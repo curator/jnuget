@@ -21,14 +21,14 @@
                 In the package manager settings, add the following URL to the list of 
                 Package Sources:
                 <blockquote>
-                    <strong>Тут URL на RSS</strong>
+                    <strong><%=request.getRequestURL()%>nuget/nuget</strong>
 
                 </blockquote>
 
                 Use the command below to push packages to this feed using the nuget command line tool (nuget.exe).
 
                 <blockquote>
-                    <strong>nuget push {package file} -s Тут URL на деплой {apikey}</strong>
+                    <strong>nuget push {package file} -s <%=request.getRequestURL()%>nuget {apikey}</strong>
                 </blockquote>            
             </fieldset>
         </div>

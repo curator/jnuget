@@ -57,6 +57,13 @@ public class MainUrl {
         return workspace.title;
     }
 
+    public MainUrl() {
+    }
+
+    public MainUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     public void writeXml(Writer writer) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(this.getClass());
         Marshaller marshaller = context.createMarshaller();
