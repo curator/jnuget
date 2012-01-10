@@ -36,6 +36,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces("application/xml")
+    @Path("")
     public Response getXml() {
         StringWriter writer = new StringWriter();
         try {
@@ -47,6 +48,21 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
+    }
+
+    @GET
+    @Produces("application/xml")
+    @Path("nuget/Packages")
+    public Response getPackages() {
+        //Фейковая реализация
+        try {
+            PackageFeed feed = new PackageFeed();
+            return Response.ok(feed.getXml(), MediaType.APPLICATION_XML).build();
+        } catch (JAXBException x) {
+            final String errorMessage = "Ошибка преобразования XML";
+            logger.error(errorMessage, x);
+            return Response.serverError().entity(errorMessage).build();
+        }
     }
 
     /**

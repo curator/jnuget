@@ -28,7 +28,7 @@
                 Use the command below to push packages to this feed using the nuget command line tool (nuget.exe).
 
                 <blockquote>
-                    <strong>nuget push {package file} -s <%=request.getRequestURL()%>nuget {apikey}</strong>
+                    <strong>nuget push {package file} -s <%=request.getRequestURL()%>nuget/ {apikey}</strong>
                 </blockquote>            
             </fieldset>
         </div>
