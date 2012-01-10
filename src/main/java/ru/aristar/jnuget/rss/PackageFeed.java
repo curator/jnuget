@@ -12,8 +12,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  *
@@ -23,8 +25,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PackageFeed {
 
-    @XmlElement(name = "title")
-    private String title = "Packages";
+    @XmlRootElement
+    public static class Title {
+
+        @XmlAttribute(name = "type")
+        private String type = "text";
+        @XmlValue
+        public String value;
+
+        public Title() {
+        }
+
+        public Title(String value) {
+            this.value = value;
+        }
+    }
+    @XmlElement(name = "title", namespace = ATOM_XML_NAMESPACE)
+    private Title title = new Title("Packages");
     @XmlElement(name = "id", namespace = ATOM_XML_NAMESPACE)
     private String id;
     @XmlElement(name = "updated", type = Date.class, namespace = ATOM_XML_NAMESPACE)
@@ -52,11 +69,11 @@ public class PackageFeed {
     }
 
     public String getTitle() {
-        return title;
+        return title != null ? title.value : null;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = new Title(title);
     }
 
     public Date getUpdated() {
