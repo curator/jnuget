@@ -1,6 +1,7 @@
 package ru.aristar.jnuget;
 
 import java.io.StringWriter;
+import java.util.Date;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path("")
 public class MainUrlResource {
-
+    
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Context
     private UriInfo context;
@@ -49,7 +50,7 @@ public class MainUrlResource {
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("nuget/Packages")
@@ -57,7 +58,10 @@ public class MainUrlResource {
         //Фейковая реализация
         try {
             PackageFeed feed = new PackageFeed();
-            return Response.ok(feed.getXml(), MediaType.APPLICATION_XML).build();
+            feed.setId(context.getAbsolutePath().toString());
+            feed.setUpdated(new Date());
+            feed.setTitle("Packages");
+            return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (JAXBException x) {
             final String errorMessage = "Ошибка преобразования XML";
             logger.error(errorMessage, x);
