@@ -1,4 +1,4 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.files;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,6 +11,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import ru.aristar.jnuget.Dependency;
+import ru.aristar.jnuget.Reference;
+import ru.aristar.jnuget.StringListTypeAdapter;
+import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.VersionTypeAdapter;
 
 /**
  * Класс, содержащий информацию о пакете NuGet

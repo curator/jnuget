@@ -1,4 +1,4 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.rss;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,18 +9,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Unlocker
  */
-@XmlRootElement(name = "author")
+@XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Author {
+public class PackageEntry {
 
-    @XmlElement(name = "name")
-    private String name;
+    @XmlElement(name = "id")
+    private String id;
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 }

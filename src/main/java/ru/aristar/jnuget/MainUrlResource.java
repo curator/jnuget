@@ -1,5 +1,7 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.rss.PackageEntry;
+import ru.aristar.jnuget.rss.PackageFeed;
 import java.io.StringWriter;
 import java.util.Date;
 import javax.ws.rs.*;
@@ -18,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path("")
 public class MainUrlResource {
-    
+
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Context
     private UriInfo context;
@@ -50,17 +52,22 @@ public class MainUrlResource {
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
     }
-    
+
     @GET
     @Produces("application/xml")
     @Path("nuget/Packages")
-    public Response getPackages() {
-        //Фейковая реализация
+    public Response getPackages() {        
         try {
+            //Фейковая реализация
             PackageFeed feed = new PackageFeed();
             feed.setId(context.getAbsolutePath().toString());
             feed.setUpdated(new Date());
             feed.setTitle("Packages");
+            PackageEntry entry = new PackageEntry();
+            entry.setId(context.getAbsolutePath().toString() + "/nuget/Packages"
+                    + "(Id='FluentAssertions',Version='1.6.0')");
+            feed.getEntries().add(entry);
+            //конец реализации
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (JAXBException x) {
             final String errorMessage = "Ошибка преобразования XML";

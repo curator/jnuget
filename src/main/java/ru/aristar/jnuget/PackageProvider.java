@@ -4,6 +4,7 @@
  */
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.rss.PackageFeed;
 import java.util.List;
 
 /**

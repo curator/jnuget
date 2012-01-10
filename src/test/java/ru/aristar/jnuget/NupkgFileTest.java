@@ -1,5 +1,7 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.NuspecFile;
 import java.io.InputStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
