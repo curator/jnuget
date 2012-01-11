@@ -23,4 +23,11 @@ public class Author {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Author() {
+    }
+
+    public Author(String name) {
+        this.name = name;
+    }
 }

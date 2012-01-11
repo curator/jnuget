@@ -57,4 +57,12 @@ public class EntryProperties {
     public void setNuspec(NuspecFile nuspecFile) {
         this.version = nuspecFile.getVersion();
     }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
+    }
 }
