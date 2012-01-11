@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.files;
 
-import ru.aristar.jnuget.files.NuspecFile;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -29,6 +30,10 @@ public class NupkgFile {
         }
     }
 
+    public NupkgFile(File file) throws JAXBException, IOException {
+        this(new FileInputStream(file));
+    }
+
     public NuspecFile getNuspecFile() {
         return nuspecFile;
     }
@@ -36,4 +41,15 @@ public class NupkgFile {
     public void setNuspecFile(NuspecFile nuspecFile) {
         this.nuspecFile = nuspecFile;
     }
+
+    public static boolean isValidFileName(String name) {
+        if (name == null) {
+            return false;
+        }
+        return name.toLowerCase().endsWith(NupkgFile.DEFAULT_EXTENSION);
+    }
+    /**
+     * Расширение по умолчанию
+     */
+    public static final String DEFAULT_EXTENSION = ".nupkg";
 }
