@@ -87,6 +87,21 @@ public class MainUrlResource {
         }
     }
 
+    @GET
+    @Produces("application/xml")
+    @Path("download/{id}/{version}")
+    public String getPackage(@PathParam("id") String id,
+            @PathParam("version") String version) {
+        return "<root>Не реализовано: <id>" + id + "</id><version>"
+                + version + "</version></root>";
+//        File f = new File("/tmp/file.doc");
+//        ResponseBuilder response = Response.ok((Object) f);
+//        response.type(contentType);
+//        response.header("Content-Disposition", "attachment; filename=\"file.doc\"");
+//        return response.build();
+
+    }
+
     /**
      * PUT method for updating or creating an instance of MainUrlResource
      *
