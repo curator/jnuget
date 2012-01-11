@@ -1,6 +1,7 @@
 package ru.aristar.jnuget;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -80,26 +82,35 @@ public class MainUrlResource {
             feed.setEntries(packageEntrys);
             //конец реализации
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
-        } catch (JAXBException x) {
+        } catch (JAXBException e) {
             final String errorMessage = "Ошибка преобразования XML";
-            logger.error(errorMessage, x);
+            logger.error(errorMessage, e);
             return Response.serverError().entity(errorMessage).build();
         }
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("download/{id}/{version}")
-    public String getPackage(@PathParam("id") String id,
-            @PathParam("version") String version) {
-        return "<root>Не реализовано: <id>" + id + "</id><version>"
-                + version + "</version></root>";
-//        File f = new File("/tmp/file.doc");
-//        ResponseBuilder response = Response.ok((Object) f);
-//        response.type(contentType);
-//        response.header("Content-Disposition", "attachment; filename=\"file.doc\"");
-//        return response.build();
-
+    public Response getPackage(@PathParam("id") String id,
+            @PathParam("version") String versionString) {
+        try {
+            Version version = Version.parse(versionString);
+            //Фейковая реализация
+            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
+            FilePackageSource packageSource = new FilePackageSource(file);
+            NupkgFile nupkg = packageSource.getPackage(id, version);
+            InputStream inputStream = nupkg.getStream();
+            ResponseBuilder response = Response.ok((Object) inputStream);
+            response.type(MediaType.APPLICATION_OCTET_STREAM);
+            String fileName = nupkg.getFileName();
+            response.header("Content-Disposition", "attachment; filename=\""+fileName+"\"");
+            return response.build();
+        } catch (Exception e) {
+            final String errorMessage = "Ошибка преобразования XML";
+            logger.error(errorMessage, e);
+            return Response.serverError().entity(errorMessage).build();
+        }
     }
 
     /**

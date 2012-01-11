@@ -17,6 +17,7 @@ public class NupkgFile {
 
     private NuspecFile nuspecFile;
     private Date updated;
+    private File file;
 
     public NupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException {
         this.updated = updated;
@@ -36,6 +37,7 @@ public class NupkgFile {
 
     public NupkgFile(File file) throws JAXBException, IOException {
         this(new FileInputStream(file), new Date(file.lastModified()));
+        this.file = file;
     }
 
     public NuspecFile getNuspecFile() {
@@ -52,6 +54,19 @@ public class NupkgFile {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    public InputStream getStream() throws IOException {
+        if (file != null) {
+            return new FileInputStream(file);
+        } else {
+            return null;
+        }
+    }
+
+    public String getFileName() {
+        return getNuspecFile().getId() + "."
+                + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
     }
 
     public static boolean isValidFileName(String name) {
