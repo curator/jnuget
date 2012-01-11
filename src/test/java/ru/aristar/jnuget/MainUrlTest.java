@@ -21,7 +21,6 @@ public class MainUrlTest {
     }
 
     @Test
-    @Ignore
     public void testUnmarshallMainUrlFromXml() throws Exception {
         //GIVEN
         InputStream inputStream = MainUrlTest.class.getResourceAsStream("/main.document.xml");

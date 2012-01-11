@@ -1,8 +1,9 @@
 package ru.aristar.jnuget;
 
-import ru.aristar.jnuget.rss.PackageEntry;
-import ru.aristar.jnuget.rss.PackageFeed;
+import java.io.File;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -12,6 +13,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.rss.PackageEntry;
+import ru.aristar.jnuget.rss.PackageEntryNameComparator;
+import ru.aristar.jnuget.rss.PackageFeed;
+import ru.aristar.jnuget.sources.FilePackageSource;
 
 /**
  * REST Web Service
@@ -56,17 +62,22 @@ public class MainUrlResource {
     @GET
     @Produces("application/xml")
     @Path("nuget/Packages")
-    public Response getPackages() {        
+    public Response getPackages() {
         try {
             //Фейковая реализация
+            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
+            FilePackageSource packageSource = new FilePackageSource(file);
             PackageFeed feed = new PackageFeed();
             feed.setId(context.getAbsolutePath().toString());
             feed.setUpdated(new Date());
             feed.setTitle("Packages");
-            PackageEntry entry = new PackageEntry();
-            entry.setId(context.getAbsolutePath().toString() + "/nuget/Packages"
-                    + "(Id='FluentAssertions',Version='1.6.0')");
-            feed.getEntries().add(entry);
+            ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
+            for (NupkgFile nupkg : packageSource.getPackages()) {
+                PackageEntry entry = new PackageEntry(nupkg);
+                packageEntrys.add(entry);
+            }
+            Collections.sort(packageEntrys, new PackageEntryNameComparator());
+            feed.setEntries(packageEntrys);
             //конец реализации
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (JAXBException x) {

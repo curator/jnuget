@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.rss;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -12,10 +11,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
 
 /**
  *
@@ -25,21 +22,6 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PackageFeed {
 
-    @XmlRootElement
-    public static class Title {
-
-        @XmlAttribute(name = "type")
-        private String type = "text";
-        @XmlValue
-        public String value;
-
-        public Title() {
-        }
-
-        public Title(String value) {
-            this.value = value;
-        }
-    }
     @XmlElement(name = "title", namespace = ATOM_XML_NAMESPACE)
     private Title title = new Title("Packages");
     @XmlElement(name = "id", namespace = ATOM_XML_NAMESPACE)
