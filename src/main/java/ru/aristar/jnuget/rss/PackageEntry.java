@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import ru.aristar.jnuget.Author;
+import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.files.NuspecFile;
 
@@ -84,6 +85,10 @@ public class PackageEntry {
 
     public PackageEntry(NupkgFile nupkgFile) {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated());
+    }
+
+    public PackageEntry(NupkgFile nupkgFile, NugetContext context) {
+        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated());        
     }
 
     public PackageEntry(NuspecFile nuspecFile, Date updated) {

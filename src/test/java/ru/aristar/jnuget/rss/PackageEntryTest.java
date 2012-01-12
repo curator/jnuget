@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +25,8 @@ public class PackageEntryTest {
         NupkgFile nupkgFile = new NupkgFile(inputStream, date);
         //WHEN
         PackageEntry entry = new PackageEntry(nupkgFile);
-        String rootUri = "http://localhost:8090/nuget/";
-        entry.setRootUri(rootUri);
+        URI rootUri = new URI("http://localhost:8090/nuget/");
+        entry.setRootUri(rootUri.toString());
         //THEN
         assertEquals("Идентификатор пакета",
                 "http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",
