@@ -1,5 +1,6 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.rss.MainUrl;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -47,7 +48,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces("application/xml")
-    @Path("")
+    @Path("nuget")
     public Response getXml() {
         StringWriter writer = new StringWriter();
         try {

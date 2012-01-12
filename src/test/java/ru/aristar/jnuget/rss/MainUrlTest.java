@@ -1,10 +1,9 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -29,6 +28,7 @@ public class MainUrlTest {
         //THEN
         assertEquals("URL сервлета", "Полный URL, куда должен быть задеполен сервлет", result.getBaseUrl());
         assertEquals("Описание пакета", "Default", result.getTitle());
-        fail("Тестовый метод не дописан");
+        assertEquals("Описание пакета", "Packages", result.getCollectionTitle());
+        assertEquals("Описание пакета", "Packages", result.getCollectionHref());
     }
 }

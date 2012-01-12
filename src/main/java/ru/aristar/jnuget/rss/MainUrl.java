@@ -1,4 +1,4 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.io.Writer;
@@ -10,19 +10,45 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import ru.aristar.jnuget.UrlFactory;
 
 /**
  * Xml корневого узла NuGet
+ *
  * @author sviridov
  */
 @XmlRootElement(name = "service", namespace = "http://www.w3.org/2007/app")
 @XmlAccessorType(XmlAccessType.NONE)
 public class MainUrl {
 
+    public static class Collection {
+
+        @XmlAttribute(name = "href")
+        private String href = "Packages";
+        private String title;
+
+        @XmlElement(name = "title", namespace = "http://www.w3.org/2005/Atom")
+        private String getTitle() {
+            if (title == null) {
+                title = "Packages";
+            }
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+    }
+
+    @XmlType(propOrder = {"title", "collection"})
     public static class Workspace {
 
         private String title;
+        @XmlElement(name = "collection", namespace = "http://www.w3.org/2007/app")
+        private Collection collection = new Collection();
 
         @XmlElement(name = "title", namespace = "http://www.w3.org/2005/Atom")
         private String getTitle() {
@@ -55,6 +81,14 @@ public class MainUrl {
 
     public String getTitle() {
         return workspace.title;
+    }
+
+    public String getCollectionHref() {
+        return workspace.collection.href;
+    }
+
+    public String getCollectionTitle() {
+        return workspace.collection.title;
     }
 
     public MainUrl() {
