@@ -101,6 +101,39 @@ public class MainUrlResource {
     }
 
     @GET
+    @Produces("application/xml")
+    @Path("nuget/{search : Search[(][)]}")
+    //Search()?$filter=IsLatestVersion&$orderby=Id&$skip=0&$top=30&searchTerm=''&targetFramework=''
+    public Response search(@QueryParam("$filter") String filter,
+            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$skip") String skip,
+            @QueryParam("searchTerm") String searchTerm,
+            @QueryParam("targetFramework") String targetFramework) {
+        try {
+            //Фейковая реализация
+            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
+            FilePackageSource packageSource = new FilePackageSource(file);
+            PackageFeed feed = new PackageFeed();
+            feed.setId(context.getAbsolutePath().toString());
+            feed.setUpdated(new Date());
+            feed.setTitle("Search");
+            ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
+            for (NupkgFile nupkg : packageSource.getPackages()) {
+                PackageEntry entry = new PackageEntry(nupkg);
+                packageEntrys.add(entry);
+            }
+            Collections.sort(packageEntrys, new PackageEntryNameComparator());
+            feed.setEntries(packageEntrys);
+            //конец реализации
+            return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
+        } catch (JAXBException e) {
+            final String errorMessage = "Ошибка преобразования XML";
+            logger.error(errorMessage, e);
+            return Response.serverError().entity(errorMessage).build();
+        }
+    }
+
+    @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("download/{id}/{version}")
     public Response getPackage(@PathParam("id") String id,
