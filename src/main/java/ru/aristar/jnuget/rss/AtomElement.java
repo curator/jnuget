@@ -1,11 +1,14 @@
 package ru.aristar.jnuget.rss;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  *
  * @author sviridov
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public class AtomElement {
 
     @XmlAttribute

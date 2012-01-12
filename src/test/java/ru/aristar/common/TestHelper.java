@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
  *
  * @author sviridov
  */
-public class TestHelper {
+public abstract class TestHelper {
 
     public static void assertOneOfAreEquals(String message,
             Object expected,
