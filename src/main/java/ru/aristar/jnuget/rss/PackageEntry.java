@@ -66,6 +66,15 @@ public class PackageEntry {
     private EntryProperties properties;
     @XmlElement(name = "link", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     private List<Link> links;
+    @XmlElement(name = "category", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    private AtomElement category;
+    @XmlElement(name = "content", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    private AtomElement content;
+
+    private String getCombineIdAndVersion() {
+        return "(Id='" + getTitle() + "',Version='"
+                + getProperties().getVersion().toString() + "')";
+    }
 
     /**
      * Конструктор по умолчанию
@@ -82,8 +91,17 @@ public class PackageEntry {
         getProperties().setNuspec(nuspecFile);
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
-        this.getLinks().add(new Link("edit-media", "Package"));
-        this.getLinks().add(new Link("edit", "Package"));
+        this.getLinks().add(new Link("edit-media", "Package",
+                "Packages" + getCombineIdAndVersion() + "/$value"));
+        this.getLinks().add(new Link("edit", "Package",
+                "Packages" + getCombineIdAndVersion()));
+        this.category = new AtomElement();
+        category.setTerm("NuGet.Server.DataServices.Package");
+        category.setScheme("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
+        this.content = new AtomElement();
+        content.setType("application/zip");
+        content.setSrc("'ТУТ УРЛ ДЕПЛОЯ'/nuget/download/" + title + "/"
+                + nuspecFile.getVersion());
     }
 
     /**
@@ -147,5 +165,13 @@ public class PackageEntry {
             links = new ArrayList<Link>();
         }
         return links;
+    }
+
+    public AtomElement getCategory() {
+        return category;
+    }
+
+    public AtomElement getContent() {
+        return content;
     }
 }

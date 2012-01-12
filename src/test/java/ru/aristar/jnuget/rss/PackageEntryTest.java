@@ -1,9 +1,12 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import static ru.aristar.common.TestHelper.assertOneOfAreEquals;
 import ru.aristar.jnuget.files.NupkgFile;
 
 /**
@@ -12,9 +15,6 @@ import ru.aristar.jnuget.files.NupkgFile;
  */
 public class PackageEntryTest {
 
-    //TODO    <link rel="edit-media" title="Package" href="Packages(Id='NUnit',Version='2.5.9.10348')/$value" />
-    //TODO    <link rel="edit" title="Package" href="Packages(Id='NUnit',Version='2.5.9.10348')" />
-    //TODO    <category term="NuGet.Server.DataServices.Package" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
     //TODO    <content type="application/zip" src="http://localhost:8090/nuget/download/NUnit/2.5.9.10348" />    
     @Test
     public void testConvertNuPkgToEntry() throws Exception {
@@ -38,8 +38,19 @@ public class PackageEntryTest {
         assertEquals("Количество ссылок", 2, entry.getLinks().size());
         assertEquals("Тип ссылки", "Package", entry.getLinks().get(0).getTitle());
         assertEquals("Тип ссылки", "Package", entry.getLinks().get(1).getTitle());
-
-
-        fail("Тест не реализован");
+        List<String> rels = Arrays.asList(entry.getLinks().get(0).getRel(), entry.getLinks().get(1).getRel());
+        assertOneOfAreEquals("Ссылочный тип", "edit-media", rels);
+        assertOneOfAreEquals("Ссылочный тип", "edit", rels);
+        List<String> hrefs = Arrays.asList(entry.getLinks().get(0).getHref(), entry.getLinks().get(1).getHref());
+        assertOneOfAreEquals("Ссылка", "Packages(Id='NUnit',Version='2.5.9.10348')/$value", hrefs);
+        assertOneOfAreEquals("Ссылка", "Packages(Id='NUnit',Version='2.5.9.10348')", hrefs);
+        assertEquals("Категория", "NuGet.Server.DataServices.Package", entry.getCategory().getTerm());
+        assertEquals("Категория схема", "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme", entry.getCategory().getScheme());
+        assertNull("Категория источник", entry.getCategory().getSrc());
+        assertNull("Категория тип", entry.getCategory().getType());
+        assertNull("Контент", entry.getContent().getTerm());
+        assertNull("Контент схема", entry.getContent().getScheme());
+        assertEquals("Контент источник", "http://localhost:8090/nuget/download/NUnit/2.5.9.10348", entry.getContent().getSrc());
+        assertEquals("Контент тип", "application/zip", entry.getContent().getType());
     }
 }
