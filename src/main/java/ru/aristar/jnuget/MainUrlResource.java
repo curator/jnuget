@@ -2,6 +2,7 @@ package ru.aristar.jnuget;
 
 import ru.aristar.jnuget.rss.MainUrl;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -64,6 +65,15 @@ public class MainUrlResource {
 
     @GET
     @Produces("application/xml")
+    @Path("nuget/{metadata : [$]metadata}")
+    public Response getMetadata() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/metadata.xml");
+        ResponseBuilder response = Response.ok((Object) inputStream);
+        return response.build();
+    }
+
+    @GET
+    @Produces("application/xml")
     @Path("nuget/Packages")
     public Response getPackages() {
         try {
@@ -105,7 +115,7 @@ public class MainUrlResource {
             ResponseBuilder response = Response.ok((Object) inputStream);
             response.type(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = nupkg.getFileName();
-            response.header("Content-Disposition", "attachment; filename=\""+fileName+"\"");
+            response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             return response.build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка преобразования XML";
