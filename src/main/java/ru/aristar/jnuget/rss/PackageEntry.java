@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.rss;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,6 +18,8 @@ import ru.aristar.jnuget.files.NuspecFile;
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PackageEntry {
+
+    private String rootUri;
 
     /*
      * <entry>
@@ -35,11 +39,6 @@ public class PackageEntry {
      * xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"> ......
      * </m:properties> </entry>
      */
-    /**
-     * Идентификатор вложения
-     */
-    @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
-    private String id;
     /**
      * Заголовок вложения
      */
@@ -65,6 +64,8 @@ public class PackageEntry {
      */
     @XmlElement(name = "properties", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")
     private EntryProperties properties;
+    @XmlElement(name = "link", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    private List<Link> links;
 
     /**
      * Конструктор по умолчанию
@@ -77,19 +78,29 @@ public class PackageEntry {
     }
 
     public PackageEntry(NuspecFile nuspecFile, Date updated) {
-        id = nuspecFile.getId();
         title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
+        this.getLinks().add(new Link("edit-media", "Package"));
+        this.getLinks().add(new Link("edit", "Package"));
     }
 
+    /**
+     * Идентификатор вложения
+     */
+    @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public String getId() {
-        return id;
+        return rootUri + "nuget/Packages(Id='" + getTitle() + "',Version='"
+                + getProperties().getVersion().toString() + "')";
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getRootUri() {
+        return rootUri;
+    }
+
+    public void setRootUri(String rootUri) {
+        this.rootUri = rootUri;
     }
 
     public String getTitle() {
@@ -129,5 +140,12 @@ public class PackageEntry {
             properties = new EntryProperties();
         }
         return properties;
+    }
+
+    public List<Link> getLinks() {
+        if (links == null) {
+            links = new ArrayList<Link>();
+        }
+        return links;
     }
 }

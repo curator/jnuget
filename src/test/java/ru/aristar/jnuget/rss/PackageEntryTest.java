@@ -12,7 +12,6 @@ import ru.aristar.jnuget.files.NupkgFile;
  */
 public class PackageEntryTest {
 
-    //TODO    <id>http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')</id>
     //TODO    <link rel="edit-media" title="Package" href="Packages(Id='NUnit',Version='2.5.9.10348')/$value" />
     //TODO    <link rel="edit" title="Package" href="Packages(Id='NUnit',Version='2.5.9.10348')" />
     //TODO    <category term="NuGet.Server.DataServices.Package" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
@@ -25,12 +24,21 @@ public class PackageEntryTest {
         NupkgFile nupkgFile = new NupkgFile(inputStream, date);
         //WHEN
         PackageEntry entry = new PackageEntry(nupkgFile);
+        String rootUri = "http://localhost:8090/nuget/";
+        entry.setRootUri(rootUri);
         //THEN
+        assertEquals("Идентификатор пакета",
+                "http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",
+                entry.getId());
         assertEquals("Название пакета", "NUnit", entry.getTitle());
         assertEquals("Описание пакета", null, entry.getSummary());
         assertEquals("Дата обновления пакета", date, entry.getUpdated());
         assertNotNull("Автор пакета", entry.getAuthor());
         assertEquals("Автор пакета", "NUnit", entry.getAuthor().getName());
+        assertEquals("Количество ссылок", 2, entry.getLinks().size());
+        assertEquals("Тип ссылки", "Package", entry.getLinks().get(0).getTitle());
+        assertEquals("Тип ссылки", "Package", entry.getLinks().get(1).getTitle());
+
 
         fail("Тест не реализован");
     }

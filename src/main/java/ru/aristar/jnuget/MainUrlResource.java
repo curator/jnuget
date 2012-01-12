@@ -87,6 +87,7 @@ public class MainUrlResource {
             ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
             for (NupkgFile nupkg : packageSource.getPackages()) {
                 PackageEntry entry = new PackageEntry(nupkg);
+                entry.setRootUri(context.getPath());
                 packageEntrys.add(entry);
             }
             Collections.sort(packageEntrys, new PackageEntryNameComparator());
@@ -120,6 +121,7 @@ public class MainUrlResource {
             ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
             for (NupkgFile nupkg : packageSource.getPackages()) {
                 PackageEntry entry = new PackageEntry(nupkg);
+                entry.setRootUri(context.getPath());
                 packageEntrys.add(entry);
             }
             Collections.sort(packageEntrys, new PackageEntryNameComparator());
