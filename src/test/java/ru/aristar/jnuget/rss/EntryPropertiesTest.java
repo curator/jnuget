@@ -13,10 +13,6 @@ import ru.aristar.jnuget.files.NuspecFile;
  */
 public class EntryPropertiesTest {
 
-//TODO IconUrl 
-//TODO LicenseUrl 
-//TODO ProjectUrl 
-//TODO ReportAbuseUrl 
 //TODO DownloadCount -1
 //TODO VersionDownloadCount -1
 //TODO RatingsCount 0
@@ -49,7 +45,7 @@ public class EntryPropertiesTest {
         properties.setNuspec(nuspecFile);
         //THEN
         assertEquals("Версия пакета", new Version(2, 5, 9, "10348"), properties.getVersion());
-        assertEquals("Заголовок значение", "", properties.getTitle().getValue());
+        //assertEquals("Заголовок значение", "", properties.getTitle().getValue());
         fail("Тест не полностью реализован");
     }
 
@@ -64,6 +60,26 @@ public class EntryPropertiesTest {
         assertNotNull("Заголовок", entryProperties.getTitle());
         assertEquals("Заголовок значение", "", entryProperties.getTitle().getValue());
         assertTrue("Заголовок nullable", entryProperties.getTitle().getNullable());
+
+        assertNotNull("URL иконки", entryProperties.getIconUrl());
+        assertEquals("URL иконки значение", "", entryProperties.getIconUrl().getValue());
+        assertTrue("URL иконки nullable", entryProperties.getIconUrl().getNullable());
+
+        assertNotNull("URL лицензии", entryProperties.getLicenseUrl());
+        assertEquals("URL лицензии значение", "", entryProperties.getLicenseUrl().getValue());
+        assertTrue("URL лицензии nullable", entryProperties.getLicenseUrl().getNullable());
+
+        assertNotNull("URL проекта", entryProperties.getProjectUrl());
+        assertEquals("URL проекта значение", "", entryProperties.getProjectUrl().getValue());
+        assertTrue("URL проекта nullable", entryProperties.getProjectUrl().getNullable());
+
+        assertNotNull("URL отчета", entryProperties.getReportAbuseUrl());
+        assertEquals("URL отчета значение", "", entryProperties.getReportAbuseUrl().getValue());
+        assertTrue("URL отчета nullable", entryProperties.getReportAbuseUrl().getNullable());
+
+        assertNotNull("URL отчета", entryProperties.getDownloadCount());
+        assertEquals("URL отчета значение", "-1", entryProperties.getDownloadCount().getValue());
+        assertEquals("URL отчета nullable", MicrosoftTypes.Int32, entryProperties.getDownloadCount().getType());
 
         fail("Тест не дописан");
     }

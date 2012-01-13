@@ -26,6 +26,16 @@ public class EntryProperties {
     private Version version;
     @XmlElement(name = "Title", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
     private MicrosoftDatasetElement title;
+    @XmlElement(name = "IconUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement iconUrl;
+    @XmlElement(name = "LicenseUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement licenseUrl;
+    @XmlElement(name = "ProjectUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement projectUrl;
+    @XmlElement(name = "ReportAbuseUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement reportAbuseUrl;
+    @XmlElement(name = "DownloadCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement downloadCount;
 
 //         <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
 //                       xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
@@ -76,6 +86,47 @@ public class EntryProperties {
 
     public void setTitle(String title) {
         this.title = new MicrosoftDatasetElement(Boolean.TRUE, null, title);
+    }
+
+    public MicrosoftDatasetElement getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, iconUrl);
+    }
+
+    public MicrosoftDatasetElement getLicenseUrl() {
+        return licenseUrl;
+    }
+
+    public void setLicenseUrl(String licenseUrl) {
+        this.licenseUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, licenseUrl);
+    }
+
+    public MicrosoftDatasetElement getProjectUrl() {
+        return projectUrl;
+    }
+
+    public void setProjectUrl(String projectUrl) {
+        this.projectUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, projectUrl);
+    }
+
+    public MicrosoftDatasetElement getReportAbuseUrl() {
+        return reportAbuseUrl;
+    }
+
+    public void setReportAbuseUrl(String reportAbuseUrl) {
+        this.reportAbuseUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, reportAbuseUrl);
+    }
+
+    public MicrosoftDatasetElement getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(Integer downloadCount) {
+        int cnt = downloadCount != null ? downloadCount : -1;
+        this.downloadCount = new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, Integer.toString(cnt));
     }
 
     public static EntryProperties parse(InputStream inputStream) throws JAXBException {

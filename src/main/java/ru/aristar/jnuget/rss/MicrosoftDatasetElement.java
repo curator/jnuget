@@ -17,14 +17,14 @@ public class MicrosoftDatasetElement {
     @XmlAttribute(name = "null", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")
     private Boolean nullable;
     @XmlAttribute(name = "type", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata")
-    private MIcrosoftTypes type;
+    private MicrosoftTypes type;
     @XmlValue
     private String value;
 
     public MicrosoftDatasetElement() {
     }
 
-    public MicrosoftDatasetElement(Boolean nullable, MIcrosoftTypes type, String value) {
+    public MicrosoftDatasetElement(Boolean nullable, MicrosoftTypes type, String value) {
         this.nullable = nullable;
         this.type = type;
         this.value = value;
@@ -38,11 +38,11 @@ public class MicrosoftDatasetElement {
         this.nullable = nullable;
     }
 
-    public MIcrosoftTypes getType() {
+    public MicrosoftTypes getType() {
         return type;
     }
 
-    public void setType(MIcrosoftTypes type) {
+    public void setType(MicrosoftTypes type) {
         this.type = type;
     }
 
