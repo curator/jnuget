@@ -103,7 +103,7 @@ public class Version implements Comparable<Version> {
             if (build != null) {
                 buffer.append(".").append(build.intValue());
 
-                if (revision != null) {
+                if (revision != null && !revision.trim().isEmpty()) {
                     if (!revision.startsWith("-")) {
                         buffer.append(".");
                     }

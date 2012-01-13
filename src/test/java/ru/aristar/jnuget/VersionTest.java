@@ -103,12 +103,12 @@ public class VersionTest {
      * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testVersionVithThreeDigit() throws Exception {
+    public void testVersionWSithThreeDigit() throws Exception {
         //GIVEN
-        final String soourceVersion = "4.0.10827";
+        final String sourceVersion = "4.0.10827";
         //WHEN
-        Version version = Version.parse(soourceVersion);
+        Version version = Version.parse(sourceVersion);
         //THEN
-        assertEquals("Версия не должна измениться", "4.0.10827", version.toString());
+        assertEquals("Версия не должна измениться", sourceVersion, version.toString());
     }
 }
