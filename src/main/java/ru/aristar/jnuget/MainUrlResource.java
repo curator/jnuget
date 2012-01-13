@@ -102,7 +102,7 @@ public class MainUrlResource {
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_ATOM_XML)
     @Path("nuget/{search : Search[(][)]}")
     //Search()?$filter=IsLatestVersion&$orderby=Id&$skip=0&$top=30&searchTerm=''&targetFramework=''
     public Response search(@QueryParam("$filter") String filter,

@@ -1,6 +1,6 @@
 package ru.aristar.jnuget;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.*;
 import org.junit.Test;
 
 /**
@@ -16,10 +16,10 @@ public class VersionTest {
         //WHEN
         Version version = Version.parse(strVersion);
         //THEN
-        Assert.assertEquals("Major", Integer.valueOf(1), version.getMajor());
-        Assert.assertEquals("Minor", Integer.valueOf(2), version.getMinor());
-        Assert.assertEquals("Build", Integer.valueOf(3), version.getBuild());
-        Assert.assertEquals("Revision", "4", version.getRevision());
+        assertEquals("Major", Integer.valueOf(1), version.getMajor());
+        assertEquals("Minor", Integer.valueOf(2), version.getMinor());
+        assertEquals("Build", Integer.valueOf(3), version.getBuild());
+        assertEquals("Revision", "4", version.getRevision());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class VersionTest {
         int result = older.compareTo(newer);
 
         // THEN
-        Assert.assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
+        assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class VersionTest {
         int result = older.compareTo(newer);
 
         // THEN
-        Assert.assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
+        assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class VersionTest {
         int result = older.compareTo(newer);
 
         // THEN
-        Assert.assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
+        assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
     }
 
     @Test
@@ -79,12 +79,12 @@ public class VersionTest {
         int result = older.compareTo(newer);
 
         // THEN
-        Assert.assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
+        assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
     }
 
     @Test
     public void testMinorGreaterBuildLesser() throws Exception {
-           // GIVEN
+        // GIVEN
         String newerStr = "1.3.3";
         String olderStr = "1.2.5";
         Version older = Version.parse(olderStr);
@@ -94,6 +94,21 @@ public class VersionTest {
         int result = newer.compareTo(older);
 
         // THEN
-        Assert.assertEquals("Версия " + newerStr + " должна быть старше, чем " + olderStr, 1, result);
+        assertEquals("Версия " + newerStr + " должна быть старше, чем " + olderStr, 1, result);
+    }
+
+    /**
+     * Преобразование строки в версию и обратно не должно менять строку
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testVersionVithThreeDigit() throws Exception {
+        //GIVEN
+        final String soourceVersion = "4.0.10827";
+        //WHEN
+        Version version = Version.parse(soourceVersion);
+        //THEN
+        assertEquals("Версия не должна измениться", "4.0.10827", version.toString());
     }
 }
