@@ -93,7 +93,7 @@ public class PackageEntry {
     public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
         this.nugetContext = nugetContext;
         title = new Title(nuspecFile.getId());
-        getProperties().setNuspec(nuspecFile);
+        getProperties().setNuspec(nuspecFile);        
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
         this.getLinks().add(new Link("edit-media", "Package",

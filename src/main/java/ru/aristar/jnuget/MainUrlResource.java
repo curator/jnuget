@@ -30,7 +30,7 @@ import ru.aristar.jnuget.sources.FilePackageSource;
  */
 @Path("")
 public class MainUrlResource {
-
+    
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Context
     private UriInfo context;
@@ -62,7 +62,7 @@ public class MainUrlResource {
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("nuget/{metadata : [$]metadata}")
@@ -71,7 +71,7 @@ public class MainUrlResource {
         ResponseBuilder response = Response.ok((Object) inputStream);
         return response.build();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("nuget/Packages")
@@ -100,7 +100,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @GET
     @Produces(MediaType.APPLICATION_ATOM_XML)
     @Path("nuget/{search : Search[(][)]}")
@@ -122,6 +122,7 @@ public class MainUrlResource {
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             for (NupkgFile nupkg : packageSource.getPackages()) {
                 PackageEntry entry = nugetContext.createPackageEntry(nupkg);
+                entry.getProperties().setIsLatestVersion(Boolean.TRUE);
                 packageEntrys.add(entry);
             }
             Collections.sort(packageEntrys, new PackageEntryNameComparator());
@@ -134,7 +135,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("download/{id}/{version}")

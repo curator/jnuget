@@ -15,6 +15,6 @@ public class MicrosoftTypeAdapter extends XmlAdapter<String, MicrosoftTypes> {
 
     @Override
     public String marshal(MicrosoftTypes type) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return type == null ? null : type.toString();
     }
 }

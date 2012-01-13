@@ -6,7 +6,9 @@ package ru.aristar.jnuget.rss;
  */
 public enum MicrosoftTypes {
 
-    Int32("Edm.Int32");
+    Int32("Edm.Int32"),
+    Double("Edm.Double"),
+    Boolean("Edm.Boolean");
 
     public static MicrosoftTypes parse(String string) {
         for (MicrosoftTypes mt : values()) {
