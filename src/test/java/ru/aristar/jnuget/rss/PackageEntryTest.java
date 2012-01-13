@@ -8,6 +8,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static ru.aristar.common.TestHelper.assertOneOfAreEquals;
+import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.NupkgFile;
 
 /**
@@ -24,9 +25,8 @@ public class PackageEntryTest {
         Date date = new Date();
         NupkgFile nupkgFile = new NupkgFile(inputStream, date);
         //WHEN
-        PackageEntry entry = new PackageEntry(nupkgFile);
-        URI rootUri = new URI("http://localhost:8090/nuget/");
-        entry.setRootUri(rootUri.toString());
+        NugetContext context = new NugetContext(new URI("http://localhost:8090/"));
+        PackageEntry entry = context.createPackageEntry(nupkgFile);       
         //THEN
         assertEquals("Идентификатор пакета",
                 "http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",

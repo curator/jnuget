@@ -20,8 +20,7 @@ import ru.aristar.jnuget.files.NuspecFile;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PackageEntry {
 
-    private String rootUri;
-
+    protected NugetContext nugetContext;
     /*
      * <entry>
      * <id>http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')</id>
@@ -84,14 +83,15 @@ public class PackageEntry {
     }
 
     public PackageEntry(NupkgFile nupkgFile) {
-        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated());
+        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), null);
     }
 
     public PackageEntry(NupkgFile nupkgFile, NugetContext context) {
-        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated());        
+        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), context);
     }
 
-    public PackageEntry(NuspecFile nuspecFile, Date updated) {
+    public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
+        this.nugetContext = nugetContext;
         title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
         this.updated = updated;
@@ -105,7 +105,7 @@ public class PackageEntry {
         category.setScheme("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
         this.content = new AtomElement();
         content.setType("application/zip");
-        content.setSrc("'ТУТ УРЛ ДЕПЛОЯ'/nuget/download/" + title + "/"
+        content.setSrc(getRootUri() + "nuget/download/" + title.value + "/"
                 + nuspecFile.getVersion());
     }
 
@@ -114,16 +114,15 @@ public class PackageEntry {
      */
     @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public String getId() {
-        return rootUri + "nuget/Packages(Id='" + getTitle() + "',Version='"
+        return getRootUri() + "nuget/nuget/Packages(Id='" + getTitle() + "',Version='"
                 + getProperties().getVersion().toString() + "')";
     }
 
     public String getRootUri() {
-        return rootUri;
-    }
-
-    public void setRootUri(String rootUri) {
-        this.rootUri = rootUri;
+        if (nugetContext == null) {
+            return null;
+        }
+        return nugetContext.getRootUri().toString();
     }
 
     public String getTitle() {

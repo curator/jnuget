@@ -85,9 +85,9 @@ public class MainUrlResource {
             feed.setUpdated(new Date());
             feed.setTitle("Packages");
             ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
+            NugetContext nugetContext = new NugetContext(context.getBaseUri());
             for (NupkgFile nupkg : packageSource.getPackages()) {
-                PackageEntry entry = new PackageEntry(nupkg);
-                entry.setRootUri(context.getPath());
+                PackageEntry entry = nugetContext.createPackageEntry(nupkg);
                 packageEntrys.add(entry);
             }
             Collections.sort(packageEntrys, new PackageEntryNameComparator());
@@ -119,9 +119,9 @@ public class MainUrlResource {
             feed.setUpdated(new Date());
             feed.setTitle("Search");
             ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
+            NugetContext nugetContext = new NugetContext(context.getBaseUri());
             for (NupkgFile nupkg : packageSource.getPackages()) {
-                PackageEntry entry = new PackageEntry(nupkg);
-                entry.setRootUri(context.getPath());
+                PackageEntry entry = nugetContext.createPackageEntry(nupkg);
                 packageEntrys.add(entry);
             }
             Collections.sort(packageEntrys, new PackageEntryNameComparator());
