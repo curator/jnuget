@@ -24,6 +24,8 @@ public class EntryProperties {
     @XmlElement(name = "Version", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
     @XmlJavaTypeAdapter(value = VersionTypeAdapter.class)
     private Version version;
+    @XmlElement(name = "Title", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    private MicrosoftDatasetElement title;
 
 //         <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
 //                       xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
@@ -66,6 +68,14 @@ public class EntryProperties {
 
     public void setVersion(Version version) {
         this.version = version;
+    }
+
+    public MicrosoftDatasetElement getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = new MicrosoftDatasetElement(Boolean.TRUE, null, title);
     }
 
     public static EntryProperties parse(InputStream inputStream) throws JAXBException {

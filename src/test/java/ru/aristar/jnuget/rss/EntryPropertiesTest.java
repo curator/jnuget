@@ -2,7 +2,7 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NuspecFile;
@@ -13,7 +13,6 @@ import ru.aristar.jnuget.files.NuspecFile;
  */
 public class EntryPropertiesTest {
 
-//TODO Title 
 //TODO IconUrl 
 //TODO LicenseUrl 
 //TODO ProjectUrl 
@@ -50,6 +49,7 @@ public class EntryPropertiesTest {
         properties.setNuspec(nuspecFile);
         //THEN
         assertEquals("Версия пакета", new Version(2, 5, 9, "10348"), properties.getVersion());
+        assertEquals("Заголовок значение", "", properties.getTitle().getValue());
         fail("Тест не полностью реализован");
     }
 
@@ -61,6 +61,9 @@ public class EntryPropertiesTest {
         EntryProperties entryProperties = EntryProperties.parse(inputStream);
         //THEN
         assertEquals("Версия пакета", "2.5.9.10348", entryProperties.getVersion().toString());
+        assertNotNull("Заголовок", entryProperties.getTitle());
+        assertEquals("Заголовок значение", "", entryProperties.getTitle().getValue());
+        assertTrue("Заголовок nullable", entryProperties.getTitle().getNullable());
 
         fail("Тест не дописан");
     }
