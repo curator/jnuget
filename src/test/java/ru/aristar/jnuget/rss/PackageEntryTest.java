@@ -17,7 +17,6 @@ import ru.aristar.jnuget.files.NupkgFile;
  */
 public class PackageEntryTest {
 
-    //TODO    <content type="application/zip" src="http://localhost:8090/nuget/download/NUnit/2.5.9.10348" />    
     @Test
     public void testConvertNuPkgToEntry() throws Exception {
         //GIVEN

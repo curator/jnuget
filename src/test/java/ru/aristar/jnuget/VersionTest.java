@@ -103,7 +103,7 @@ public class VersionTest {
      * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testVersionWSithThreeDigit() throws Exception {
+    public void testVersionWithThreeDigit() throws Exception {
         //GIVEN
         final String sourceVersion = "4.0.10827";
         //WHEN
