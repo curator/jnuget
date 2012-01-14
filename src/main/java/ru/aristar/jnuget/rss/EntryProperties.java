@@ -91,6 +91,9 @@ public class EntryProperties {
         elements.add(createMicrosoftElement("Version", false, MicrosoftTypes.String, this.version));
         elements.add(createMicrosoftElement("Title", true, MicrosoftTypes.String, this.title));
         elements.add(createMicrosoftElement("IconUrl", true, MicrosoftTypes.String, this.iconUrl));
+        elements.add(createMicrosoftElement("LicenseUrl", true, MicrosoftTypes.String, this.licenseUrl));
+        elements.add(createMicrosoftElement("ProjectUrl", true, MicrosoftTypes.String, this.projectUrl));
+        elements.add(createMicrosoftElement("ReportAbuseUrl", true, MicrosoftTypes.String, this.reportAbuseUrl));
         return elements;
     }
 
@@ -108,6 +111,9 @@ public class EntryProperties {
         this.version = Version.parse(hashMap.get("Version").getTextContent());
         this.title = hashMap.get("Title").getTextContent();
         this.iconUrl = hashMap.get("IconUrl").getTextContent();
+        this.licenseUrl = hashMap.get("LicenseUrl").getTextContent();
+        this.projectUrl = hashMap.get("ProjectUrl").getTextContent();
+        this.reportAbuseUrl = hashMap.get("ReportAbuseUrl").getTextContent();
     }
     /**
      * Версия пакета
@@ -121,12 +127,18 @@ public class EntryProperties {
      * URL иконки
      */
     private String iconUrl;
-    @XmlElement(name = "LicenseUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement licenseUrl;
-    @XmlElement(name = "ProjectUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement projectUrl;
-    @XmlElement(name = "ReportAbuseUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement reportAbuseUrl;
+    /**
+     * URL лицензии
+     */
+    private String licenseUrl;
+    /**
+     * URL проекта
+     */
+    private String projectUrl;
+    /**
+     * URL отчета
+     */
+    private String reportAbuseUrl;
     @XmlElement(name = "DownloadCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
     private MicrosoftDatasetElement downloadCount;
     @XmlElement(name = "VersionDownloadCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
@@ -211,28 +223,28 @@ public class EntryProperties {
         this.iconUrl = iconUrl;
     }
 
-    public MicrosoftDatasetElement getLicenseUrl() {
+    public String getLicenseUrl() {
         return licenseUrl;
     }
 
     public void setLicenseUrl(String licenseUrl) {
-        this.licenseUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, licenseUrl);
+        this.licenseUrl = licenseUrl;
     }
 
-    public MicrosoftDatasetElement getProjectUrl() {
+    public String getProjectUrl() {
         return projectUrl;
     }
 
     public void setProjectUrl(String projectUrl) {
-        this.projectUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, projectUrl);
+        this.projectUrl = projectUrl;
     }
 
-    public MicrosoftDatasetElement getReportAbuseUrl() {
+    public String getReportAbuseUrl() {
         return reportAbuseUrl;
     }
 
     public void setReportAbuseUrl(String reportAbuseUrl) {
-        this.reportAbuseUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, reportAbuseUrl);
+        this.reportAbuseUrl = reportAbuseUrl;
     }
 
     public MicrosoftDatasetElement getDownloadCount() {

@@ -44,6 +44,11 @@ public class EntryPropertiesTest {
         fail("Тест не полностью реализован");
     }
 
+    /**
+     * Тест распознавания свойств пакета (RSS) из XML
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testParseProperties() throws Exception {
         //GIVEN
@@ -53,19 +58,10 @@ public class EntryPropertiesTest {
         //THEN
         assertEquals("Версия пакета", "2.5.9.10348", entryProperties.getVersion().toString());
         assertEquals("Заголовок", "", entryProperties.getTitle());
-        assertEquals("URL иконки ", "", entryProperties.getIconUrl());
-
-        assertNotNull("URL лицензии", entryProperties.getLicenseUrl());
-        assertEquals("URL лицензии значение", "", entryProperties.getLicenseUrl().getValue());
-        assertTrue("URL лицензии nullable", entryProperties.getLicenseUrl().getNullable());
-
-        assertNotNull("URL проекта", entryProperties.getProjectUrl());
-        assertEquals("URL проекта значение", "", entryProperties.getProjectUrl().getValue());
-        assertTrue("URL проекта nullable", entryProperties.getProjectUrl().getNullable());
-
-        assertNotNull("URL отчета", entryProperties.getReportAbuseUrl());
-        assertEquals("URL отчета значение", "", entryProperties.getReportAbuseUrl().getValue());
-        assertTrue("URL отчета nullable", entryProperties.getReportAbuseUrl().getNullable());
+        assertEquals("URL иконки", "", entryProperties.getIconUrl());
+        assertEquals("URL лицензии", "", entryProperties.getLicenseUrl());
+        assertEquals("URL проекта", "", entryProperties.getProjectUrl());
+        assertEquals("URL отчета", "", entryProperties.getReportAbuseUrl());
 
         assertNotNull("Количество загрузок пакета", entryProperties.getDownloadCount());
         assertEquals("Количество загрузок пакета значение", "-1", entryProperties.getDownloadCount().getValue());
