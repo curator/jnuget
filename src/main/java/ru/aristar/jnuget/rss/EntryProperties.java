@@ -17,6 +17,7 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
+ * Свойства пакета, в RSS
  *
  * @author sviridov
  */
@@ -24,11 +25,31 @@ import ru.aristar.jnuget.files.NuspecFile;
 @XmlAccessorType(XmlAccessType.NONE)
 public class EntryProperties {
 
+    /**
+     * Создает XML элемент формата Microsoft DataTable из версии
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param type тип элемента по версии Microsoft
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
     private Element createMicrosoftElement(String name, boolean nullable, MicrosoftTypes type, Version value) throws ParserConfigurationException {
         String stringValue = value == null ? null : value.toString();
         return createMicrosoftElement(name, nullable, type, stringValue);
     }
 
+    /**
+     * Создает XML элемент формата Microsoft DataTable из строки
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param type тип элемента по версии Microsoft
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
     private Element createMicrosoftElement(String name, boolean nullable, MicrosoftTypes type, String value) throws ParserConfigurationException {
         Document document = createDocument();
         Element element = document.createElementNS("http://schemas.microsoft.com/ado/2007/08/dataservices", name);
@@ -44,6 +65,12 @@ public class EntryProperties {
         return document.getDocumentElement();
     }
 
+    /**
+     * Создает документ XMl для дальнейшего использования в преобразовании
+     *
+     * @return пустой документ XML
+     * @throws ParserConfigurationException
+     */
     private Document createDocument() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -52,6 +79,12 @@ public class EntryProperties {
         return document;
     }
 
+    /**
+     * Возвращает список свойст, сериализованный в XML
+     *
+     * @return списох элементов XML
+     * @throws ParserConfigurationException
+     */
     @XmlAnyElement
     public List<Element> getProperties() throws ParserConfigurationException {
         ArrayList<Element> elements = new ArrayList<Element>();
@@ -61,6 +94,12 @@ public class EntryProperties {
         return elements;
     }
 
+    /**
+     * Восстанавливает свойства класса из спискаэлементов XML
+     *
+     * @param properties список элементов XML
+     * @throws Exception
+     */
     public void setProperties(List<Element> properties) throws Exception {
         HashMap<String, Element> hashMap = new HashMap<>();
         for (Element element : properties) {
