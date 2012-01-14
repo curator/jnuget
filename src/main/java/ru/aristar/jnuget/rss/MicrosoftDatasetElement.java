@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author sviridov
  */
 @XmlAccessorType(XmlAccessType.NONE)
+@Deprecated
 public class MicrosoftDatasetElement {
 
     //xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"   

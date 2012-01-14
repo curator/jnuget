@@ -35,9 +35,9 @@ public class EntryPropertiesTest {
         properties.setNuspec(nuspecFile);
         properties.setIsLatestVersion(true);
         //THEN
-        assertEquals("Версия пакета", new Version(2, 5, 9, "10348"), properties.getVersion());        
+        assertEquals("Версия пакета", new Version(2, 5, 9, "10348"), properties.getVersion());
         //**************************************
-        assertEquals("Описание пакета", "Пакет модульного тестирования", properties.getDescription());          
+        assertEquals("Описание пакета", "Пакет модульного тестирования", properties.getDescription());
         //**************************************
         assertEquals("Версия пакета является последней", "true", properties.getIsLatestVersion().getValue());
         //assertEquals("Заголовок значение", "", properties.getTitle().getValue());
@@ -52,13 +52,8 @@ public class EntryPropertiesTest {
         EntryProperties entryProperties = EntryProperties.parse(inputStream);
         //THEN
         assertEquals("Версия пакета", "2.5.9.10348", entryProperties.getVersion().toString());
-        assertNotNull("Заголовок", entryProperties.getTitle());
-        assertEquals("Заголовок значение", "", entryProperties.getTitle().getValue());
-        assertTrue("Заголовок nullable", entryProperties.getTitle().getNullable());
-
-        assertNotNull("URL иконки", entryProperties.getIconUrl());
-        assertEquals("URL иконки значение", "", entryProperties.getIconUrl().getValue());
-        assertTrue("URL иконки nullable", entryProperties.getIconUrl().getNullable());
+        assertEquals("Заголовок", "", entryProperties.getTitle());
+        assertEquals("URL иконки ", "", entryProperties.getIconUrl());
 
         assertNotNull("URL лицензии", entryProperties.getLicenseUrl());
         assertEquals("URL лицензии значение", "", entryProperties.getLicenseUrl().getValue());

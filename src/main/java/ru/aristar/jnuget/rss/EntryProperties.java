@@ -1,16 +1,19 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.VersionTypeAdapter;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -21,13 +24,64 @@ import ru.aristar.jnuget.files.NuspecFile;
 @XmlAccessorType(XmlAccessType.NONE)
 public class EntryProperties {
 
-    @XmlElement(name = "Version", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    @XmlJavaTypeAdapter(value = VersionTypeAdapter.class)
+    private Element createMicrosoftElement(String name, boolean nullable, MicrosoftTypes type, Version value) throws ParserConfigurationException {
+        String stringValue = value == null ? null : value.toString();
+        return createMicrosoftElement(name, nullable, type, stringValue);
+    }
+
+    private Element createMicrosoftElement(String name, boolean nullable, MicrosoftTypes type, String value) throws ParserConfigurationException {
+        Document document = createDocument();
+        Element element = document.createElementNS("http://schemas.microsoft.com/ado/2007/08/dataservices", name);
+        if (nullable) {
+            element.setAttributeNS("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata", "null", Boolean.toString(nullable));
+        }
+        if (type != MicrosoftTypes.String) {
+            element.setAttributeNS("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata", "type", type.toString());
+        }
+        element.setTextContent(value);
+        document.appendChild(element);
+        document.normalizeDocument();
+        return document.getDocumentElement();
+    }
+
+    private Document createDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder docb = dbf.newDocumentBuilder();
+        Document document = docb.newDocument();
+        return document;
+    }
+
+    @XmlAnyElement
+    public List<Element> getProperties() throws ParserConfigurationException {
+        ArrayList<Element> elements = new ArrayList<Element>();
+        elements.add(createMicrosoftElement("Version", false, MicrosoftTypes.String, this.version));
+        elements.add(createMicrosoftElement("Title", true, MicrosoftTypes.String, this.title));
+        elements.add(createMicrosoftElement("IconUrl", true, MicrosoftTypes.String, this.iconUrl));
+        return elements;
+    }
+
+    public void setProperties(List<Element> properties) throws Exception {
+        HashMap<String, Element> hashMap = new HashMap<>();
+        for (Element element : properties) {
+            hashMap.put(element.getLocalName(), element);
+        }
+        this.version = Version.parse(hashMap.get("Version").getTextContent());
+        this.title = hashMap.get("Title").getTextContent();
+        this.iconUrl = hashMap.get("IconUrl").getTextContent();
+    }
+    /**
+     * Версия пакета
+     */
     private Version version;
-    @XmlElement(name = "Title", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement title;
-    @XmlElement(name = "IconUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement iconUrl;
+    /**
+     * Заголовок пакета
+     */
+    private String title;
+    /**
+     * URL иконки
+     */
+    private String iconUrl;
     @XmlElement(name = "LicenseUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
     private MicrosoftDatasetElement licenseUrl;
     @XmlElement(name = "ProjectUrl", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
@@ -102,20 +156,20 @@ public class EntryProperties {
         this.version = version;
     }
 
-    public MicrosoftDatasetElement getTitle() {
+    public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
-        this.title = new MicrosoftDatasetElement(Boolean.TRUE, null, title);
+        this.title = title;
     }
 
-    public MicrosoftDatasetElement getIconUrl() {
+    public String getIconUrl() {
         return iconUrl;
     }
 
     public void setIconUrl(String iconUrl) {
-        this.iconUrl = new MicrosoftDatasetElement(Boolean.TRUE, null, iconUrl);
+        this.iconUrl = iconUrl;
     }
 
     public MicrosoftDatasetElement getLicenseUrl() {

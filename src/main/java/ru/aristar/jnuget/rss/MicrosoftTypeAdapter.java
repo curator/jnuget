@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  *
  * @author sviridov
  */
+@Deprecated
 public class MicrosoftTypeAdapter extends XmlAdapter<String, MicrosoftTypes> {
 
     @Override

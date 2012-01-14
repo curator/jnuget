@@ -8,7 +8,8 @@ public enum MicrosoftTypes {
 
     Int32("Edm.Int32"),
     Double("Edm.Double"),
-    Boolean("Edm.Boolean");
+    Boolean("Edm.Boolean"),
+    String("Edm.String");
 
     public static MicrosoftTypes parse(String string) {
         for (MicrosoftTypes mt : values()) {

@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 /**
  * Версия пакета
+ *
  * @author unlocker
  */
 public class Version implements Comparable<Version> {
@@ -15,7 +16,6 @@ public class Version implements Comparable<Version> {
      */
     private static Pattern pattern = Pattern.compile("(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?(.*)");
 
-    
     private static Integer parseInt(String group) {
         if (group == null || group.isEmpty()) {
             return null;
@@ -56,6 +56,9 @@ public class Version implements Comparable<Version> {
     }
 
     public static Version parse(String input) throws Exception {
+        if (input == null) {
+            return null;
+        }
         Matcher matcher = pattern.matcher(input);
         if (!matcher.find()) {
             throw new Exception("Аргумент неправильный. " + input);
