@@ -1,9 +1,7 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -30,14 +28,88 @@ public class EntryProperties {
      *
      * @param name название элемента XML
      * @param nullable может ли элемент принимать значение NULL
-     * @param type тип элемента по версии Microsoft
      * @param value значение элемента
      * @return элемент XML
      * @throws ParserConfigurationException
      */
-    private Element createMicrosoftElement(String name, boolean nullable, MicrosoftTypes type, Version value) throws ParserConfigurationException {
+    private Element createMicrosoftElement(String name, boolean nullable, Version value) throws ParserConfigurationException {
         String stringValue = value == null ? null : value.toString();
-        return createMicrosoftElement(name, nullable, type, stringValue);
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.String, stringValue);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из строки
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, String value) throws ParserConfigurationException {
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.String, value);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из целого числа
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, Integer value) throws ParserConfigurationException {
+        String stringValue = value == null ? null : value.toString();
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.Int32, stringValue);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из числа с плавающей
+     * точкой
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, Double value) throws ParserConfigurationException {
+        String stringValue = value == null ? null : value.toString();
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.Double, stringValue);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из boolean
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, Boolean value) throws ParserConfigurationException {
+        String stringValue = value == null ? null : value.toString();
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.Boolean, stringValue);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из даты/времени
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, Date value) throws ParserConfigurationException {
+        String stringValue = null;
+        if (value != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(value);
+            stringValue = javax.xml.bind.DatatypeConverter.printDateTime(calendar);
+        }
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.DateTime, stringValue);
     }
 
     /**
@@ -88,12 +160,29 @@ public class EntryProperties {
     @XmlAnyElement
     public List<Element> getProperties() throws ParserConfigurationException {
         ArrayList<Element> elements = new ArrayList<Element>();
-        elements.add(createMicrosoftElement("Version", false, MicrosoftTypes.String, this.version));
-        elements.add(createMicrosoftElement("Title", true, MicrosoftTypes.String, this.title));
-        elements.add(createMicrosoftElement("IconUrl", true, MicrosoftTypes.String, this.iconUrl));
-        elements.add(createMicrosoftElement("LicenseUrl", true, MicrosoftTypes.String, this.licenseUrl));
-        elements.add(createMicrosoftElement("ProjectUrl", true, MicrosoftTypes.String, this.projectUrl));
-        elements.add(createMicrosoftElement("ReportAbuseUrl", true, MicrosoftTypes.String, this.reportAbuseUrl));
+        elements.add(createMicrosoftElement("Version", false, this.version));
+        elements.add(createMicrosoftElement("Title", true, this.title));
+        elements.add(createMicrosoftElement("IconUrl", true, this.iconUrl));
+        elements.add(createMicrosoftElement("LicenseUrl", true, this.licenseUrl));
+        elements.add(createMicrosoftElement("ProjectUrl", true, this.projectUrl));
+        elements.add(createMicrosoftElement("ReportAbuseUrl", true, this.reportAbuseUrl));
+        elements.add(createMicrosoftElement("DownloadCount", false, this.downloadCount));
+        elements.add(createMicrosoftElement("VersionDownloadCount", false, this.versionDownloadCount));
+        elements.add(createMicrosoftElement("RatingsCount", false, this.ratingsCount));
+        elements.add(createMicrosoftElement("VersionRatingsCount", false, this.versionRatingsCount));
+        elements.add(createMicrosoftElement("Rating", false, this.rating));
+        elements.add(createMicrosoftElement("VersionRating", false, this.versionRating));
+        elements.add(createMicrosoftElement("RequireLicenseAcceptance", false, this.requireLicenseAcceptance));
+        elements.add(createMicrosoftElement("Description", false, this.description));
+        elements.add(createMicrosoftElement("ReleaseNotes", true, this.releaseNotes));
+        elements.add(createMicrosoftElement("Language", true, this.language));
+        elements.add(createMicrosoftElement("Published", false, this.published));
+        elements.add(createMicrosoftElement("Price", false, this.price));
+        elements.add(createMicrosoftElement("Dependencies", false, this.dependencies));
+
+        //***********************************************
+        elements.add(createMicrosoftElement("IsLatestVersion", false, this.isLatestVersion));
+        elements.add(createMicrosoftElement("Summary", true, this.summary));
         return elements;
     }
 
@@ -114,6 +203,23 @@ public class EntryProperties {
         this.licenseUrl = hashMap.get("LicenseUrl").getTextContent();
         this.projectUrl = hashMap.get("ProjectUrl").getTextContent();
         this.reportAbuseUrl = hashMap.get("ReportAbuseUrl").getTextContent();
+        this.downloadCount = Integer.decode(hashMap.get("DownloadCount").getTextContent());
+        this.versionDownloadCount = Integer.decode(hashMap.get("VersionDownloadCount").getTextContent());
+        this.ratingsCount = Integer.decode(hashMap.get("RatingsCount").getTextContent());
+        this.versionRatingsCount = Integer.decode(hashMap.get("VersionRatingsCount").getTextContent());
+        this.rating = Double.parseDouble(hashMap.get("Rating").getTextContent());
+        this.versionRating = Double.parseDouble(hashMap.get("VersionRating").getTextContent());
+        this.requireLicenseAcceptance = Boolean.parseBoolean(hashMap.get("RequireLicenseAcceptance").getTextContent());
+        this.description = hashMap.get("Description").getTextContent();
+        this.releaseNotes = hashMap.get("ReleaseNotes").getTextContent();
+        this.language = hashMap.get("Language").getTextContent();
+        this.published = javax.xml.bind.DatatypeConverter.parseDateTime(hashMap.get("Published").getTextContent()).getTime();
+        this.price = Double.parseDouble(hashMap.get("Price").getTextContent());
+        this.dependencies = hashMap.get("Dependencies").getTextContent();
+
+        //***********************************************
+        this.isLatestVersion = Boolean.parseBoolean(hashMap.get("IsLatestVersion").getTextContent());
+        this.summary = hashMap.get("Summary") == null ? null : hashMap.get("Summary").getTextContent();
     }
     /**
      * Версия пакета
@@ -139,27 +245,67 @@ public class EntryProperties {
      * URL отчета
      */
     private String reportAbuseUrl;
-    @XmlElement(name = "DownloadCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement downloadCount;
-    @XmlElement(name = "VersionDownloadCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement versionDownloadCount;
-    @XmlElement(name = "RatingsCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement ratingsCount;
-    @XmlElement(name = "VersionRatingsCount", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement versionRatingsCount;
-    @XmlElement(name = "Rating", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement rating;
-    @XmlElement(name = "VersionRating", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement versionRating;
-    @XmlElement(name = "RequireLicenseAcceptance", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement requireLicenseAcceptance;
-    @XmlElement(name = "Description", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    /**
+     * Число загрузок пакета
+     */
+    private Integer downloadCount;
+    /**
+     * Число загрузок версии пакета
+     */
+    private Integer versionDownloadCount;
+    /**
+     * Число человек, указавших рейтнг пакета
+     */
+    private Integer ratingsCount;
+    /**
+     * Число человек, указавших рейтинг версии
+     */
+    private Integer versionRatingsCount;
+    /**
+     * Рейтинг пакета
+     */
+    private Double rating;
+    /**
+     * Рейтинг версии
+     */
+    private Double versionRating;
+    /**
+     * Требуется подтверждение лицензии
+     */
+    private Boolean requireLicenseAcceptance;
+    /**
+     * Описание проекта
+     */
     private String description;
-    @XmlElement(name = "ReleaseNotes", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement releaseNotes;
+    /**
+     * ЗАмечания к релизу
+     */
+    private String releaseNotes;
+    /**
+     * Язык
+     */
+    private String language;
+    /**
+     * Дата публиуации
+     */
+    private Date published;
+    /**
+     * Стоимость пакета
+     */
+    private Double price;
+    /**
+     * Зависимости пакета
+     */
+    private String dependencies;
     //*****************************************************************
-    @XmlElement(name = "IsLatestVersion", namespace = "http://schemas.microsoft.com/ado/2007/08/dataservices")
-    private MicrosoftDatasetElement isLatestVersion;
+    /**
+     * Версия является последней
+     */
+    private Boolean isLatestVersion;
+    /**
+     * Общее описание
+     */
+    private String summary;
     //             <d:RatingsCount m:type="Edm.Int32">0</d:RatingsCount>
     //             <d:VersionRatingsCount m:type="Edm.Int32">-1</d:VersionRatingsCount>
     //         <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
@@ -247,67 +393,67 @@ public class EntryProperties {
         this.reportAbuseUrl = reportAbuseUrl;
     }
 
-    public MicrosoftDatasetElement getDownloadCount() {
+    public Integer getDownloadCount() {
         return downloadCount;
     }
 
     public void setDownloadCount(Integer downloadCount) {
         int cnt = downloadCount != null ? downloadCount : -1;
-        this.downloadCount = new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, Integer.toString(cnt));
+        this.downloadCount = cnt;
     }
 
-    public MicrosoftDatasetElement getVersionDownloadCount() {
+    public Integer getVersionDownloadCount() {
         return versionDownloadCount;
     }
 
     public void setVersionDownloadCount(Integer versionDownloadCount) {
         int cnt = versionDownloadCount != null ? versionDownloadCount : -1;
-        this.versionDownloadCount = new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, Integer.toString(cnt));
+        this.versionDownloadCount = cnt;
     }
 
-    public MicrosoftDatasetElement getRatingsCount() {
+    public Integer getRatingsCount() {
         return ratingsCount;
     }
 
     public void setRatingsCount(Integer ratingsCount) {
-        int cnt = ratingsCount != null ? ratingsCount : -1;
-        this.ratingsCount = new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, Integer.toString(cnt));
+        int cnt = ratingsCount != null ? ratingsCount : 0;
+        this.ratingsCount = cnt;
     }
 
-    public MicrosoftDatasetElement getVersionRatingsCount() {
+    public Integer getVersionRatingsCount() {
         return versionRatingsCount;
     }
 
     public void setVersionRatingsCount(Integer versionRatingsCount) {
         int cnt = versionRatingsCount != null ? versionRatingsCount : -1;
-        this.versionRatingsCount = new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, Integer.toString(cnt));
+        this.versionRatingsCount = cnt;
     }
 
-    public MicrosoftDatasetElement getRating() {
+    public Double getRating() {
         return rating;
     }
 
     public void setRating(Double rating) {
         double cnt = rating != null ? rating : -1;
-        this.rating = new MicrosoftDatasetElement(null, MicrosoftTypes.Double, Double.toString(cnt));
+        this.rating = cnt;
     }
 
-    public MicrosoftDatasetElement getVersionRating() {
+    public Double getVersionRating() {
         return versionRating;
     }
 
     public void setVersionRating(Double versionRating) {
         double cnt = versionRating != null ? versionRating : -1;
-        this.versionRating = new MicrosoftDatasetElement(null, MicrosoftTypes.Double, Double.toString(cnt));
+        this.versionRating = cnt;
     }
 
-    public MicrosoftDatasetElement getRequireLicenseAcceptance() {
+    public Boolean getRequireLicenseAcceptance() {
         return requireLicenseAcceptance;
     }
 
     public void setRequireLicenseAcceptance(Boolean requireLicenseAcceptance) {
         boolean b = requireLicenseAcceptance == null ? false : requireLicenseAcceptance;
-        this.requireLicenseAcceptance = new MicrosoftDatasetElement(null, MicrosoftTypes.Boolean, Boolean.toString(b));
+        this.requireLicenseAcceptance = b;
     }
 
     public String getDescription() {
@@ -318,21 +464,62 @@ public class EntryProperties {
         this.description = description;
     }
 
-    public MicrosoftDatasetElement getReleaseNotes() {
+    public String getReleaseNotes() {
         return releaseNotes;
     }
 
     public void setReleaseNotes(String releaseNotes) {
-        this.releaseNotes = new MicrosoftDatasetElement(Boolean.TRUE, null, releaseNotes);
+        this.releaseNotes = releaseNotes;
     }
 
-    public MicrosoftDatasetElement getIsLatestVersion() {
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+
+    public void setPublished(Date published) {
+        this.published = published;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(String dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    //***************************************************
+    public Boolean getIsLatestVersion() {
         return isLatestVersion;
     }
 
     public void setIsLatestVersion(Boolean isLatestVersion) {
         boolean b = isLatestVersion == null ? false : isLatestVersion;
-        this.isLatestVersion = new MicrosoftDatasetElement(null, MicrosoftTypes.Boolean, Boolean.toString(b));
+        this.isLatestVersion = b;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public static EntryProperties parse(InputStream inputStream) throws JAXBException {

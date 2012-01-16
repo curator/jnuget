@@ -1,7 +1,8 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NuspecFile;
@@ -12,10 +13,6 @@ import ru.aristar.jnuget.files.NuspecFile;
  */
 public class EntryPropertiesTest {
 
-//TODO Language 
-//TODO Published 2011-09-23T05:18:55.5327281Z
-//TODO Price 0
-//TODO Dependencies
 //TODO PackageHash CoknSJBGJ7kao2P6y9E9BuL1IkhP5LLhZ+ImtsgdxzFDpjs0QtRVOV8kxysakJu3cvw5O0hImcnVloCaQ9+Nmg==
 //TODO PackageSize 214905
 //TODO ExternalPackageUri 
@@ -23,8 +20,7 @@ public class EntryPropertiesTest {
 //TODO Copyright 
 //TODO PackageType 
 //TODO Tags Unit test 
-//IsLatestVersion true
-//TODO Summary     
+
     @Test
     public void testConvertNuspecToEntryProperties() throws Exception {
         //GIVEN
@@ -39,7 +35,7 @@ public class EntryPropertiesTest {
         //**************************************
         assertEquals("Описание пакета", "Пакет модульного тестирования", properties.getDescription());
         //**************************************
-        assertEquals("Версия пакета является последней", "true", properties.getIsLatestVersion().getValue());
+        assertEquals("Версия пакета является последней", true, properties.getIsLatestVersion());
         //assertEquals("Заголовок значение", "", properties.getTitle().getValue());
         fail("Тест не полностью реализован");
     }
@@ -62,46 +58,23 @@ public class EntryPropertiesTest {
         assertEquals("URL лицензии", "", entryProperties.getLicenseUrl());
         assertEquals("URL проекта", "", entryProperties.getProjectUrl());
         assertEquals("URL отчета", "", entryProperties.getReportAbuseUrl());
-
-        assertNotNull("Количество загрузок пакета", entryProperties.getDownloadCount());
-        assertEquals("Количество загрузок пакета значение", "-1", entryProperties.getDownloadCount().getValue());
-        assertEquals("Количество загрузок пакета nullable", MicrosoftTypes.Int32, entryProperties.getDownloadCount().getType());
-
-        assertEquals("Количество загрузок версий",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, "-1"),
-                entryProperties.getVersionDownloadCount());
-
-        assertEquals("Рейтинг (количество)",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, "0"),
-                entryProperties.getRatingsCount());
-
-        assertEquals("Рейтинг версии (количество)",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Int32, "-1"),
-                entryProperties.getVersionRatingsCount());
-
-        assertEquals("Рейтинг",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Double, "-1"),
-                entryProperties.getRating());
-
-        assertEquals("Рейтинг версии",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Double, "-1"),
-                entryProperties.getVersionRating());
-
-        assertEquals("Требуется лицензия",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Boolean, "false"),
-                entryProperties.getRequireLicenseAcceptance());
-
-        assertEquals("Описание пакета", "Пакет модульного тестирования",
-                entryProperties.getDescription());
-
-        assertEquals("Замечания крелизу",
-                new MicrosoftDatasetElement(Boolean.TRUE, null, ""),
-                entryProperties.getReleaseNotes());
+        assertEquals("Количество загрузок пакета", Integer.valueOf(-1), entryProperties.getDownloadCount());
+        assertEquals("Количество загрузок версий", Integer.valueOf(-1), entryProperties.getVersionDownloadCount());
+        assertEquals("Рейтинг (количество)", Integer.valueOf(0), entryProperties.getRatingsCount());
+        assertEquals("Рейтинг версии (количество)", Integer.valueOf(-1), entryProperties.getVersionRatingsCount());
+        assertEquals("Рейтинг", Double.valueOf(-1), entryProperties.getRating());
+        assertEquals("Рейтинг версии", Double.valueOf(-1), entryProperties.getVersionRating());
+        assertEquals("Требуется лицензия", false, entryProperties.getRequireLicenseAcceptance());
+        assertEquals("Описание пакета", "Пакет модульного тестирования", entryProperties.getDescription());
+        assertEquals("Замечания крелизу", "", entryProperties.getReleaseNotes());
+        assertEquals("Язык", "", entryProperties.getLanguage());
+        assertEquals("Дата публикации пакета", javax.xml.bind.DatatypeConverter.parseDateTime("2011-09-23T05:18:55.5327281Z").getTime(), entryProperties.getPublished());
+        assertEquals("Стоимость пакета", Double.valueOf(0), entryProperties.getPrice());
+        assertEquals("Зависимости пакета", "", entryProperties.getDependencies());
 
         //*****************************************************
-        assertEquals("Это последняя версия",
-                new MicrosoftDatasetElement(null, MicrosoftTypes.Boolean, "true"),
-                entryProperties.getIsLatestVersion());
+        assertEquals("Это последняя версия", true, entryProperties.getIsLatestVersion());
+        assertEquals("Общее описание", "", entryProperties.getSummary());
 
         fail("Тест не дописан");
     }
