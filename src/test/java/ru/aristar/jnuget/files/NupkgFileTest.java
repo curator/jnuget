@@ -1,6 +1,10 @@
 package ru.aristar.jnuget.files;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -31,5 +35,24 @@ public class NupkgFileTest {
         NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
         //THEN
         assertEquals("Имя файла", "NUnit.2.5.9.10348.nupkg", nupkgFile.getFileName());
+    }
+
+    @Test
+    public void testGetHash() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        File tempFile = File.createTempFile("tmp", "nupkg");
+        FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) >= 0) {
+            fileOutputStream.write(buffer, 0, len);
+        }
+        fileOutputStream.flush();
+        fileOutputStream.close();
+        //WHEN
+        NupkgFile nupkgFile = new NupkgFile(tempFile);
+        //THEN
+        assertEquals("Хеш файла", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", nupkgFile.getHash());
     }
 }

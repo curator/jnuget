@@ -228,7 +228,7 @@ public class EntryProperties {
         elements.add(createMicrosoftElement("Categories", true, this.categories));
         elements.add(createMicrosoftElement("Copyright", true, this.copyright));
         elements.add(createMicrosoftElement("PackageType", true, this.packageType));
-        elements.add(createMicrosoftElement("Tags", false, this.tags));
+        elements.add(createMicrosoftElement("Tags", true, this.tags));
         elements.add(createMicrosoftElement("IsLatestVersion", false, this.isLatestVersion));
         elements.add(createMicrosoftElement("Summary", true, this.summary));
         return elements;

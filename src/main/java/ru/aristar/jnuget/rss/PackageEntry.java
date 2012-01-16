@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.rss;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +88,11 @@ public class PackageEntry {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), null);
     }
 
-    public PackageEntry(NupkgFile nupkgFile, NugetContext context) {
+    public PackageEntry(NupkgFile nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), context);
+        this.getProperties().setPackageHash(nupkgFile.getHash());
+        this.getProperties().setPackageSize(nupkgFile.getSize());
+        this.getProperties().setPublished(nupkgFile.getUpdated());
     }
 
     public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
@@ -106,7 +111,7 @@ public class PackageEntry {
         this.content = new AtomElement();
         content.setType("application/zip");
         content.setSrc(getRootUri() + "nuget/download/" + title.value + "/"
-                + nuspecFile.getVersion());
+                + nuspecFile.getVersion());        
     }
 
     /**

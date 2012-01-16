@@ -1,6 +1,8 @@
 package ru.aristar.jnuget;
 
+import java.io.IOException;
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.rss.PackageEntry;
 
@@ -20,7 +22,7 @@ public class NugetContext {
         return rootUri;
     }
 
-    public PackageEntry createPackageEntry(NupkgFile nupkgFile) {
+    public PackageEntry createPackageEntry(NupkgFile nupkgFile) throws NoSuchAlgorithmException, IOException {
         PackageEntry entry = new PackageEntry(nupkgFile, this);
         return entry;
     }

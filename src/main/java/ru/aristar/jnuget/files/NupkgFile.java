@@ -1,9 +1,8 @@
 package ru.aristar.jnuget.files;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -67,6 +66,23 @@ public class NupkgFile {
     public String getFileName() {
         return getNuspecFile().getId() + "."
                 + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
+    }
+
+    public String getHash() throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        byte[] buffer = new byte[1024];
+
+        InputStream inputStream = getStream();
+        int len = 0;
+        while ((len = inputStream.read(buffer)) >= 0) {
+            md.update(buffer, 0, len);
+        };
+        byte[] mdbytes = md.digest();
+        return javax.xml.bind.DatatypeConverter.printBase64Binary(mdbytes);
+    }
+
+    public Long getSize() {
+        return file.length();
     }
 
     public static boolean isValidFileName(String name) {
