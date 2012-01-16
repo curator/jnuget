@@ -11,14 +11,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import ru.aristar.jnuget.Dependency;
-import ru.aristar.jnuget.Reference;
-import ru.aristar.jnuget.StringListTypeAdapter;
-import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.VersionTypeAdapter;
+import ru.aristar.jnuget.*;
 
 /**
  * Класс, содержащий информацию о пакете NuGet
+ *
  * @author sviridov
  */
 @XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE)
@@ -89,13 +86,13 @@ public class NuspecFile {
         /**
          * Список ссылок
          */
-        @XmlElementWrapper(name="references", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElementWrapper(name = "references", namespace = NUSPEC_XML_NAMESPACE)
         @XmlElement(name = "reference", namespace = NUSPEC_XML_NAMESPACE)
         private List<Reference> references;
         /**
          * Список зависимостей
          */
-        @XmlElementWrapper(name= "dependencies", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElementWrapper(name = "dependencies", namespace = NUSPEC_XML_NAMESPACE)
         @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE)
         private List<Dependency> dependencies;
     }
@@ -157,7 +154,7 @@ public class NuspecFile {
     public String getDescription() {
         return metadata.description;
     }
-    
+
     /**
      * @return Краткое описание пакета
      */
@@ -171,44 +168,48 @@ public class NuspecFile {
     public String getCopyright() {
         return metadata.copyright;
     }
-    
+
     /**
      * @return Язык
      */
     public String getLanguage() {
         return metadata.language;
     }
-    
+
     /**
      * @return Список меток
      */
-    public List<String> getTags(){
-        if(metadata.tags == null)
+    public List<String> getTags() {
+        if (metadata.tags == null) {
             return new ArrayList<>();
+        }
         return metadata.tags;
     }
-    
+
     /**
      * @return Список ссылок
      */
-    public List<Reference> getReferences(){
-        if(metadata.references == null)
+    public List<Reference> getReferences() {
+        if (metadata.references == null) {
             return new ArrayList<>();
+        }
         return metadata.references;
     }
-    
+
     /**
      * @return Список зависимостей
      */
-    public List<Dependency> getDependencies(){
-        if(metadata.dependencies == null)
+    public List<Dependency> getDependencies() {
+        if (metadata.dependencies == null) {
             return new ArrayList<>();
+        }
         return metadata.dependencies;
     }
 
     //TODO Добавить проверку схемы
     /**
      * Восстанавливает информацию о пакете из XML
+     *
      * @param data XML
      * @return распознанная информация о пакете
      * @throws JAXBException ошибка преобразования XML
@@ -221,6 +222,7 @@ public class NuspecFile {
     //TODO Добавить проверку схемы
     /**
      * Восстанавливает информацию о пакете из XML
+     *
      * @param inputStream XML
      * @return распознанная информация о пакете
      * @throws JAXBException ошибка преобразования XML

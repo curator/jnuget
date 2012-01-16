@@ -20,15 +20,25 @@ public class EntryPropertiesTest {
         EntryProperties properties = new EntryProperties();
         //WHEN        
         properties.setNuspec(nuspecFile);
-        properties.setIsLatestVersion(true);
         //THEN
         assertEquals("Версия пакета", new Version(2, 5, 9, "10348"), properties.getVersion());
-        //**************************************
+        assertEquals("Заголовок", "", properties.getTitle());
+        assertEquals("URL иконки", "", properties.getIconUrl());
+        assertEquals("URL лицензии", "", properties.getLicenseUrl());
+        assertEquals("URL проекта", "", properties.getProjectUrl());
+        assertEquals("URL отчета", "", properties.getReportAbuseUrl());
+        assertEquals("Требуется лицензия", false, properties.getRequireLicenseAcceptance());
         assertEquals("Описание пакета", "Пакет модульного тестирования", properties.getDescription());
-        //**************************************
-        assertEquals("Версия пакета является последней", true, properties.getIsLatestVersion());
-        //assertEquals("Заголовок значение", "", properties.getTitle().getValue());
-        fail("Тест не полностью реализован");
+        assertEquals("Замечания крелизу", "", properties.getReleaseNotes());
+        assertEquals("Язык", "", properties.getLanguage());
+        assertEquals("Стоимость пакета", Double.valueOf(0), properties.getPrice());
+        assertEquals("Зависимости пакета", "", properties.getDependencies());
+        assertEquals("Внешний URI", "", properties.getExternalPackageUri());
+        assertEquals("Категории", "", properties.getCategories());
+        assertEquals("Права", "Copyright 2011", properties.getCopyright());
+        assertEquals("Тип пакета", "", properties.getPackageType());
+        assertArrayEquals("Теги пакета", new String[]{"Unit test"}, properties.getTags().toArray());
+        assertEquals("Общее описание", "", properties.getSummary());
     }
 
     /**
@@ -68,7 +78,7 @@ public class EntryPropertiesTest {
         assertEquals("Категории", "", entryProperties.getCategories());
         assertEquals("Права", "", entryProperties.getCopyright());
         assertEquals("Тип пакета", "", entryProperties.getPackageType());
-        assertArrayEquals("Теги пакета", new String[]{"Unit", "test"}, entryProperties.getTags().toArray());
+        assertArrayEquals("Теги пакета", new String[]{"Unit test"}, entryProperties.getTags().toArray());
         assertEquals("Это последняя версия", true, entryProperties.getIsLatestVersion());
         assertEquals("Общее описание", "", entryProperties.getSummary());
     }
