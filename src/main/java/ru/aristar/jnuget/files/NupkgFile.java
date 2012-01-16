@@ -64,7 +64,8 @@ public class NupkgFile {
     }
 
     public String getFileName() {
-        return getNuspecFile().getId() + "."
+        return getNuspecFile().
+                getId() + "."
                 + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
     }
 
@@ -73,6 +74,9 @@ public class NupkgFile {
         byte[] buffer = new byte[1024];
 
         InputStream inputStream = getStream();
+        if (inputStream == null) {
+            return null;
+        }
         int len = 0;
         while ((len = inputStream.read(buffer)) >= 0) {
             md.update(buffer, 0, len);
@@ -82,6 +86,9 @@ public class NupkgFile {
     }
 
     public Long getSize() {
+        if (file == null) {
+            return null;
+        }
         return file.length();
     }
 

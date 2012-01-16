@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import ru.aristar.jnuget.Author;
 import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.NupkgFile;
@@ -20,6 +21,8 @@ import ru.aristar.jnuget.files.NuspecFile;
  */
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlType(propOrder = {"id", "title", "summary", "updated", "author", "links",
+    "category", "content", "properties"})
 public class PackageEntry {
 
     protected NugetContext nugetContext;
@@ -98,7 +101,7 @@ public class PackageEntry {
     public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
         this.nugetContext = nugetContext;
         title = new Title(nuspecFile.getId());
-        getProperties().setNuspec(nuspecFile);        
+        getProperties().setNuspec(nuspecFile);
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
         this.getLinks().add(new Link("edit-media", "Package",
@@ -111,7 +114,7 @@ public class PackageEntry {
         this.content = new AtomElement();
         content.setType("application/zip");
         content.setSrc(getRootUri() + "nuget/download/" + title.value + "/"
-                + nuspecFile.getVersion());        
+                + nuspecFile.getVersion());
     }
 
     /**

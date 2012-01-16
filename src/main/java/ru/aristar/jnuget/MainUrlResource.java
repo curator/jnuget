@@ -19,9 +19,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.NupkgFile;
-import ru.aristar.jnuget.rss.PackageEntry;
-import ru.aristar.jnuget.rss.PackageEntryNameComparator;
-import ru.aristar.jnuget.rss.PackageFeed;
+import ru.aristar.jnuget.rss.*;
 import ru.aristar.jnuget.sources.FilePackageSource;
 
 /**
@@ -129,6 +127,7 @@ public class MainUrlResource {
                 try {
                     PackageEntry entry = nugetContext.createPackageEntry(nupkg);
                     entry.getProperties().setIsLatestVersion(Boolean.TRUE);
+                    addServerInformationInToEntry(entry);
                     packageEntrys.add(entry);
                 } catch (IOException | NoSuchAlgorithmException e) {
                     logger.warn("Ошибка сбора информации о пакете", e);
@@ -178,5 +177,22 @@ public class MainUrlResource {
     @PUT
     @Consumes("application/xml")
     public void putXml(String content) {
+    }
+
+    private void addServerInformationInToEntry(PackageEntry entry) {
+        EntryProperties properties = entry.getProperties();
+        //TODO Не факт, что сюда
+        //****************************
+        properties.setIconUrl("");
+        properties.setLicenseUrl("");
+        properties.setProjectUrl("");
+        properties.setReportAbuseUrl("");
+        //***************************
+        properties.setDownloadCount(-1);
+        properties.setVersionDownloadCount(-1);
+        properties.setRatingsCount(0);
+        properties.setVersionRatingsCount(0);
+        properties.setRating(Double.valueOf(0));
+        properties.setVersionRating(Double.valueOf(0));
     }
 }

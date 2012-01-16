@@ -9,10 +9,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 /**
  *
@@ -20,6 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "feed", namespace = PackageFeed.ATOM_XML_NAMESPACE)
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlType(propOrder = {"title", "id", "updated", /*"link",*/ "entries"})
 public class PackageFeed {
 
     @XmlElement(name = "title", namespace = ATOM_XML_NAMESPACE)
@@ -28,6 +26,7 @@ public class PackageFeed {
     private String id;
     @XmlElement(name = "updated", type = Date.class, namespace = ATOM_XML_NAMESPACE)
     private Date updated;
+    //TODO Добавить Link
     @XmlElement(name = "entry", namespace = ATOM_XML_NAMESPACE)
     private List<PackageEntry> entries;
 
