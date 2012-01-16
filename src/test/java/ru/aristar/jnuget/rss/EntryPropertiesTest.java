@@ -1,8 +1,7 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NuspecFile;
@@ -12,14 +11,6 @@ import ru.aristar.jnuget.files.NuspecFile;
  * @author sviridov
  */
 public class EntryPropertiesTest {
-
-//TODO PackageHash CoknSJBGJ7kao2P6y9E9BuL1IkhP5LLhZ+ImtsgdxzFDpjs0QtRVOV8kxysakJu3cvw5O0hImcnVloCaQ9+Nmg==
-//TODO PackageSize 214905
-//TODO ExternalPackageUri 
-//TODO Categories 
-//TODO Copyright 
-//TODO PackageType 
-//TODO Tags Unit test 
 
     @Test
     public void testConvertNuspecToEntryProperties() throws Exception {
@@ -71,11 +62,14 @@ public class EntryPropertiesTest {
         assertEquals("Дата публикации пакета", javax.xml.bind.DatatypeConverter.parseDateTime("2011-09-23T05:18:55.5327281Z").getTime(), entryProperties.getPublished());
         assertEquals("Стоимость пакета", Double.valueOf(0), entryProperties.getPrice());
         assertEquals("Зависимости пакета", "", entryProperties.getDependencies());
-
-        //*****************************************************
+        assertEquals("Хеш пакета", "CoknSJBGJ7kao2P6y9E9BuL1IkhP5LLhZ+ImtsgdxzFDpjs0QtRVOV8kxysakJu3cvw5O0hImcnVloCaQ9+Nmg==", entryProperties.getPackageHash());
+        assertEquals("Размер пакета", Long.valueOf(214905), entryProperties.getPackageSize());
+        assertEquals("Внешний URI", "", entryProperties.getExternalPackageUri());
+        assertEquals("Категории", "", entryProperties.getCategories());
+        assertEquals("Права", "", entryProperties.getCopyright());
+        assertEquals("Тип пакета", "", entryProperties.getPackageType());
+        assertArrayEquals("Теги пакета", new String[]{"Unit", "test"}, entryProperties.getTags().toArray());
         assertEquals("Это последняя версия", true, entryProperties.getIsLatestVersion());
         assertEquals("Общее описание", "", entryProperties.getSummary());
-
-        fail("Тест не дописан");
     }
 }

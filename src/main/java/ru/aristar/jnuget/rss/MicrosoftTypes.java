@@ -7,6 +7,7 @@ package ru.aristar.jnuget.rss;
 public enum MicrosoftTypes {
 
     Int32("Edm.Int32"),
+    Int64("Edm.Int64"),
     Double("Edm.Double"),
     Boolean("Edm.Boolean"),
     String("Edm.String"),

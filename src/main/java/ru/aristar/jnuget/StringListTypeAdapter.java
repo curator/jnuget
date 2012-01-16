@@ -11,11 +11,21 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  */
 public class StringListTypeAdapter extends XmlAdapter<String, List<String>> {
 
-    private final String DELIMETER = ",";
-    
+    private String delimeter = ",";
+    private boolean trimSpaces = true;
+
+    public StringListTypeAdapter() {
+    }
+
+    public StringListTypeAdapter(String delimeter, boolean trimSpaces) {
+        this.delimeter = delimeter;
+        this.trimSpaces = trimSpaces;
+    }
+
     @Override
     public List<String> unmarshal(String v) throws Exception {
-        String[] temp = v.split("\\s*" + DELIMETER + "\\s*");
+        String pattern = trimSpaces ? "\\s*" + delimeter + "\\s*" : delimeter;
+        String[] temp = v.split(pattern);
         List<String> result = new ArrayList<>();
 
         for (String str : temp) {
@@ -36,7 +46,7 @@ public class StringListTypeAdapter extends XmlAdapter<String, List<String>> {
         }
         StringBuilder buffer = new StringBuilder(iter.next());
         while (iter.hasNext()) {
-            buffer.append(DELIMETER).append(iter.next());
+            buffer.append(delimeter).append(iter.next());
         }
         return buffer.toString();
     }

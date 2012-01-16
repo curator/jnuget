@@ -2,6 +2,7 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.util.*;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -11,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NuspecFile;
 
@@ -65,6 +67,20 @@ public class EntryProperties {
     }
 
     /**
+     * Создает XML элемент формата Microsoft DataTable из long
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, Long value) throws ParserConfigurationException {
+        String stringValue = value == null ? null : value.toString();
+        return createMicrosoftElement(name, nullable, MicrosoftTypes.Int64, stringValue);
+    }
+
+    /**
      * Создает XML элемент формата Microsoft DataTable из числа с плавающей
      * точкой
      *
@@ -110,6 +126,30 @@ public class EntryProperties {
             stringValue = javax.xml.bind.DatatypeConverter.printDateTime(calendar);
         }
         return createMicrosoftElement(name, nullable, MicrosoftTypes.DateTime, stringValue);
+    }
+
+    /**
+     * Создает XML элемент формата Microsoft DataTable из списка строк
+     *
+     * @param name название элемента XML
+     * @param nullable может ли элемент принимать значение NULL
+     * @param value значение элемента
+     * @return элемент XML
+     * @throws ParserConfigurationException
+     */
+    private Element createMicrosoftElement(String name, boolean nullable, List<String> value) throws ParserConfigurationException {
+        String stringValue = null;
+        if (value != null) {
+            try {
+                StringListTypeAdapter adapter = new StringListTypeAdapter(" ", false);
+                stringValue = adapter.marshal(value);
+            } catch (Exception e) {
+                throw new ParserConfigurationException("Ошибка преобразования списка строк");
+            }
+        }
+        Element element = createMicrosoftElement(name, nullable, MicrosoftTypes.DateTime, stringValue);
+        element.setAttributeNS(XMLConstants.XML_NS_URI, "space", "preserve");
+        return element;
     }
 
     /**
@@ -179,8 +219,13 @@ public class EntryProperties {
         elements.add(createMicrosoftElement("Published", false, this.published));
         elements.add(createMicrosoftElement("Price", false, this.price));
         elements.add(createMicrosoftElement("Dependencies", false, this.dependencies));
-
-        //***********************************************
+        elements.add(createMicrosoftElement("PackageHash", false, this.packageHash));
+        elements.add(createMicrosoftElement("PackageSize", false, this.packageSize));
+        elements.add(createMicrosoftElement("ExternalPackageUri", true, this.externalPackageUri));
+        elements.add(createMicrosoftElement("Categories", true, this.categories));
+        elements.add(createMicrosoftElement("Copyright", true, this.copyright));
+        elements.add(createMicrosoftElement("PackageType", true, this.packageType));
+        elements.add(createMicrosoftElement("Tags", false, this.tags));
         elements.add(createMicrosoftElement("IsLatestVersion", false, this.isLatestVersion));
         elements.add(createMicrosoftElement("Summary", true, this.summary));
         return elements;
@@ -197,6 +242,8 @@ public class EntryProperties {
         for (Element element : properties) {
             hashMap.put(element.getLocalName(), element);
         }
+        StringListTypeAdapter adapter = new StringListTypeAdapter(" ", false);
+
         this.version = Version.parse(hashMap.get("Version").getTextContent());
         this.title = hashMap.get("Title").getTextContent();
         this.iconUrl = hashMap.get("IconUrl").getTextContent();
@@ -216,8 +263,13 @@ public class EntryProperties {
         this.published = javax.xml.bind.DatatypeConverter.parseDateTime(hashMap.get("Published").getTextContent()).getTime();
         this.price = Double.parseDouble(hashMap.get("Price").getTextContent());
         this.dependencies = hashMap.get("Dependencies").getTextContent();
-
-        //***********************************************
+        this.packageHash = hashMap.get("PackageHash").getTextContent();
+        this.packageSize = Long.decode(hashMap.get("PackageSize").getTextContent());
+        this.externalPackageUri = hashMap.get("ExternalPackageUri").getTextContent();
+        this.categories = hashMap.get("Categories").getTextContent();
+        this.copyright = hashMap.get("Copyright").getTextContent();
+        this.packageType = hashMap.get("PackageType").getTextContent();
+        this.tags = adapter.unmarshal(hashMap.get("Tags").getTextContent());
         this.isLatestVersion = Boolean.parseBoolean(hashMap.get("IsLatestVersion").getTextContent());
         this.summary = hashMap.get("Summary") == null ? null : hashMap.get("Summary").getTextContent();
     }
@@ -297,7 +349,34 @@ public class EntryProperties {
      * Зависимости пакета
      */
     private String dependencies;
-    //*****************************************************************
+    /**
+     * Хеш пакета
+     */
+    private String packageHash;
+    /**
+     * Размер пакета
+     */
+    private Long packageSize;
+    /**
+     * Внешний URl пакета
+     */
+    private String externalPackageUri;
+    /**
+     * Категория пакета
+     */
+    private String categories;
+    /**
+     * Права на пакет
+     */
+    private String copyright;
+    /**
+     * Тип пакета
+     */
+    private String packageType;
+    /**
+     * Теги пакета
+     */
+    private List<String> tags;
     /**
      * Версия является последней
      */
@@ -504,7 +583,65 @@ public class EntryProperties {
         this.dependencies = dependencies;
     }
 
-    //***************************************************
+    public String getPackageHash() {
+        return packageHash;
+    }
+
+    public void setPackageHash(String packageHash) {
+        this.packageHash = packageHash;
+    }
+
+    public Long getPackageSize() {
+        return packageSize;
+    }
+
+    public void setPackageSize(Long packageSize) {
+        this.packageSize = packageSize;
+    }
+
+    public String getExternalPackageUri() {
+        return externalPackageUri;
+    }
+
+    public void setExternalPackageUri(String externalPackageUri) {
+        this.externalPackageUri = externalPackageUri;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
+
+    public String getPackageType() {
+        return packageType;
+    }
+
+    public void setPackageType(String packageType) {
+        this.packageType = packageType;
+    }
+
+    public List<String> getTags() {
+        if (tags == null) {
+            tags = new ArrayList<String>();
+        }
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     public Boolean getIsLatestVersion() {
         return isLatestVersion;
     }
