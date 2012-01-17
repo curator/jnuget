@@ -21,7 +21,11 @@ public interface PackageSource {
 
     Collection<NupkgFile> getPackages(String id);
 
+    Collection<NupkgFile> getPackages(String id, boolean ignoreCase);
+
     NupkgFile getLastVersionPackage(String id);
+
+    NupkgFile getLastVersionPackage(String id, boolean ignoreCase);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -31,4 +35,6 @@ public interface PackageSource {
      * @return
      */
     NupkgFile getPackage(String id, Version version);
+
+    NupkgFile getPackage(String id, Version version, boolean ignoreCase);
 }

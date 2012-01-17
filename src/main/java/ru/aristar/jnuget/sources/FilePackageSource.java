@@ -108,4 +108,19 @@ public class FilePackageSource implements PackageSource {
     public NupkgFile getLastVersionPackage(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
