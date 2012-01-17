@@ -10,7 +10,7 @@ import ru.aristar.jnuget.sources.FilePackageSource;
  */
 class QueryExecutor {
 
-    public Collection<NupkgFile> exexQuery(FilePackageSource packageSource, final String filter) {
+    public Collection<NupkgFile> execQuery(FilePackageSource packageSource, final String filter) {
         return packageSource.getPackages();
     }
 }

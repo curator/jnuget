@@ -85,7 +85,7 @@ public class MainUrlResource {
             FilePackageSource packageSource = getPackageSource();
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
-            Collection<NupkgFile> files = queryExecutor.exexQuery(packageSource, filter);
+            Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
             PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
