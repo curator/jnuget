@@ -12,34 +12,72 @@ import ru.aristar.jnuget.files.NupkgFile;
  */
 public class NugetPackageId {
 
+    /**
+     * Идентификатор пакета.
+     */
     private String id;
+
+    /**
+     * Версия пакета.
+     */
     private Version version;
 
+    /**
+     * Возвращает идентификатор пакета.
+     * @return идентификатор пакета
+     */
     public String getId() {
         return id;
     }
-
+    
+    /**
+     * Устанавливает идентификатор пакета.
+     * @param id идентификатор пакета
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Возвращает версию пакета.
+     * @return версия пакета
+     */
     public Version getVersion() {
         return version;
     }
 
+    /**
+     * Устанавливает версию пакета.
+     * @param version версия пакета
+     */
     public void setVersion(Version version) {
         this.version = version;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s.%s%s", id, version, NupkgFile.DEFAULT_EXTENSION);
+    }
+         
+    /**
+     * Выражение разбора строки имени файла
+     */
     private static Pattern parser =
             Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + NupkgFile.DEFAULT_EXTENSION + "$");
 
-    public static NugetPackageId Parse(String filename) {
+    /**
+     * Разбирает строку названия файла пакета
+     * @param filename название файла
+     * @return информация о пакете
+     * @throws NugetFormatException некорректный формат имени файла
+     */
+    public static NugetPackageId parse(String filename) throws NugetFormatException {
         if (filename == null || filename.isEmpty()) {
-            return null;
+            throw new NugetFormatException("Неправильный формат строки " + filename);
         }
         Matcher matcher = parser.matcher(filename);
         if (!matcher.matches()) {
-            return null;
+            throw new NugetFormatException("Неправильный формат строки " + filename);
         } else {
             try {
                 NugetPackageId result = new NugetPackageId();
@@ -47,7 +85,7 @@ public class NugetPackageId {
                 result.version = Version.parse(matcher.group(2));
                 return result;
             } catch (Exception ex) {
-                return null;
+                throw new NugetFormatException("Неправильный формат строки", ex);
             }
         }
     }

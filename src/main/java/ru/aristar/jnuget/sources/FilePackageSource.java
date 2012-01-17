@@ -41,14 +41,27 @@ public class FilePackageSource implements PackageSource {
     public FilePackageSource(File rootFolder) {
         this.rootFolder = rootFolder;
     }
-    
-    private List<NugetPackageId> GetFullList() {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+    /**
+     * Возвращает информацию по имеющимся пакетам
+     * @return Список объектов с информацией
+     */
+    private List<NugetPackageId> getPackagesList() {
+        ArrayList<NugetPackageId> packages = new ArrayList<>();
+        for (File file : rootFolder.listFiles()) {
+            try {
+                NugetPackageId info = NugetPackageId.parse(file.getName());
+                packages.add(info);
+            } catch (NugetFormatException ex) {
+                logger.warn("Не удалось разобрать имя файла", ex);
+            }
+        }
+        return packages;
     }
 
     /**
      * Фильтр, оставляющий только корректный файлы пакетов
-     *
+     * 
      * @return true, если файл является файлом пакета, иначе false
      */
     private FilenameFilter getNupkgFileNameFilter() {
