@@ -1,14 +1,9 @@
 package ru.aristar.jnuget;
 
-import ru.aristar.jnuget.rss.MainUrl;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -19,7 +14,8 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.NupkgFile;
-import ru.aristar.jnuget.rss.*;
+import ru.aristar.jnuget.rss.MainUrl;
+import ru.aristar.jnuget.rss.PackageFeed;
 import ru.aristar.jnuget.sources.FilePackageSource;
 
 /**
@@ -73,75 +69,26 @@ public class MainUrlResource {
 
     @GET
     @Produces("application/xml")
-    @Path("nuget/{packages : Packages[(]?[)]?}")
+    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") String orderBy,
             @QueryParam("$skip") String skip,
+            @QueryParam("$top") String top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
+            System.out.println(filter + " " + orderBy + " " + skip + " " + searchTerm + " " + targetFramework);
             logger.debug("Запрос пакетов: {} {} {} {} {}",
-                    new Object[]{filter, orderBy, skip, searchTerm, targetFramework});     
-            //Фейковая реализация
-            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
-            FilePackageSource packageSource = new FilePackageSource(file);
-            PackageFeed feed = new PackageFeed();
-            feed.setId(context.getAbsolutePath().toString());
-            feed.setUpdated(new Date());
-            feed.setTitle("Packages");
-            ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
+                    new Object[]{filter, orderBy, skip, searchTerm, targetFramework});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
-            for (NupkgFile nupkg : packageSource.getPackages()) {
-                try {
-                    PackageEntry entry = nugetContext.createPackageEntry(nupkg);
-                    packageEntrys.add(entry);
-                } catch (IOException | NoSuchAlgorithmException e) {
-                    logger.warn("Ошибка сбора информации о пакете", e);
-                }
-            }
-            Collections.sort(packageEntrys, new PackageEntryNameComparator());
-            feed.setEntries(packageEntrys);
-            //конец реализации
-            return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
-        } catch (JAXBException e) {
-            final String errorMessage = "Ошибка преобразования XML";
-            logger.error(errorMessage, e);
-            return Response.serverError().entity(errorMessage).build();
-        }
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_ATOM_XML)
-    @Path("nuget/{search : Search[(][)]}")
-    //Search()?$filter=IsLatestVersion&$orderby=Id&$skip=0&$top=30&searchTerm=''&targetFramework=''
-    public Response search(@QueryParam("$filter") String filter,
-            @QueryParam("$orderby") String orderBy,
-            @QueryParam("$skip") String skip,
-            @QueryParam("searchTerm") String searchTerm,
-            @QueryParam("targetFramework") String targetFramework) {
-        try {
-            //Фейковая реализация
-            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
-            FilePackageSource packageSource = new FilePackageSource(file);
-            PackageFeed feed = new PackageFeed();
-            feed.setId(context.getAbsolutePath().toString());
-            feed.setUpdated(new Date());
-            feed.setTitle("Search");
-            ArrayList<PackageEntry> packageEntrys = new ArrayList<>();
-            NugetContext nugetContext = new NugetContext(context.getBaseUri());
-            for (NupkgFile nupkg : packageSource.getPackages()) {
-                try {
-                    PackageEntry entry = nugetContext.createPackageEntry(nupkg);
-                    entry.getProperties().setIsLatestVersion(Boolean.TRUE);
-                    addServerInformationInToEntry(entry);
-                    packageEntrys.add(entry);
-                } catch (IOException | NoSuchAlgorithmException e) {
-                    logger.warn("Ошибка сбора информации о пакете", e);
-                }
-            }
-            Collections.sort(packageEntrys, new PackageEntryNameComparator());
-            feed.setEntries(packageEntrys);
-            //конец реализации
+            //Получить источник пакетов
+            FilePackageSource packageSource = getPackageSource();
+            //Выбрать пакеты по запросу
+            QueryExecutor queryExecutor = new QueryExecutor();
+            Collection<NupkgFile> files = queryExecutor.exexQuery(packageSource, filter);
+            //Преобразовать пакеты в RSS
+            NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
+            PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (JAXBException e) {
             final String errorMessage = "Ошибка преобразования XML";
@@ -157,9 +104,7 @@ public class MainUrlResource {
             @PathParam("version") String versionString) {
         try {
             Version version = Version.parse(versionString);
-            //Фейковая реализация
-            File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
-            FilePackageSource packageSource = new FilePackageSource(file);
+            FilePackageSource packageSource = getPackageSource();
             NupkgFile nupkg = packageSource.getPackage(id, version);
             InputStream inputStream = nupkg.getStream();
             ResponseBuilder response = Response.ok((Object) inputStream);
@@ -185,20 +130,9 @@ public class MainUrlResource {
     public void putXml(String content) {
     }
 
-    private void addServerInformationInToEntry(PackageEntry entry) {
-        EntryProperties properties = entry.getProperties();
-        //TODO Не факт, что сюда
-        //****************************
-        properties.setIconUrl("");
-        properties.setLicenseUrl("");
-        properties.setProjectUrl("");
-        properties.setReportAbuseUrl("");
-        //***************************
-        properties.setDownloadCount(-1);
-        properties.setVersionDownloadCount(-1);
-        properties.setRatingsCount(0);
-        properties.setVersionRatingsCount(0);
-        properties.setRating(Double.valueOf(0));
-        properties.setVersionRating(Double.valueOf(0));
+    private FilePackageSource getPackageSource() {
+        //Фейковая реализация
+        File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
+        return new FilePackageSource(file);
     }
 }
