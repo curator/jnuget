@@ -11,10 +11,12 @@ import java.util.regex.Pattern;
  */
 public class Version implements Comparable<Version> {
 
+    public static final String VERSION_FORMAT = "(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?(.*)";
+    
     /**
      * Выражение разбора
      */
-    private static Pattern pattern = Pattern.compile("(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?(.*)");
+    private static Pattern pattern = Pattern.compile(VERSION_FORMAT);
 
     private static Integer parseInt(String group) {
         if (group == null || group.isEmpty()) {

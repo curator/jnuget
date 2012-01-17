@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ public class FilePackageSource implements PackageSource {
      */
     public FilePackageSource(File rootFolder) {
         this.rootFolder = rootFolder;
+    }
+    
+    private List<NugetPackageId> GetFullList() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
