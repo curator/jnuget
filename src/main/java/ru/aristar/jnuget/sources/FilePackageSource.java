@@ -93,4 +93,19 @@ public class FilePackageSource implements PackageSource {
         }
         return null;
     }
+
+    @Override
+    public Collection<NupkgFile> getLastVersionPackages() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Collection<NupkgFile> getPackages(String id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public NupkgFile getLastVersionPackage(String id) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

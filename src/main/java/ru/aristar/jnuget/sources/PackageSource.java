@@ -17,6 +17,12 @@ public interface PackageSource {
      */
     Collection<NupkgFile> getPackages();
 
+    Collection<NupkgFile> getLastVersionPackages();
+
+    Collection<NupkgFile> getPackages(String id);
+
+    NupkgFile getLastVersionPackage(String id);
+
     /**
      * Возвращает пакет с указанной версией и идентификатором
      *

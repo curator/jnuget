@@ -73,9 +73,15 @@ public class MainUrlResource {
 
     @GET
     @Produces("application/xml")
-    @Path("nuget/Packages")
-    public Response getPackages() {
+    @Path("nuget/{packages : Packages[(]?[)]?}")
+    public Response getPackages(@QueryParam("$filter") String filter,
+            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$skip") String skip,
+            @QueryParam("searchTerm") String searchTerm,
+            @QueryParam("targetFramework") String targetFramework) {
         try {
+            logger.debug("Запрос пакетов: {} {} {} {} {}",
+                    new Object[]{filter, orderBy, skip, searchTerm, targetFramework});     
             //Фейковая реализация
             File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
             FilePackageSource packageSource = new FilePackageSource(file);
