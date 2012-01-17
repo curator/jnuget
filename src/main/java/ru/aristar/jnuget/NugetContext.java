@@ -26,4 +26,8 @@ public class NugetContext {
         PackageEntry entry = new PackageEntry(nupkgFile, this);
         return entry;
     }
+
+    public NuPkgToRssTransformer createToRssTransformer() {
+        return new NuPkgToRssTransformer(this);
+    }
 }
