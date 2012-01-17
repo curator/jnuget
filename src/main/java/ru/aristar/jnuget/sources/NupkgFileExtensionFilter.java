@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import ru.aristar.jnuget.files.NupkgFile;
 
 /**
- *
+ * Фильтр файлов пакетов по расширению "nupkg"
  * @author Unlocker
  */
 public class NupkgFileExtensionFilter implements FilenameFilter {
