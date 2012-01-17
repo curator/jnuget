@@ -1,8 +1,8 @@
 package ru.aristar.jnuget;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringWriter;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import java.io.*;
 import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -126,8 +126,25 @@ public class MainUrlResource {
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    @Consumes("application/xml")
-    public void putXml(String content) {
+    @Path("")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
+            @FormDataParam("package") InputStream inputStream,
+            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException {
+        System.out.println("Получены данные: " + fileInfo.getFileName());
+        System.out.println("ApiKey: " + apiKey);
+        File file = new File("c:\\" + fileInfo.getFileName());
+        file.delete();
+        FileOutputStream outputStream = new FileOutputStream(file);
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inputStream.read(buffer)) >= 0) {
+            outputStream.write(buffer, 0, len);
+        }
+        outputStream.flush();
+        outputStream.close();
+        ResponseBuilder response = Response.ok();
+        return response.build();
     }
 
     private FilePackageSource getPackageSource() {
