@@ -68,4 +68,11 @@ public interface PackageSource {
      * @return файл пакета
      */
     NupkgFile getPackage(String id, Version version, boolean ignoreCase);
+    
+    
+    /**
+     * Загружает пакет в хранилище
+     * @param file Файл для загрузки
+     */
+    void pushPackage(NupkgFile file);
 }

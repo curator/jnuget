@@ -3,9 +3,7 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,7 @@ public class FilePackageSource implements PackageSource {
      * @param packages Информация о пакетах
      * @return Список файлов пакетов
      */
-    private Collection<NupkgFile> convertIdsToPackages(List<NugetPackageId> packages) {
+    private Collection<NupkgFile> convertIdsToPackages(Collection<NugetPackageId> packages) {
         ArrayList<NupkgFile> nupkgFiles = new ArrayList<>();
         for (NugetPackageId pack : packages) {
             try {
@@ -68,7 +66,7 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return Список объектов с информацией
      */
-    private List<NugetPackageId> getPackagesList(FilenameFilter filter) {
+    private List<NugetPackageId> getPackageList(FilenameFilter filter) {
         ArrayList<NugetPackageId> packages = new ArrayList<>();
         for (File file : rootFolder.listFiles(filter)) {
             try {
@@ -88,7 +86,7 @@ public class FilePackageSource implements PackageSource {
      * @return список пакетов
      */
     private Collection<NupkgFile> getPackages(FilenameFilter filter) {
-        List<NugetPackageId> packages = getPackagesList(filter);
+        List<NugetPackageId> packages = getPackageList(filter);
         return convertIdsToPackages(packages);
     }
 
@@ -112,8 +110,23 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public Collection<NupkgFile> getLastVersionPackages() {
-        //TODO Выбрать последние версии
-        return getPackages();
+        List<NugetPackageId> list = getPackageList(new NupkgFileExtensionFilter());
+        Map<String, NugetPackageId> map = new HashMap();
+        
+        for (NugetPackageId info : list) {
+            String loweredId = info.getId().toLowerCase();
+            // Указанный пакет еще учитывался
+            if (!map.containsKey(loweredId)) {
+                map.put(loweredId, info);
+            } else { // Пакет уже попадался, сравниваем версии
+                Version saved = map.get(loweredId).getVersion();
+                // Версия пакета новее, чем сохраненная
+                if(saved.compareTo(info.getVersion()) > 0) {
+                    map.put(loweredId, info);
+                }
+            }
+        }
+        return convertIdsToPackages(map.values());
     }
 
     @Override
@@ -148,5 +161,10 @@ public class FilePackageSource implements PackageSource {
             }
         }
         return null;
+    }
+
+    @Override
+    public void pushPackage(NupkgFile file) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
