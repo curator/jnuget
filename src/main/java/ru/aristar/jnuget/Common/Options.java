@@ -67,6 +67,8 @@ public class Options {
     public void saveOptions(File file) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(this, file);
     }
 
