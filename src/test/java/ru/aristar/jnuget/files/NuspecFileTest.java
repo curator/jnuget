@@ -1,15 +1,18 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.files;
 
-import ru.aristar.jnuget.files.NuspecFile;
-import org.junit.Test;
+import java.io.InputStream;
 import static org.junit.Assert.*;
+import org.junit.Test;
+import ru.aristar.jnuget.Dependency;
+import ru.aristar.jnuget.Reference;
+import ru.aristar.jnuget.Version;
 
 /**
  *
  * @author sviridov
  */
 public class NuspecFileTest {
-    
+
     @Test
     public void testParseMethod() throws Exception {
         final String fileName = "/test.nuspec.xml";
@@ -23,7 +26,7 @@ public class NuspecFileTest {
         assertEquals("Описание", "Реализация контрактов уровня изоляции ProjecWise API", result.getDescription());
         assertEquals("Права", "НЕОЛАНТ", result.getCopyright());
     }
-    
+
     @Test
     public void testParseWithReferences() throws Exception {
         // GIVEN
@@ -45,11 +48,11 @@ public class NuspecFileTest {
         assertEquals("Описание", "Пакет модульного тестирования", result.getDescription());
         assertEquals("Права", "Copyright 2011", result.getCopyright());
         assertEquals("Количество меток", tags.length, result.getTags().size());
-        assertEquals("Метки", tags, result.getTags().toArray());
+        assertArrayEquals("Метки", tags, result.getTags().toArray());
         assertEquals("Количество ссылок", references.length, result.getReferences().size());
-        assertEquals("Ссылки", references, result.getReferences().toArray());
+        assertArrayEquals("Ссылки", references, result.getReferences().toArray());
     }
-    
+
     @Test
     public void testParseWithDependencies() throws Exception {
         // GIVEN
@@ -69,15 +72,41 @@ public class NuspecFileTest {
         assertEquals("Авторы", "NHibernate community, Hibernate community", result.getAuthors());
         assertEquals("Владельцы", "NHibernate community, Hibernate community", result.getOwners());
         assertEquals("Требуется подтверждение лицензии", false, result.isRequireLicenseAcceptance());
-        assertEquals("Описание", 
-                "NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.", 
+        assertEquals("Описание",
+                "NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.",
                 result.getDescription());
-        assertEquals("Краткое описание", 
-                "NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.", 
+        assertEquals("Краткое описание",
+                "NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.",
                 result.getSummary());
         assertEquals("Количество меток", tags.length, result.getTags().size());
-        assertEquals("Метки", tags, result.getTags().toArray());
+        assertArrayEquals("Метки", tags, result.getTags().toArray());
         assertEquals("Количество зависимостей", dependencies.length, result.getDependencies().size());
-        assertEquals("Зависимости", dependencies, result.getDependencies().toArray());
+        assertArrayEquals("Зависимости", dependencies, result.getDependencies().toArray());
+    }
+
+    @Test
+    public void testParseReleaseNotes() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/FluentAssertions.nuspec.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        //THEN
+        fail("Необходимо проверить releaseNotes");
+    }
+
+    /**
+     * Проверка на соответствие старой схеме
+     * http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseOldScheme() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/NLog.nuspec.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        //THEN
+        fail("Необходимо проверить, что пакет распарсился");
     }
 }

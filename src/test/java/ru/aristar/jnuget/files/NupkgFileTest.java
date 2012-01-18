@@ -8,7 +8,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import ru.aristar.jnuget.NuspecFileTest;
 
 /**
  *

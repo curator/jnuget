@@ -25,9 +25,15 @@ public class NupkgFile {
             loop:
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().endsWith(".nuspec")) {
-                    byte[] buffer = new byte[(int) entry.getSize()];
-                    zipInputStream.read(buffer, 0, buffer.length);
-                    nuspecFile = NuspecFile.Parse(buffer);
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while ((len = zipInputStream.read(buffer)) >= 0) {
+                        outputStream.write(buffer, 0, len);
+                    }
+                    outputStream.flush();
+                    outputStream.close();
+                    nuspecFile = NuspecFile.Parse(outputStream.toByteArray());
                     break loop;
                 }
             }

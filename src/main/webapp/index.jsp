@@ -14,7 +14,7 @@
         <div>
             <h2>You are running JNuGet.Server </h2> <%-- //TODO  добавить в конец строки версию вида v1.1.1.1111--%>
             <p>
-                Click <a href="/nuget/nuget/Packages">here</a> to view your packages.
+                Click <a href="nuget/nuget/Packages">here</a> to view your packages.
             </p>
             <fieldset style="width:800px">
                 <legend><strong>Repository URLs</strong></legend>

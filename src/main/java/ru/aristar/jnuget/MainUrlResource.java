@@ -77,7 +77,6 @@ public class MainUrlResource {
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            System.out.println(filter + " " + orderBy + " " + skip + " " + searchTerm + " " + targetFramework);
             logger.debug("Запрос пакетов: {} {} {} {} {}",
                     new Object[]{filter, orderBy, skip, searchTerm, targetFramework});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
