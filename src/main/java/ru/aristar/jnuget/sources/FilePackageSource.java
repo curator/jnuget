@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
@@ -110,23 +111,9 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public Collection<NupkgFile> getLastVersionPackages() {
-        List<NugetPackageId> list = getPackageList(new NupkgFileExtensionFilter());
-        Map<String, NugetPackageId> map = new HashMap();
-        
-        for (NugetPackageId info : list) {
-            String loweredId = info.getId().toLowerCase();
-            // Указанный пакет еще учитывался
-            if (!map.containsKey(loweredId)) {
-                map.put(loweredId, info);
-            } else { // Пакет уже попадался, сравниваем версии
-                Version saved = map.get(loweredId).getVersion();
-                // Версия пакета новее, чем сохраненная
-                if(saved.compareTo(info.getVersion()) > 0) {
-                    map.put(loweredId, info);
-                }
-            }
-        }
-        return convertIdsToPackages(map.values());
+        List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
+        Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
+        return convertIdsToPackages(lastVersions);
     }
 
     @Override
@@ -164,7 +151,33 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public void pushPackage(NupkgFile file) {
+    public void pushPackage(NupkgFile nupkgFile) {
+        /*
+         * File file = new File("c:\\" + fileInfo.getFileName()); file.delete();
+         * FileOutputStream outputStream = new FileOutputStream(file); byte[]
+         * buffer = new byte[1024]; int len = 0; while ((len =
+         * inputStream.read(buffer)) >= 0) { outputStream.write(buffer, 0, len);
+         * } outputStream.flush(); outputStream.close();
+         */
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private Collection<NugetPackageId> extractLastVersion(Collection<NugetPackageId> list, boolean ignoreCase) {
+        Map<String, NugetPackageId> map = new HashMap();
+
+        for (NugetPackageId info : list) {
+            String packageId = ignoreCase ? info.getId().toLowerCase() : info.getId();
+            // Указанный пакет еще учитывался
+            if (!map.containsKey(packageId)) {
+                map.put(packageId, info);
+            } else { // Пакет уже попадался, сравниваем версии
+                Version saved = map.get(packageId).getVersion();
+                // Версия пакета новее, чем сохраненная
+                if (saved.compareTo(info.getVersion()) > 0) {
+                    map.put(packageId, info);
+                }
+            }
+        }
+        return map.values();
     }
 }

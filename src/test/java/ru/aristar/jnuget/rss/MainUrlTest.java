@@ -3,6 +3,7 @@ package ru.aristar.jnuget.rss;
 import java.io.InputStream;
 import java.io.StringWriter;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,7 @@ import org.junit.Test;
 public class MainUrlTest {
 
     @Test
+    @Ignore("Это не тест")
     public void testMarshallToXml() throws Exception {
         MainUrl mainUrl = new MainUrl();
         StringWriter writer = new StringWriter();

@@ -6,7 +6,7 @@ import java.util.Comparator;
  *
  * @author sviridov
  */
-public class PackageEntryNameComparator implements Comparator<PackageEntry> {
+public class PackageIdComparator implements Comparator<PackageEntry> {
 
     @Override
     public int compare(PackageEntry o1, PackageEntry o2) {

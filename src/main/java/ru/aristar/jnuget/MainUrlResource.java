@@ -4,6 +4,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.*;
 import java.util.Collection;
+import java.util.Date;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -129,19 +130,11 @@ public class MainUrlResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
             @FormDataParam("package") InputStream inputStream,
-            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException {
-        System.out.println("Получены данные: " + fileInfo.getFileName());
-        System.out.println("ApiKey: " + apiKey);
-        File file = new File("c:\\" + fileInfo.getFileName());
-        file.delete();
-        FileOutputStream outputStream = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        while ((len = inputStream.read(buffer)) >= 0) {
-            outputStream.write(buffer, 0, len);
-        }
-        outputStream.flush();
-        outputStream.close();
+            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException, JAXBException {
+        logger.debug("Получены данные: " + fileInfo.getFileName());
+        logger.debug("ApiKey: " + apiKey);
+        NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
+        getPackageSource().pushPackage(nupkgFile);
         ResponseBuilder response = Response.ok();
         return response.build();
     }
