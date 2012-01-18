@@ -1,5 +1,6 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.sources.PackageSourceFactory;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.*;
@@ -73,13 +74,14 @@ public class MainUrlResource {
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") String orderBy,
-            @QueryParam("$skip") String skip,
-            @QueryParam("$top") String top,
+            @QueryParam("$skip") @DefaultValue("0") int skip,
+            @QueryParam("$top") @DefaultValue("-1") int top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            logger.debug("Запрос пакетов: {} {} {} {} {}",
-                    new Object[]{filter, orderBy, skip, searchTerm, targetFramework});
+            logger.debug("Запрос пакетов: filter={}, orderBy={}, skip={}, "
+                    + "top={}, searchTerm={}, targetFramework={}",
+                    new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             //Получить источник пакетов
             FilePackageSource packageSource = getPackageSource();
@@ -131,8 +133,7 @@ public class MainUrlResource {
     public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
             @FormDataParam("package") InputStream inputStream,
             @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException, JAXBException {
-        logger.debug("Получены данные: " + fileInfo.getFileName());
-        logger.debug("ApiKey: " + apiKey);
+        logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
         NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
         getPackageSource().pushPackage(nupkgFile);
         ResponseBuilder response = Response.ok();
@@ -140,8 +141,6 @@ public class MainUrlResource {
     }
 
     private FilePackageSource getPackageSource() {
-        //Фейковая реализация
-        File file = new File("c:/inetpub/wwwroot/nuget/Packages/");
-        return new FilePackageSource(file);
+        return PackageSourceFactory.getInstance().getPackageSource();
     }
 }

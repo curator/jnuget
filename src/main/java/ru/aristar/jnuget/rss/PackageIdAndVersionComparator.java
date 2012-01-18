@@ -4,6 +4,8 @@ import java.util.Comparator;
 import ru.aristar.jnuget.Version;
 
 /**
+ * Компаратор, производящий сравнение сначало по идентификатору пакета, а потом
+ * по его версии
  *
  * @author sviridov
  */
