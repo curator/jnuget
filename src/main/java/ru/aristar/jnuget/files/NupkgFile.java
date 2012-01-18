@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBException;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -18,7 +19,7 @@ public class NupkgFile {
     private Date updated;
     private File file;
 
-    public NupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException {
+    public NupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
         this.updated = updated;
         try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
@@ -40,7 +41,7 @@ public class NupkgFile {
         }
     }
 
-    public NupkgFile(File file) throws JAXBException, IOException {
+    public NupkgFile(File file) throws JAXBException, IOException, SAXException {
         this(new FileInputStream(file), new Date(file.lastModified()));
         this.file = file;
     }

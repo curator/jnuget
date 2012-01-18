@@ -11,6 +11,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.transform.sax.SAXSource;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 import ru.aristar.jnuget.*;
 
 /**
@@ -18,7 +23,7 @@ import ru.aristar.jnuget.*;
  *
  * @author sviridov
  */
-@XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE)
+@XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE_2011)
 public class NuspecFile {
 
     /**
@@ -29,77 +34,82 @@ public class NuspecFile {
         /**
          * Уникальный идентификатор пакета
          */
-        @XmlElement(name = "id", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "id", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String id;
         /**
          * Версия пакета
          */
-        @XmlElement(name = "version", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "version", namespace = NUSPEC_XML_NAMESPACE_2011)
         @XmlJavaTypeAdapter(value = VersionTypeAdapter.class)
         private Version version;
         /**
          * Заглавие
          */
-        @XmlElement(name = "title", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "title", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String title;
         /**
          * Список авторов пакета
          */
-        @XmlElement(name = "authors", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "authors", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String authors;
         /**
          * Список владельцев пакета
          */
-        @XmlElement(name = "owners", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "owners", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String owners;
         /**
          * Требуется ли запрос лицензии
          */
-        @XmlElement(name = "requireLicenseAcceptance", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "requireLicenseAcceptance", namespace = NUSPEC_XML_NAMESPACE_2011)
         private Boolean requireLicenseAcceptance;
         /**
          * Описание пакета
          */
-        @XmlElement(name = "description", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "description", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String description;
+        /**
+         * Примечания к релизу
+         */
+        @XmlElement(name = "releaseNotes", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private String releaseNotes;
         /**
          * Краткое описание
          */
-        @XmlElement(name = "summary", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "summary", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String summary;
         /**
          * Кому пренадлежат права на пакет
          */
-        @XmlElement(name = "copyright", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "copyright", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String copyright;
         /**
          * Язык
          */
-        @XmlElement(name = "language", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "language", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String language;
         /**
          * Список меток, разделенных запятыми
          */
-        @XmlElement(name = "tags", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElement(name = "tags", namespace = NUSPEC_XML_NAMESPACE_2011)
         @XmlJavaTypeAdapter(value = StringListTypeAdapter.class)
         private List<String> tags;
         /**
          * Список ссылок
          */
-        @XmlElementWrapper(name = "references", namespace = NUSPEC_XML_NAMESPACE)
-        @XmlElement(name = "reference", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElementWrapper(name = "references", namespace = NUSPEC_XML_NAMESPACE_2011)
+        @XmlElement(name = "reference", namespace = NUSPEC_XML_NAMESPACE_2011)
         private List<Reference> references;
         /**
          * Список зависимостей
          */
-        @XmlElementWrapper(name = "dependencies", namespace = NUSPEC_XML_NAMESPACE)
-        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE)
+        @XmlElementWrapper(name = "dependencies", namespace = NUSPEC_XML_NAMESPACE_2011)
+        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
         private List<Dependency> dependencies;
     }
     /**
      * Метаданные пакета
      */
-    @XmlElement(name = "metadata", namespace = NUSPEC_XML_NAMESPACE)
+    @XmlElement(name = "metadata", namespace = NUSPEC_XML_NAMESPACE_2011)
     private Metadata metadata;
 
     /**
@@ -153,6 +163,22 @@ public class NuspecFile {
      */
     public String getDescription() {
         return metadata.description;
+    }
+
+    /**
+     *
+     * @return примечания к релизу
+     */
+    public String getReleaseNotes() {
+        return this.metadata.releaseNotes;
+    }
+
+    /**
+     *
+     * @param releaseNotes примечания к релизу
+     */
+    public void setReleaseNotes(String releaseNotes) {
+        this.metadata.releaseNotes = releaseNotes;
     }
 
     /**
@@ -213,8 +239,9 @@ public class NuspecFile {
      * @param data XML
      * @return распознанная информация о пакете
      * @throws JAXBException ошибка преобразования XML
+     * @throws SAXException ошибка фильтра SAX
      */
-    public static NuspecFile Parse(byte[] data) throws JAXBException {
+    public static NuspecFile Parse(byte[] data) throws JAXBException, SAXException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
         return Parse(inputStream);
     }
@@ -226,15 +253,25 @@ public class NuspecFile {
      * @param inputStream XML
      * @return распознанная информация о пакете
      * @throws JAXBException ошибка преобразования XML
+     * @throws SAXException ошибка фильтра SAX
      */
-    public static NuspecFile Parse(InputStream inputStream) throws JAXBException {
+    public static NuspecFile Parse(InputStream inputStream) throws JAXBException, SAXException {
         JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        NuspecFile result = (NuspecFile) unmarshaller.unmarshal(inputStream);
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+        NugetNamespaceFilter inFilter = new NugetNamespaceFilter();
+        inFilter.setParent(reader);
+        InputSource inputSource = new InputSource(inputStream);
+        SAXSource saxSource = new SAXSource(inFilter, inputSource);
+        NuspecFile result = (NuspecFile) unmarshaller.unmarshal(saxSource);
         return result;
     }
     /**
-     * Пространство имен для спецификации пакета NuGet
+     * Пространство имен для спецификации пакета NuGet 2011
      */
-    public static final String NUSPEC_XML_NAMESPACE = "http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd";
+    public static final String NUSPEC_XML_NAMESPACE_2011 = "http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd";
+    /**
+     * Пространство имен для спецификации пакета NuGet 2010
+     */
+    public static final String NUSPEC_XML_NAMESPACE_2010 = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
 }

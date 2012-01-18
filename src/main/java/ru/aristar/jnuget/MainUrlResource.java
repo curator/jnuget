@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
@@ -132,7 +133,7 @@ public class MainUrlResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
             @FormDataParam("package") InputStream inputStream,
-            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException, JAXBException {
+            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException, JAXBException, SAXException {
         logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
         NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
         getPackageSource().pushPackage(nupkgFile);

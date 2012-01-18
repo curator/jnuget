@@ -8,6 +8,7 @@ import java.util.*;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.files.NuspecFile;
@@ -54,7 +55,7 @@ public class FilePackageSource implements PackageSource {
                 File file = new File(rootFolder, pack.toString());
                 NupkgFile nupkgFile = new NupkgFile(file);
                 nupkgFiles.add(nupkgFile);
-            } catch (IOException | JAXBException e) {
+            } catch (IOException | JAXBException | SAXException e) {
                 logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
             }
         }

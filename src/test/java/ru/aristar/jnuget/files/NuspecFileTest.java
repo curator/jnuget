@@ -84,6 +84,11 @@ public class NuspecFileTest {
         assertArrayEquals("Зависимости", dependencies, result.getDependencies().toArray());
     }
 
+    /**
+     * Проверка получения примечаний к релизу
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testParseReleaseNotes() throws Exception {
         //GIVEN
@@ -91,7 +96,9 @@ public class NuspecFileTest {
         //WHEN
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN
-        fail("Необходимо проверить releaseNotes");
+        assertEquals("Примечания к релизу", "And() extension method to "
+                + "TimeSpanConversionExtensions to support 4.Hours()."
+                + "And(30.Minutes())", nuspecFile.getReleaseNotes());
     }
 
     /**
@@ -107,6 +114,6 @@ public class NuspecFileTest {
         //WHEN
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN
-        fail("Необходимо проверить, что пакет распарсился");
+        assertEquals("Идентификатор пакета", "NLog", nuspecFile.getId());
     }
 }
