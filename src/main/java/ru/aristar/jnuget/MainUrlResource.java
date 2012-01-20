@@ -1,9 +1,9 @@
 package ru.aristar.jnuget;
 
-import ru.aristar.jnuget.files.TempNupkgFile;
-import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -14,8 +14,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
 import ru.aristar.jnuget.sources.FilePackageSource;
@@ -135,21 +135,38 @@ public class MainUrlResource {
     }
 
     /**
-     * PUT method for updating or creating an instance of MainUrlResource
+     * Метод помещения пакета в хранилище для версии NuGet старше 1.6
      *
-     * @param apiKey
-     * @param inputStream
-     * @param fileInfo
-     * @return an HTTP response with content of the updated or created resource.
+     * @param apiKey ключ доступа
+     * @param inputStream поток данных
+     * @return
      */
     @PUT
     @Path("")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
-            @FormDataParam("package") InputStream inputStream,
-            @FormDataParam("package") FormDataContentDisposition fileInfo) {
+    public Response putPackage(@HeaderParam("X-NuGet-ApiKey") String apiKey,
+            @FormDataParam("package") InputStream inputStream) {
         try {
-            logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
+            logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
+            try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
+                getPackageSource().pushPackage(nupkgFile);
+            }
+            ResponseBuilder response = Response.ok();
+            //TODO необходимо заснифать ответ
+            return response.build();
+        } catch (Exception e) {
+            final String errorMessage = "Ошибка помещения пакета в хранилище";
+            logger.error(errorMessage, e);
+            return Response.serverError().entity(errorMessage).build();
+        }
+    }
+
+    @POST
+    @Path("PackageFiles/{apiKey}/nupkg")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    public Response postPackage(@PathParam("apiKey") String apiKey, InputStream inputStream) throws IOException {
+        try {
+            logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                 getPackageSource().pushPackage(nupkgFile);
             }
@@ -160,6 +177,16 @@ public class MainUrlResource {
             logger.error(errorMessage, e);
             return Response.serverError().entity(errorMessage).build();
         }
+    }
+
+    @POST
+    @Path("PublishedPackages/Publish")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response postPackageMetadata(InputStream inputStream) {
+        //TODO необходимо обработать запрос
+        //{"id":"Neolant.IOT.EventBus","key":"4003d786-cc37-4004-bfdf-c4f3e8ef9b3a","version":"0.0.2.557"}
+        ResponseBuilder response = Response.ok();
+        return response.build();
     }
 
     private FilePackageSource getPackageSource() {
