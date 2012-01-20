@@ -151,8 +151,7 @@ public class MainUrlResource {
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                 getPackageSource().pushPackage(nupkgFile);
             }
-            ResponseBuilder response = Response.ok();
-            //TODO необходимо заснифать ответ
+            ResponseBuilder response = Response.status(Response.Status.CREATED);
             return response.build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка помещения пакета в хранилище";
