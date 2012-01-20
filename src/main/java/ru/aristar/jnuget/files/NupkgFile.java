@@ -17,7 +17,7 @@ public class NupkgFile {
 
     private NuspecFile nuspecFile;
     private Date updated;
-    private File file;
+    protected File file;
 
     public NupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
         this.updated = updated;
@@ -25,7 +25,7 @@ public class NupkgFile {
             ZipEntry entry;
             loop:
             while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (!entry.isDirectory() && entry.getName().endsWith(".nuspec")) {
+                if (!entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION)) {
                     byte[] buffer = new byte[1024];
                     int len;
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

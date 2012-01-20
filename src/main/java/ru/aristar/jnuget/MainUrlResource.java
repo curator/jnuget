@@ -1,11 +1,10 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.files.TempNupkgFile;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Collection;
-import java.util.Date;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +14,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
@@ -62,6 +62,14 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
+    }
+
+    @GET
+    @Produces("application/xml")
+    @Path("")
+    public Response getRootXml() {
+        //TODO Разобраться со структурой приложения (что по какому URL должно находится)
+        return getXml();
     }
 
     @GET
@@ -142,8 +150,9 @@ public class MainUrlResource {
             @FormDataParam("package") FormDataContentDisposition fileInfo) {
         try {
             logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
-            NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
-            getPackageSource().pushPackage(nupkgFile);
+            try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
+                getPackageSource().pushPackage(nupkgFile);
+            }
             ResponseBuilder response = Response.ok();
             return response.build();
         } catch (Exception e) {

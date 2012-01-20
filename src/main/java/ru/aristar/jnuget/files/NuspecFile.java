@@ -274,4 +274,8 @@ public class NuspecFile {
      * Пространство имен для спецификации пакета NuGet 2010
      */
     public static final String NUSPEC_XML_NAMESPACE_2010 = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
+    /**
+     * Расширение файла
+     */
+    public static final String DEFAULT_FILE_EXTENSION = ".nuspec";
 }

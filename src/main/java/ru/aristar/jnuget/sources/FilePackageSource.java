@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.files.NuspecFile;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  * Хранилище пакетов, использующее стандартную для NuGet конфигурацию
@@ -92,13 +96,13 @@ public class FilePackageSource implements PackageSource {
         List<NugetPackageId> packages = getPackageList(filter);
         return convertIdsToPackages(packages);
     }
-    
+
     @Override
     public Collection<NupkgFile> getPackages() {
         FilenameFilter filenameFilter = new NupkgFileExtensionFilter();
         return getPackages(filenameFilter);
     }
-    
+
     @Override
     public NupkgFile getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
@@ -110,36 +114,36 @@ public class FilePackageSource implements PackageSource {
         }
         return null;
     }
-    
+
     @Override
     public Collection<NupkgFile> getLastVersionPackages() {
         List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
         Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
         return convertIdsToPackages(lastVersions);
     }
-    
+
     @Override
     public Collection<NupkgFile> getPackages(String id) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
         return getPackages(filenameFilter);
     }
-    
+
     @Override
     public NupkgFile getLastVersionPackage(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         return getPackages(filenameFilter);
     }
-    
+
     @Override
     public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
@@ -151,22 +155,25 @@ public class FilePackageSource implements PackageSource {
         }
         return null;
     }
-    
+
     @Override
-    public void pushPackage(NupkgFile nupkgFile) {
-        /*
-         * File file = new File("c:\\" + fileInfo.getFileName()); file.delete();
-         * FileOutputStream outputStream = new FileOutputStream(file); byte[]
-         * buffer = new byte[1024]; int len = 0; while ((len =
-         * inputStream.read(buffer)) >= 0) { outputStream.write(buffer, 0, len);
-         * } outputStream.flush(); outputStream.close();
-         */
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void pushPackage(NupkgFile nupkgFile) throws IOException {
+        File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
+        File finalDest = new File(rootFolder, nupkgFile.getFileName());
+        ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream());
+        FileChannel dest = new FileOutputStream(tmpDest).getChannel();
+        TempNupkgFile.fastChannelCopy(src, dest);
+        src.close();
+        dest.close();
+        if (!tmpDest.renameTo(finalDest)) {
+            throw new IOException("Не удалось переименовать фал " + tmpDest
+                    + " в " + finalDest);
+        }
     }
-    
+
     private Collection<NugetPackageId> extractLastVersion(Collection<NugetPackageId> list, boolean ignoreCase) {
         Map<String, NugetPackageId> map = new HashMap();
-        
+
         for (NugetPackageId info : list) {
             String packageId = ignoreCase ? info.getId().toLowerCase() : info.getId();
             // Указанный пакет еще учитывался

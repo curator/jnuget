@@ -13,7 +13,7 @@ public class PackageSourceFactory {
     /**
      * Экземпляр фабрики
      */
-    private static PackageSourceFactory instance;
+    private volatile static PackageSourceFactory instance;
     /**
      * Настройки сервера
      */
