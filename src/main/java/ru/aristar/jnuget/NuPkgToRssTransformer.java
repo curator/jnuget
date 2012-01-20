@@ -49,7 +49,7 @@ public class NuPkgToRssTransformer {
         feed.setUpdated(new Date());
         feed.setTitle("Packages");
         List<PackageEntry> packageEntrys = new ArrayList<>();
-
+        
         for (NupkgFile nupkg : files) {
             try {
                 PackageEntry entry = context.createPackageEntry(nupkg);
@@ -62,15 +62,38 @@ public class NuPkgToRssTransformer {
         }
         Collections.sort(packageEntrys, new PackageIdAndVersionComparator());
         markLastVersion(packageEntrys);
-        skip = normalizeSkip(skip, packageEntrys.size());
-        top = normalizeTop(skip, packageEntrys.size(), top);
-
-        packageEntrys = packageEntrys.subList(skip, skip + top - 1);
-
+        logger.debug("Получено {} записей о пакетах", new Object[]{packageEntrys.size()});
+        packageEntrys = cutPackageList(skip, top, packageEntrys);
+        logger.debug("Подготовлено {} записей о пакетах", new Object[]{packageEntrys.size()});
         feed.setEntries(packageEntrys);
         return feed;
     }
 
+    /**
+     * Безопасно уменьшает в размерах список пакетов
+     *
+     * @param skip количество пакетов, которые следует пропустить с начала
+     * списка
+     * @param top количество пакетов, не более которого будет возвращено в
+     * обрезаном списке
+     * @param packageEntrys исходный список
+     * @return обрезанный список
+     */
+    protected <T> List<T> cutPackageList(final int skip, final int top, List<T> packageEntrys) {
+        if (packageEntrys == null || packageEntrys.isEmpty()) {
+            return packageEntrys;
+        }
+        try {
+            int newSkip = normalizeSkip(skip, packageEntrys.size());
+            int newTop = normalizeTop(skip, packageEntrys.size(), top);
+            return packageEntrys.subList(skip, newSkip + newTop);
+        } catch (Exception e) {
+            logger.error("Ошибка получения подсписка пакетов: "
+                    + "skip={} top={} size={}", new Object[]{skip, top, packageEntrys.size()});
+            throw e;
+        }
+    }
+    
     private void addServerInformationInToEntry(PackageEntry entry) {
         EntryProperties properties = entry.getProperties();
         //TODO Не факт, что сюда

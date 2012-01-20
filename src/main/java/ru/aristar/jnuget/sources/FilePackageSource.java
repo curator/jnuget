@@ -39,6 +39,7 @@ public class FilePackageSource implements PackageSource {
      * @param rootFolder папка с пакетами
      */
     public FilePackageSource(File rootFolder) {
+        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{rootFolder});
         this.rootFolder = rootFolder;
     }
 
@@ -91,13 +92,13 @@ public class FilePackageSource implements PackageSource {
         List<NugetPackageId> packages = getPackageList(filter);
         return convertIdsToPackages(packages);
     }
-
+    
     @Override
     public Collection<NupkgFile> getPackages() {
         FilenameFilter filenameFilter = new NupkgFileExtensionFilter();
         return getPackages(filenameFilter);
     }
-
+    
     @Override
     public NupkgFile getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
@@ -109,36 +110,36 @@ public class FilePackageSource implements PackageSource {
         }
         return null;
     }
-
+    
     @Override
     public Collection<NupkgFile> getLastVersionPackages() {
         List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
         Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
         return convertIdsToPackages(lastVersions);
     }
-
+    
     @Override
     public Collection<NupkgFile> getPackages(String id) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
         return getPackages(filenameFilter);
     }
-
+    
     @Override
     public NupkgFile getLastVersionPackage(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         return getPackages(filenameFilter);
     }
-
+    
     @Override
     public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
@@ -150,7 +151,7 @@ public class FilePackageSource implements PackageSource {
         }
         return null;
     }
-
+    
     @Override
     public void pushPackage(NupkgFile nupkgFile) {
         /*
@@ -162,10 +163,10 @@ public class FilePackageSource implements PackageSource {
          */
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     private Collection<NugetPackageId> extractLastVersion(Collection<NugetPackageId> list, boolean ignoreCase) {
         Map<String, NugetPackageId> map = new HashMap();
-
+        
         for (NugetPackageId info : list) {
             String packageId = ignoreCase ? info.getId().toLowerCase() : info.getId();
             // Указанный пакет еще учитывался

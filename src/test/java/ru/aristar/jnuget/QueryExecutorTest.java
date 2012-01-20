@@ -33,7 +33,7 @@ public class QueryExecutorTest {
     @Test
     public void testExecQueryWithId() throws Exception {
         //GIVEN
-        final String filter = "tolower(id) eq package.name";
+        final String filter = "tolower(id) eq 'package.name'";
         final PackageSource source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
 

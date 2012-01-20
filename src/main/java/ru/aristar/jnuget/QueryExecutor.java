@@ -17,7 +17,7 @@ class QueryExecutor {
             return packageSource.getPackages();
         }
         if (filter.toLowerCase().startsWith("tolower(id) eq")) {
-            Pattern pattern = Pattern.compile("(\\w+)\\((\\w+)\\)\\s+(\\w+)\\s+(.+)");
+            Pattern pattern = Pattern.compile("(\\w+)\\((\\w+)\\)\\s+(\\w+)\\s+'?([^']+)'?");
             Matcher matcher = pattern.matcher(filter);
             if (matcher.find()) {
                 String function = matcher.group(1);

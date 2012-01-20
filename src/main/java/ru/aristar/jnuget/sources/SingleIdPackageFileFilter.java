@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 
 /**
  * Фильтр файлов пакетов по заданному идентификатору
+ *
  * @author Unlocker
  */
 public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implements FilenameFilter {
@@ -13,7 +14,6 @@ public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implemen
      * Идентификатор пакета
      */
     private final String id;
-    
     /**
      * Игнорировать ли регистр символов
      */
@@ -21,6 +21,7 @@ public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implemen
 
     /**
      * Фильтр файлов пакетов по заданному идентификатору
+     *
      * @param id Идентификатор пакета
      * @param ignoreCase Игнорировать ли регистр символов
      */
@@ -30,8 +31,9 @@ public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implemen
     }
 
     /**
-     * Фильтр файлов пакетов по заданному идентификатору, 
-     * игнорирующий регистр символов
+     * Фильтр файлов пакетов по заданному идентификатору, игнорирующий регистр
+     * символов
+     *
      * @param id Идентификатор пакета
      */
     public SingleIdPackageFileFilter(String id) {

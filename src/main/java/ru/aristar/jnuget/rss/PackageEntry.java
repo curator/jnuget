@@ -113,7 +113,7 @@ public class PackageEntry {
         category.setScheme("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
         this.content = new AtomElement();
         content.setType("application/zip");
-        content.setSrc(getRootUri() + "nuget/download/" + title.value + "/"
+        content.setSrc(getRootUri() + "download/" + title.value + "/"
                 + nuspecFile.getVersion());
     }
 
@@ -122,7 +122,7 @@ public class PackageEntry {
      */
     @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public String getId() {
-        return getRootUri() + "nuget/nuget/Packages(Id='" + getTitle() + "',Version='"
+        return getRootUri() + "nuget/Packages(Id='" + getTitle() + "',Version='"
                 + getProperties().getVersion().toString() + "')";
     }
 

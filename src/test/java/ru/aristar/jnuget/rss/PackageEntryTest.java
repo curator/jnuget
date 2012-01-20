@@ -28,7 +28,7 @@ public class PackageEntryTest {
         PackageEntry entry = context.createPackageEntry(nupkgFile);       
         //THEN
         assertEquals("Идентификатор пакета",
-                "http://localhost:8090/nuget/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",
+                "http://localhost:8090/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",
                 entry.getId());
         assertEquals("Название пакета", "NUnit", entry.getTitle());
         assertEquals("Описание пакета", null, entry.getSummary());
@@ -50,7 +50,7 @@ public class PackageEntryTest {
         assertNull("Категория тип", entry.getCategory().getType());
         assertNull("Контент", entry.getContent().getTerm());
         assertNull("Контент схема", entry.getContent().getScheme());
-        assertEquals("Контент источник", "http://localhost:8090/nuget/download/NUnit/2.5.9.10348", entry.getContent().getSrc());
+        assertEquals("Контент источник", "http://localhost:8090/download/NUnit/2.5.9.10348", entry.getContent().getSrc());
         assertEquals("Контент тип", "application/zip", entry.getContent().getType());
     }
 }

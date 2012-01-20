@@ -1,6 +1,8 @@
 package ru.aristar.jnuget;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import ru.aristar.jnuget.rss.PackageEntry;
@@ -54,5 +56,39 @@ public class NuPkgToRssTransformerTest {
         assertFalse("Меньшие версии не последние", firstB.getProperties().getIsLatestVersion());
         assertTrue("Большие версии последние", lastA.getProperties().getIsLatestVersion());
         assertTrue("Большие версии последние", lastB.getProperties().getIsLatestVersion());
+    }
+
+    /**
+     * Тест получения подсписка для значений skip=0, top=-1
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetSublist() throws Exception {
+        //GIVEN
+        List<Object> sources = new ArrayList<>();
+        sources.addAll(Collections.nCopies(10, new Object()));
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformer(null);
+        //WHEN
+        List<Object> result = transformer.cutPackageList(0, -1, sources);
+        //THEN 
+        assertEquals("Размер обрезанного списка", 10, result.size());
+    }
+
+    /**
+     * Тест получения подсписка для значений skip=0, top=-1
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetSublistFromOneMessageList() throws Exception {
+        //GIVEN
+        List<Object> sources = new ArrayList<>();
+        sources.add(new Object());
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformer(null);
+        //WHEN
+        List<Object> result = transformer.cutPackageList(0, -1, sources);
+        //THEN 
+        assertEquals("Размер обрезанного списка", 1, result.size());
     }
 }

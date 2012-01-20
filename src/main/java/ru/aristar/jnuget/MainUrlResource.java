@@ -1,9 +1,9 @@
 package ru.aristar.jnuget;
 
-import ru.aristar.jnuget.sources.PackageSourceFactory;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import java.io.*;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Date;
 import javax.ws.rs.*;
@@ -15,11 +15,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
 import ru.aristar.jnuget.sources.FilePackageSource;
+import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
  * REST Web Service
@@ -29,6 +29,9 @@ import ru.aristar.jnuget.sources.FilePackageSource;
 @Path("")
 public class MainUrlResource {
 
+    /**
+     * Логгер
+     */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     @Context
     private UriInfo context;
@@ -89,12 +92,13 @@ public class MainUrlResource {
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
             Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
+            logger.debug("Получено {} пакетов", new Object[]{files.size()});
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
             PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
-        } catch (JAXBException e) {
-            final String errorMessage = "Ошибка преобразования XML";
+        } catch (Exception e) {
+            final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);
             return Response.serverError().entity(errorMessage).build();
         }
@@ -116,7 +120,7 @@ public class MainUrlResource {
             response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             return response.build();
         } catch (Exception e) {
-            final String errorMessage = "Ошибка преобразования XML";
+            final String errorMessage = "Ошибка получения пакета " + id + " " + versionString;
             logger.error(errorMessage, e);
             return Response.serverError().entity(errorMessage).build();
         }
@@ -125,7 +129,9 @@ public class MainUrlResource {
     /**
      * PUT method for updating or creating an instance of MainUrlResource
      *
-     * @param content representation for the resource
+     * @param apiKey
+     * @param inputStream
+     * @param fileInfo
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
@@ -133,12 +139,18 @@ public class MainUrlResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response putXml(@HeaderParam("X-NuGet-ApiKey") String apiKey,
             @FormDataParam("package") InputStream inputStream,
-            @FormDataParam("package") FormDataContentDisposition fileInfo) throws IOException, JAXBException, SAXException {
-        logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
-        NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
-        getPackageSource().pushPackage(nupkgFile);
-        ResponseBuilder response = Response.ok();
-        return response.build();
+            @FormDataParam("package") FormDataContentDisposition fileInfo) {
+        try {
+            logger.debug("Получен пакет: {} ApiInfo={}", new Object[]{fileInfo.getFileName(), apiKey});
+            NupkgFile nupkgFile = new NupkgFile(inputStream, new Date());
+            getPackageSource().pushPackage(nupkgFile);
+            ResponseBuilder response = Response.ok();
+            return response.build();
+        } catch (Exception e) {
+            final String errorMessage = "Ошибка помещения пакета в хранилище";
+            logger.error(errorMessage, e);
+            return Response.serverError().entity(errorMessage).build();
+        }
     }
 
     private FilePackageSource getPackageSource() {
