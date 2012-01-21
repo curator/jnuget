@@ -141,6 +141,7 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+        //FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -158,20 +159,30 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public void pushPackage(NupkgFile nupkgFile) throws IOException {
+        // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
         File finalDest = new File(rootFolder, nupkgFile.getFileName());
-        ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream());
-        FileChannel dest = new FileOutputStream(tmpDest).getChannel();
-        TempNupkgFile.fastChannelCopy(src, dest);
-        src.close();
+        FileChannel dest;
+        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
+            dest = new FileOutputStream(tmpDest).getChannel();
+            TempNupkgFile.fastChannelCopy(src, dest);
+        }
         dest.close();
         if (!tmpDest.renameTo(finalDest)) {
-            throw new IOException("Не удалось переименовать фал " + tmpDest
+            throw new IOException("Не удалось переименовать файл " + tmpDest
                     + " в " + finalDest);
         }
     }
 
-    private Collection<NugetPackageId> extractLastVersion(Collection<NugetPackageId> list, boolean ignoreCase) {
+    /**
+     * Извлекает информацию о последних версиях всех пакетов
+     *
+     * @param list общий список всех пакетов
+     * @param ignoreCase нужно ли игнорировать регистр символов
+     * @return список последних версий пакетов
+     */
+    private Collection<NugetPackageId> extractLastVersion(
+            Collection<NugetPackageId> list, boolean ignoreCase) {
         Map<String, NugetPackageId> map = new HashMap();
 
         for (NugetPackageId info : list) {
