@@ -37,6 +37,6 @@ public class PackageFeedTest {
         assertEquals("Идентификатор", "http://localhost:8090/nuget/nuget/Packages", packageFeed.getId());
         assertEquals("Дата обновления", parseXmlDate("2011-10-08T06:49:38Z"), packageFeed.getUpdated());
         assertEquals("Количество пакетов", 26, packageFeed.getEntries().size());
-        fail("Тест реализован не до конца");
+        assertEquals("Заголовок RSS", "Packages", packageFeed.getTitle());
     }
 }

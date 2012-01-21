@@ -56,9 +56,11 @@ public class FilePackageSource implements PackageSource {
     private Collection<NupkgFile> convertIdsToPackages(Collection<NugetPackageId> packages) {
         ArrayList<NupkgFile> nupkgFiles = new ArrayList<>();
         for (NugetPackageId pack : packages) {
-            NupkgFile current = convertIdToPackage(pack);
-            if (current != null) {
+            try {
+                NupkgFile current = convertIdToPackage(pack);
                 nupkgFiles.add(current);
+            } catch (JAXBException | IOException | SAXException e) {
+                logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
             }
         }
         return nupkgFiles;
@@ -69,16 +71,15 @@ public class FilePackageSource implements PackageSource {
      *
      * @param pack информация о пакете
      * @return Файл пакета
+     * @throws JAXBException ошибка разбора XML
+     * @throws IOException ошибка чтения файла с диска
+     * @throws SAXException ошибка изменения пространства имен
      */
-    private NupkgFile convertIdToPackage(NugetPackageId pack) {
-        try {
-            File file = new File(rootFolder, pack.toString());
-            NupkgFile nupkgFile = new NupkgFile(file);
-            return nupkgFile;
-        } catch (IOException | JAXBException | SAXException e) {
-            logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
-            return null;
-        }
+    private NupkgFile convertIdToPackage(NugetPackageId pack)
+            throws JAXBException, IOException, SAXException {
+        File file = new File(rootFolder, pack.toString());
+        NupkgFile nupkgFile = new NupkgFile(file);
+        return nupkgFile;
     }
 
     /**
@@ -160,7 +161,13 @@ public class FilePackageSource implements PackageSource {
         if (lastVersion.isEmpty()) {
             return null;
         }
-        return convertIdToPackage(lastVersion.iterator().next());
+        NugetPackageId packageId = lastVersion.iterator().next();
+        try {
+            return convertIdToPackage(packageId);
+        } catch (JAXBException | IOException | SAXException e) {
+            logger.warn("Ошибка чтения архивного файла пакета " + packageId, e);
+            return null;
+        }
     }
 
     @Override
