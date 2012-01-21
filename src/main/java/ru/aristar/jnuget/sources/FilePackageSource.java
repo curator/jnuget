@@ -56,15 +56,29 @@ public class FilePackageSource implements PackageSource {
     private Collection<NupkgFile> convertIdsToPackages(Collection<NugetPackageId> packages) {
         ArrayList<NupkgFile> nupkgFiles = new ArrayList<>();
         for (NugetPackageId pack : packages) {
-            try {
-                File file = new File(rootFolder, pack.toString());
-                NupkgFile nupkgFile = new NupkgFile(file);
-                nupkgFiles.add(nupkgFile);
-            } catch (IOException | JAXBException | SAXException e) {
-                logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
+            NupkgFile current = convertIdToPackage(pack);
+            if (current != null) {
+                nupkgFiles.add(current);
             }
         }
         return nupkgFiles;
+    }
+
+    /**
+     * Преобразует информацию в пакет
+     *
+     * @param pack информация о пакете
+     * @return Файл пакета
+     */
+    private NupkgFile convertIdToPackage(NugetPackageId pack) {
+        try {
+            File file = new File(rootFolder, pack.toString());
+            NupkgFile nupkgFile = new NupkgFile(file);
+            return nupkgFile;
+        } catch (IOException | JAXBException | SAXException e) {
+            logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
+            return null;
+        }
     }
 
     /**
@@ -130,7 +144,7 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public NupkgFile getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLastVersionPackage(id, true);
     }
 
     @Override
@@ -141,8 +155,12 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
-        //FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-        throw new UnsupportedOperationException("Not supported yet.");
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
+        Collection<NugetPackageId> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+        if (lastVersion.isEmpty()) {
+            return null;
+        }
+        return convertIdToPackage(lastVersion.iterator().next());
     }
 
     @Override
