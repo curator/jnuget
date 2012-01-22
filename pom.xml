@@ -65,13 +65,7 @@
             <version>1.6.4</version>
             <scope>compile</scope>
             <optional>true</optional>
-        </dependency>
-        <!-- //TODO удалить эту зависимость -->
-        <dependency>
-            <groupId>rome</groupId>
-            <artifactId>rome</artifactId>
-            <version>1.0</version>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
