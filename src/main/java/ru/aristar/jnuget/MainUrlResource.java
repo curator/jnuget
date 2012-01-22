@@ -22,7 +22,7 @@ import ru.aristar.jnuget.sources.FilePackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
- * REST Web Service
+ * Сервис управления пакетами
  *
  * @author sviridov
  */
@@ -37,16 +37,15 @@ public class MainUrlResource {
     private UriInfo context;
 
     /**
-     * Creates a new instance of MainUrlResource
+     * Конструктор по умолчанию (требование JAX-RS)
      */
     public MainUrlResource() {
     }
 
     /**
-     * Retrieves representation of an instance of
-     * ru.aristar.jnuget.MainUrlResource
+     * Возвращает XML корневого узла сервера
      *
-     * @return
+     * @return XML
      */
     @GET
     @Produces("application/xml")
@@ -105,6 +104,38 @@ public class MainUrlResource {
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
             PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
+        } catch (Exception e) {
+            final String errorMessage = "Ошибка получения списка пакетов";
+            logger.error(errorMessage, e);
+            return Response.serverError().entity(errorMessage).build();
+        }
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
+    public Response getPackageCount(@QueryParam("$filter") String filter,
+            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$skip") @DefaultValue("0") int skip,
+            @QueryParam("$top") @DefaultValue("-1") int top,
+            @QueryParam("searchTerm") String searchTerm,
+            @QueryParam("targetFramework") String targetFramework) {
+        try {
+            //TODO Решиние "В лоб" необходимо переделать по человечески (вынести получение пакетов в отдельный метод)
+            logger.debug("Запрос количества пакетов: filter={}, orderBy={}, skip={}, "
+                    + "top={}, searchTerm={}, targetFramework={}",
+                    new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
+            NugetContext nugetContext = new NugetContext(context.getBaseUri());
+            //Получить источник пакетов
+            FilePackageSource packageSource = getPackageSource();
+            //Выбрать пакеты по запросу
+            QueryExecutor queryExecutor = new QueryExecutor();
+            Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
+            logger.debug("Получено {} пакетов", new Object[]{files.size()});
+            //Преобразовать пакеты в RSS
+            NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
+            PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
+            return Response.ok(feed.getEntries().size(), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);
