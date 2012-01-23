@@ -3,7 +3,6 @@ package ru.aristar.jnuget.files;
 import java.io.InputStream;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import ru.aristar.jnuget.Dependency;
 import ru.aristar.jnuget.Reference;
 import ru.aristar.jnuget.Version;
 

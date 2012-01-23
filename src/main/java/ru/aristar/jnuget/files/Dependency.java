@@ -1,11 +1,14 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.files;
 
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.VersionTypeAdapter;
 
 /**
  * Описание зависимости
+ *
  * @author Unlocker
  */
 public class Dependency {
@@ -15,14 +18,13 @@ public class Dependency {
      */
     @XmlAttribute(name = "id")
     public String id;
-    
     /**
      * Версия пакета
      */
     @XmlAttribute(name = "version")
     @XmlJavaTypeAdapter(value = VersionTypeAdapter.class)
     public Version version;
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -43,5 +45,10 @@ public class Dependency {
         hash = 97 * hash + Objects.hashCode(this.id);
         hash = 97 * hash + Objects.hashCode(this.version);
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return id + ":" + version;
     }
 }

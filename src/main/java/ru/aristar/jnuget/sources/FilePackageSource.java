@@ -206,7 +206,7 @@ public class FilePackageSource implements PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
-    private Collection<NugetPackageId> extractLastVersion(
+    protected Collection<NugetPackageId> extractLastVersion(
             Collection<NugetPackageId> list, boolean ignoreCase) {
         Map<String, NugetPackageId> map = new HashMap();
 
@@ -218,7 +218,7 @@ public class FilePackageSource implements PackageSource {
             } else { // Пакет уже попадался, сравниваем версии
                 Version saved = map.get(packageId).getVersion();
                 // Версия пакета новее, чем сохраненная
-                if (saved.compareTo(info.getVersion()) > 0) {
+                if (saved.compareTo(info.getVersion()) < 0) {
                     map.put(packageId, info);
                 }
             }

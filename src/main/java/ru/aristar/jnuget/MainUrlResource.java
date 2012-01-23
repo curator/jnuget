@@ -135,7 +135,7 @@ public class MainUrlResource {
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
             PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
-            return Response.ok(feed.getEntries().size(), MediaType.TEXT_PLAIN).build();
+            return Response.ok(Integer.toString(feed.getEntries().size()), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);
