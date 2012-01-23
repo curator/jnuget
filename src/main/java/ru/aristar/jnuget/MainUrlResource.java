@@ -6,11 +6,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +59,7 @@ public class MainUrlResource {
         }
         return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("")
@@ -70,7 +67,7 @@ public class MainUrlResource {
         //TODO Разобраться со структурой приложения (что по какому URL должно находится)
         return getXml();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("nuget/{metadata : [$]metadata}")
@@ -79,7 +76,7 @@ public class MainUrlResource {
         ResponseBuilder response = Response.ok((Object) inputStream);
         return response.build();
     }
-
+    
     @GET
     @Produces("application/xml")
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
@@ -110,7 +107,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
@@ -142,7 +139,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("download/{id}/{version}")
@@ -152,9 +149,13 @@ public class MainUrlResource {
             Version version = Version.parse(versionString);
             FilePackageSource packageSource = getPackageSource();
             NupkgFile nupkg = packageSource.getPackage(id, version);
+            if (nupkg == null) {
+                logger.warn("Пакет " + id + ":" + versionString + " не найден");
+                return Response.status(Response.Status.NOT_FOUND).build();                
+            }
             InputStream inputStream = nupkg.getStream();
             ResponseBuilder response = Response.ok((Object) inputStream);
-            response.header("Content-Length", nupkg.getSize());
+            response.header(HttpHeaders.CONTENT_LENGTH, nupkg.getSize());
             response.type(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = nupkg.getFileName();
             response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
@@ -191,7 +192,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @POST
     @Path("PackageFiles/{apiKey}/nupkg")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
@@ -209,7 +210,7 @@ public class MainUrlResource {
             return Response.serverError().entity(errorMessage).build();
         }
     }
-
+    
     @POST
     @Path("PublishedPackages/Publish")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -219,7 +220,7 @@ public class MainUrlResource {
         ResponseBuilder response = Response.ok();
         return response.build();
     }
-
+    
     private FilePackageSource getPackageSource() {
         return PackageSourceFactory.getInstance().getPackageSource();
     }
