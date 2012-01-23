@@ -38,14 +38,14 @@ public class Options {
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
      * Имя каталога с пакетами
-     */
-    @XmlElement(name="FolderName")
+     */    
     private String folderName;
 
     /**
      *
      * @return имя каталога с пакетами
      */
+    @XmlElement(name="FolderName")
     public String getFolderName() {
         return folderName;
     }
@@ -53,9 +53,9 @@ public class Options {
     /**
      *
      * @param folderName имя каталога с пакетами
-     */
+     */    
     public void setFolderName(String folderName) {
-        this.folderName = folderName;
+        this.folderName = OptionConverter.replaceVariables(folderName);
     }
 
     /**

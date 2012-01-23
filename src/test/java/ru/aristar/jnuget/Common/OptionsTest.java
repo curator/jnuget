@@ -17,13 +17,14 @@ public class OptionsTest {
     public void testGetDefaultOptions() {
         //GIVEN
         File file = new File(Options.DEFAULT_OPTIONS_FILE_NAME);
+        final String userHome = System.getProperty("user.home");
         file.delete();
         assertFalse("Файла с настройками не должно существовать перед тестом", file.exists());
         //WHEN
         Options options = Options.loadOptions();
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
-        assertEquals("Имя папки с пакетами", "c:/inetpub/wwwroot/nuget/Packages/", options.getFolderName());
+        assertEquals("Имя папки с пакетами", userHome + "/.nuget/", options.getFolderName());
         //TEARDOWN
         file.delete();
     }
