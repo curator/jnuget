@@ -154,6 +154,7 @@ public class MainUrlResource {
             NupkgFile nupkg = packageSource.getPackage(id, version);
             InputStream inputStream = nupkg.getStream();
             ResponseBuilder response = Response.ok((Object) inputStream);
+            response.header("Content-Length", nupkg.getSize());
             response.type(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = nupkg.getFileName();
             response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");

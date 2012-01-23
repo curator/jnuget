@@ -120,7 +120,7 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public NupkgFile getPackage(final String id, Version version) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
         for (NupkgFile nupkgFile : getPackages(filenameFilter)) {
             NuspecFile nuspec = nupkgFile.getNuspecFile();
             if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
