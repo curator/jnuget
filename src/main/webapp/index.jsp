@@ -12,7 +12,9 @@
     </head>
     <body>
         <div>
-            <h2>You are running JNuGet.Server </h2> <%-- //TODO  добавить в конец строки версию вида v1.1.1.1111--%>
+            <%  String vesion = this.getClass().getPackage().getImplementationVersion();
+                vesion = vesion == null ? "" : "v" + vesion;%>
+            <h2>You are running JNuGet.Server <%=vesion%> </h2>
             <p>
                 Click <a href="nuget/nuget/Packages">here</a> to view your packages.
             </p>
