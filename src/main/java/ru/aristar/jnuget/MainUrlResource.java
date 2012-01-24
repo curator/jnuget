@@ -6,11 +6,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +132,7 @@ public class MainUrlResource {
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
             PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
-            return Response.ok(feed.getEntries().size(), MediaType.TEXT_PLAIN).build();
+            return Response.ok(Integer.toString(feed.getEntries().size()), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);
@@ -152,8 +149,13 @@ public class MainUrlResource {
             Version version = Version.parse(versionString);
             FilePackageSource packageSource = getPackageSource();
             NupkgFile nupkg = packageSource.getPackage(id, version);
+            if (nupkg == null) {
+                logger.warn("Пакет " + id + ":" + versionString + " не найден");
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             InputStream inputStream = nupkg.getStream();
             ResponseBuilder response = Response.ok((Object) inputStream);
+            response.header(HttpHeaders.CONTENT_LENGTH, nupkg.getSize());
             response.type(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = nupkg.getFileName();
             response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
@@ -179,10 +181,15 @@ public class MainUrlResource {
             @FormDataParam("package") InputStream inputStream) {
         try {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
+            ResponseBuilder response;
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
-                getPackageSource().pushPackage(nupkgFile);
+                boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
+                if (pushed) {
+                    response = Response.status(Response.Status.CREATED);
+                } else {
+                    response = Response.status(Response.Status.FORBIDDEN);
+                }
             }
-            ResponseBuilder response = Response.status(Response.Status.CREATED);
             return response.build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка помещения пакета в хранилище";
@@ -197,10 +204,15 @@ public class MainUrlResource {
     public Response postPackage(@PathParam("apiKey") String apiKey, InputStream inputStream) throws IOException {
         try {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
+            ResponseBuilder response;
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
-                getPackageSource().pushPackage(nupkgFile);
+                boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
+                if (pushed) {
+                    response = Response.ok();
+                } else {
+                    response = Response.status(Response.Status.FORBIDDEN);
+                }
             }
-            ResponseBuilder response = Response.ok();
             return response.build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка помещения пакета в хранилище";

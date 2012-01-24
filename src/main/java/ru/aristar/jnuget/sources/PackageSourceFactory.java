@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.Options;
 
 /**
@@ -25,6 +27,10 @@ public class PackageSourceFactory {
     public PackageSourceFactory() {
         this.options = Options.loadOptions();
     }
+    /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Возвращает экземпляр фабрики, или создает новый
@@ -50,6 +56,15 @@ public class PackageSourceFactory {
     public FilePackageSource getPackageSource() {
         String folderName = options.getFolderName();
         File file = new File(folderName);
-        return new FilePackageSource(file);
+        FilePackageSource packageSource = new FilePackageSource(file);
+        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
+        if (options.getApiKey() != null) {
+            packageSource.setPushStrategy(new ApiKeyPushStrategy(options.getApiKey()));
+            logger.info("Установлен ключ для фиксации пакетов");
+        } else {
+            packageSource.setPushStrategy(new SimplePushStrategy(false));
+            logger.warn("Используется стратегия фиксации по умолчанию");
+        }
+        return packageSource;
     }
 }

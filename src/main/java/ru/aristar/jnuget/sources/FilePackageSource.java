@@ -32,6 +32,10 @@ public class FilePackageSource implements PackageSource {
      * Логгер
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Стратегия помещения пакета в хранилище
+     */
+    private PushStrategy strategy;
 
     /**
      * Конструктор по умолчанию
@@ -42,8 +46,7 @@ public class FilePackageSource implements PackageSource {
     /**
      * @param rootFolder папка с пакетами
      */
-    public FilePackageSource(File rootFolder) {
-        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{rootFolder});
+    public FilePackageSource(File rootFolder) {        
         this.rootFolder = rootFolder;
     }
 
@@ -120,7 +123,7 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public NupkgFile getPackage(final String id, Version version) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
         for (NupkgFile nupkgFile : getPackages(filenameFilter)) {
             NuspecFile nuspec = nupkgFile.getNuspecFile();
             if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
@@ -183,7 +186,10 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public void pushPackage(NupkgFile nupkgFile) throws IOException {
+    public boolean pushPackage(NupkgFile nupkgFile, String apiKey) throws IOException {
+        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+            return false;
+        }
         // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
         File finalDest = new File(rootFolder, nupkgFile.getFileName());
@@ -197,6 +203,7 @@ public class FilePackageSource implements PackageSource {
             throw new IOException("Не удалось переименовать файл " + tmpDest
                     + " в " + finalDest);
         }
+        return true;
     }
 
     /**
@@ -206,7 +213,7 @@ public class FilePackageSource implements PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
-    private Collection<NugetPackageId> extractLastVersion(
+    protected Collection<NugetPackageId> extractLastVersion(
             Collection<NugetPackageId> list, boolean ignoreCase) {
         Map<String, NugetPackageId> map = new HashMap();
 
@@ -218,11 +225,24 @@ public class FilePackageSource implements PackageSource {
             } else { // Пакет уже попадался, сравниваем версии
                 Version saved = map.get(packageId).getVersion();
                 // Версия пакета новее, чем сохраненная
-                if (saved.compareTo(info.getVersion()) > 0) {
+                if (saved.compareTo(info.getVersion()) < 0) {
                     map.put(packageId, info);
                 }
             }
         }
         return map.values();
+    }
+
+    @Override
+    public PushStrategy getPushStrategy() {
+        if (strategy == null) {
+            strategy = new SimplePushStrategy(false);
+        }
+        return strategy;
+    }
+
+    @Override
+    public void setPushStrategy(PushStrategy strategy) {
+        this.strategy = strategy;
     }
 }

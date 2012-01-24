@@ -42,6 +42,23 @@ public class EntryPropertiesTest {
     }
 
     /**
+     * Проверка генерации информации о пакете с зависимостями
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testConvertNuspecWithDependencies() throws Exception {
+        //GIVEN
+        InputStream inputStream = this.getClass().getResourceAsStream("/Dependencies.nuspec.xml");
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        EntryProperties properties = new EntryProperties();
+        //WHEN        
+        properties.setNuspec(nuspecFile);    
+        //THEN
+        assertEquals("Зависимости пакета", "NLog:2.0.0.2000", properties.getDependencies());
+    }
+
+    /**
      * Тест распознавания свойств пакета (RSS) из XML
      *
      * @throws Exception ошибка в процессе теста

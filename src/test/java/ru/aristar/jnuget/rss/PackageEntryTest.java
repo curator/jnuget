@@ -25,7 +25,7 @@ public class PackageEntryTest {
         NupkgFile nupkgFile = new NupkgFile(inputStream, date);
         //WHEN
         NugetContext context = new NugetContext(new URI("http://localhost:8090/"));
-        PackageEntry entry = context.createPackageEntry(nupkgFile);       
+        PackageEntry entry = context.createPackageEntry(nupkgFile);
         //THEN
         assertEquals("Идентификатор пакета",
                 "http://localhost:8090/nuget/Packages(Id='NUnit',Version='2.5.9.10348')",

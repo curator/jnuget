@@ -83,6 +83,23 @@ public interface PackageSource {
      * Загружает пакет в хранилище
      *
      * @param file Файл для загрузки
+     * @param apiKey ключ (пароль для репозитория)
+     * @return true в случае, если пакет помещен в хранилище
+     * @throws IOException ошибка чтения/записи
      */
-    void pushPackage(NupkgFile file) throws IOException;
+    boolean pushPackage(NupkgFile file, String apiKey) throws IOException;
+
+    /**
+     * Возвращает стратегию помещения пакетов в базу данных
+     *
+     * @return стратегия помещения пакетов
+     */
+    PushStrategy getPushStrategy();
+
+    /**
+     * Устанавливает стратегию помещения пакетов в базу данных
+     *
+     * @param strategy стратегия помещения пакетов
+     */
+    void setPushStrategy(PushStrategy strategy);
 }

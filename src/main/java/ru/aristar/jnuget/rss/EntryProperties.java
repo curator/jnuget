@@ -17,6 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.Dependency;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -401,8 +402,7 @@ public class EntryProperties {
         this.releaseNotes = "";
         this.language = "";
         this.price = Double.valueOf(0);
-        //TODO сделать зависимости
-        this.dependencies = "";
+        this.dependencies = dependenciesListToString(nuspecFile.getDependencies());
         this.externalPackageUri = "";
         this.categories = "";
         this.copyright = nuspecFile.getCopyright();
@@ -653,5 +653,24 @@ public class EntryProperties {
         JAXBContext context = JAXBContext.newInstance(EntryProperties.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return (EntryProperties) unmarshaller.unmarshal(inputStream);
+    }
+
+    /**
+     * Преобразует список зависимостей в строку с разделителем ","
+     *
+     * @param dependencies список зависимостей
+     * @return строка
+     */
+    protected String dependenciesListToString(List<Dependency> dependencies) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(dependencies.get(0).toString());
+        for (int i = 1; i < dependencies.size(); i++) {
+            builder.append(", ");
+            builder.append(dependencies.get(i).toString());
+        }
+        return builder.toString();
     }
 }

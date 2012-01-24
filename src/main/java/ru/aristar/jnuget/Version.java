@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 public class Version implements Comparable<Version> {
 
     public static final String VERSION_FORMAT = "(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?(.*)";
-    
     /**
      * Выражение разбора
      */
@@ -77,15 +76,23 @@ public class Version implements Comparable<Version> {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Version)) {
+        if (getClass() != obj.getClass()) {
             return false;
-        } else {
-            Version o = (Version) obj;
-            return this.major == o.major
-                    && this.minor == o.minor
-                    && this.build == o.build
-                    && stringsNullOrEqual(this.revision, o.revision);
         }
+        final Version other = (Version) obj;
+        if (!Objects.equals(this.major, other.major)) {
+            return false;
+        }
+        if (!Objects.equals(this.minor, other.minor)) {
+            return false;
+        }
+        if (!Objects.equals(this.build, other.build)) {
+            return false;
+        }
+        if (!Objects.equals(this.revision, other.revision)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
