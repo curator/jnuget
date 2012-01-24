@@ -46,8 +46,7 @@ public class FilePackageSource implements PackageSource {
     /**
      * @param rootFolder папка с пакетами
      */
-    public FilePackageSource(File rootFolder) {
-        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{rootFolder});
+    public FilePackageSource(File rootFolder) {        
         this.rootFolder = rootFolder;
     }
 
