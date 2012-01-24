@@ -32,6 +32,10 @@ public class FilePackageSource implements PackageSource {
      * Логгер
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Стратегия помещения пакета в хранилище
+     */
+    private PushStrategy strategy;
 
     /**
      * Конструктор по умолчанию
@@ -183,7 +187,10 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public void pushPackage(NupkgFile nupkgFile) throws IOException {
+    public boolean pushPackage(NupkgFile nupkgFile, String apiKey) throws IOException {
+        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+            return false;
+        }
         // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
         File finalDest = new File(rootFolder, nupkgFile.getFileName());
@@ -197,6 +204,7 @@ public class FilePackageSource implements PackageSource {
             throw new IOException("Не удалось переименовать файл " + tmpDest
                     + " в " + finalDest);
         }
+        return true;
     }
 
     /**
@@ -224,5 +232,18 @@ public class FilePackageSource implements PackageSource {
             }
         }
         return map.values();
+    }
+
+    @Override
+    public PushStrategy getPushStrategy() {
+        if (strategy == null) {
+            strategy = new SimplePushStrategy(false);
+        }
+        return strategy;
+    }
+
+    @Override
+    public void setPushStrategy(PushStrategy strategy) {
+        this.strategy = strategy;
     }
 }

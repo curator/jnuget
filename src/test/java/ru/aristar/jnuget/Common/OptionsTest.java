@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.Common;
 
 import java.io.File;
+import java.io.InputStream;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -25,7 +26,24 @@ public class OptionsTest {
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
         assertEquals("Имя папки с пакетами", userHome + "/.nuget/", options.getFolderName());
+        assertNull("По умолчанию стратегия пула не задается", options.getApiKey());
         //TEARDOWN
         file.delete();
+    }
+
+    /**
+     * Проверка чтения настроек из XML файла
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseOptions() throws Exception {
+        //GIVEN
+        InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.test.config.xml");
+        //WHEN
+        Options options = Options.parse(inputStream);
+        //THEN
+        assertEquals("Каталог с пакетами", "TEST_FOLDER", options.getFolderName());
+        assertEquals("Ключ доступа", "TEST_API_KEY", options.getApiKey());
     }
 }

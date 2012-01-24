@@ -50,6 +50,10 @@ public class PackageSourceFactory {
     public FilePackageSource getPackageSource() {
         String folderName = options.getFolderName();
         File file = new File(folderName);
-        return new FilePackageSource(file);
+        FilePackageSource packageSource = new FilePackageSource(file);
+        if (options.getApiKey() != null) {
+            packageSource.setPushStrategy(new ApiKeyPushStrategy(options.getApiKey()));
+        }
+        return packageSource;
     }
 }

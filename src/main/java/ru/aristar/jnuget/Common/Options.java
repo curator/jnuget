@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author sviridov
  */
-@XmlRootElement(name="Options")
+@XmlRootElement(name = "Options")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Options {
 
@@ -38,14 +38,19 @@ public class Options {
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
      * Имя каталога с пакетами
-     */    
+     */
     private String folderName;
+    /**
+     * Ключ (пароль для публикации пакетов)
+     */
+    @XmlElement(name = "ApiKey")
+    private String apiKey;
 
     /**
      *
      * @return имя каталога с пакетами
      */
-    @XmlElement(name="FolderName")
+    @XmlElement(name = "FolderName")
     public String getFolderName() {
         return folderName;
     }
@@ -53,9 +58,25 @@ public class Options {
     /**
      *
      * @param folderName имя каталога с пакетами
-     */    
+     */
     public void setFolderName(String folderName) {
+        //TODO Необходимо изменить место, в котором производится подмена исходной строки
         this.folderName = OptionConverter.replaceVariables(folderName);
+    }
+
+    /**
+     *
+     * @return Ключ (пароль для публикации пакетов)
+     */
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    /**
+     * @param apiKey Ключ (пароль для публикации пакетов)
+     */
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     /**
