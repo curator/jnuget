@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  *
@@ -73,7 +74,7 @@ public class FilePackageSourceTest {
         if (testFolder != null && testFolder.exists()) {
             testFolder.delete();
         }
-
+        
     }
 
     /**
@@ -113,7 +114,7 @@ public class FilePackageSourceTest {
         Collection<NugetPackageId> result = filePackageSource.extractLastVersion(idList, true);
         NugetPackageId[] resArr = result.toArray(new NugetPackageId[0]);
         Arrays.sort(resArr, new Comparator<NugetPackageId>() {
-
+            
             @Override
             public int compare(NugetPackageId o1, NugetPackageId o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());
@@ -121,5 +122,25 @@ public class FilePackageSourceTest {
         });
         //THEN 
         assertArrayEquals("Должны возвращаться только последние версии", new NugetPackageId[]{lastA, lastB}, resArr);
+    }
+
+    /**
+     * Проверка помещения пакета в хранилище поверх существующего
+     * поведение на Windows и Linux различаются!
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testPushOverwrite() throws Exception {
+        //GIVEN
+        FilePackageSource packageSource = new FilePackageSource(testFolder);
+        packageSource.setPushStrategy(new SimplePushStrategy(true));
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        NupkgFile nupkgFile = new TempNupkgFile(inputStream);
+        //WHEN
+        boolean result = packageSource.pushPackage(nupkgFile, null);
+        //THEN
+        assertTrue("Файл перезаписался", result);
+        
     }
 }
