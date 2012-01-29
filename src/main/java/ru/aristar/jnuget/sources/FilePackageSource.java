@@ -46,8 +46,11 @@ public class FilePackageSource implements PackageSource {
     /**
      * @param rootFolder папка с пакетами
      */
-    public FilePackageSource(File rootFolder) {        
+    public FilePackageSource(File rootFolder) {
         this.rootFolder = rootFolder;
+        if (!rootFolder.exists()) {
+            rootFolder.mkdirs();
+        }
     }
 
     /**
