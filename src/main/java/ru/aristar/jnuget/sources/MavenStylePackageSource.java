@@ -1,9 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -130,18 +127,24 @@ public class MavenStylePackageSource implements PackageSource {
         return versionFolder;
     }
     
-    private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, FileNotFoundException{
-        /*File nuspecFile = new File(packageFolder, "nuspec.xml");
+    private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, FileNotFoundException, IOException{
+        File nuspecFile = new File(packageFolder, "nuspec.xml");
         JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
         Marshaller marshaller = context.createMarshaller();
-        FileChannel dest = new FileOutputStream(nuspecFile).getChannel();
-   
-        ByteBuffer buffer = ByteBuffer.wrap(marshaller.marshal(nuspec, null));
-        int write = dest.write(buffer);
-        if(write != buffer.capacity())
-            throw new IOException("Не удалось записать контрольную сумму в файл " + hashFile);
-        return true;*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        OutputStream stream = new FileOutputStream(nuspecFile);
+        try{
+            marshaller.marshal(nuspec, stream);
+        } catch (JAXBException ex){
+            throw new IOException("Не удалось записать nuspec-файл " + nuspecFile.toString(), ex);
+        }
+        
+        finally {
+            stream.flush();
+            stream.close();
+        }
+            
+        return true;
     }
     
     private boolean extractHash(File packageFolder, String hash) throws FileNotFoundException, IOException{
