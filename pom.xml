@@ -100,6 +100,12 @@
                         <extended>true</extended>
                         <logTimeZone>GMT</logTimeZone>
                     </requestLog>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>nuget.home</name>
+                            <value>${project.build.directory}/WorkFolder/</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>                
                 <executions>
                     <execution>

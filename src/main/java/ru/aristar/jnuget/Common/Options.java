@@ -24,6 +24,21 @@ import org.slf4j.LoggerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Options {
 
+    static {
+        String nugetHome = (String) System.getProperties().get("nuget.home");
+        String fileSeparator = (String) System.getProperties().get("file.separator");
+        if (nugetHome == null) {
+            nugetHome = System.getenv("NUGET_HOME");
+            if (nugetHome == null) {
+                nugetHome = (String) System.getProperties().get("user.home");
+                if (!nugetHome.endsWith(fileSeparator)) {
+                    nugetHome = nugetHome + fileSeparator;
+                }
+                nugetHome = nugetHome + ".nuget";
+            }
+            System.getProperties().setProperty("nuget.home", nugetHome);
+        }
+    }
     /**
      * Имя файла с настройками
      */
@@ -124,7 +139,11 @@ public class Options {
      * @return
      */
     public static final Options loadOptions() {
-        File file = new File(DEFAULT_OPTIONS_FILE_NAME);
+        String homeFolderName = (String) System.getProperties().get("nuget.home");
+        File homeFolder = new File(homeFolderName);
+        homeFolder.mkdirs();
+        File file = new File(homeFolder, DEFAULT_OPTIONS_FILE_NAME);
+        logger.info("Используется файл настройки: {}", new Object[]{file.getAbsolutePath()});
         //Попытка загрузки настроек
         if (file.exists()) {
             try {

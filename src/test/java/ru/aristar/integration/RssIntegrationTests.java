@@ -2,7 +2,9 @@ package ru.aristar.integration;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import java.io.File;
 import static org.junit.Assert.assertTrue;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -11,6 +13,15 @@ import org.junit.Test;
  * @author sviridov
  */
 public class RssIntegrationTests {
+
+    /**
+     * Инициализация настроек интеграционных тестов
+     */
+    @BeforeClass
+    public static void Setup() {
+        File testFolder = new File("target/WorkFolder/");
+        testFolder.mkdirs();
+    }
 
     /**
      * Корневой URL содержит страницу с общей информацией
