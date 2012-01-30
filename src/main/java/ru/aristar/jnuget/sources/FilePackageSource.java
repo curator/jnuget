@@ -54,6 +54,20 @@ public class FilePackageSource implements PackageSource {
     }
 
     /**
+     * Переименовывает файл с перезаписью существующего
+     *
+     * @param source источник
+     * @param dest назначение
+     * @return true, в случае успеха
+     */
+    protected boolean renameFile(File source, File dest) {
+        if (dest.exists()) {
+            dest.delete();
+        }
+        return source.renameTo(dest);
+    }
+
+    /**
      * Преобразует информацию в список файлов пакетов
      *
      * @param packages Информация о пакетах
@@ -202,9 +216,11 @@ public class FilePackageSource implements PackageSource {
             TempNupkgFile.fastChannelCopy(src, dest);
         }
         dest.close();
-        if (!tmpDest.renameTo(finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
+        if (finalDest.exists()) {
+            if (!renameFile(tmpDest, finalDest)) {
+                throw new IOException("Не удалось переименовать файл " + tmpDest
+                        + " в " + finalDest);
+            }
         }
         return true;
     }
