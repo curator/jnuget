@@ -216,11 +216,9 @@ public class FilePackageSource implements PackageSource {
             TempNupkgFile.fastChannelCopy(src, dest);
         }
         dest.close();
-        if (finalDest.exists()) {
-            if (!renameFile(tmpDest, finalDest)) {
-                throw new IOException("Не удалось переименовать файл " + tmpDest
-                        + " в " + finalDest);
-            }
+        if (!renameFile(tmpDest, finalDest)) {
+            throw new IOException("Не удалось переименовать файл " + tmpDest
+                    + " в " + finalDest);
         }
         return true;
     }
