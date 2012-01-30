@@ -151,46 +151,6 @@ public class MavenStylePackageSource implements PackageSource {
         return versionFolder;
     }
 
-    /**
-     * Извлекает спецификацию из пакета, записывает в виде отдельного файла
-     *
-     * @param packageFolder Папка назначения пакета
-     * @param nuspec Файл спецификации
-     * @return Удачно ли прошло извлечение
-     * @throws JAXBException Ошибка обработки XML файла спецификации
-     * @throws IOException Ошибка операций с файлом
-     */
-    private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, IOException {
-        File nuspecFile = new File(packageFolder, "nuspec.xml");
-        try (OutputStream outputStream = new FileOutputStream(nuspecFile)) {
-            nuspec.saveTo(outputStream);
-        }
-        return true;
-    }
-
-    /**
-     * Извлекает контрольную сумму пакета в виде отдельного файла
-     *
-     * @param packageFolder Папка назначения пакета
-     * @param hash Контрольная сумма пакета
-     * @return Удачно ли прошло извлечение
-     * @throws FileNotFoundException Файл назначения не найден
-     * @throws IOException Ошибка операций с файлом
-     */
-    private boolean extractHash(File packageFolder, String hash) throws FileNotFoundException, IOException {
-        File hashFile = new File(packageFolder, "hash.sha512");
-        ByteBuffer buffer;
-        int write;
-        try (FileChannel dest = new FileOutputStream(hashFile).getChannel()) {
-            buffer = ByteBuffer.wrap(hash.getBytes());
-            write = dest.write(buffer);
-        }
-        if (write != buffer.capacity()) {
-            throw new IOException("Не удалось записать контрольную сумму в файл " + hashFile);
-        }
-        return true;
-    }
-
     @Override
     public PushStrategy getPushStrategy() {
         if (strategy == null) {
