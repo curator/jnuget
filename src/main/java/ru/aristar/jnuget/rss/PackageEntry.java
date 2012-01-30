@@ -93,7 +93,7 @@ public class PackageEntry {
 
     public PackageEntry(NupkgFile nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), context);
-        this.getProperties().setPackageHash(nupkgFile.getHash());
+        this.getProperties().setPackageHash(nupkgFile.getHash().toString());
         this.getProperties().setPackageSize(nupkgFile.getSize());
         this.getProperties().setPublished(nupkgFile.getUpdated());
     }

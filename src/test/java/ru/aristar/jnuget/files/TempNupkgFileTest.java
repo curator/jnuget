@@ -24,6 +24,6 @@ public class TempNupkgFileTest {
         //THEN
         assertEquals("Хеш файла, созданного из потока", "kDPZtMu1BOZerHZvsbPnj7"
                 + "DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZj"
-                + "PRJA==", nupkgFile.getHash());
+                + "PRJA==", nupkgFile.getHash().toString());
     }
 }

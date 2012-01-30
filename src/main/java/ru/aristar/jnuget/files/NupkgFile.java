@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.activation.UnsupportedDataTypeException;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
 
@@ -66,7 +67,7 @@ public class NupkgFile {
         if (file != null) {
             return new FileInputStream(file);
         } else {
-            return null;
+            throw new UnsupportedDataTypeException("Файл с данными не установлен");
         }
     }
 
@@ -76,20 +77,22 @@ public class NupkgFile {
                 + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
     }
 
-    public String getHash() throws NoSuchAlgorithmException, IOException {
+    public Hash getHash() throws NoSuchAlgorithmException, IOException {
+        if (hash != null) {
+            return hash;
+        }
+
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         byte[] buffer = new byte[1024];
 
         InputStream inputStream = getStream();
-        if (inputStream == null) {
-            return null;
-        }
         int len = 0;
         while ((len = inputStream.read(buffer)) >= 0) {
             md.update(buffer, 0, len);
-        };
+        }
         byte[] mdbytes = md.digest();
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(mdbytes);
+        hash = new Hash(mdbytes);
+        return hash;
     }
 
     public Long getSize() {
@@ -105,6 +108,7 @@ public class NupkgFile {
         }
         return name.toLowerCase().endsWith(NupkgFile.DEFAULT_EXTENSION);
     }
+    private Hash hash;
     /**
      * Расширение по умолчанию
      */
