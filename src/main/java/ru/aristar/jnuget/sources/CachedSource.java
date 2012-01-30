@@ -10,29 +10,66 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NupkgFile;
 
 /**
+ * Класс, обеспечивающий промежуточное хранение кешированных результатов
+ * запросов
  *
  * @author sviridov
  */
 public class CachedSource implements PackageSource {
 
+    /**
+     * Исходное хранилище данных
+     */
     private PackageSource source;
+    /**
+     * Логгер
+     */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * @return Исходное хранилище данных
+     */
     public PackageSource getSource() {
         return source;
     }
 
+    /**
+     * @param source Исходное хранилище данных
+     */
     public void setSource(PackageSource source) {
         this.source = source;
     }
 
+    /**
+     * @param source Исходное хранилище данных
+     */
     public CachedSource(PackageSource source) {
         this.source = source;
     }
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CachedSource() {
     }
 
+    /**
+     * Очистка кеша
+     */
+    protected void clearCache() {
+        try {
+            JCS.getInstance("packages").clear();
+        } catch (CacheException e) {
+            logger.warn("Ошибка очистки кеша", e);
+        }
+    }
+
+    /**
+     * возвращаент сохраненный результат из кеша
+     *
+     * @param key ключ
+     * @return сохраненный результат
+     */
     private Object getValueFromCache(String key) {
         try {
             JCS cache = JCS.getInstance("packages");
@@ -43,6 +80,12 @@ public class CachedSource implements PackageSource {
         }
     }
 
+    /**
+     * Помещает значение в кеш
+     *
+     * @param key ключ
+     * @param object объект для сохранения
+     */
     private void putValueToCache(String key, Object object) {
         try {
             JCS cache = JCS.getInstance("packages");
@@ -101,36 +144,55 @@ public class CachedSource implements PackageSource {
 
     @Override
     public NupkgFile getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        final String cacheName = "package_last_" + id;
+        NupkgFile result = (NupkgFile) getValueFromCache(cacheName);
+        if (result == null) {
+            result = source.getLastVersionPackage(id);
+            putValueToCache(cacheName, result);
+        }
+        return result;
     }
 
     @Override
     public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (!ignoreCase) {
+            return getLastVersionPackage(id);
+        }
+        final String cacheName = "package_last_igc_" + id;
+        NupkgFile result = (NupkgFile) getValueFromCache(cacheName);
+        if (result == null) {
+            result = source.getLastVersionPackage(id, true);
+            putValueToCache(cacheName, result);
+        }
+        return result;
     }
 
     @Override
     public NupkgFile getPackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return source.getPackage(id, version);
     }
 
     @Override
     public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return source.getPackage(id, version, ignoreCase);
     }
 
     @Override
     public boolean pushPackage(NupkgFile file, String apiKey) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        boolean result = source.pushPackage(file, apiKey);
+        if (result) {
+            clearCache();
+        }
+        return result;
     }
 
     @Override
     public PushStrategy getPushStrategy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return source.getPushStrategy();
     }
 
     @Override
     public void setPushStrategy(PushStrategy strategy) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        source.setPushStrategy(strategy);
     }
 }
