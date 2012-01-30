@@ -5,7 +5,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -94,27 +96,41 @@ public class MavenStylePackageSource implements PackageSource {
 
     @Override
     public boolean pushPackage(NupkgFile nupkgFile, String apiKey) throws IOException {
-        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
-            return false;
-        }
-        File packageFolder = verifyPackageDestination(rootFolder, nupkgFile.getNuspecFile());
-        // Открывает временный файл, копирует его в место постоянного хранения.
-        File tmpDest = new File(packageFolder, nupkgFile.getFileName() + ".tmp");
-        File finalDest = new File(packageFolder, nupkgFile.getFileName());
-        FileChannel dest;
-        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
-            dest = new FileOutputStream(tmpDest).getChannel();
-            TempNupkgFile.fastChannelCopy(src, dest);
-        }
-        dest.close();
-        // TODO добавить распаковку nuspec и контрольной суммы.
-        if (!tmpDest.renameTo(finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
+        try {
+            if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+                return false;
+            }
+            File packageFolder = verifyPackageDestination(rootFolder, nupkgFile.getNuspecFile());
+            // Открывает временный файл, копирует его в место постоянного хранения.
+            File tmpDest = new File(packageFolder, nupkgFile.getFileName() + ".tmp");
+            File finalDest = new File(packageFolder, nupkgFile.getFileName());
+            FileChannel dest;
+            try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
+                dest = new FileOutputStream(tmpDest).getChannel();
+                TempNupkgFile.fastChannelCopy(src, dest);
+            }
+            dest.close();
+            if (!tmpDest.renameTo(finalDest)) {
+                throw new IOException("Не удалось переименовать файл " + tmpDest
+                        + " в " + finalDest);
+            }
+            if (!(extractHash(packageFolder, nupkgFile.getHash())
+                    && extractNuspec(packageFolder, nupkgFile.getNuspecFile()))) {
+                throw new IOException("Не удалось распаковать хэш или файл спецификации.");
+            }
+        } catch (JAXBException | NoSuchAlgorithmException ex) {
+            java.util.logging.Logger.getLogger(MavenStylePackageSource.class.getName()).log(Level.WARNING, null, ex);
         }
         return true;
     }
 
+    /**
+     * Проверяет наличие папки для хранения пакета, создает ее в случае необходимости
+     *
+     * @param rootFolder Корневая папка хранилища
+     * @param source Файл спецификации
+     * @return Папка назначения для пакета
+     */
     private File verifyPackageDestination(File rootFolder, NuspecFile source) {
         String id = source.getId();
         Version version = source.getVersion();
@@ -129,6 +145,15 @@ public class MavenStylePackageSource implements PackageSource {
         return versionFolder;
     }
 
+    /**
+     * Извлекает спецификацию из пакета, записывает в виде отдельного файла
+     *
+     * @param packageFolder Папка назначения пакета
+     * @param nuspec Файл спецификации
+     * @return Удачно ли прошло извлечение
+     * @throws JAXBException Ошибка обработки XML файла спецификации
+     * @throws IOException Ошибка операций с файлом
+     */
     private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, IOException {
         File nuspecFile = new File(packageFolder, "nuspec.xml");
         try (OutputStream outputStream = new FileOutputStream(nuspecFile)) {
@@ -137,11 +162,23 @@ public class MavenStylePackageSource implements PackageSource {
         return true;
     }
 
+    /**
+     * Извлекает контрольную сумму пакета в виде отдельного файла
+     *
+     * @param packageFolder Папка назначения пакета
+     * @param hash Контрольная сумма пакета
+     * @return Удачно ли прошло извлечение
+     * @throws FileNotFoundException Файл назначения не найден
+     * @throws IOException Ошибка операций с файлом
+     */
     private boolean extractHash(File packageFolder, String hash) throws FileNotFoundException, IOException {
         File hashFile = new File(packageFolder, "hash.sha512");
-        FileChannel dest = new FileOutputStream(hashFile).getChannel();
-        ByteBuffer buffer = ByteBuffer.wrap(hash.getBytes());
-        int write = dest.write(buffer);
+        ByteBuffer buffer;
+        int write;
+        try (FileChannel dest = new FileOutputStream(hashFile).getChannel()) {
+            buffer = ByteBuffer.wrap(hash.getBytes());
+            write = dest.write(buffer);
+        }
         if (write != buffer.capacity()) {
             throw new IOException("Не удалось записать контрольную сумму в файл " + hashFile);
         }
