@@ -119,41 +119,32 @@ public class MavenStylePackageSource implements PackageSource {
         String id = source.getId();
         Version version = source.getVersion();
         File packageFolder = new File(rootFolder, id.toLowerCase());
-        if(!packageFolder.exists())
+        if (!packageFolder.exists()) {
             packageFolder.mkdir();
+        }
         File versionFolder = new File(packageFolder, version.toString());
-        if(!versionFolder.exists())
+        if (!versionFolder.exists()) {
             versionFolder.mkdir();
+        }
         return versionFolder;
     }
-    
-    private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, FileNotFoundException, IOException{
+
+    private boolean extractNuspec(File packageFolder, NuspecFile nuspec) throws JAXBException, IOException {
         File nuspecFile = new File(packageFolder, "nuspec.xml");
-        JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        OutputStream stream = new FileOutputStream(nuspecFile);
-        try{
-            marshaller.marshal(nuspec, stream);
-        } catch (JAXBException ex){
-            throw new IOException("Не удалось записать nuspec-файл " + nuspecFile.toString(), ex);
+        try (OutputStream outputStream = new FileOutputStream(nuspecFile)) {
+            nuspec.saveTo(outputStream);
         }
-        
-        finally {
-            stream.flush();
-            stream.close();
-        }
-            
         return true;
     }
-    
-    private boolean extractHash(File packageFolder, String hash) throws FileNotFoundException, IOException{
+
+    private boolean extractHash(File packageFolder, String hash) throws FileNotFoundException, IOException {
         File hashFile = new File(packageFolder, "hash.sha512");
         FileChannel dest = new FileOutputStream(hashFile).getChannel();
         ByteBuffer buffer = ByteBuffer.wrap(hash.getBytes());
         int write = dest.write(buffer);
-        if(write != buffer.capacity())
+        if (write != buffer.capacity()) {
             throw new IOException("Не удалось записать контрольную сумму в файл " + hashFile);
+        }
         return true;
     }
 
