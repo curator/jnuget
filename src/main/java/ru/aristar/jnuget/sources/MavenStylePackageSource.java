@@ -1,7 +1,8 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.*;
-import java.nio.ByteBuffer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -21,6 +22,14 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  * @author unlocker
  */
 public class MavenStylePackageSource implements PackageSource {
+    /**
+     * Название файла с контрольной суммой
+     */
+    public static final String HASH_FILE = "hash.sha512";
+    /**
+     * Название извлеченного файла nuspec
+     */
+    public static final String NUSPEC_FILE = "nuspec.xml";
 
     /**
      * Корневая папка, в которой расположены пакеты
@@ -113,13 +122,13 @@ public class MavenStylePackageSource implements PackageSource {
         }
         try {
             // Сохраняем nuspec
-            File nuspecFile = new File(packageFolder, "nuspec.xml");
+            File nuspecFile = new File(packageFolder, NUSPEC_FILE);
             try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
                 nupkgFile.getNuspecFile().saveTo(fileOutputStream);
             }
 
             // Сохраняем контрольную сумму
-            File hashFile = new File(packageFolder, "hash.sha512");
+            File hashFile = new File(packageFolder, HASH_FILE);
             try (FileOutputStream output = new FileOutputStream(hashFile)) {
                 nupkgFile.getHash().saveTo(output);
             }
