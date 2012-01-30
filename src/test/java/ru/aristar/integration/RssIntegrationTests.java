@@ -29,7 +29,7 @@ public class RssIntegrationTests {
      * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testDoGet() throws Exception {
+    public void testGetRootPage() throws Exception {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
@@ -51,5 +51,24 @@ public class RssIntegrationTests {
         WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Packages");
         //THEN
         assertTrue(response.getText().contains("type=\"text\">Packages<"));
+    }
+
+    /**
+     * Тест получения корневого XML
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetMainXml() throws Exception {
+        //GIVEN
+        WebConversation webConversation = new WebConversation();
+        //WHEN
+        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget");
+        //THEN
+        assertTrue(response.getText().contains("xml:base=\"http://localhost:8088/nuget/nuget\""));
+        assertTrue(response.getText().contains("title>Default<"));
+        assertTrue(response.getText().contains("href=\"Packages\""));
+        assertTrue(response.getText().contains("title>Packages<"));
+
     }
 }
