@@ -1,7 +1,7 @@
 package ru.aristar.jnuget.sources;
 
 import java.util.Objects;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  * Стратегия публикации пакетов, основанная на проверке ключа
@@ -32,7 +32,7 @@ public class ApiKeyPushStrategy implements PushStrategy {
 
 
     @Override
-    public boolean canPush(NupkgFile nupkgFile, String apiKey) {
+    public boolean canPush(ClassicNupkg nupkgFile, String apiKey) {
         return Objects.equals(this.apiKey, apiKey);
     }
 }

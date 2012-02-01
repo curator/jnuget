@@ -12,7 +12,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
@@ -61,47 +61,47 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages() {
+    public Collection<ClassicNupkg> getPackages() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<NupkgFile> getLastVersionPackages() {
+    public Collection<ClassicNupkg> getLastVersionPackages() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id) {
+    public Collection<ClassicNupkg> getPackages(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
+    public Collection<ClassicNupkg> getPackages(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id) {
+    public ClassicNupkg getLastVersionPackage(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+    public ClassicNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version) {
+    public ClassicNupkg getPackage(String id, Version version) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+    public ClassicNupkg getPackage(String id, Version version, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public boolean pushPackage(NupkgFile nupkgFile, String apiKey) throws IOException {
+    public boolean pushPackage(ClassicNupkg nupkgFile, String apiKey) throws IOException {
 
         if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
             return false;

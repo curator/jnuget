@@ -14,13 +14,13 @@ import org.xml.sax.SAXException;
  *
  * @author sviridov
  */
-public class NupkgFile {
+public class ClassicNupkg implements Nupkg {
 
-    private NuspecFile nuspecFile;
-    private Date updated;
+    protected NuspecFile nuspecFile;
+    protected Date updated;
     protected File file;
 
-    public NupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
+    public ClassicNupkg(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
         this.updated = updated;
         try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
@@ -42,27 +42,22 @@ public class NupkgFile {
         }
     }
 
-    public NupkgFile(File file) throws JAXBException, IOException, SAXException {
+    public ClassicNupkg(File file) throws JAXBException, IOException, SAXException {
         this(new FileInputStream(file), new Date(file.lastModified()));
         this.file = file;
     }
 
+    @Override
     public NuspecFile getNuspecFile() {
         return nuspecFile;
     }
 
-    public void setNuspecFile(NuspecFile nuspecFile) {
-        this.nuspecFile = nuspecFile;
-    }
-
+    @Override
     public Date getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
+    @Override
     public InputStream getStream() throws IOException {
         if (file != null) {
             return new FileInputStream(file);
@@ -71,12 +66,14 @@ public class NupkgFile {
         }
     }
 
+    @Override
     public String getFileName() {
         return getNuspecFile().
                 getId() + "."
                 + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
     }
 
+    @Override
     public Hash getHash() throws NoSuchAlgorithmException, IOException {
         if (hash != null) {
             return hash;
@@ -95,6 +92,7 @@ public class NupkgFile {
         return hash;
     }
 
+    @Override
     public Long getSize() {
         if (file == null) {
             return null;
@@ -106,11 +104,7 @@ public class NupkgFile {
         if (name == null) {
             return false;
         }
-        return name.toLowerCase().endsWith(NupkgFile.DEFAULT_EXTENSION);
+        return name.toLowerCase().endsWith(ClassicNupkg.DEFAULT_EXTENSION);
     }
     private Hash hash;
-    /**
-     * Расширение по умолчанию
-     */
-    public static final String DEFAULT_EXTENSION = ".nupkg";
 }

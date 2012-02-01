@@ -3,7 +3,7 @@ package ru.aristar.jnuget.sources;
 import java.io.IOException;
 import java.util.Collection;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  * Контракт источника пакетов
@@ -17,14 +17,14 @@ public interface PackageSource {
      *
      * @return коллекция файлов пакетов
      */
-    Collection<NupkgFile> getPackages();
+    Collection<ClassicNupkg> getPackages();
 
     /**
      * Возвращает список пакетов, содержащий только последние версии
      *
      * @return коллекция файлов пакетов
      */
-    Collection<NupkgFile> getLastVersionPackages();
+    Collection<ClassicNupkg> getLastVersionPackages();
 
     /**
      * Возвращает пакеты с указанным идентификатором
@@ -32,7 +32,7 @@ public interface PackageSource {
      * @param id
      * @return коллекция файлов пакетов
      */
-    Collection<NupkgFile> getPackages(String id);
+    Collection<ClassicNupkg> getPackages(String id);
 
     /**
      * Возвращает список пакетов с указанным идентификатором
@@ -41,7 +41,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return коллекция файлов пакетов
      */
-    Collection<NupkgFile> getPackages(String id, boolean ignoreCase);
+    Collection<ClassicNupkg> getPackages(String id, boolean ignoreCase);
 
     /**
      * Возвращает последнюю версию указанного пакета
@@ -49,7 +49,7 @@ public interface PackageSource {
      * @param id идентификатор пакета
      * @return файл пакета
      */
-    NupkgFile getLastVersionPackage(String id);
+    ClassicNupkg getLastVersionPackage(String id);
 
     /**
      * Возвращает последнюю версию указанного пакета
@@ -58,7 +58,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return файл пакета
      */
-    NupkgFile getLastVersionPackage(String id, boolean ignoreCase);
+    ClassicNupkg getLastVersionPackage(String id, boolean ignoreCase);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -67,7 +67,7 @@ public interface PackageSource {
      * @param version версия пакета
      * @return файл пакета
      */
-    NupkgFile getPackage(String id, Version version);
+    ClassicNupkg getPackage(String id, Version version);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -77,7 +77,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return файл пакета
      */
-    NupkgFile getPackage(String id, Version version, boolean ignoreCase);
+    ClassicNupkg getPackage(String id, Version version, boolean ignoreCase);
 
     /**
      * Загружает пакет в хранилище
@@ -87,7 +87,7 @@ public interface PackageSource {
      * @return true в случае, если пакет помещен в хранилище
      * @throws IOException ошибка чтения/записи
      */
-    boolean pushPackage(NupkgFile file, String apiKey) throws IOException;
+    boolean pushPackage(ClassicNupkg file, String apiKey) throws IOException;
 
     /**
      * Возвращает стратегию помещения пакетов в базу данных

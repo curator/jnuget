@@ -9,6 +9,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Date;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
 
@@ -16,7 +17,7 @@ import org.xml.sax.SAXException;
  *
  * @author sviridov
  */
-public class TempNupkgFile extends NupkgFile implements AutoCloseable {
+public class TempNupkgFile extends ClassicNupkg implements AutoCloseable {
 
     /**
      * Копирует данные из одного канала в другой
@@ -61,10 +62,29 @@ public class TempNupkgFile extends NupkgFile implements AutoCloseable {
 
     public TempNupkgFile(InputStream inputStream) throws IOException, JAXBException, SAXException {
         super(createTemporaryFile(inputStream));
+        this.updated = new Date();
+    }
+
+    public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
+        this(inputStream);
+        this.updated = updated;
+    }
+
+    @Override
+    public Date getUpdated() {
+        return updated;
     }
 
     @Override
     public void close() throws Exception {
         file.delete();
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public void setNuspecFile(NuspecFile nuspecFile) {
+        this.nuspecFile = nuspecFile;
     }
 }

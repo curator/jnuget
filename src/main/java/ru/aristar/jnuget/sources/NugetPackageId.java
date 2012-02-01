@@ -3,7 +3,7 @@ package ru.aristar.jnuget.sources;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  * Информация о пакете.
@@ -56,14 +56,14 @@ public class NugetPackageId {
 
     @Override
     public String toString() {
-        return String.format("%s.%s%s", id, version, NupkgFile.DEFAULT_EXTENSION);
+        return String.format("%s.%s%s", id, version, ClassicNupkg.DEFAULT_EXTENSION);
     }
          
     /**
      * Выражение разбора строки имени файла
      */
     private static Pattern parser =
-            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + NupkgFile.DEFAULT_EXTENSION + "$");
+            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + ClassicNupkg.DEFAULT_EXTENSION + "$");
 
     /**
      * Разбирает строку названия файла пакета

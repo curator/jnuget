@@ -1,6 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  * Простая стратегия публикации с флагом разрешить/запретить
@@ -42,7 +42,7 @@ public class SimplePushStrategy implements PushStrategy {
     }
 
     @Override
-    public boolean canPush(NupkgFile nupkgFile, String apiKey) {
+    public boolean canPush(ClassicNupkg nupkgFile, String apiKey) {
         return isAllow();
     }
 }

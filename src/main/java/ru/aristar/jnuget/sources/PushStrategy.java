@@ -1,6 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  *
@@ -15,5 +15,5 @@ public interface PushStrategy {
      * @param apiKey ключ (пароль)
      * @return true, если разрешено поместить пакет в хранилище
      */
-    boolean canPush(NupkgFile nupkgFile, String apiKey);
+    boolean canPush(ClassicNupkg nupkgFile, String apiKey);
 }

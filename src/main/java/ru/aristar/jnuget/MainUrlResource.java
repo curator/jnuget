@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
@@ -95,7 +95,7 @@ public class MainUrlResource {
             FilePackageSource packageSource = getPackageSource();
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
-            Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
+            Collection<ClassicNupkg> files = queryExecutor.execQuery(packageSource, filter);
             logger.debug("Получено {} пакетов", new Object[]{files.size()});
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
@@ -127,7 +127,7 @@ public class MainUrlResource {
             FilePackageSource packageSource = getPackageSource();
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
-            Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
+            Collection<ClassicNupkg> files = queryExecutor.execQuery(packageSource, filter);
             logger.debug("Получено {} пакетов", new Object[]{files.size()});
             //Преобразовать пакеты в RSS
             NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
@@ -148,7 +148,7 @@ public class MainUrlResource {
         try {
             Version version = Version.parse(versionString);
             FilePackageSource packageSource = getPackageSource();
-            NupkgFile nupkg = packageSource.getPackage(id, version);
+            ClassicNupkg nupkg = packageSource.getPackage(id, version);
             if (nupkg == null) {
                 logger.warn("Пакет " + id + ":" + versionString + " не найден");
                 return Response.status(Response.Status.NOT_FOUND).build();

@@ -9,7 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 
 /**
  *
@@ -63,7 +63,7 @@ public class CachedSourceTest {
         FilePackageSource source = new FilePackageSource(testFolder);
         CachedSource packageSource = new CachedSource(source);
         //WHEN
-        Collection<NupkgFile> packages = packageSource.getPackages();
+        Collection<ClassicNupkg> packages = packageSource.getPackages();
         //THEN
         assertEquals("Прочитано файлов", 1, packages.size());
         assertEquals("Идентификатор пакета", "NUnit", packages.iterator().next().getNuspecFile().getId());

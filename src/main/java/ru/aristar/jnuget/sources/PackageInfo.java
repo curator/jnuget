@@ -2,7 +2,7 @@ package ru.aristar.jnuget.sources;
 
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Hash;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -31,7 +31,7 @@ public interface PackageInfo {
      *
      * @return Тело пакета.
      */
-    NupkgFile getPackage();
+    ClassicNupkg getPackage();
 
     /**
      * Спецификация.

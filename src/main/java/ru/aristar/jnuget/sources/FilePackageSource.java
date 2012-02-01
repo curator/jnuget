@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
@@ -73,11 +73,11 @@ public class FilePackageSource implements PackageSource {
      * @param packages Информация о пакетах
      * @return Список файлов пакетов
      */
-    private Collection<NupkgFile> convertIdsToPackages(Collection<NugetPackageId> packages) {
-        ArrayList<NupkgFile> nupkgFiles = new ArrayList<>();
+    private Collection<ClassicNupkg> convertIdsToPackages(Collection<NugetPackageId> packages) {
+        ArrayList<ClassicNupkg> nupkgFiles = new ArrayList<>();
         for (NugetPackageId pack : packages) {
             try {
-                NupkgFile current = convertIdToPackage(pack);
+                ClassicNupkg current = convertIdToPackage(pack);
                 nupkgFiles.add(current);
             } catch (JAXBException | IOException | SAXException e) {
                 logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
@@ -95,10 +95,10 @@ public class FilePackageSource implements PackageSource {
      * @throws IOException ошибка чтения файла с диска
      * @throws SAXException ошибка изменения пространства имен
      */
-    private NupkgFile convertIdToPackage(NugetPackageId pack)
+    private ClassicNupkg convertIdToPackage(NugetPackageId pack)
             throws JAXBException, IOException, SAXException {
         File file = new File(rootFolder, pack.toString());
-        NupkgFile nupkgFile = new NupkgFile(file);
+        ClassicNupkg nupkgFile = new ClassicNupkg(file);
         return nupkgFile;
     }
 
@@ -127,21 +127,21 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return список пакетов
      */
-    private Collection<NupkgFile> getPackages(FilenameFilter filter) {
+    private Collection<ClassicNupkg> getPackages(FilenameFilter filter) {
         List<NugetPackageId> packages = getPackageList(filter);
         return convertIdsToPackages(packages);
     }
 
     @Override
-    public Collection<NupkgFile> getPackages() {
+    public Collection<ClassicNupkg> getPackages() {
         FilenameFilter filenameFilter = new NupkgFileExtensionFilter();
         return getPackages(filenameFilter);
     }
 
     @Override
-    public NupkgFile getPackage(final String id, Version version) {
+    public ClassicNupkg getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
-        for (NupkgFile nupkgFile : getPackages(filenameFilter)) {
+        for (ClassicNupkg nupkgFile : getPackages(filenameFilter)) {
             NuspecFile nuspec = nupkgFile.getNuspecFile();
             if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
                 return nupkgFile;
@@ -151,31 +151,31 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getLastVersionPackages() {
+    public Collection<ClassicNupkg> getLastVersionPackages() {
         List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
         Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
         return convertIdsToPackages(lastVersions);
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id) {
+    public Collection<ClassicNupkg> getPackages(String id) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
         return getPackages(filenameFilter);
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id) {
+    public ClassicNupkg getLastVersionPackage(String id) {
         return getLastVersionPackage(id, true);
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
+    public Collection<ClassicNupkg> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         return getPackages(filenameFilter);
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+    public ClassicNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
         Collection<NugetPackageId> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
         if (lastVersion.isEmpty()) {
@@ -191,9 +191,9 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+    public ClassicNupkg getPackage(String id, Version version, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        for (NupkgFile nupkgFile : getPackages(filenameFilter)) {
+        for (ClassicNupkg nupkgFile : getPackages(filenameFilter)) {
             NuspecFile nuspec = nupkgFile.getNuspecFile();
             if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
                 return nupkgFile;
@@ -203,7 +203,7 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public boolean pushPackage(NupkgFile nupkgFile, String apiKey) throws IOException {
+    public boolean pushPackage(ClassicNupkg nupkgFile, String apiKey) throws IOException {
         if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
             return false;
         }
