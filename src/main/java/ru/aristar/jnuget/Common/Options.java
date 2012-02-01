@@ -147,6 +147,7 @@ public class Options {
         //Попытка загрузки настроек
         if (file.exists()) {
             try {
+                logger.info("Загрузка настроек из файла {}", new Object[]{file.getAbsolutePath()});
                 return Options.parse(file);
             } catch (JAXBException | FileNotFoundException e) {
                 logger.warn("Ошибка загрузки настроек", e);
