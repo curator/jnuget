@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.*;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import ru.aristar.jnuget.files.NupkgFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.PackageFeed;
-import ru.aristar.jnuget.sources.FilePackageSource;
+import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
@@ -92,7 +92,7 @@ public class MainUrlResource {
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             //Получить источник пакетов
-            FilePackageSource packageSource = getPackageSource();
+            PackageSource packageSource = getPackageSource();
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
             Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
@@ -124,7 +124,7 @@ public class MainUrlResource {
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             //Получить источник пакетов
-            FilePackageSource packageSource = getPackageSource();
+            PackageSource packageSource = getPackageSource();
             //Выбрать пакеты по запросу
             QueryExecutor queryExecutor = new QueryExecutor();
             Collection<NupkgFile> files = queryExecutor.execQuery(packageSource, filter);
@@ -147,7 +147,7 @@ public class MainUrlResource {
             @PathParam("version") String versionString) {
         try {
             Version version = Version.parse(versionString);
-            FilePackageSource packageSource = getPackageSource();
+            PackageSource packageSource = getPackageSource();
             NupkgFile nupkg = packageSource.getPackage(id, version);
             if (nupkg == null) {
                 logger.warn("Пакет " + id + ":" + versionString + " не найден");
@@ -231,7 +231,7 @@ public class MainUrlResource {
         return response.build();
     }
 
-    private FilePackageSource getPackageSource() {
+    private PackageSource getPackageSource() {
         return PackageSourceFactory.getInstance().getPackageSource();
     }
 }

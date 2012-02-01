@@ -80,8 +80,7 @@ public class Options {
      * @param folderName имя каталога с пакетами
      */
     public void setFolderName(String folderName) {
-        //TODO Необходимо изменить место, в котором производится подмена исходной строки
-        this.folderName = OptionConverter.replaceVariables(folderName);
+        this.folderName = folderName;
     }
 
     /**
