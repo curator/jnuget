@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
@@ -79,7 +80,7 @@ public class FilePackageSource implements PackageSource {
             try {
                 ClassicNupkg current = convertIdToPackage(pack);
                 nupkgFiles.add(current);
-            } catch (JAXBException | IOException | SAXException e) {
+            } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
                 logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
             }
         }
@@ -94,9 +95,10 @@ public class FilePackageSource implements PackageSource {
      * @throws JAXBException ошибка разбора XML
      * @throws IOException ошибка чтения файла с диска
      * @throws SAXException ошибка изменения пространства имен
+     * @throws NugetFormatException ошибка формата пакета 
      */
     private ClassicNupkg convertIdToPackage(NugetPackageId pack)
-            throws JAXBException, IOException, SAXException {
+            throws JAXBException, IOException, SAXException, NugetFormatException {
         File file = new File(rootFolder, pack.toString());
         ClassicNupkg nupkgFile = new ClassicNupkg(file);
         return nupkgFile;
@@ -184,7 +186,7 @@ public class FilePackageSource implements PackageSource {
         NugetPackageId packageId = lastVersion.iterator().next();
         try {
             return convertIdToPackage(packageId);
-        } catch (JAXBException | IOException | SAXException e) {
+        } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
             logger.warn("Ошибка чтения архивного файла пакета " + packageId, e);
             return null;
         }

@@ -1,10 +1,10 @@
-package ru.aristar.jnuget.sources;
+package ru.aristar.jnuget.files;
 
 /**
  * Исключение в разборе формата.
  * @author Unlocker
  */
-class NugetFormatException extends Exception {
+public class NugetFormatException extends Exception {
 
     public NugetFormatException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);

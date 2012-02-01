@@ -4,11 +4,14 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.activation.UnsupportedDataTypeException;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
+import ru.aristar.jnuget.Version;
 
 /**
  *
@@ -19,32 +22,13 @@ public class ClassicNupkg implements Nupkg {
     protected NuspecFile nuspecFile;
     protected Date updated;
     protected File file;
+    protected Version version;
+    protected String id;
 
-    public ClassicNupkg(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
-        this.updated = updated;
-        try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-            ZipEntry entry;
-            loop:
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (!entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION)) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while ((len = zipInputStream.read(buffer)) >= 0) {
-                        outputStream.write(buffer, 0, len);
-                    }
-                    outputStream.flush();
-                    outputStream.close();
-                    nuspecFile = NuspecFile.Parse(outputStream.toByteArray());
-                    break loop;
-                }
-            }
-        }
-    }
-
-    public ClassicNupkg(File file) throws JAXBException, IOException, SAXException {
-        this(new FileInputStream(file), new Date(file.lastModified()));
+    public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
         this.file = file;
+        this.updated = new Date(file.lastModified());
+        parse(file.getName());
     }
 
     @Override
@@ -107,4 +91,33 @@ public class ClassicNupkg implements Nupkg {
         return name.toLowerCase().endsWith(ClassicNupkg.DEFAULT_EXTENSION);
     }
     private Hash hash;
+    
+             
+    /**
+     * Выражение разбора строки имени файла
+     */
+    private static Pattern parser =
+            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + ClassicNupkg.DEFAULT_EXTENSION + "$");
+
+    /**
+     * Разбирает строку названия файла пакета
+     * @param filename название файла
+     * @throws NugetFormatException некорректный формат имени файла
+     */
+    private void parse(String filename) throws NugetFormatException {
+        if (filename == null || filename.isEmpty()) {
+            throw new NugetFormatException("Неправильный формат строки " + filename);
+        }
+        Matcher matcher = parser.matcher(filename);
+        if (!matcher.matches()) {
+            throw new NugetFormatException("Неправильный формат строки " + filename);
+        } else {
+            try {
+                id = matcher.group(1);
+                version = Version.parse(matcher.group(2));
+            } catch (Exception ex) {
+                throw new NugetFormatException("Неправильный формат строки", ex);
+            }
+        }
+    }
 }

@@ -60,13 +60,12 @@ public class TempNupkgFile extends ClassicNupkg implements AutoCloseable {
         return file;
     }
 
-    public TempNupkgFile(InputStream inputStream) throws IOException, JAXBException, SAXException {
-        super(createTemporaryFile(inputStream));
-        this.updated = new Date();
+    public TempNupkgFile(InputStream inputStream) throws IOException, JAXBException, SAXException, NugetFormatException {
+        this(inputStream, new Date());
     }
 
-    public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException {
-        this(inputStream);
+    public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException, NugetFormatException {
+        super(createTemporaryFile(inputStream));
         this.updated = updated;
     }
 

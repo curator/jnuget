@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import static ru.aristar.common.TestHelper.assertOneOfAreEquals;
 import ru.aristar.jnuget.NugetContext;
-import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
