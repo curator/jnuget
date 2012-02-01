@@ -25,7 +25,8 @@ public class OptionsTest {
         Options options = Options.loadOptions();
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
-        assertEquals("Имя папки с пакетами", userHome + "/.nuget/Packages/", options.getFolderName());
+        String except = (userHome + "/.nuget/Packages/").replaceAll("\\\\", "/");
+        assertEquals("Имя папки с пакетами", except, options.getFolderName().replaceAll("\\\\", "/"));
         assertNull("По умолчанию стратегия пула не задается", options.getApiKey());
         //TEARDOWN
         file.delete();
