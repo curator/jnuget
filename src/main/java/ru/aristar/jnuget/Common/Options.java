@@ -25,6 +25,26 @@ import org.slf4j.LoggerFactory;
 public class Options {
 
     /**
+     * Если установлено свойство Java машины nuget.home - используется оно,
+     * иначе смотрим переменную окружения NUGET_HOME, иначе используем домашнюю
+     * папку текущего пользователя
+     */
+    static {
+        String nugetHome = (String) System.getProperties().get("nuget.home");
+        String fileSeparator = (String) System.getProperties().get("file.separator");
+        if (nugetHome == null) {
+            nugetHome = System.getenv("NUGET_HOME");
+            if (nugetHome == null) {
+                nugetHome = (String) System.getProperties().get("user.home");
+                if (!nugetHome.endsWith(fileSeparator)) {
+                    nugetHome = nugetHome + fileSeparator;
+                }
+                nugetHome = nugetHome + ".nuget";
+            }
+            System.getProperties().setProperty("nuget.home", nugetHome);
+        }
+    }
+    /**
      * Имя файла с настройками
      */
     public static final String DEFAULT_OPTIONS_FILE_NAME = "jnuget.config.xml";
@@ -124,13 +144,17 @@ public class Options {
      * @return
      */
     public static final Options loadOptions() {
-        File file = new File(DEFAULT_OPTIONS_FILE_NAME);
+        String homeFolderName = (String) System.getProperties().get("nuget.home");
+        File homeFolder = new File(homeFolderName);
+        homeFolder.mkdirs();
+        File file = new File(homeFolder, DEFAULT_OPTIONS_FILE_NAME);
         //Попытка загрузки настроек
         if (file.exists()) {
             try {
+                logger.info("Загрузка настроек из файла {}", new Object[]{file.getAbsolutePath()});
                 return Options.parse(file);
             } catch (JAXBException | FileNotFoundException e) {
-                logger.warn("Ошибка загрузки настроек", e);
+                logger.warn("Ошибка загрузки настроек из файла " + file, e);
             }
         } else {
             logger.warn("Файл настроек не найден");

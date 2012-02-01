@@ -17,15 +17,16 @@ public class OptionsTest {
     @Test
     public void testGetDefaultOptions() {
         //GIVEN
-        File file = new File(Options.DEFAULT_OPTIONS_FILE_NAME);
         final String userHome = System.getProperty("user.home");
+        File file = new File(userHome + "/.nuget/" + Options.DEFAULT_OPTIONS_FILE_NAME);
         file.delete();
         assertFalse("Файла с настройками не должно существовать перед тестом", file.exists());
         //WHEN
         Options options = Options.loadOptions();
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
-        assertEquals("Имя папки с пакетами", userHome + "/.nuget/", options.getFolderName());
+        String except = (userHome + "/.nuget/Packages/").replaceAll("\\\\", "/");
+        assertEquals("Имя папки с пакетами", except, options.getFolderName().replaceAll("\\\\", "/"));
         assertNull("По умолчанию стратегия пула не задается", options.getApiKey());
         //TEARDOWN
         file.delete();
