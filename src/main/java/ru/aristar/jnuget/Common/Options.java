@@ -24,6 +24,11 @@ import org.slf4j.LoggerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Options {
 
+    /**
+     * Если установлено свойство Java машины nuget.home - используется оно,
+     * иначе смотрим переменную окружения NUGET_HOME, иначе используем домашнюю
+     * папку текущего пользователя
+     */
     static {
         String nugetHome = (String) System.getProperties().get("nuget.home");
         String fileSeparator = (String) System.getProperties().get("file.separator");
@@ -143,14 +148,13 @@ public class Options {
         File homeFolder = new File(homeFolderName);
         homeFolder.mkdirs();
         File file = new File(homeFolder, DEFAULT_OPTIONS_FILE_NAME);
-        logger.info("Используется файл настройки: {}", new Object[]{file.getAbsolutePath()});
         //Попытка загрузки настроек
         if (file.exists()) {
             try {
                 logger.info("Загрузка настроек из файла {}", new Object[]{file.getAbsolutePath()});
                 return Options.parse(file);
             } catch (JAXBException | FileNotFoundException e) {
-                logger.warn("Ошибка загрузки настроек", e);
+                logger.warn("Ошибка загрузки настроек из файла " + file, e);
             }
         } else {
             logger.warn("Файл настроек не найден");

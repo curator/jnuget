@@ -3,9 +3,14 @@ package ru.aristar.integration;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  * Интеграционные тесты сайта
@@ -16,11 +21,21 @@ public class RssIntegrationTests {
 
     /**
      * Инициализация настроек интеграционных тестов
+     *
+     * @throws IOException ошибка копирования файла
      */
     @BeforeClass
-    public static void Setup() {
-        File testFolder = new File("target/WorkFolder/");
+    public static void Setup() throws IOException {
+        String homeFolderName = System.getProperty("nuget.home");
+        File testFolder = new File(homeFolderName);
         testFolder.mkdirs();
+        File packageFolder = new File(testFolder, "Packages");
+        packageFolder.mkdirs();
+        File packageFile = new File(packageFolder, "NUnit.2.5.9.10348.nupkg");
+        try (InputStream inputStream = RssIntegrationTests.class.getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+                FileOutputStream outputStream = new FileOutputStream(packageFile)) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), outputStream.getChannel());
+        }
     }
 
     /**
@@ -70,5 +85,20 @@ public class RssIntegrationTests {
         assertTrue(response.getText().contains("href=\"Packages\""));
         assertTrue(response.getText().contains("title>Packages<"));
 
+    }
+
+    /**
+     * Тест получения записи о пакете
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetPackageEntry() throws Exception {
+        //GIVEN
+        WebConversation webConversation = new WebConversation();
+        //WHEN
+        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Packages");
+        //THEN
+        assertTrue(response.getText().contains("Packages(Id='NUnit',Version='2.5.9.10348')"));
     }
 }
