@@ -25,6 +25,9 @@ public class ClassicNupkg implements Nupkg {
     protected Version version;
     protected String id;
 
+    protected ClassicNupkg() {
+    }
+
     public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
         this.file = file;
         this.updated = new Date(file.lastModified());
@@ -90,9 +93,7 @@ public class ClassicNupkg implements Nupkg {
         }
         return name.toLowerCase().endsWith(ClassicNupkg.DEFAULT_EXTENSION);
     }
-    private Hash hash;
-    
-             
+    protected Hash hash;
     /**
      * Выражение разбора строки имени файла
      */
@@ -101,6 +102,7 @@ public class ClassicNupkg implements Nupkg {
 
     /**
      * Разбирает строку названия файла пакета
+     *
      * @param filename название файла
      * @throws NugetFormatException некорректный формат имени файла
      */

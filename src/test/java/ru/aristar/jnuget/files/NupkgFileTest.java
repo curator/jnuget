@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.files;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.channels.Channels;
@@ -50,7 +51,7 @@ public class NupkgFileTest {
         fileOutputStream.flush();
         fileOutputStream.close();
         //WHEN
-        ClassicNupkg nupkgFile = new ClassicNupkg(tempFile);
+        ClassicNupkg nupkgFile = new TempNupkgFile(new FileInputStream(tempFile));
         //THEN
         assertEquals("Хеш файла", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", nupkgFile.getHash().toString());
     }
