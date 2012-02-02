@@ -1,9 +1,8 @@
 package ru.aristar.jnuget.Common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -11,6 +10,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author sviridov
  */
-@XmlRootElement(name = "Options")
+@XmlRootElement(name = "options")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Options {
 
@@ -57,31 +57,16 @@ public class Options {
      */
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
-     * Имя каталога с пакетами
-     */
-    private String folderName;
-    /**
      * Ключ (пароль для публикации пакетов)
      */
     @XmlElement(name = "ApiKey")
     private String apiKey;
-
     /**
-     *
-     * @return имя каталога с пакетами
+     * Список настроек хранилищ
      */
-    @XmlElement(name = "FolderName")
-    public String getFolderName() {
-        return folderName;
-    }
-
-    /**
-     *
-     * @param folderName имя каталога с пакетами
-     */
-    public void setFolderName(String folderName) {
-        this.folderName = folderName;
-    }
+    @XmlElement(name = "storage")
+    @XmlElementWrapper(name = "storages")
+    private List<StorageOptions> storageOptionsList;
 
     /**
      *
@@ -99,17 +84,39 @@ public class Options {
     }
 
     /**
+     * @return Список настроек хранилищ
+     */
+    public List<StorageOptions> getStorageOptionsList() {
+        if (storageOptionsList == null) {
+            storageOptionsList = new ArrayList<>();
+        }
+        return storageOptionsList;
+    }
+
+    /**
+     * @param storageOptionsList Список настроек хранилищ
+     */
+    public void setStorageOptionsList(List<StorageOptions> storageOptionsList) {
+        this.storageOptionsList = storageOptionsList;
+    }
+
+    /**
      * Сохраняет настройки в файл
      *
      * @param file файл, в который производится сохранение
      * @throws JAXBException ошибка сохранения
      */
-    public void saveOptions(File file) throws JAXBException {
+    public void saveOptions(File file) throws JAXBException, FileNotFoundException {
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        saveOptions(fileOutputStream);
+    }
+
+    public void saveOptions(OutputStream outputStream) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(this, file);
+        marshaller.marshal(this, outputStream);
     }
 
     /**
@@ -164,7 +171,7 @@ public class Options {
                 options.saveOptions(file);
                 logger.info("Настройки сохранены в " + file);
                 return options;
-            } catch (JAXBException e) {
+            } catch (JAXBException | FileNotFoundException e) {
                 logger.warn("Ошибка загрузки настроек по умолчанию", e);
             }
         }

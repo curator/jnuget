@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.OptionConverter;
 import ru.aristar.jnuget.Common.Options;
+import ru.aristar.jnuget.Common.StorageOptions;
 
 /**
  * Фабрика источников данных
@@ -38,32 +39,45 @@ public class PackageSourceFactory {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Создание нового хранилища на основе настроек
+     * Создание нового корневого хранилища на основе настроек
      *
-     * @param sourceOptions 
+     * @param serviceOptions настройки приложения
      * @return хранилище пакетов
      */
-    protected PackageSource createPackageSource(Options sourceOptions) {
+    protected PackageSource createRootPackageSource(Options serviceOptions) {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
-        rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
-
-        //Создание файлового хранилища
-        String folderName = OptionConverter.replaceVariables(sourceOptions.getFolderName());
-        File file = new File(folderName);
-        FilePackageSource childSource = new FilePackageSource(file);
-        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
-        if (sourceOptions.getApiKey() != null) {
-            childSource.setPushStrategy(new ApiKeyPushStrategy(sourceOptions.getApiKey()));
+        //TODO Стратегию сделать персональной для каждого хранилища
+        if (serviceOptions.getApiKey() != null) {
+            rootPackageSource.setPushStrategy(new ApiKeyPushStrategy(serviceOptions.getApiKey()));
             logger.info("Установлен ключ для фиксации пакетов");
         } else {
-            childSource.setPushStrategy(new SimplePushStrategy(false));
+            rootPackageSource.setPushStrategy(new SimplePushStrategy(false));
             logger.warn("Используется стратегия фиксации по умолчанию");
         }
-        rootPackageSource.getSources().add(childSource);
 
+        for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
+            PackageSource childSource = createPackageSource(storageOptions);
+            rootPackageSource.getSources().add(childSource);
+        }
         return rootPackageSource;
+    }
+
+    /**
+     * Создание нового дочернего хранилища на основе настроек
+     *
+     * @param storageOptions настройки хранилища
+     * @return хранилище пакетов
+     */
+    protected PackageSource createPackageSource(StorageOptions storageOptions) {
+        //Создание файлового хранилища
+        //TODO Заменить заглушку на нормальную реализацию
+        String folderName = OptionConverter.replaceVariables(storageOptions.getProperties().get("folderName"));
+        File file = new File(folderName);
+        FilePackageSource filePackageSource = new FilePackageSource(file);
+        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
+        return filePackageSource;
     }
 
     /**
@@ -92,7 +106,7 @@ public class PackageSourceFactory {
             //TODO Добавить возможность переинициализации
             synchronized (this) {
                 if (packageSource == null) {
-                    packageSource = createPackageSource(options);
+                    packageSource = createRootPackageSource(options);
                 }
             }
         }

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Options>
-    <FolderName>TEST_FOLDER</FolderName>    
+<options>   
     <ApiKey>TEST_API_KEY</ApiKey>
-</Options>
+    <storages>
+        <storage class="TEST_CLASS_1">
+            <properties>
+                <properties>
+                    <property name="folderName" value="TEST_FOLDER_1"/>
+                </properties>
+            </properties>
+        </storage>
+        <storage class="TEST_CLASS_2">
+            <properties>
+                <properties>
+                    <property name="folderName" value="TEST_FOLDER_2"/>
+                </properties>
+            </properties>
+        </storage>
+    </storages>
+</options>

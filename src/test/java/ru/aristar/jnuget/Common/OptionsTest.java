@@ -25,7 +25,8 @@ public class OptionsTest {
         Options options = Options.loadOptions();
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
-        assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getFolderName());
+        assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
+        assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
         assertNull("По умолчанию стратегия пула не задается", options.getApiKey());
         //TEARDOWN
         file.delete();
@@ -42,8 +43,12 @@ public class OptionsTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.test.config.xml");
         //WHEN
         Options options = Options.parse(inputStream);
-        //THEN
-        assertEquals("Каталог с пакетами", "TEST_FOLDER", options.getFolderName());
+        //THEN        
         assertEquals("Ключ доступа", "TEST_API_KEY", options.getApiKey());
+        assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
+        assertEquals("Класс хранилища 1", "TEST_CLASS_1", options.getStorageOptionsList().get(0).getClassName());
+        assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
+        assertEquals("Класс хранилища 2", "TEST_CLASS_2", options.getStorageOptionsList().get(1).getClassName());
+        assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName"));
     }
 }
