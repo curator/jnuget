@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  *
@@ -29,7 +29,7 @@ public class RootPackageSourceTest {
             {
                 //THEN
                 oneOf(source).getPackages();
-                will(returnValue(new ArrayList<NupkgFile>()));
+                will(returnValue(new ArrayList<Nupkg>()));
             }
         });
         RootPackageSource packageSource = new RootPackageSource();

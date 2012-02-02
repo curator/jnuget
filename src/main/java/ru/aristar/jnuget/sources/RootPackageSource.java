@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  *
@@ -41,8 +41,8 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages() {
-        ArrayList<NupkgFile> result = new ArrayList<>();
+    public Collection<Nupkg> getPackages() {
+        ArrayList<Nupkg> result = new ArrayList<>();
         for (PackageSource source : getSources()) {
             result.addAll(source.getPackages());
         }
@@ -50,12 +50,12 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getLastVersionPackages() {
-        HashMap<String, NupkgFile> result = new HashMap<>();
+    public Collection<Nupkg> getLastVersionPackages() {
+        HashMap<String, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
-            for (NupkgFile nupkgFile : source.getLastVersionPackages()) {
+            for (Nupkg nupkgFile : source.getLastVersionPackages()) {
                 String packageId = nupkgFile.getNuspecFile().getId();
-                NupkgFile storedPackage = result.get(packageId);
+                Nupkg storedPackage = result.get(packageId);
                 if (storedPackage == null
                         || storedPackage.getNuspecFile().getVersion().compareTo(nupkgFile.getNuspecFile().getVersion()) < 0) {
                     result.put(packageId, nupkgFile);
@@ -66,10 +66,10 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id) {
-        HashMap<Version, NupkgFile> result = new HashMap<>();
+    public Collection<Nupkg> getPackages(String id) {
+        HashMap<Version, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
-            for (NupkgFile file : source.getPackages(id)) {
+            for (Nupkg file : source.getPackages(id)) {
                 result.put(file.getNuspecFile().getVersion(), file);
             }
         }
@@ -77,10 +77,10 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
-        HashMap<Version, NupkgFile> result = new HashMap<>();
+    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
+        HashMap<Version, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
-            for (NupkgFile file : source.getPackages(id, ignoreCase)) {
+            for (Nupkg file : source.getPackages(id, ignoreCase)) {
                 result.put(file.getNuspecFile().getVersion(), file);
             }
         }
@@ -88,9 +88,9 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id) {
+    public Nupkg getLastVersionPackage(String id) {
         for (PackageSource source : getSources()) {
-            NupkgFile nupkgFile = source.getLastVersionPackage(id);
+            Nupkg nupkgFile = source.getLastVersionPackage(id);
             if (nupkgFile != null) {
                 return nupkgFile;
             }
@@ -99,9 +99,9 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
         for (PackageSource source : getSources()) {
-            NupkgFile nupkgFile = source.getLastVersionPackage(id, ignoreCase);
+            Nupkg nupkgFile = source.getLastVersionPackage(id, ignoreCase);
             if (nupkgFile != null) {
                 return nupkgFile;
             }
@@ -110,9 +110,9 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version) {
+    public Nupkg getPackage(String id, Version version) {
         for (PackageSource source : getSources()) {
-            NupkgFile nupkgFile = source.getPackage(id, version);
+            Nupkg nupkgFile = source.getPackage(id, version);
             if (nupkgFile != null) {
                 return nupkgFile;
             }
@@ -121,9 +121,9 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
         for (PackageSource source : getSources()) {
-            NupkgFile nupkgFile = source.getPackage(id, version, ignoreCase);
+            Nupkg nupkgFile = source.getPackage(id, version, ignoreCase);
             if (nupkgFile != null) {
                 return nupkgFile;
             }
@@ -132,7 +132,7 @@ public class RootPackageSource implements PackageSource {
     }
 
     @Override
-    public boolean pushPackage(NupkgFile file, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
         for (PackageSource source : getSources()) {
             if (source.pushPackage(file, apiKey)) {
                 return true;
