@@ -20,7 +20,12 @@ import org.xml.sax.SAXException;
  *
  * @author sviridov
  */
-public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable {
+public class TempNupkgFile implements Nupkg, AutoCloseable {
+
+    private Hash hash;
+    private File file;
+    private Date updated;
+    private NuspecFile nuspecFile;
 
     /**
      * Копирует данные из одного канала в другой
@@ -152,5 +157,20 @@ public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable 
                 }
             }
         }
+    }
+
+    @Override
+    public String getFileName() {
+        return getNuspecFile().
+                getId() + "."
+                + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
+    }
+
+    @Override
+    public Long getSize() {
+        if (file == null) {
+            return null;
+        }
+        return file.length();
     }
 }
