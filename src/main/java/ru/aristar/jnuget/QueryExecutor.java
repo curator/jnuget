@@ -3,7 +3,7 @@ package ru.aristar.jnuget;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -14,7 +14,7 @@ class QueryExecutor {
 
     //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
     
-    public Collection<ClassicNupkg> execQuery(PackageSource packageSource, final String filter) {
+    public Collection<Nupkg> execQuery(PackageSource packageSource, final String filter) {
         if (filter == null || "".equals(filter)) {
             return packageSource.getPackages();
         }

@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  *
@@ -84,7 +84,7 @@ public class FilePackageSourceTest {
         //GIVEN
         FilePackageSource packageSource = new FilePackageSource(testFolder);
         //WHEN
-        Collection<ClassicNupkg> packages = packageSource.getPackages();
+        Collection<Nupkg> packages = packageSource.getPackages();
         //THEN
         assertEquals("Прочитано файлов", 1, packages.size());
         assertEquals("Идентификатор пакета", "NUnit", packages.iterator().next().getNuspecFile().getId());
