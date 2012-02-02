@@ -6,6 +6,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.rss.EntryProperties;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.rss.PackageFeed;
@@ -35,7 +36,7 @@ public class NuPkgToRssTransformer {
     }
 
     /**
-     * Преобразует коллекцию ClassicNupkg в RSS структуру
+     * Преобразует коллекцию Nupkg в RSS структуру
      *
      * @param files колллекция исходных файлов
      * @param orderBy поле, по которому производится упорядочивание
@@ -43,7 +44,7 @@ public class NuPkgToRssTransformer {
      * @param top всего вывести
      * @return RSS структура
      */
-    public PackageFeed transform(Collection<ClassicNupkg> files, String orderBy, int skip, int top) {
+    public PackageFeed transform(Collection<Nupkg> files, String orderBy, int skip, int top) {
         //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
         PackageFeed feed = new PackageFeed();
         feed.setId(context.getRootUri().toString());
@@ -51,7 +52,7 @@ public class NuPkgToRssTransformer {
         feed.setTitle("Packages");
         List<PackageEntry> packageEntrys = new ArrayList<>();
         
-        for (ClassicNupkg nupkg : files) {
+        for (Nupkg nupkg : files) {
             try {
                 PackageEntry entry = context.createPackageEntry(nupkg);
                 entry.getProperties().setIsLatestVersion(Boolean.FALSE);

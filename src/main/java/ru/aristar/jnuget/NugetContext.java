@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
@@ -29,7 +30,7 @@ public class NugetContext {
         return rootUri;
     }
 
-    public PackageEntry createPackageEntry(ClassicNupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+    public PackageEntry createPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
         PackageEntry entry = new PackageEntry(nupkgFile, this);
         return entry;
     }

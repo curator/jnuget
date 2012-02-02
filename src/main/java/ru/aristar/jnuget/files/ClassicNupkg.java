@@ -91,14 +91,14 @@ public class ClassicNupkg implements Nupkg {
         if (name == null) {
             return false;
         }
-        return name.toLowerCase().endsWith(ClassicNupkg.DEFAULT_EXTENSION);
+        return name.toLowerCase().endsWith(Nupkg.DEFAULT_EXTENSION);
     }
     protected Hash hash;
     /**
      * Выражение разбора строки имени файла
      */
     private static Pattern parser =
-            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + ClassicNupkg.DEFAULT_EXTENSION + "$");
+            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + Nupkg.DEFAULT_EXTENSION + "$");
 
     /**
      * Разбирает строку названия файла пакета

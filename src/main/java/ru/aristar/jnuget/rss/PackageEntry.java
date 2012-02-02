@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import ru.aristar.jnuget.Author;
 import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -87,11 +88,11 @@ public class PackageEntry {
     public PackageEntry() {
     }
 
-    public PackageEntry(ClassicNupkg nupkgFile) {
+    public PackageEntry(Nupkg nupkgFile) {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), null);
     }
 
-    public PackageEntry(ClassicNupkg nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
+    public PackageEntry(Nupkg nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
         this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), context);
         this.getProperties().setPackageHash(nupkgFile.getHash().toString());
         this.getProperties().setPackageSize(nupkgFile.getSize());

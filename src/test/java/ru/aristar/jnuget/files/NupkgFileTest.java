@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -21,7 +19,7 @@ public class NupkgFileTest {
         //GIVEN
         InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         //WHEN
-        ClassicNupkg nupkgFile = new TempNupkgFile(inputStream, new Date());
+        Nupkg nupkgFile = new TempNupkgFile(inputStream, new Date());
         NuspecFile result = nupkgFile.getNuspecFile();
         //THEN
         assertEquals("Описание пакета", "Пакет модульного тестирования", result.getDescription());
@@ -32,7 +30,7 @@ public class NupkgFileTest {
         //GIVEN
         InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         //WHEN
-        ClassicNupkg nupkgFile = new TempNupkgFile(inputStream, new Date());
+        Nupkg nupkgFile = new TempNupkgFile(inputStream, new Date());
         //THEN
         assertEquals("Имя файла", "NUnit.2.5.9.10348.nupkg", nupkgFile.getFileName());
     }
@@ -51,7 +49,7 @@ public class NupkgFileTest {
         fileOutputStream.flush();
         fileOutputStream.close();
         //WHEN
-        ClassicNupkg nupkgFile = new TempNupkgFile(new FileInputStream(tempFile));
+        Nupkg nupkgFile = new TempNupkgFile(new FileInputStream(tempFile));
         //THEN
         assertEquals("Хеш файла", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", nupkgFile.getHash().toString());
     }
