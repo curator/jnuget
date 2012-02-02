@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.api.Expectation;
+import org.jmock.integration.junit4.JMock;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -25,6 +29,7 @@ public class FilePackageSourceTest {
      * Тестовая папка с пакетами
      */
     private static File testFolder;
+    private Mockery context = new Mockery();
 
     /**
      * Создает идентификатор фала пакета
@@ -34,11 +39,21 @@ public class FilePackageSourceTest {
      * @return идентификатор фала пакета
      * @throws Exception некорректный формат версии
      */
-    private NugetPackageId createPackageId(String id, String version) throws Exception {
-        NugetPackageId packageId = new NugetPackageId();
-        packageId.setId(id);
-        packageId.setVersion(Version.parse(version));
-        return packageId;
+    private Nupkg createNupkg(final String id, final String version) throws Exception {
+        final Nupkg pack = context.mock(Nupkg.class);
+        context.checking(new Expectations() {
+
+            {
+                one(pack).getId();
+                will(returnValue(id));
+            }
+            {
+                one(pack).getVersion();
+                will(returnValue(version));
+            }
+        });
+
+        return pack;
     }
 
     /**
@@ -91,8 +106,7 @@ public class FilePackageSourceTest {
     }
 
     /**
-     * Проверка метода, извлекающего из списка идентификаторов последние версии
-     * пакетов
+     * Проверка метода, извлекающего из списка идентификаторов последние версии пакетов
      *
      * @throws Exception ошибка в процессе теста
      */
@@ -100,17 +114,17 @@ public class FilePackageSourceTest {
     public void testGetLastVersions() throws Exception {
         //GIVEN
         FilePackageSource filePackageSource = new FilePackageSource();
-        Collection<NugetPackageId> idList = new ArrayList<>();
-        idList.add(createPackageId("A", "1.1.1"));
-        idList.add(createPackageId("A", "1.1.2"));
-        idList.add(createPackageId("A", "1.2.1"));
-        NugetPackageId lastA = createPackageId("A", "2.1.1");
+        Collection<Nupkg> idList = new ArrayList<>();
+        idList.add(createNupkg("A", "1.1.1"));
+        idList.add(createNupkg("A", "1.1.2"));
+        idList.add(createNupkg("A", "1.2.1"));
+        Nupkg lastA = createNupkg("A", "2.1.1");
         idList.add(lastA);
-        idList.add(createPackageId("B", "2.1.1"));
-        NugetPackageId lastB = createPackageId("B", "5.1.1");
+        idList.add(createNupkg("B", "2.1.1"));
+        Nupkg lastB = createNupkg("B", "5.1.1");
         idList.add(lastB);
         //WHEN
-        Collection<NugetPackageId> result = filePackageSource.extractLastVersion(idList, true);
+        Collection<Nupkg> result = filePackageSource.extractLastVersion(idList, true);
         NugetPackageId[] resArr = result.toArray(new NugetPackageId[0]);
         Arrays.sort(resArr, new Comparator<NugetPackageId>() {
 
@@ -120,6 +134,6 @@ public class FilePackageSourceTest {
             }
         });
         //THEN 
-        assertArrayEquals("Должны возвращаться только последние версии", new NugetPackageId[]{lastA, lastB}, resArr);
+        assertArrayEquals("Должны возвращаться только последние версии", new Nupkg[]{lastA, lastB}, resArr);
     }
 }

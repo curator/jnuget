@@ -8,6 +8,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
+import java.util.logging.Level;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class FilePackageSource implements PackageSource {
      * @throws JAXBException ошибка разбора XML
      * @throws IOException ошибка чтения файла с диска
      * @throws SAXException ошибка изменения пространства имен
-     * @throws NugetFormatException ошибка формата пакета 
+     * @throws NugetFormatException ошибка формата пакета
      */
     private ClassicNupkg convertIdToPackage(NugetPackageId pack)
             throws JAXBException, IOException, SAXException, NugetFormatException {
@@ -107,13 +108,13 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return Список объектов с информацией
      */
-    private List<NugetPackageId> getPackageList(FilenameFilter filter) {
-        ArrayList<NugetPackageId> packages = new ArrayList<>();
+    private List<Nupkg> getPackageList(FilenameFilter filter) {
+        ArrayList<Nupkg> packages = new ArrayList<>();
         for (File file : rootFolder.listFiles(filter)) {
             try {
-                NugetPackageId info = NugetPackageId.parse(file.getName());
-                packages.add(info);
-            } catch (NugetFormatException ex) {
+                Nupkg pack = new ClassicNupkg(file);
+                packages.add(pack);
+            } catch (NugetFormatException | JAXBException | IOException | SAXException ex) {
                 logger.warn("Не удалось разобрать имя файла", ex);
             }
         }
@@ -127,8 +128,7 @@ public class FilePackageSource implements PackageSource {
      * @return список пакетов
      */
     private Collection<Nupkg> getPackages(FilenameFilter filter) {
-        List<NugetPackageId> packages = getPackageList(filter);
-        return convertIdsToPackages(packages);
+        return getPackageList(filter);
     }
 
     @Override
@@ -140,109 +140,120 @@ public class FilePackageSource implements PackageSource {
     @Override
     public Nupkg getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
-        for (Nupkg nupkgFile : getPackages(filenameFilter)) {
-            NuspecFile nuspec = nupkgFile.getNuspecFile();
-            if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
-                return nupkgFile;
+        for (Nupkg pack : getPackages(filenameFilter)) {
+            if (pack.getId().equals(id) && pack.getVersion().equals(version)) {
+                return pack;
             }
         }
         return null;
     }
 
-    @Override
-    public Collection<Nupkg> getLastVersionPackages() {
-        List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
-        Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
-        return convertIdsToPackages(lastVersions);
-    }
+        @Override
+        public Collection<Nupkg> getLastVersionPackages
+        
+            () {
+        List<Nupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
+            return extractLastVersion(allPackages, true);
+        }
 
-    @Override
-    public Collection<Nupkg> getPackages(String id) {
+        @Override
+        public Collection<Nupkg> getPackages
+        (String id
+        
+            ) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
-        return getPackages(filenameFilter);
-    }
+            return getPackages(filenameFilter);
+        }
 
-    @Override
-    public Nupkg getLastVersionPackage(String id) {
+        @Override
+        public Nupkg getLastVersionPackage
+        (String id
+        
+            ) {
         return getLastVersionPackage(id, true);
-    }
+        }
 
-    @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
+        @Override
+        public Collection<Nupkg> getPackages
+        (String id, boolean ignoreCase
+        
+            ) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        return getPackages(filenameFilter);
-    }
+            return getPackages(filenameFilter);
+        }
 
-    @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
+        @Override
+        public Nupkg getLastVersionPackage(String id, boolean ignoreCase            ) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-        Collection<NugetPackageId> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
-        if (lastVersion.isEmpty()) {
-            return null;
-        }
-        NugetPackageId packageId = lastVersion.iterator().next();
-        try {
-            return convertIdToPackage(packageId);
-        } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
-            logger.warn("Ошибка чтения архивного файла пакета " + packageId, e);
-            return null;
-        }
-    }
-
-    @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        for (Nupkg nupkgFile : getPackages(filenameFilter)) {
-            NuspecFile nuspec = nupkgFile.getNuspecFile();
-            if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
-                return nupkgFile;
+            Collection<Nupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+            if (lastVersion.isEmpty()) {
+                return null;
             }
+            return lastVersion.iterator().next();
         }
-        return null;
-    }
 
-    @Override
-    public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
-        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
-            return false;
+        @Override
+        public Nupkg getPackage
+        (String id, Version version
+        , boolean ignoreCase
+        
+            ) {
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
+            for (Nupkg nupkgFile : getPackages(filenameFilter)) {
+                NuspecFile nuspec = nupkgFile.getNuspecFile();
+                if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
+                    return nupkgFile;
+                }
+            }
+            return null;
         }
-        // Открывает временный файл, копирует его в место постоянного хранения.
-        File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
-        File finalDest = new File(rootFolder, nupkgFile.getFileName());
-        FileChannel dest;
-        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
-            dest = new FileOutputStream(tmpDest).getChannel();
-            TempNupkgFile.fastChannelCopy(src, dest);
-        }
-        dest.close();
-        if (!renameFile(tmpDest, finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
-        }
-        return true;
-    }
 
-    /**
-     * Извлекает информацию о последних версиях всех пакетов
-     *
-     * @param list общий список всех пакетов
-     * @param ignoreCase нужно ли игнорировать регистр символов
-     * @return список последних версий пакетов
-     */
-    protected Collection<NugetPackageId> extractLastVersion(
-            Collection<NugetPackageId> list, boolean ignoreCase) {
-        Map<String, NugetPackageId> map = new HashMap();
+        @Override
+        public boolean pushPackage
+        (Nupkg nupkgFile, String apiKey
+        ) throws IOException {
+            if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+                return false;
+            }
+            // Открывает временный файл, копирует его в место постоянного хранения.
+            File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
+            File finalDest = new File(rootFolder, nupkgFile.getFileName());
+            FileChannel dest;
+            try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
+                dest = new FileOutputStream(tmpDest).getChannel();
+                TempNupkgFile.fastChannelCopy(src, dest);
+            }
+            dest.close();
+            if (!renameFile(tmpDest, finalDest)) {
+                throw new IOException("Не удалось переименовать файл " + tmpDest
+                        + " в " + finalDest);
+            }
+            return true;
+        }
 
-        for (NugetPackageId info : list) {
-            String packageId = ignoreCase ? info.getId().toLowerCase() : info.getId();
+        /**
+         * Извлекает информацию о последних версиях всех пакетов
+         *
+         * @param list общий список всех пакетов
+         * @param ignoreCase нужно ли игнорировать регистр символов
+         * @return список последних версий пакетов
+         */
+    
+
+    protected Collection<Nupkg> extractLastVersion(
+            Collection<Nupkg> list, boolean ignoreCase) {
+        Map<String, Nupkg> map = new HashMap();
+
+        for (Nupkg pack : list) {
+            String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
             // Указанный пакет еще учитывался
             if (!map.containsKey(packageId)) {
-                map.put(packageId, info);
+                map.put(packageId, pack);
             } else { // Пакет уже попадался, сравниваем версии
                 Version saved = map.get(packageId).getVersion();
                 // Версия пакета новее, чем сохраненная
-                if (saved.compareTo(info.getVersion()) < 0) {
-                    map.put(packageId, info);
+                if (saved.compareTo(pack.getVersion()) < 0) {
+                    map.put(packageId, pack);
                 }
             }
         }
