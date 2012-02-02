@@ -29,9 +29,42 @@ public class PackageSourceFactory {
         this.options = Options.loadOptions();
     }
     /**
+     * Источник пакетов
+     */
+    private volatile PackageSource packageSource = null;
+    /**
      * Логгер
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * Создание нового хранилища на основе настроек
+     *
+     * @param sourceOptions 
+     * @return хранилище пакетов
+     */
+    protected PackageSource createPackageSource(Options sourceOptions) {
+        //Создание корневого хранилища
+        logger.info("Инициализация файлового хранища");
+        RootPackageSource rootPackageSource = new RootPackageSource();
+        rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
+
+        //Создание файлового хранилища
+        String folderName = OptionConverter.replaceVariables(sourceOptions.getFolderName());
+        File file = new File(folderName);
+        FilePackageSource childSource = new FilePackageSource(file);
+        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
+        if (sourceOptions.getApiKey() != null) {
+            childSource.setPushStrategy(new ApiKeyPushStrategy(sourceOptions.getApiKey()));
+            logger.info("Установлен ключ для фиксации пакетов");
+        } else {
+            childSource.setPushStrategy(new SimplePushStrategy(false));
+            logger.warn("Используется стратегия фиксации по умолчанию");
+        }
+        rootPackageSource.getSources().add(childSource);
+
+        return rootPackageSource;
+    }
 
     /**
      * Возвращает экземпляр фабрики, или создает новый
@@ -55,24 +88,14 @@ public class PackageSourceFactory {
      * @return источник пакетов
      */
     public PackageSource getPackageSource() {
-        //Создание корневого хранилища
-        RootPackageSource rootPackageSource = new RootPackageSource();
-        rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
-
-        //Создание файлового хранилища
-        String folderName = OptionConverter.replaceVariables(options.getFolderName());
-        File file = new File(folderName);
-        FilePackageSource packageSource = new FilePackageSource(file);
-        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
-        if (options.getApiKey() != null) {
-            packageSource.setPushStrategy(new ApiKeyPushStrategy(options.getApiKey()));
-            logger.info("Установлен ключ для фиксации пакетов");
-        } else {
-            packageSource.setPushStrategy(new SimplePushStrategy(false));
-            logger.warn("Используется стратегия фиксации по умолчанию");
+        if (packageSource == null) {
+            //TODO Добавить возможность переинициализации
+            synchronized (this) {
+                if (packageSource == null) {
+                    packageSource = createPackageSource(options);
+                }
+            }
         }
-        rootPackageSource.getSources().add(packageSource);
-
-        return rootPackageSource;
+        return packageSource;
     }
 }
