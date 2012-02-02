@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import ru.aristar.jnuget.Version;
 
 /**
  *
@@ -26,5 +27,9 @@ public interface Nupkg {
     InputStream getStream() throws IOException;
 
     Date getUpdated();
+
+    String getId();
+
+    Version getVersion();
     
 }

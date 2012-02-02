@@ -15,6 +15,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
+import ru.aristar.jnuget.Version;
 
 /**
  *
@@ -161,9 +162,7 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
 
     @Override
     public String getFileName() {
-        return getNuspecFile().
-                getId() + "."
-                + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
+        return getId() + "." + getVersion().toString() + DEFAULT_EXTENSION;
     }
 
     @Override
@@ -172,5 +171,15 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
             return null;
         }
         return file.length();
+    }
+
+    @Override
+    public String getId() {
+        return getNuspecFile().getId();
+    }
+
+    @Override
+    public Version getVersion() {
+        return getNuspecFile().getVersion();
     }
 }
