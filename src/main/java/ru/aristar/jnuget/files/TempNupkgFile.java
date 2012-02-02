@@ -20,7 +20,7 @@ import org.xml.sax.SAXException;
  *
  * @author sviridov
  */
-public class TempNupkgFile extends ClassicNupkg implements AutoCloseable {
+public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable {
 
     /**
      * Копирует данные из одного канала в другой
