@@ -4,6 +4,8 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -36,6 +38,13 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public NuspecFile getNuspecFile() {
+        if (nuspecFile == null) {
+            try {
+                LoadNuspec();
+            } catch (IOException | JAXBException | SAXException ex) {
+                Logger.getLogger(ClassicNupkg.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return nuspecFile;
     }
 
@@ -119,6 +128,33 @@ public class ClassicNupkg implements Nupkg {
                 version = Version.parse(matcher.group(2));
             } catch (Exception ex) {
                 throw new NugetFormatException("Неправильный формат строки", ex);
+            }
+        }
+    }
+
+    /**
+     *
+     * @throws IOException
+     * @throws JAXBException
+     * @throws SAXException
+     */
+    private void LoadNuspec() throws IOException, JAXBException, SAXException {
+        try (ZipInputStream zipInputStream = new ZipInputStream(getStream())) {
+            ZipEntry entry;
+            loop:
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                if (!entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION)) {
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while ((len = zipInputStream.read(buffer)) >= 0) {
+                        outputStream.write(buffer, 0, len);
+                    }
+                    outputStream.flush();
+                    outputStream.close();
+                    nuspecFile = NuspecFile.Parse(outputStream.toByteArray());
+                    break;
+                }
             }
         }
     }
