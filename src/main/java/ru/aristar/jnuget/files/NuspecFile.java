@@ -1,11 +1,14 @@
 package ru.aristar.jnuget.files;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -230,6 +233,19 @@ public class NuspecFile {
             return new ArrayList<>();
         }
         return metadata.dependencies;
+    }
+
+    /**
+     * Сохраняет спецификацию в поток данных
+     *
+     * @param outputStream поток для записи
+     * @throws JAXBException ошибка соъранения XML
+     */
+    public void saveTo(OutputStream outputStream) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(this.getClass());
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(this, outputStream);
     }
 
     //TODO Добавить проверку схемы

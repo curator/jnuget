@@ -7,7 +7,8 @@ import org.apache.jcs.access.exception.CacheException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  * Класс, обеспечивающий промежуточное хранение кешированных результатов
@@ -73,7 +74,7 @@ public class CachedSource implements PackageSource {
     private Object getValueFromCache(String key) {
         try {
             JCS cache = JCS.getInstance("packages");
-            return (Collection<NupkgFile>) cache.get(key);
+            return (Collection<Nupkg>) cache.get(key);
         } catch (CacheException ex) {
             logger.warn("Ошибка получения объекта из кеша", ex);
             return null;
@@ -96,9 +97,9 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages() {
+    public Collection<Nupkg> getPackages() {
         final String cacheName = "AllPackages";
-        Collection<NupkgFile> result = (Collection<NupkgFile>) getValueFromCache(cacheName);
+        Collection<Nupkg> result = (Collection<Nupkg>) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getPackages();
             putValueToCache(cacheName, result);
@@ -107,9 +108,9 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getLastVersionPackages() {
+    public Collection<Nupkg> getLastVersionPackages() {
         final String cacheName = "LastPackages";
-        Collection<NupkgFile> result = (Collection<NupkgFile>) getValueFromCache(cacheName);
+        Collection<Nupkg> result = (Collection<Nupkg>) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getLastVersionPackages();
             putValueToCache(cacheName, result);
@@ -118,9 +119,9 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id) {
+    public Collection<Nupkg> getPackages(String id) {
         final String cacheName = "package_" + id;
-        Collection<NupkgFile> result = (Collection<NupkgFile>) getValueFromCache(cacheName);
+        Collection<Nupkg> result = (Collection<Nupkg>) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getPackages(id);
             putValueToCache(cacheName, result);
@@ -129,12 +130,12 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public Collection<NupkgFile> getPackages(String id, boolean ignoreCase) {
+    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         if (!ignoreCase) {
             return getPackages(id);
         }
         final String cacheName = "package_igc_" + id;
-        Collection<NupkgFile> result = (Collection<NupkgFile>) getValueFromCache(cacheName);
+        Collection<Nupkg> result = (Collection<Nupkg>) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getPackages(id, true);
             putValueToCache(cacheName, result);
@@ -143,9 +144,9 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id) {
+    public Nupkg getLastVersionPackage(String id) {
         final String cacheName = "package_last_" + id;
-        NupkgFile result = (NupkgFile) getValueFromCache(cacheName);
+        Nupkg result = (Nupkg) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getLastVersionPackage(id);
             putValueToCache(cacheName, result);
@@ -154,12 +155,12 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getLastVersionPackage(String id, boolean ignoreCase) {
+    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
         if (!ignoreCase) {
             return getLastVersionPackage(id);
         }
         final String cacheName = "package_last_igc_" + id;
-        NupkgFile result = (NupkgFile) getValueFromCache(cacheName);
+        Nupkg result = (Nupkg) getValueFromCache(cacheName);
         if (result == null) {
             result = source.getLastVersionPackage(id, true);
             putValueToCache(cacheName, result);
@@ -168,17 +169,17 @@ public class CachedSource implements PackageSource {
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version) {
+    public Nupkg getPackage(String id, Version version) {
         return source.getPackage(id, version);
     }
 
     @Override
-    public NupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
         return source.getPackage(id, version, ignoreCase);
     }
 
     @Override
-    public boolean pushPackage(NupkgFile file, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
         boolean result = source.pushPackage(file, apiKey);
         if (result) {
             clearCache();

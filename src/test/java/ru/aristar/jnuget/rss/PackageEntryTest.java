@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import static ru.aristar.common.TestHelper.assertOneOfAreEquals;
 import ru.aristar.jnuget.NugetContext;
-import ru.aristar.jnuget.files.NupkgFile;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  *
@@ -21,8 +21,9 @@ public class PackageEntryTest {
     public void testConvertNuPkgToEntry() throws Exception {
         //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
-        Date date = new Date();
-        NupkgFile nupkgFile = new NupkgFile(inputStream, date);
+        final Date date = new Date();
+        TempNupkgFile nupkgFile = new TempNupkgFile(inputStream, date);
+        nupkgFile.setUpdated(date);
         //WHEN
         NugetContext context = new NugetContext(new URI("http://localhost:8090/"));
         PackageEntry entry = context.createPackageEntry(nupkgFile);
