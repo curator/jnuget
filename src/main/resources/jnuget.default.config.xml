@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Options>
-    <FolderName>${nuget.home}/Packages/</FolderName>    
-</Options>
+<options>    
+    <storages>
+        <storage class="ru.aristar.jnuget.sources.FilePackageSource">
+            <properties>
+                <properties>
+                    <property name="folderName" value="${nuget.home}/Packages/"/>
+                </properties>
+            </properties>
+        </storage>
+    </storages>
+</options>

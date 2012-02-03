@@ -8,7 +8,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
-import java.util.logging.Level;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,22 @@ public class FilePackageSource implements PackageSource {
     private PushStrategy strategy;
 
     /**
+     * Устанавливает корневую папку хранилища (если папка не существует -
+     * производит попытку создать ее)
+     *
+     * @param rootFolder корневая пака хранилища
+     */
+    private void setRootFolder(File rootFolder) {
+        final String folderName = rootFolder == null ? null : rootFolder.getAbsolutePath();
+        logger.info("Устанавливается корневая папка хранилища: {}", new Object[]{folderName});
+        this.rootFolder = rootFolder;
+        if (!rootFolder.exists()) {
+            rootFolder.mkdirs();
+        }
+
+    }
+
+    /**
      * Конструктор по умолчанию
      */
     public FilePackageSource() {
@@ -46,10 +61,21 @@ public class FilePackageSource implements PackageSource {
      * @param rootFolder папка с пакетами
      */
     public FilePackageSource(File rootFolder) {
-        this.rootFolder = rootFolder;
-        if (!rootFolder.exists()) {
-            rootFolder.mkdirs();
-        }
+        setRootFolder(rootFolder);
+    }
+
+    /**
+     * @return полное имя папки с пакетами
+     */
+    public String getFolderName() {
+        return rootFolder == null ? null : rootFolder.getAbsolutePath();
+    }
+
+    /**
+     * @param pathName полное имя папки с пакетами
+     */
+    public void setFolderName(String pathName) {
+        setRootFolder(new File(pathName));
     }
 
     /**
@@ -64,25 +90,6 @@ public class FilePackageSource implements PackageSource {
             dest.delete();
         }
         return source.renameTo(dest);
-    }
-
-    /**
-     * Преобразует информацию в список файлов пакетов
-     *
-     * @param packages Информация о пакетах
-     * @return Список файлов пакетов
-     */
-    private Collection<Nupkg> convertIdsToPackages(Collection<NugetPackageId> packages) {
-        ArrayList<Nupkg> nupkgFiles = new ArrayList<>();
-        for (NugetPackageId pack : packages) {
-            try {
-                Nupkg current = convertIdToPackage(pack);
-                nupkgFiles.add(current);
-            } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
-                logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
-            }
-        }
-        return nupkgFiles;
     }
 
     /**
@@ -148,102 +155,82 @@ public class FilePackageSource implements PackageSource {
         return null;
     }
 
-        @Override
-        public Collection<Nupkg> getLastVersionPackages
-        
-            () {
+    @Override
+    public Collection<Nupkg> getLastVersionPackages() {
         List<Nupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
-            return extractLastVersion(allPackages, true);
-        }
+        return extractLastVersion(allPackages, true);
+    }
 
-        @Override
-        public Collection<Nupkg> getPackages
-        (String id
-        
-            ) {
+    @Override
+    public Collection<Nupkg> getPackages(String id) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
-            return getPackages(filenameFilter);
-        }
+        return getPackages(filenameFilter);
+    }
 
-        @Override
-        public Nupkg getLastVersionPackage
-        (String id
-        
-            ) {
+    @Override
+    public Nupkg getLastVersionPackage(String id) {
         return getLastVersionPackage(id, true);
-        }
+    }
 
-        @Override
-        public Collection<Nupkg> getPackages
-        (String id, boolean ignoreCase
-        
-            ) {
+    @Override
+    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-            return getPackages(filenameFilter);
-        }
+        return getPackages(filenameFilter);
+    }
 
-        @Override
-        public Nupkg getLastVersionPackage(String id, boolean ignoreCase            ) {
+    @Override
+    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-            Collection<Nupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
-            if (lastVersion.isEmpty()) {
-                return null;
-            }
-            return lastVersion.iterator().next();
-        }
-
-        @Override
-        public Nupkg getPackage
-        (String id, Version version
-        , boolean ignoreCase
-        
-            ) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-            for (Nupkg nupkgFile : getPackages(filenameFilter)) {
-                NuspecFile nuspec = nupkgFile.getNuspecFile();
-                if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
-                    return nupkgFile;
-                }
-            }
+        Collection<Nupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+        if (lastVersion.isEmpty()) {
             return null;
         }
+        return lastVersion.iterator().next();
+    }
 
-        @Override
-        public boolean pushPackage
-        (Nupkg nupkgFile, String apiKey
-        ) throws IOException {
-            if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
-                return false;
+    @Override
+    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
+        for (Nupkg nupkgFile : getPackages(filenameFilter)) {
+            NuspecFile nuspec = nupkgFile.getNuspecFile();
+            if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
+                return nupkgFile;
             }
-            // Открывает временный файл, копирует его в место постоянного хранения.
-            File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
-            File finalDest = new File(rootFolder, nupkgFile.getFileName());
-            FileChannel dest;
-            try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
-                dest = new FileOutputStream(tmpDest).getChannel();
-                TempNupkgFile.fastChannelCopy(src, dest);
-            }
-            dest.close();
-            if (!renameFile(tmpDest, finalDest)) {
-                throw new IOException("Не удалось переименовать файл " + tmpDest
-                        + " в " + finalDest);
-            }
-            return true;
         }
+        return null;
+    }
 
-        /**
-         * Извлекает информацию о последних версиях всех пакетов
-         *
-         * @param list общий список всех пакетов
-         * @param ignoreCase нужно ли игнорировать регистр символов
-         * @return список последних версий пакетов
-         */
-    
+    @Override
+    public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
+        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+            return false;
+        }
+        // Открывает временный файл, копирует его в место постоянного хранения.
+        File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
+        File finalDest = new File(rootFolder, nupkgFile.getFileName());
+        FileChannel dest;
+        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
+            dest = new FileOutputStream(tmpDest).getChannel();
+            TempNupkgFile.fastChannelCopy(src, dest);
+        }
+        dest.close();
+        if (!renameFile(tmpDest, finalDest)) {
+            throw new IOException("Не удалось переименовать файл " + tmpDest
+                    + " в " + finalDest);
+        }
+        return true;
+    }
 
+    /**
+     * Извлекает информацию о последних версиях всех пакетов
+     *
+     * @param list общий список всех пакетов
+     * @param ignoreCase нужно ли игнорировать регистр символов
+     * @return список последних версий пакетов
+     */
     protected Collection<Nupkg> extractLastVersion(
             Collection<Nupkg> list, boolean ignoreCase) {
         Map<String, Nupkg> map = new HashMap();
-
         for (Nupkg pack : list) {
             String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
             // Указанный пакет еще учитывался

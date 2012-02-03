@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.files.TempNupkgFile;
@@ -100,5 +100,20 @@ public class RssIntegrationTests {
         WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Packages");
         //THEN
         assertTrue(response.getText().contains("Packages(Id='NUnit',Version='2.5.9.10348')"));
+    }
+
+    /**
+     * Тест получения количества пакетов
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetPackageCount() throws Exception {
+        //GIVEN
+        WebConversation webConversation = new WebConversation();
+        //WHEN
+        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net40");
+        //THEN
+        assertEquals("В хранилище должно быть определенное количество пакетов", "1", response.getText());
     }
 }
