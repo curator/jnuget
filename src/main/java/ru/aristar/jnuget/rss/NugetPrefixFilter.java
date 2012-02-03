@@ -9,15 +9,26 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 /**
+ * Фильтр, переносящий декларацию некоторых пространств имен в корневой элемент
+ * документа
  *
  * @author sviridov
  */
 public class NugetPrefixFilter extends XMLFilterImpl {
 
+    /**
+     * @param uriToPrefix маппинг URI на префикс
+     */
     public NugetPrefixFilter(Map<String, String> uriToPrefix) {
         this.uriToPrefix = uriToPrefix;
     }
+    /**
+     * маппинг URI на префикс
+     */
     private final Map<String, String> uriToPrefix;
+    /**
+     * маппинг префикс на URI
+     */
     private final Map<String, String> prefixToUri = new HashMap<>();
 
     @Override
@@ -79,6 +90,14 @@ public class NugetPrefixFilter extends XMLFilterImpl {
         }
     }
 
+    /**
+     * Заменяет префикс у имени элемента
+     *
+     * @param uri URI элемента
+     * @param localName имя без префикса
+     * @param qName имя с префиксом
+     * @return имя с измененным префиксом
+     */
     private String changeNamePrefix(String uri, String localName, String qName) {
         if (uri != null && uriToPrefix.containsKey(uri)) {
             qName = uriToPrefix.get(uri) + ":" + localName;
