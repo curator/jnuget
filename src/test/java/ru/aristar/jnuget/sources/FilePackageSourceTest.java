@@ -10,8 +10,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.jmock.api.Expectation;
-import org.jmock.integration.junit4.JMock;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -30,6 +28,7 @@ public class FilePackageSourceTest {
      */
     private static File testFolder;
     private Mockery context = new Mockery();
+    private int mockId = 0;
 
     /**
      * Создает идентификатор фала пакета
@@ -40,16 +39,14 @@ public class FilePackageSourceTest {
      * @throws Exception некорректный формат версии
      */
     private Nupkg createNupkg(final String id, final String version) throws Exception {
-        final Nupkg pack = context.mock(Nupkg.class);
+        final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
 
             {
-                one(pack).getId();
+                atLeast(0).of(pack).getId();
                 will(returnValue(id));
-            }
-            {
-                one(pack).getVersion();
-                will(returnValue(version));
+                atLeast(0).of(pack).getVersion();
+                will(returnValue(Version.parse(version)));
             }
         });
 
@@ -125,11 +122,11 @@ public class FilePackageSourceTest {
         idList.add(lastB);
         //WHEN
         Collection<Nupkg> result = filePackageSource.extractLastVersion(idList, true);
-        NugetPackageId[] resArr = result.toArray(new NugetPackageId[0]);
-        Arrays.sort(resArr, new Comparator<NugetPackageId>() {
+        Nupkg[] resArr = result.toArray(new Nupkg[0]);
+        Arrays.sort(resArr, new Comparator<Nupkg>() {
 
             @Override
-            public int compare(NugetPackageId o1, NugetPackageId o2) {
+            public int compare(Nupkg o1, Nupkg o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());
             }
         });
