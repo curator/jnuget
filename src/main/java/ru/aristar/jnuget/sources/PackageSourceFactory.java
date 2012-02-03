@@ -3,6 +3,7 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Map;
+import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.OptionConverter;
@@ -78,7 +79,7 @@ public class PackageSourceFactory {
      * @return метод - сеттер
      * @throws NoSuchMethodException метод не найден
      */
-    protected Method findSetter(Class<? extends PackageSource> sourceClass, String propertyName) throws NoSuchMethodException {
+    protected Method findSetter(Class<?> sourceClass, String propertyName) throws NoSuchMethodException {
         String setterName = "set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
         for (Method method : sourceClass.getMethods()) {
             if (method.getName().equals(setterName) && method.getParameterTypes().length == 1) {
@@ -99,8 +100,12 @@ public class PackageSourceFactory {
             throws Exception {
         //Создание файлового хранилища
         logger.info("Инициализация хранилища типа {}", new Object[]{storageOptions.getClassName()});
-        Class<? extends PackageSource> sourceClass = (Class<? extends PackageSource>) Class.forName(storageOptions.getClassName());
-        PackageSource newSource = sourceClass.newInstance();
+        Class<?> sourceClass = Class.forName(storageOptions.getClassName());
+        Object object = sourceClass.newInstance();
+        if (!(object instanceof PackageSource)) {
+            throw new UnsupportedDataTypeException("Класс " + sourceClass + " не является хранилищем пакетов");
+        }
+        PackageSource newSource = (PackageSource) object;
         for (Map.Entry<String, String> entry : storageOptions.getProperties().entrySet()) {
             Method method = findSetter(sourceClass, entry.getKey());
             Class<?> valueType = method.getParameterTypes()[0];

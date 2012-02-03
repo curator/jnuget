@@ -230,7 +230,7 @@ public class FilePackageSource implements PackageSource {
      */
     protected Collection<Nupkg> extractLastVersion(
             Collection<Nupkg> list, boolean ignoreCase) {
-        Map<String, Nupkg> map = new HashMap();
+        Map<String, Nupkg> map = new HashMap<>();
         for (Nupkg pack : list) {
             String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
             // Указанный пакет еще учитывался

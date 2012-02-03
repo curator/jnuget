@@ -13,7 +13,7 @@ public class PropertiesTypeAdapter extends XmlAdapter<Properties, Map<String, St
 
     @Override
     public Map<String, String> unmarshal(Properties properties) throws Exception {
-        Map result = new HashMap();
+        Map<String, String> result = new HashMap<>();
         for (Property property : properties.getProperties()) {
             result.put(property.name, property.value);
         }
