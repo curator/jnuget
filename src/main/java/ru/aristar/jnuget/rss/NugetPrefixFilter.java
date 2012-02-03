@@ -68,8 +68,6 @@ public class NugetPrefixFilter extends XMLFilterImpl {
         prefixToUri.put(prefix, uri);
         if (!uriToPrefix.containsKey(uri)) {
             super.startPrefixMapping(prefix, uri);
-        } else {
-            super.startPrefixMapping(uriToPrefix.get(uri), uri);
         }
     }
 
@@ -78,8 +76,6 @@ public class NugetPrefixFilter extends XMLFilterImpl {
         String uri = prefixToUri.get(prefix);
         if (!uriToPrefix.containsKey(uri)) {
             super.endPrefixMapping(prefix);
-        } else {
-            super.endPrefixMapping(uriToPrefix.get(uri));
         }
     }
 

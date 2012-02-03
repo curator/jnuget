@@ -1,16 +1,12 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.rss;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.rss.EntryProperties;
-import ru.aristar.jnuget.rss.PackageEntry;
-import ru.aristar.jnuget.rss.PackageFeed;
-import ru.aristar.jnuget.rss.PackageIdAndVersionComparator;
 
 /**
  *

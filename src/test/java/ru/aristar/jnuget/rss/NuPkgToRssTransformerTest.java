@@ -1,11 +1,11 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.rss;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import ru.aristar.jnuget.rss.PackageEntry;
+import org.junit.Test;
+import ru.aristar.jnuget.Version;
 
 /**
  *

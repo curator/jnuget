@@ -1,5 +1,6 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.IOException;
 import java.io.InputStream;
