@@ -93,25 +93,6 @@ public class FilePackageSource implements PackageSource {
     }
 
     /**
-     * Преобразует информацию в список файлов пакетов
-     *
-     * @param packages Информация о пакетах
-     * @return Список файлов пакетов
-     */
-    private Collection<Nupkg> convertIdsToPackages(Collection<NugetPackageId> packages) {
-        ArrayList<Nupkg> nupkgFiles = new ArrayList<>();
-        for (NugetPackageId pack : packages) {
-            try {
-                Nupkg current = convertIdToPackage(pack);
-                nupkgFiles.add(current);
-            } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
-                logger.warn("Не удалось прочитать пакет " + pack.toString(), e);
-            }
-        }
-        return nupkgFiles;
-    }
-
-    /**
      * Преобразует информацию в пакет
      *
      * @param pack информация о пакете
@@ -134,13 +115,13 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return Список объектов с информацией
      */
-    private List<NugetPackageId> getPackageList(FilenameFilter filter) {
-        ArrayList<NugetPackageId> packages = new ArrayList<>();
+    private List<Nupkg> getPackageList(FilenameFilter filter) {
+        ArrayList<Nupkg> packages = new ArrayList<>();
         for (File file : rootFolder.listFiles(filter)) {
             try {
-                NugetPackageId info = NugetPackageId.parse(file.getName());
-                packages.add(info);
-            } catch (NugetFormatException ex) {
+                Nupkg pack = new ClassicNupkg(file);
+                packages.add(pack);
+            } catch (NugetFormatException | JAXBException | IOException | SAXException ex) {
                 logger.warn("Не удалось разобрать имя файла", ex);
             }
         }
@@ -154,8 +135,7 @@ public class FilePackageSource implements PackageSource {
      * @return список пакетов
      */
     private Collection<Nupkg> getPackages(FilenameFilter filter) {
-        List<NugetPackageId> packages = getPackageList(filter);
-        return convertIdsToPackages(packages);
+        return getPackageList(filter);
     }
 
     @Override
@@ -167,10 +147,9 @@ public class FilePackageSource implements PackageSource {
     @Override
     public Nupkg getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
-        for (Nupkg nupkgFile : getPackages(filenameFilter)) {
-            NuspecFile nuspec = nupkgFile.getNuspecFile();
-            if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
-                return nupkgFile;
+        for (Nupkg pack : getPackages(filenameFilter)) {
+            if (pack.getId().equals(id) && pack.getVersion().equals(version)) {
+                return pack;
             }
         }
         return null;
@@ -178,9 +157,8 @@ public class FilePackageSource implements PackageSource {
 
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
-        List<NugetPackageId> allPackages = getPackageList(new NupkgFileExtensionFilter());
-        Collection<NugetPackageId> lastVersions = extractLastVersion(allPackages, true);
-        return convertIdsToPackages(lastVersions);
+        List<Nupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
+        return extractLastVersion(allPackages, true);
     }
 
     @Override
@@ -203,17 +181,11 @@ public class FilePackageSource implements PackageSource {
     @Override
     public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-        Collection<NugetPackageId> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+        Collection<Nupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
         if (lastVersion.isEmpty()) {
             return null;
         }
-        NugetPackageId packageId = lastVersion.iterator().next();
-        try {
-            return convertIdToPackage(packageId);
-        } catch (JAXBException | IOException | SAXException | NugetFormatException e) {
-            logger.warn("Ошибка чтения архивного файла пакета " + packageId, e);
-            return null;
-        }
+        return lastVersion.iterator().next();
     }
 
     @Override
@@ -256,20 +228,19 @@ public class FilePackageSource implements PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
-    protected Collection<NugetPackageId> extractLastVersion(
-            Collection<NugetPackageId> list, boolean ignoreCase) {
-        Map<String, NugetPackageId> map = new HashMap();
-
-        for (NugetPackageId info : list) {
-            String packageId = ignoreCase ? info.getId().toLowerCase() : info.getId();
+    protected Collection<Nupkg> extractLastVersion(
+            Collection<Nupkg> list, boolean ignoreCase) {
+        Map<String, Nupkg> map = new HashMap();
+        for (Nupkg pack : list) {
+            String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
             // Указанный пакет еще учитывался
             if (!map.containsKey(packageId)) {
-                map.put(packageId, info);
+                map.put(packageId, pack);
             } else { // Пакет уже попадался, сравниваем версии
                 Version saved = map.get(packageId).getVersion();
                 // Версия пакета новее, чем сохраненная
-                if (saved.compareTo(info.getVersion()) < 0) {
-                    map.put(packageId, info);
+                if (saved.compareTo(pack.getVersion()) < 0) {
+                    map.put(packageId, pack);
                 }
             }
         }

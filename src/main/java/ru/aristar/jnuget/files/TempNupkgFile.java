@@ -15,12 +15,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
+import ru.aristar.jnuget.Version;
 
 /**
  *
  * @author sviridov
  */
-public class TempNupkgFile extends ClassicNupkg implements AutoCloseable {
+public class TempNupkgFile implements Nupkg, AutoCloseable {
+
+    private Hash hash;
+    private File file;
+    private Date updated;
+    private NuspecFile nuspecFile;
 
     /**
      * Копирует данные из одного канала в другой
@@ -152,5 +158,28 @@ public class TempNupkgFile extends ClassicNupkg implements AutoCloseable {
                 }
             }
         }
+    }
+
+    @Override
+    public String getFileName() {
+        return getId() + "." + getVersion().toString() + DEFAULT_EXTENSION;
+    }
+
+    @Override
+    public Long getSize() {
+        if (file == null) {
+            return null;
+        }
+        return file.length();
+    }
+
+    @Override
+    public String getId() {
+        return getNuspecFile().getId();
+    }
+
+    @Override
+    public Version getVersion() {
+        return getNuspecFile().getVersion();
     }
 }

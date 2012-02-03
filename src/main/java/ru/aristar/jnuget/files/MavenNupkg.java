@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import ru.aristar.jnuget.Version;
 
 /**
  *
@@ -38,6 +39,16 @@ public class MavenNupkg implements Nupkg {
 
     @Override
     public Date getUpdated() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getId() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Version getVersion() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
