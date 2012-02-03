@@ -6,7 +6,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>NuGet Private Repository</title>
-        <style>
+        <style type="text/css">
             body { font-family: Calibri; }
         </style>
     </head>
@@ -19,7 +19,7 @@
                 Click <a href="nuget/nuget/Packages">here</a> to view your packages.
             </p>
             <fieldset style="width:800px">
-                <legend><strong>Repository URLs</strong></legend>
+                <legend><strong>Repository URL's</strong></legend>
                 In the package manager settings, add the following URL to the list of 
                 Package Sources:
                 <blockquote>
