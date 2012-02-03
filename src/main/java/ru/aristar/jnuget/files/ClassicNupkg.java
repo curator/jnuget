@@ -69,9 +69,7 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public String getFileName() {
-        return getNuspecFile().
-                getId() + "."
-                + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
+        return getId() + "." + getVersion().toString() + DEFAULT_EXTENSION;
     }
 
     @Override
