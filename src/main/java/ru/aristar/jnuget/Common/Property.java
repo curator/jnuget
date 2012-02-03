@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Свойство класса
  *
  * @author sviridov
  */
@@ -13,14 +14,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Property {
 
+    /**
+     * Имя свойства
+     */
     @XmlAttribute(name = "name")
     public String name;
+    /**
+     * Строковое значение свойства
+     */
     @XmlAttribute(name = "value")
     public String value;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public Property() {
     }
 
+    /**
+     * @param name имя свойства
+     * @param value строковое значение свойства
+     */
     public Property(String name, String value) {
         this.name = name;
         this.value = value;

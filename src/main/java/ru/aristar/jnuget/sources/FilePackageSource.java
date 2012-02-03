@@ -36,6 +36,22 @@ public class FilePackageSource implements PackageSource {
     private PushStrategy strategy;
 
     /**
+     * Устанавливает корневую папку хранилища (если папка не существует -
+     * производит попытку создать ее)
+     *
+     * @param rootFolder корневая пака хранилища
+     */
+    private void setRootFolder(File rootFolder) {
+        final String folderName = rootFolder == null ? null : rootFolder.getAbsolutePath();
+        logger.info("Устанавливается корневая папка хранилища: {}", new Object[]{folderName});
+        this.rootFolder = rootFolder;
+        if (!rootFolder.exists()) {
+            rootFolder.mkdirs();
+        }
+
+    }
+
+    /**
      * Конструктор по умолчанию
      */
     public FilePackageSource() {
@@ -45,10 +61,21 @@ public class FilePackageSource implements PackageSource {
      * @param rootFolder папка с пакетами
      */
     public FilePackageSource(File rootFolder) {
-        this.rootFolder = rootFolder;
-        if (!rootFolder.exists()) {
-            rootFolder.mkdirs();
-        }
+        setRootFolder(rootFolder);
+    }
+
+    /**
+     * @return полное имя папки с пакетами
+     */
+    public String getFolderName() {
+        return rootFolder == null ? null : rootFolder.getAbsolutePath();
+    }
+
+    /**
+     * @param pathName полное имя папки с пакетами
+     */
+    public void setFolderName(String pathName) {
+        setRootFolder(new File(pathName));
     }
 
     /**
@@ -92,7 +119,7 @@ public class FilePackageSource implements PackageSource {
      * @throws JAXBException ошибка разбора XML
      * @throws IOException ошибка чтения файла с диска
      * @throws SAXException ошибка изменения пространства имен
-     * @throws NugetFormatException ошибка формата пакета 
+     * @throws NugetFormatException ошибка формата пакета
      */
     private ClassicNupkg convertIdToPackage(NugetPackageId pack)
             throws JAXBException, IOException, SAXException, NugetFormatException {

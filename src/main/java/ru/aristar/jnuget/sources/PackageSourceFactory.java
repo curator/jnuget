@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.OptionConverter;
@@ -58,10 +60,32 @@ public class PackageSourceFactory {
         }
 
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
-            PackageSource childSource = createPackageSource(storageOptions);
-            rootPackageSource.getSources().add(childSource);
+            try {
+                PackageSource childSource = createPackageSource(storageOptions);
+                rootPackageSource.getSources().add(childSource);
+            } catch (Exception e) {
+                logger.warn("Ошибка создания хранилища пакетов", e);
+            }
         }
         return rootPackageSource;
+    }
+
+    /**
+     * Производит поиск сеттера для свойства
+     *
+     * @param sourceClass класс, в котором производится поиск сеттера
+     * @param propertyName имя свойства
+     * @return метод - сеттер
+     * @throws NoSuchMethodException метод не найден
+     */
+    protected Method findSetter(Class<? extends PackageSource> sourceClass, String propertyName) throws NoSuchMethodException {
+        String setterName = "set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+        for (Method method : sourceClass.getMethods()) {
+            if (method.getName().equals(setterName) && method.getParameterTypes().length == 1) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException("Метод " + setterName + " не найден в классе " + sourceClass.getName());
     }
 
     /**
@@ -69,15 +93,23 @@ public class PackageSourceFactory {
      *
      * @param storageOptions настройки хранилища
      * @return хранилище пакетов
+     * @throws Exception ошибка создания хранилища
      */
-    protected PackageSource createPackageSource(StorageOptions storageOptions) {
+    protected PackageSource createPackageSource(StorageOptions storageOptions)
+            throws Exception {
         //Создание файлового хранилища
-        //TODO Заменить заглушку на нормальную реализацию
-        String folderName = OptionConverter.replaceVariables(storageOptions.getProperties().get("folderName"));
-        File file = new File(folderName);
-        FilePackageSource filePackageSource = new FilePackageSource(file);
-        logger.info("Создано файловое хранилище с адресом: {}", new Object[]{file});
-        return filePackageSource;
+        logger.info("Инициализация хранилища типа {}", new Object[]{storageOptions.getClassName()});
+        Class<? extends PackageSource> sourceClass = (Class<? extends PackageSource>) Class.forName(storageOptions.getClassName());
+        PackageSource newSource = sourceClass.newInstance();
+        for (Map.Entry<String, String> entry : storageOptions.getProperties().entrySet()) {
+            Method method = findSetter(sourceClass, entry.getKey());
+            Class<?> valueType = method.getParameterTypes()[0];
+            String stringValue = OptionConverter.replaceVariables(entry.getValue());
+            Object value = valueType.getConstructor(String.class).newInstance(stringValue);
+            method.invoke(newSource, value);
+        }
+        logger.info("Хранилище создано");
+        return newSource;
     }
 
     /**
