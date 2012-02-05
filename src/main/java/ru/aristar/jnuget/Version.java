@@ -3,6 +3,7 @@ package ru.aristar.jnuget;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import ru.aristar.jnuget.files.NugetFormatException;
 
 /**
  * Версия пакета
@@ -56,13 +57,13 @@ public class Version implements Comparable<Version> {
         return revision;
     }
 
-    public static Version parse(String input) throws Exception {
+    public static Version parse(String input) throws NugetFormatException {
         if (input == null) {
             return null;
         }
         Matcher matcher = pattern.matcher(input);
         if (!matcher.find()) {
-            throw new Exception("Аргумент неправильный. " + input);
+            throw new NugetFormatException("Аргумент неправильный. " + input);
         }
         Integer major = parseInt(matcher.group(1));
         Integer minor = parseInt(matcher.group(2));

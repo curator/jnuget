@@ -26,6 +26,8 @@ public class ClassicNupkg implements Nupkg {
     protected File file;
     protected Version version;
     protected String id;
+    
+    protected ClassicNupkg(){}
 
     public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
         this.file = file;
