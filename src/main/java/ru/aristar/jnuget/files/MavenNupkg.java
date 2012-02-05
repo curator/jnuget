@@ -28,24 +28,22 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
     protected MavenNupkg() {
         super();
     }
-
-    public static MavenNupkg ParseDirectoryStructure(File packDir) throws NugetFormatException {
+    
+    public MavenNupkg(File packDir) throws NugetFormatException {
         MavenNupkg nupkg = new MavenNupkg();
         if (!packDir.isDirectory()) {
             throw new NugetFormatException(String.format("По указанному пути '%s' располагается не папка.", packDir.getPath()));
         }
-        Version version = Version.parse(packDir.getName());
-        String id = packDir.getParent();
-        if (id == null) {
+        Version parsedVersion = Version.parse(packDir.getName());
+        String parsedId = packDir.getParent();
+        if (parsedId == null) {
             throw new NugetFormatException("Id пакета не может быть пустым.");
         }
-
-        nupkg.id = id;
+        nupkg.id = parsedId;
         nupkg.file = packDir;
-        nupkg.version = version;
-
-        return nupkg;
+        nupkg.version = parsedVersion;
     }
+    
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private File nupkgFile;
     private Long size;
@@ -100,9 +98,9 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
 
     @Override
     public InputStream getStream() throws IOException {
-        File nupkgFile = getNupkgFile();
-        if (nupkgFile != null) {
-            return new FileInputStream(nupkgFile);
+        File nupkg = getNupkgFile();
+        if (nupkg != null) {
+            return new FileInputStream(nupkg);
         }
         return null;
     }
