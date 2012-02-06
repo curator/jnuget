@@ -38,11 +38,24 @@ public class Index {
         }
     }
 
+    /**
+     * Итератор, перебирающий все пакеты в индексе
+     */
     public class AllPackagesIterator implements Iterator<Nupkg> {
 
+        /**
+         * Итератор по всем группам пакетов (пакеты группированы по
+         * идентификаторам)
+         */
         private final Iterator<TreeMap<Version, Nupkg>> iterator;
+        /**
+         * Текущая группа пакетов (разные версии одного пакета)
+         */
         private Iterator<Nupkg> currentGroup;
 
+        /**
+         * @param iterator итератор индекса
+         */
         public AllPackagesIterator(Iterator<TreeMap<Version, Nupkg>> iterator) {
             this.iterator = iterator;
             if (iterator.hasNext()) {
@@ -59,11 +72,24 @@ public class Index {
 
         @Override
         public Nupkg next() {
-            return currentGroup.next();
+            Nupkg result = currentGroup.next();
+            if (!currentGroup.hasNext()) {
+                switchGroup();
+            }
+            return result;
         }
 
         @Override
         public void remove() {
+        }
+
+        /**
+         * Переключает текущую группу пакетов на следующую
+         */
+        private void switchGroup() {
+            if (iterator.hasNext()) {
+                currentGroup = iterator.next().values().iterator();
+            }
         }
     }
 
@@ -75,10 +101,20 @@ public class Index {
         return new LastVersionIterator(treeMap.values().iterator());
     }
 
+    /**
+     * Возвращает итератор, перебирающий все пакеты в индексе
+     *
+     * @return итератор пакетов
+     */
     public Iterator<Nupkg> getAllPackages() {
         return new AllPackagesIterator(treeMap.values().iterator());
     }
 
+    /**
+     * Помещает пакет в индекс
+     *
+     * @param nupkg пакет, который следует поместить в индекс
+     */
     public void put(Nupkg nupkg) {
         TreeMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
         if (packageGroup == null) {
@@ -88,18 +124,33 @@ public class Index {
         packageGroup.put(nupkg.getVersion(), nupkg);
     }
 
+    /**
+     * Помещает все пакеты в индекс
+     *
+     * @param nupkgs набор пакетов
+     */
     public void putAll(Iterable<Nupkg> nupkgs) {
         for (Nupkg nupkg : nupkgs) {
             put(nupkg);
         }
     }
 
+    /**
+     * Помещает все пакеты в индекс
+     *
+     * @param nupkgs набор пакетов
+     */
     public void putAll(Nupkg... nupkgs) {
         for (Nupkg nupkg : nupkgs) {
             put(nupkg);
         }
     }
 
+    /**
+     * Удаляет пакет из индекса
+     *
+     * @param nupkg пакет, который необходимо удалить из индекса
+     */
     public void remove(Nupkg nupkg) {
         TreeMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
         if (packageGroup != null) {

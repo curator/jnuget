@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -14,8 +15,40 @@ import ru.aristar.jnuget.files.Nupkg;
  */
 public class IndexedFilePackageSource implements PackageSource {
 
-    private Index index = new Index();
-    private FilePackageSource packageSource;
+    /**
+     * Индекс пакетов
+     */
+    private volatile Index index = new Index();
+    /**
+     * Индексируемый источник пакетов
+     */
+    protected FilePackageSource packageSource = new FilePackageSource();
+    /**
+     * Логгер
+     */
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * Поторк, обновляющий индекс
+     */
+    private class RefreshIndexThread implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                refreshIndex();
+            } catch (Exception e) {
+                logger.error("Ошибка оновления индекса для хранилища " + getFolderName(), e);
+            }
+        }
+    }
+
+    private void refreshIndex() {
+        Collection<Nupkg> packages = packageSource.getPackages();
+        Index newIndex = new Index();
+        newIndex.putAll(packages);
+        this.index = newIndex;
+    }
 
     public Index getIndex() {
         return index;
@@ -24,7 +57,7 @@ public class IndexedFilePackageSource implements PackageSource {
     @Override
     public Collection<Nupkg> getPackages() {
         ArrayList<Nupkg> result = new ArrayList<>();
-        Iterator<Nupkg> iterator = index.getAllPackages();
+        Iterator<Nupkg> iterator = getIndex().getAllPackages();
         while (iterator.hasNext()) {
             result.add(iterator.next());
         }
@@ -34,7 +67,7 @@ public class IndexedFilePackageSource implements PackageSource {
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
         ArrayList<Nupkg> result = new ArrayList<>();
-        Iterator<Nupkg> iterator = index.getLastVersions();
+        Iterator<Nupkg> iterator = getIndex().getLastVersions();
         while (iterator.hasNext()) {
             result.add(iterator.next());
         }
@@ -89,5 +122,16 @@ public class IndexedFilePackageSource implements PackageSource {
     @Override
     public void setPushStrategy(PushStrategy strategy) {
         packageSource.setPushStrategy(strategy);
+    }
+
+    public Thread setFolderName(String folderName) {
+        packageSource.setFolderName(folderName);
+        Thread thread = new Thread(new RefreshIndexThread());
+        thread.start();
+        return thread;
+    }
+
+    public String getFolderName() {
+        return packageSource.getFolderName();
     }
 }
