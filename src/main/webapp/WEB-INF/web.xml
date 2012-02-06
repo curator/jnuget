@@ -10,9 +10,18 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>LauncherServlet</servlet-name>
+        <servlet-class>ru.aristar.jnuget.Common.LauncherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ServletAdaptor</servlet-name>
         <url-pattern>/nuget/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LauncherServlet</servlet-name>
+        <url-pattern>/LauncherServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

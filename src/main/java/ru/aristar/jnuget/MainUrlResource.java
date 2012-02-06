@@ -1,8 +1,6 @@
 package ru.aristar.jnuget;
 
-import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import com.sun.jersey.multipart.FormDataParam;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -12,10 +10,10 @@ import javax.ws.rs.core.*;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
+import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageFeed;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
@@ -40,7 +38,7 @@ public class MainUrlResource {
      */
     public MainUrlResource() {
     }
-
+    
     /**
      * Возвращает XML корневого узла сервера
      *

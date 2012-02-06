@@ -102,7 +102,13 @@ public class Index {
      * @return все версии пакета из индекса
      */
     public Collection<Nupkg> getPackageById(String id) {
-        return treeMap.get(id).values();
+        id = id.toLowerCase();
+        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        if (group == null) {
+            return null;
+        } else {
+            return treeMap.get(id).values();
+        }
     }
 
     /**
@@ -130,7 +136,7 @@ public class Index {
         TreeMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
         if (packageGroup == null) {
             packageGroup = new TreeMap<>();
-            treeMap.put(nupkg.getId(), packageGroup);
+            treeMap.put(nupkg.getId().toLowerCase(), packageGroup);
         }
         packageGroup.put(nupkg.getVersion(), nupkg);
     }
@@ -176,6 +182,7 @@ public class Index {
      * @return последняя версия пакета
      */
     public Nupkg getLastVersion(String id) {
+        id = id.toLowerCase();
         TreeMap<Version, Nupkg> group = treeMap.get(id);
         if (group != null) {
             return group.lastEntry().getValue();
@@ -192,6 +199,7 @@ public class Index {
      * @return пакет
      */
     public Nupkg getPackage(String id, Version version) {
+        id = id.toLowerCase();
         TreeMap<Version, Nupkg> group = treeMap.get(id);
         if (group != null) {
             return group.get(version);

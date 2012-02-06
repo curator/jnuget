@@ -1,3 +1,4 @@
+<%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="java.util.jar.Manifest"%>
 <%@page import="java.io.InputStream"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,13 +15,16 @@
     </head>
     <body>
         <div>
-            <%
+            <%                
                 String vesion = null;
                 try {
                     InputStream inputStream = getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
-                    Manifest manifest = new Manifest(inputStream);
-                    vesion = manifest.getMainAttributes().getValue("Implementation-Version");
+                    if (inputStream != null) {
+                        Manifest manifest = new Manifest(inputStream);
+                        vesion = manifest.getMainAttributes().getValue("Implementation-Version");
+                    }
                 } catch (Exception e) {
+                    LoggerFactory.getLogger("Index.page").warn("Ошибка определения версии пакета", e);
                 }
                 vesion = vesion == null ? "" : "v" + vesion;%>
             <h2>You are running JNuGet.Server <%=vesion%> </h2>
