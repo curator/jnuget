@@ -1,9 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.*;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -65,7 +62,8 @@ public class Index {
             if (iterator.hasNext()) {
                 currentGroup = iterator.next().values().iterator();
             } else {
-                currentGroup = Collections.EMPTY_LIST.iterator();
+                List<Nupkg> emptyList = Collections.emptyList();
+                currentGroup = emptyList.iterator();
             }
         }
 

@@ -1,3 +1,5 @@
+<%@page import="java.util.jar.Manifest"%>
+<%@page import="java.io.InputStream"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
@@ -12,7 +14,14 @@
     </head>
     <body>
         <div>
-            <%  String vesion = this.getClass().getPackage().getImplementationVersion();
+            <%
+                String vesion = null;
+                try {
+                    InputStream inputStream = getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
+                    Manifest manifest = new Manifest(inputStream);
+                    vesion = manifest.getMainAttributes().getValue("Implementation-Version");
+                } catch (Exception e) {
+                }
                 vesion = vesion == null ? "" : "v" + vesion;%>
             <h2>You are running JNuGet.Server <%=vesion%> </h2>
             <p>
