@@ -43,13 +43,23 @@ public class IndexedFilePackageSource implements PackageSource {
         }
     }
 
+    /**
+     * Перечитывает индекс хранилища
+     */
     private void refreshIndex() {
+        logger.info("Инициировано обновление индекса хранилища");
         Collection<Nupkg> packages = packageSource.getPackages();
         Index newIndex = new Index();
         newIndex.putAll(packages);
         this.index = newIndex;
+        logger.info("Обновление индекса хранилища завершено. Обнаружено {} пакетов", new Object[]{index.size()});
     }
 
+    /**
+     * Возвращает индекс хранилища
+     *
+     * @return индекс хранилища
+     */
     public Index getIndex() {
         return index;
     }
@@ -76,32 +86,32 @@ public class IndexedFilePackageSource implements PackageSource {
 
     @Override
     public Collection<Nupkg> getPackages(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getIndex().getPackageById(id);
     }
 
     @Override
     public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackages(id);
     }
 
     @Override
     public Nupkg getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getIndex().getLastVersion(id);
     }
 
     @Override
     public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLastVersionPackage(id);
     }
 
     @Override
     public Nupkg getPackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getIndex().getPackage(id, version);
     }
 
     @Override
     public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackage(id, version);
     }
 
     @Override
@@ -124,6 +134,10 @@ public class IndexedFilePackageSource implements PackageSource {
         packageSource.setPushStrategy(strategy);
     }
 
+    /**
+     * @param folderName полное имя папки с пакетами
+     * @return поток обновления индекса
+     */
     public Thread setFolderName(String folderName) {
         packageSource.setFolderName(folderName);
         Thread thread = new Thread(new RefreshIndexThread());
@@ -131,6 +145,9 @@ public class IndexedFilePackageSource implements PackageSource {
         return thread;
     }
 
+    /**
+     * @return полное имя папки с пакетами
+     */
     public String getFolderName() {
         return packageSource.getFolderName();
     }

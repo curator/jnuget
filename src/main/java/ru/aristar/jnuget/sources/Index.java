@@ -8,11 +8,15 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
+ * Индекс хранилища пакетов
  *
  * @author sviridov
  */
 public class Index {
 
+    /**
+     * Индекс пакетов
+     */
     private TreeMap<String, TreeMap<Version, Nupkg>> treeMap = new TreeMap<>();
 
     public class LastVersionIterator implements Iterator<Nupkg> {
@@ -93,10 +97,19 @@ public class Index {
         }
     }
 
+    /**
+     * Возвращает все версии указанного пакета
+     *
+     * @param id идентификатор пакета
+     * @return все версии пакета из индекса
+     */
     public Collection<Nupkg> getPackageById(String id) {
         return treeMap.get(id).values();
     }
 
+    /**
+     * @return последние версии пакетов
+     */
     public Iterator<Nupkg> getLastVersions() {
         return new LastVersionIterator(treeMap.values().iterator());
     }
@@ -156,5 +169,49 @@ public class Index {
         if (packageGroup != null) {
             packageGroup.remove(nupkg.getVersion());
         }
+    }
+
+    /**
+     * Возвращает последнюю версию пакета из индекса
+     *
+     * @param id идентификатор пакета
+     * @return последняя версия пакета
+     */
+    public Nupkg getLastVersion(String id) {
+        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        if (group != null) {
+            return group.lastEntry().getValue();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Возвращает пакет по спецификации
+     *
+     * @param id идеентификатор пакета
+     * @param version версия пакета
+     * @return пакет
+     */
+    public Nupkg getPackage(String id, Version version) {
+        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        if (group != null) {
+            return group.get(version);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Размер индекса
+     *
+     * @return количество пакетов в индексе
+     */
+    public int size() {
+        int result = 0;
+        for (TreeMap<Version, Nupkg> a : treeMap.values()) {
+            result = result + a.size();
+        }
+        return result;
     }
 }

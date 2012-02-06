@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
@@ -107,6 +108,30 @@ public class IndexTest {
     }
 
     /**
+     * Проверка получения размера индекса
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetIndexSize() throws Exception {
+        //GIVEN
+        Nupkg[] nupkgs = new Nupkg[]{
+            createNupkg("A", "1.1.0"),
+            createNupkg("A", "1.2.0"),
+            createNupkg("A", "1.2.0"),
+            createNupkg("B", "1.1.0"),
+            createNupkg("C", "2.1.0"),
+            createNupkg("C", "5.1.0")
+        };
+
+        Index index = new Index();
+        //WHEN
+        index.putAll(nupkgs);
+        //THEN
+        assertEquals("Размер индекса", 5, index.size());
+    }
+
+    /**
      * Проверка получения последних версий пакетов
      *
      * @throws Exception ошибка в процессе теста
@@ -131,5 +156,32 @@ public class IndexTest {
         //THEN
         sortNupkgArray(result);
         assertArrayEquals("Последние версии пакетов", new Nupkg[]{lastA, lastB, lastC}, result);
+    }
+
+    /**
+     * Проверка получения всех версий пакета
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetAllPackageVersionById() throws Exception {
+        //GIVEN
+        Nupkg firstA, lastA;
+        Nupkg[] nupkgs = new Nupkg[]{
+            firstA = createNupkg("A", "1.1.0"),
+            lastA = createNupkg("A", "1.2.0"),
+            createNupkg("B", "1.1.0"),
+            createNupkg("C", "2.1.0"),
+            createNupkg("C", "5.1.0")
+        };
+
+        Index index = new Index();
+        index.putAll(nupkgs);
+
+        //WHEN
+        Nupkg[] result = index.getPackageById("A").toArray(new Nupkg[0]);
+        //THEN
+        sortNupkgArray(result);
+        assertArrayEquals("Версии пакета A", new Nupkg[]{firstA, lastA}, result);
     }
 }
