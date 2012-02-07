@@ -19,6 +19,7 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  */
 public class RssIntegrationTests {
 
+    //TODO Заменить HTTPUnit на HTMLUnit
     /**
      * Инициализация настроек интеграционных тестов
      *
