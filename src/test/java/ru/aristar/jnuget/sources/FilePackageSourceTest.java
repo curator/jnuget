@@ -30,7 +30,14 @@ public class FilePackageSourceTest {
      * Тестовая папка с пакетами
      */
     private static File testFolder;
+    /**
+     * Контекст создания заглушек
+     */
+    
     private Mockery context = new Mockery();
+    /**
+     * Идентификатор заглушки
+     */
     private int mockId = 0;
 
     /**

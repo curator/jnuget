@@ -1,7 +1,6 @@
 package ru.aristar.jnuget.sources;
 
 import java.util.Objects;
-import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
