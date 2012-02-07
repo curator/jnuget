@@ -24,8 +24,9 @@ public class OptionsTest {
         assertFalse("Файла с настройками не должно существовать перед тестом", file.exists());
         //WHEN
         Options options = Options.loadOptions();
-        //THEN
+        //THEN        
         assertTrue("Файл с настройками должен быть создан", file.exists());
+        assertNull("Стратегия корневого хранилища не устанавливается", options.getStrategyOptions());
         assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
         assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
         assertNull("По умолчанию стратегия пула не задается", options.getStorageOptionsList().get(0).getStrategyOptions());
@@ -44,7 +45,9 @@ public class OptionsTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.test.config.xml");
         //WHEN
         Options options = Options.parse(inputStream);
-        //THEN        
+        //THEN       
+        assertEquals("Класс корневой стратегии фиксации", "PUSH_CLASS_GLOBAL", options.getStrategyOptions().getClassName());
+        assertEquals("Свойство стратегии фиксации", "value_g", options.getStrategyOptions().getProperties().get("property_g"));
         assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
         assertEquals("Класс хранилища 1", "TEST_CLASS_1", options.getStorageOptionsList().get(0).getClassName());
         assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName"));

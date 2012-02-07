@@ -57,6 +57,11 @@ public class Options {
      */
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
+     * Стратегия фиксации для всего хранилища
+     */
+    @XmlElement(name = "pushStrategy")
+    private PushStrategyOptions strategyOptions;
+    /**
      * Список настроек хранилищ
      */
     @XmlElement(name = "storage")
@@ -78,6 +83,20 @@ public class Options {
      */
     public void setStorageOptionsList(List<StorageOptions> storageOptionsList) {
         this.storageOptionsList = storageOptionsList;
+    }
+
+    /**
+     * @return Стратегия фиксации для всего хранилища
+     */
+    public PushStrategyOptions getStrategyOptions() {
+        return strategyOptions;
+    }
+
+    /**
+     * @param strategyOptions Стратегия фиксации для всего хранилища
+     */
+    public void setStrategyOptions(PushStrategyOptions strategyOptions) {
+        this.strategyOptions = strategyOptions;
     }
 
     /**

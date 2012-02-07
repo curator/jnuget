@@ -51,6 +51,21 @@ public class PackageSourceFactory {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
+        PushStrategy pushStrategy = null;
+        try {
+            if (serviceOptions.getStrategyOptions() != null) {
+                pushStrategy = createPushStrategy(serviceOptions.getStrategyOptions());
+                rootPackageSource.setPushStrategy(pushStrategy);
+            }
+        } catch (Exception e) {
+            logger.error("Ошибка создания стратегии фиксации", e);
+        }
+        if (rootPackageSource.getPushStrategy() == null) {
+            rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
+            logger.warn("Для репозитория устанавливается разрешается "
+                    + "публикация пакетов.");
+        }
+
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 PackageSource childSource = createPackageSource(storageOptions);
@@ -159,7 +174,8 @@ public class PackageSourceFactory {
     public static PackageSourceFactory getInstance() {
         if (instance == null) {
             synchronized (PackageSourceFactory.class) {
-                if (instance == null) {
+                if (instance
+                        == null) {
                     instance = new PackageSourceFactory();
                 }
             }

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<options>   
+<options>  
+    <pushStrategy class="PUSH_CLASS_GLOBAL">
+        <properties>
+            <property name="property_g" value="value_g"/>
+        </properties>                
+    </pushStrategy>
     <storages>
         <storage class="TEST_CLASS_1">
             <properties>
