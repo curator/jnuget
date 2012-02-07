@@ -7,14 +7,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.NuspecFile;
-import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.files.*;
 
 /**
  * Хранилище пакетов, имитирующее структуру хранилища Maven.
@@ -22,14 +22,6 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  * @author unlocker
  */
 public class MavenStylePackageSource implements PackageSource {
-    /**
-     * Название файла с контрольной суммой
-     */
-    public static final String HASH_FILE = "hash.sha512";
-    /**
-     * Название извлеченного файла nuspec
-     */
-    public static final String NUSPEC_FILE = "nuspec.xml";
 
     /**
      * Корневая папка, в которой расположены пакеты
@@ -62,42 +54,73 @@ public class MavenStylePackageSource implements PackageSource {
 
     @Override
     public Collection<Nupkg> getPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Nupkg> list = new ArrayList<>();
+        for (String id : rootFolder.list()) {
+            list.addAll(getPackagesById(id));
+        }
+        return list;
     }
 
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Nupkg> list = new ArrayList<>();
+        for (String id : rootFolder.list()) {
+            list.add(getLastVersionPackage(id));
+        }
+        return list;
     }
 
     @Override
     public Collection<Nupkg> getPackages(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackages(id, true);
     }
 
     @Override
     public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackagesById(id);
     }
 
     @Override
     public Nupkg getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLastVersionPackage(id, true);
     }
 
     @Override
     public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        File idDir = new File(rootFolder, id);
+        Nupkg lastVersion = null;
+        for (File versionDir : idDir.listFiles()) {
+            try {
+                Nupkg temp = new MavenNupkg(versionDir);
+                if (lastVersion == null || temp.getVersion().compareTo(lastVersion.getVersion()) > 0) {
+                    lastVersion = temp;
+                }
+            } catch (NugetFormatException ex) {
+                logger.error("Не удалось считать информацию о пакете.", ex);
+            }
+        }
+        return lastVersion;
     }
 
     @Override
     public Nupkg getPackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackage(id, version, true);
     }
 
     @Override
     public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        File idDir = new File(rootFolder, id);
+        for (File versionDir : idDir.listFiles()) {
+            try {
+                Nupkg temp = new MavenNupkg(versionDir);
+                if (temp.getVersion() == version) {
+                    return temp;
+                }
+            } catch (NugetFormatException ex) {
+                logger.error("Не удалось считать информацию о пакете.", ex);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -122,13 +145,13 @@ public class MavenStylePackageSource implements PackageSource {
         }
         try {
             // Сохраняем nuspec
-            File nuspecFile = new File(packageFolder, NUSPEC_FILE);
+            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE);
             try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
                 nupkgFile.getNuspecFile().saveTo(fileOutputStream);
             }
 
             // Сохраняем контрольную сумму
-            File hashFile = new File(packageFolder, HASH_FILE);
+            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE);
             try (FileOutputStream output = new FileOutputStream(hashFile)) {
                 nupkgFile.getHash().saveTo(output);
             }
@@ -171,5 +194,18 @@ public class MavenStylePackageSource implements PackageSource {
     @Override
     public void setPushStrategy(PushStrategy strategy) {
         this.strategy = strategy;
+    }
+
+    private Collection<Nupkg> getPackagesById(String id) {
+        File idDir = new File(rootFolder, id);
+        List<Nupkg> list = new ArrayList<>();
+        for (File versionDir : idDir.listFiles()) {
+            try {
+                list.add(new MavenNupkg(versionDir));
+            } catch (NugetFormatException ex) {
+                logger.error("Не удалось считать информацию о пакете.", ex);
+            }
+        }
+        return list;
     }
 }

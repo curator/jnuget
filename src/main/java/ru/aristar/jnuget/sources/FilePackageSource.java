@@ -93,23 +93,6 @@ public class FilePackageSource implements PackageSource {
     }
 
     /**
-     * Преобразует информацию в пакет
-     *
-     * @param pack информация о пакете
-     * @return Файл пакета
-     * @throws JAXBException ошибка разбора XML
-     * @throws IOException ошибка чтения файла с диска
-     * @throws SAXException ошибка изменения пространства имен
-     * @throws NugetFormatException ошибка формата пакета
-     */
-    private ClassicNupkg convertIdToPackage(NugetPackageId pack)
-            throws JAXBException, IOException, SAXException, NugetFormatException {
-        File file = new File(rootFolder, pack.toString());
-        ClassicNupkg nupkgFile = new ClassicNupkg(file);
-        return nupkgFile;
-    }
-
-    /**
      * Возвращает информацию по имеющимся пакетам
      *
      * @param filter фильтр файлов

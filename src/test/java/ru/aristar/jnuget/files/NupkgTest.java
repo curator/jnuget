@@ -5,14 +5,30 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Date;
+import junit.framework.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import ru.aristar.jnuget.Version;
 
 /**
  *
  * @author sviridov
  */
-public class NupkgFileTest {
+public class NupkgTest {
+
+    @Test
+    public void testParseWithFullVersion() throws Exception {
+        // Given
+        final String idStr = "NUnit";
+        final String versionStr = "2.5.9.10348";
+        final String filename = String.format("%s.%s.nupkg", idStr, versionStr);
+        // When
+        Nupkg result = new ClassicNupkg(new File(filename));
+        // Then
+        Assert.assertEquals("Неправильный id пакета", idStr, result.getId());
+        Assert.assertEquals("Неправильный версия пакета", Version.parse(versionStr), result.getVersion());
+        Assert.assertEquals("Неправильное имя файла", "NUnit.2.5.9.10348.nupkg", result.getFileName());
+    }
 
     @Test
     public void testReadNuspeck() throws Exception {

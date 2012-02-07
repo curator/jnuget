@@ -26,6 +26,8 @@ public class ClassicNupkg implements Nupkg {
     protected File file;
     protected Version version;
     protected String id;
+    
+    protected ClassicNupkg(){}
 
     public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
         this.file = file;
@@ -69,9 +71,7 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public String getFileName() {
-        return getNuspecFile().
-                getId() + "."
-                + getNuspecFile().getVersion().toString() + DEFAULT_EXTENSION;
+        return getId() + "." + getVersion().toString() + DEFAULT_EXTENSION;
     }
 
     @Override
