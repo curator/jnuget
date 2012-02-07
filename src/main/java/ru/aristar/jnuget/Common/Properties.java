@@ -16,7 +16,6 @@ public class Properties {
     /**
      * Список свойств
      */
-    @XmlElementWrapper(name = "properties")
     @XmlElement(name = "property")
     public List<Property> properties;
 

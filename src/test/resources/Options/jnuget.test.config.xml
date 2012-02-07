@@ -4,16 +4,12 @@
     <storages>
         <storage class="TEST_CLASS_1">
             <properties>
-                <properties>
-                    <property name="folderName" value="TEST_FOLDER_1"/>
-                </properties>
+                <property name="folderName" value="TEST_FOLDER_1"/>
             </properties>
         </storage>
         <storage class="TEST_CLASS_2">
             <properties>
-                <properties>
-                    <property name="folderName" value="TEST_FOLDER_2"/>
-                </properties>
+                <property name="folderName" value="TEST_FOLDER_2"/>
             </properties>
         </storage>
     </storages>

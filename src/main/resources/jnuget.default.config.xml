@@ -3,9 +3,7 @@
     <storages>
         <storage class="ru.aristar.jnuget.sources.FilePackageSource">
             <properties>
-                <properties>
-                    <property name="folderName" value="${nuget.home}/Packages/"/>
-                </properties>
+                <property name="folderName" value="${nuget.home}/Packages/"/>
             </properties>
         </storage>
     </storages>
