@@ -17,6 +17,7 @@ public class OptionsTest {
     @Test
     public void testGetDefaultOptions() {
         //GIVEN
+        //TODO Переделать тест так, чтобы он не заменял файл в папке пользователя
         final String userHome = System.getProperty("user.home");
         File file = new File(userHome + "/.nuget/" + Options.DEFAULT_OPTIONS_FILE_NAME);
         file.delete();

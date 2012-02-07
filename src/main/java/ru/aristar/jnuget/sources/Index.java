@@ -14,13 +14,22 @@ public class Index {
     /**
      * Индекс пакетов
      */
-    private TreeMap<String, TreeMap<Version, Nupkg>> treeMap = new TreeMap<>();
+    private SortedMap<String, SortedMap<Version, Nupkg>> treeMap = Collections.synchronizedSortedMap(new TreeMap<String, SortedMap<Version, Nupkg>>());
 
+    /**
+     * Итератор, перебирающий последние версии всех пакетов
+     */
     public class LastVersionIterator implements Iterator<Nupkg> {
 
-        private final Iterator<TreeMap<Version, Nupkg>> iterator;
+        /**
+         * Итератор групп пакетов (по идентификаторам)
+         */
+        private final Iterator<SortedMap<Version, Nupkg>> iterator;
 
-        public LastVersionIterator(Iterator<TreeMap<Version, Nupkg>> iterator) {
+        /**
+         * @param iterator Итератор групп пакетов (по идентификаторам)
+         */
+        public LastVersionIterator(Iterator<SortedMap<Version, Nupkg>> iterator) {
             this.iterator = iterator;
         }
 
@@ -31,7 +40,9 @@ public class Index {
 
         @Override
         public Nupkg next() {
-            return iterator.next().lastEntry().getValue();
+            SortedMap<Version, Nupkg> packageGroup = iterator.next();
+            Version key = packageGroup.lastKey();
+            return packageGroup.get(key);
         }
 
         @Override
@@ -48,7 +59,7 @@ public class Index {
          * Итератор по всем группам пакетов (пакеты группированы по
          * идентификаторам)
          */
-        private final Iterator<TreeMap<Version, Nupkg>> iterator;
+        private final Iterator<SortedMap<Version, Nupkg>> iterator;
         /**
          * Текущая группа пакетов (разные версии одного пакета)
          */
@@ -57,7 +68,7 @@ public class Index {
         /**
          * @param iterator итератор индекса
          */
-        public AllPackagesIterator(Iterator<TreeMap<Version, Nupkg>> iterator) {
+        public AllPackagesIterator(Iterator<SortedMap<Version, Nupkg>> iterator) {
             this.iterator = iterator;
             if (iterator.hasNext()) {
                 currentGroup = iterator.next().values().iterator();
@@ -103,7 +114,7 @@ public class Index {
      */
     public Collection<Nupkg> getPackageById(String id) {
         id = id.toLowerCase();
-        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        SortedMap<Version, Nupkg> group = treeMap.get(id);
         if (group == null) {
             return null;
         } else {
@@ -133,9 +144,9 @@ public class Index {
      * @param nupkg пакет, который следует поместить в индекс
      */
     public void put(Nupkg nupkg) {
-        TreeMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
+        SortedMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId().toLowerCase());
         if (packageGroup == null) {
-            packageGroup = new TreeMap<>();
+            packageGroup = Collections.synchronizedSortedMap(new TreeMap<Version, Nupkg>());
             treeMap.put(nupkg.getId().toLowerCase(), packageGroup);
         }
         packageGroup.put(nupkg.getVersion(), nupkg);
@@ -169,7 +180,7 @@ public class Index {
      * @param nupkg пакет, который необходимо удалить из индекса
      */
     public void remove(Nupkg nupkg) {
-        TreeMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
+        SortedMap<Version, Nupkg> packageGroup = treeMap.get(nupkg.getId());
         if (packageGroup != null) {
             packageGroup.remove(nupkg.getVersion());
         }
@@ -183,9 +194,10 @@ public class Index {
      */
     public Nupkg getLastVersion(String id) {
         id = id.toLowerCase();
-        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        SortedMap<Version, Nupkg> group = treeMap.get(id);
         if (group != null) {
-            return group.lastEntry().getValue();
+            Version key = group.lastKey();
+            return group.get(key);
         } else {
             return null;
         }
@@ -200,7 +212,7 @@ public class Index {
      */
     public Nupkg getPackage(String id, Version version) {
         id = id.toLowerCase();
-        TreeMap<Version, Nupkg> group = treeMap.get(id);
+        SortedMap<Version, Nupkg> group = treeMap.get(id);
         if (group != null) {
             return group.get(version);
         } else {
@@ -215,7 +227,7 @@ public class Index {
      */
     public int size() {
         int result = 0;
-        for (TreeMap<Version, Nupkg> a : treeMap.values()) {
+        for (SortedMap<Version, Nupkg> a : treeMap.values()) {
             result = result + a.size();
         }
         return result;

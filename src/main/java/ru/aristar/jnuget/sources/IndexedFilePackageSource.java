@@ -16,9 +16,13 @@ import ru.aristar.jnuget.files.Nupkg;
 public class IndexedFilePackageSource implements PackageSource {
 
     /**
+     * Монитор, обеспечивающий блокировку вставки пакетов при обновлении индекса
+     */
+    private static final Object monitor = new Object();
+    /**
      * Индекс пакетов
      */
-    private volatile Index index = new Index();
+    private volatile Index index = null;
     /**
      * Индексируемый источник пакетов
      */
@@ -47,12 +51,16 @@ public class IndexedFilePackageSource implements PackageSource {
      * Перечитывает индекс хранилища
      */
     private void refreshIndex() {
-        logger.info("Инициировано обновление индекса хранилища");
-        Collection<Nupkg> packages = packageSource.getPackages();
-        Index newIndex = new Index();
-        newIndex.putAll(packages);
-        this.index = newIndex;
-        logger.info("Обновление индекса хранилища завершено. Обнаружено {} пакетов", new Object[]{index.size()});
+        synchronized (monitor) {
+            logger.info("Инициировано обновление индекса хранилища");
+            Collection<Nupkg> packages = packageSource.getPackages();
+            Index newIndex = new Index();
+            //TODO Добавить активизацию полной инициализации пакета
+            newIndex.putAll(packages);
+            this.index = newIndex;
+            logger.info("Обновление индекса хранилища завершено. Обнаружено {} пакетов", new Object[]{index.size()});
+            monitor.notifyAll();
+        }
     }
 
     /**
@@ -61,6 +69,18 @@ public class IndexedFilePackageSource implements PackageSource {
      * @return индекс хранилища
      */
     public Index getIndex() {
+        if (index == null) {
+            try {
+                synchronized (monitor) {
+                    while (index == null) {
+                        logger.warn("Индекс не создан, ожидание создания индекса");
+                        monitor.wait();
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.error("Ожидание загрузки индекса прервано. Остановка потока");
+            }
+        }
         return index;
     }
 
@@ -116,12 +136,13 @@ public class IndexedFilePackageSource implements PackageSource {
 
     @Override
     public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
-        boolean result = packageSource.pushPackage(file, apiKey);
-        if (result) {
-            index.put(file);
+        synchronized (monitor) {
+            boolean result = packageSource.pushPackage(file, apiKey);
+            if (result) {
+                getIndex().put(file);
+            }
+            return result;
         }
-        return result;
-
     }
 
     @Override
