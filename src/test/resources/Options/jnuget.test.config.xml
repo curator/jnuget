@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <options>   
-    <ApiKey>TEST_API_KEY</ApiKey>
     <storages>
         <storage class="TEST_CLASS_1">
             <properties>
                 <property name="folderName" value="TEST_FOLDER_1"/>
             </properties>
+            <pushStrategy class="PUSH_CLASS_1">
+                <properties>
+                    <property name="property_1" value="value_1"/>
+                </properties>                
+            </pushStrategy>
         </storage>
         <storage class="TEST_CLASS_2">
             <properties>

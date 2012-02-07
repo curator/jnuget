@@ -31,9 +31,22 @@ public class ApiKeyPushStrategy implements PushStrategy {
     public ApiKeyPushStrategy() {
     }
 
-
     @Override
     public boolean canPush(Nupkg nupkgFile, String apiKey) {
         return Objects.equals(this.apiKey, apiKey);
+    }
+
+    /**
+     * @return Ключ (пароль), разрешающий публикацию пакета
+     */
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    /**
+     * @param apiKey Ключ (пароль), разрешающий публикацию пакета
+     */
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

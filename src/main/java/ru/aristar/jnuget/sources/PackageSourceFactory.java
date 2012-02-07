@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
@@ -8,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.OptionConverter;
 import ru.aristar.jnuget.Common.Options;
+import ru.aristar.jnuget.Common.PushStrategyOptions;
 import ru.aristar.jnuget.Common.StorageOptions;
 
 /**
@@ -51,15 +51,6 @@ public class PackageSourceFactory {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
-        //TODO Стратегию сделать персональной для каждого хранилища
-        if (serviceOptions.getApiKey() != null) {
-            rootPackageSource.setPushStrategy(new ApiKeyPushStrategy(serviceOptions.getApiKey()));
-            logger.info("Установлен ключ для фиксации пакетов");
-        } else {
-            rootPackageSource.setPushStrategy(new SimplePushStrategy(false));
-            logger.warn("Используется стратегия фиксации по умолчанию");
-        }
-
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 PackageSource childSource = createPackageSource(storageOptions);
@@ -106,15 +97,58 @@ public class PackageSourceFactory {
             throw new UnsupportedDataTypeException("Класс " + sourceClass + " не является хранилищем пакетов");
         }
         PackageSource newSource = (PackageSource) object;
-        for (Map.Entry<String, String> entry : storageOptions.getProperties().entrySet()) {
+        setObjectProperties(storageOptions.getProperties(), object);
+        if (storageOptions.getStrategyOptions() != null) {
+            PushStrategy pushStrategy = createPushStrategy(storageOptions.getStrategyOptions());
+            newSource.setPushStrategy(pushStrategy);
+            logger.info("Установлена стратегия по фиксации");
+        } else {
+            newSource.setPushStrategy(new SimplePushStrategy(false));
+            logger.warn("Используется стратегия фиксации по умолчанию");
+        }
+
+        logger.info("Хранилище создано");
+        return newSource;
+    }
+
+    /**
+     * Создает стратегию фиксации пакетов
+     *
+     * @param strategyOptions настройки стратегии
+     * @return стратегия фиксации
+     * @throws Exception ошибка создания стратегии
+     */
+    private PushStrategy createPushStrategy(PushStrategyOptions strategyOptions) throws Exception {
+        //Создание стратегии фиксации
+        logger.info("Инициализация стратегии типа {}", new Object[]{strategyOptions.getClassName()});
+        Class<?> sourceClass = Class.forName(strategyOptions.getClassName());
+        Object object = sourceClass.newInstance();
+        if (!(object instanceof PushStrategy)) {
+            throw new UnsupportedDataTypeException("Класс " + sourceClass + " не является стратегией публикации");
+        }
+        PushStrategy newSource = (PushStrategy) object;
+        setObjectProperties(strategyOptions.getProperties(), newSource);
+        logger.info("Стратегия создана");
+        return newSource;
+    }
+
+    /**
+     * Устанавливает свойства объекту
+     *
+     * @param properties карта свойств
+     * @param newObject объект
+     * @throws Exception ошибка установки свойств
+     */
+    private void setObjectProperties(Map<String, String> properties, Object newObject)
+            throws Exception {
+        Class<?> sourceClass = newObject.getClass();
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
             Method method = findSetter(sourceClass, entry.getKey());
             Class<?> valueType = method.getParameterTypes()[0];
             String stringValue = OptionConverter.replaceVariables(entry.getValue());
             Object value = valueType.getConstructor(String.class).newInstance(stringValue);
-            method.invoke(newSource, value);
+            method.invoke(newObject, value);
         }
-        logger.info("Хранилище создано");
-        return newSource;
     }
 
     /**

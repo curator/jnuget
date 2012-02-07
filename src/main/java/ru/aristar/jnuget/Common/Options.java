@@ -57,31 +57,11 @@ public class Options {
      */
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
-     * Ключ (пароль для публикации пакетов)
-     */
-    @XmlElement(name = "ApiKey")
-    private String apiKey;
-    /**
      * Список настроек хранилищ
      */
     @XmlElement(name = "storage")
     @XmlElementWrapper(name = "storages")
     private List<StorageOptions> storageOptionsList;
-
-    /**
-     *
-     * @return Ключ (пароль для публикации пакетов)
-     */
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    /**
-     * @param apiKey Ключ (пароль для публикации пакетов)
-     */
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
 
     /**
      * @return Список настроек хранилищ

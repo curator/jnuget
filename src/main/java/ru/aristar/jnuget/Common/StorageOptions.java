@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.NONE)
 public class StorageOptions {
 
+    //TODO объеденить StorageOptions с PushStrategyOptions  
     /**
      * Имя класса хранилища
      */
@@ -22,6 +23,11 @@ public class StorageOptions {
     @XmlJavaTypeAdapter(PropertiesTypeAdapter.class)
     @XmlElement(name = "properties")
     private Map<String, String> properties;
+    /**
+     * Стратегия публикации пакетов
+     */
+    @XmlElement(name = "pushStrategy")
+    private PushStrategyOptions strategyOptions;
 
     /**
      * @return Имя класса хранилища
@@ -45,5 +51,19 @@ public class StorageOptions {
             properties = new HashMap<>();
         }
         return properties;
+    }
+
+    /**
+     * @return Стратегия публикации пакетов
+     */
+    public PushStrategyOptions getStrategyOptions() {
+        return strategyOptions;
+    }
+
+    /**
+     * @param strategyOptions Стратегия публикации пакетов
+     */
+    public void setStrategyOptions(PushStrategyOptions strategyOptions) {
+        this.strategyOptions = strategyOptions;
     }
 }
