@@ -54,10 +54,10 @@ public class RootPackageSource implements PackageSource {
         HashMap<String, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
             for (Nupkg nupkgFile : source.getLastVersionPackages()) {
-                String packageId = nupkgFile.getNuspecFile().getId();
+                String packageId = nupkgFile.getId();
                 Nupkg storedPackage = result.get(packageId);
                 if (storedPackage == null
-                        || storedPackage.getNuspecFile().getVersion().compareTo(nupkgFile.getNuspecFile().getVersion()) < 0) {
+                        || storedPackage.getVersion().compareTo(nupkgFile.getVersion()) < 0) {
                     result.put(packageId, nupkgFile);
                 }
             }
