@@ -74,6 +74,7 @@ public class PackageSourceFactory {
                 logger.warn("Ошибка создания хранилища пакетов", e);
             }
         }
+        logger.info("Создано {} хранилищ", new Object[]{rootPackageSource.getSources().size()});
         return rootPackageSource;
     }
 

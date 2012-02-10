@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -70,7 +71,9 @@ public class RootPackageSource implements PackageSource {
         HashMap<Version, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
             for (Nupkg file : source.getPackages(id)) {
-                result.put(file.getNuspecFile().getVersion(), file);
+                if (file != null) {
+                    result.put(file.getVersion(), file);
+                }
             }
         }
         return result.values();
@@ -81,7 +84,9 @@ public class RootPackageSource implements PackageSource {
         HashMap<Version, Nupkg> result = new HashMap<>();
         for (PackageSource source : getSources()) {
             for (Nupkg file : source.getPackages(id, ignoreCase)) {
-                result.put(file.getNuspecFile().getVersion(), file);
+                if (file != null) {
+                    result.put(file.getVersion(), file);
+                }
             }
         }
         return result.values();

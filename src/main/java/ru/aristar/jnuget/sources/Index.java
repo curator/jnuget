@@ -116,7 +116,7 @@ public class Index {
         id = id.toLowerCase();
         SortedMap<Version, Nupkg> group = treeMap.get(id);
         if (group == null) {
-            return null;
+            return Arrays.asList(new Nupkg[]{});
         } else {
             return treeMap.get(id).values();
         }
