@@ -63,9 +63,9 @@ public class MavenNupkgTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
-        FileWriter fileWriter = new FileWriter(hashFile);
-        fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
-        fileWriter.flush();
+        try (FileWriter fileWriter = new FileWriter(hashFile)) {
+            fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
+        }
         //WHEN
         MavenNupkg mavenNupkg = new MavenNupkg(versionFolder);
         //THEN
@@ -123,6 +123,29 @@ public class MavenNupkgTest {
         File targetFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
+        //WHEN
+        MavenNupkg result = new MavenNupkg(versionFolder);
+        System.out.println(result);
+    }
+
+    /**
+     * Создание пакета из каталога, в котором нет файла спецификации
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test(expected = NugetFormatException.class)
+    public void testCreateWhereNoNuspecFile() throws Exception {
+        //GIVEN
+        File idFolder = new File(testFolder, "NUnit/");
+        File versionFolder = new File(idFolder, "2.5.9.10348/");
+        versionFolder.mkdirs();
+        File targetFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
+        File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
+        try (FileWriter fileWriter = new FileWriter(hashFile)) {
+            fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
+        }
         //WHEN
         MavenNupkg result = new MavenNupkg(versionFolder);
         System.out.println(result);
