@@ -145,7 +145,7 @@ public class MavenStylePackageSource implements PackageSource {
         }
         try {
             // Сохраняем nuspec
-            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE);
+            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE_NAME);
             try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
                 nupkgFile.getNuspecFile().saveTo(fileOutputStream);
             }

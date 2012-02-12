@@ -66,6 +66,9 @@ public class MavenNupkgTest {
         try (FileWriter fileWriter = new FileWriter(hashFile)) {
             fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
         }
+        File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
+        InputStream nuspecStream = this.getClass().getResourceAsStream("/NUnit.nuspec.xml");
+        TempNupkgFile.fastChannelCopy(Channels.newChannel(nuspecStream), new FileOutputStream(nuspecFile).getChannel());
         //WHEN
         MavenNupkg mavenNupkg = new MavenNupkg(versionFolder);
         //THEN

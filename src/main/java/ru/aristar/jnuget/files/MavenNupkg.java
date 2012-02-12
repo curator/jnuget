@@ -2,14 +2,12 @@ package ru.aristar.jnuget.files;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import javax.imageio.IIOException;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.sources.NupkgFileExtensionFilter;
 
 /**
  *
@@ -24,7 +22,7 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
     /**
      * Название извлеченного файла nuspec
      */
-    public static final String NUSPEC_FILE = "nuspec.xml";
+    public static final String NUSPEC_FILE_NAME = "nuspec.xml";
     /**
      * Логгер
      */
@@ -43,11 +41,14 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
         if (!packageFolder.isDirectory()) {
             throw new NugetFormatException(String.format("По указанному пути '%s' располагается не папка.", packageFolder.getAbsolutePath()));
         }
-        if (!folderContaintsPackageFile(packageFolder)) {
+        if (!folderContainsPackageFile(packageFolder)) {
             throw new NugetFormatException(String.format("Каталог '%s' не содержит файла пакета.", packageFolder.getAbsolutePath()));
         }
-        if (!folderContaintsHashFile(packageFolder)) {
+        if (!folderContainsFile(packageFolder, HASH_FILE_NAME)) {
             throw new NugetFormatException(String.format("Каталог '%s' не содержит файла хеша.", packageFolder.getAbsolutePath()));
+        }
+        if (!folderContainsFile(packageFolder, NUSPEC_FILE_NAME)) {
+            throw new NugetFormatException(String.format("Каталог '%s' не содержит файла спецификации.", packageFolder.getAbsolutePath()));
         }
         String parsedId = packageFolder.getParentFile().getName();
         this.id = parsedId;
@@ -76,11 +77,8 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
     @Override
     public Hash getHash() throws NoSuchAlgorithmException, IOException {
         if (hash == null) {
-            for (File curFile : packageFolder.listFiles()) {
-                if (curFile.getName().equalsIgnoreCase(HASH_FILE_NAME)) {
-                    hash = readHash(curFile);
-                }
-            }
+            File hashFile = new File(packageFolder, HASH_FILE_NAME);
+            hash = readHash(hashFile);
         }
         return hash;
     }
@@ -88,14 +86,11 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
     @Override
     public NuspecFile getNuspecFile() {
         if (nuspecFile == null) {
-            for (File curFile : packageFolder.listFiles()) {
-                if (curFile.getName().equalsIgnoreCase(NUSPEC_FILE)) {
-                    try (InputStream input = new FileInputStream(curFile)) {
-                        return nuspecFile = NuspecFile.Parse(input);
-                    } catch (JAXBException | SAXException | IOException ex) {
-                        logger.error("При чтении nuspec-файла произошла ошибка.", ex);
-                    }
-                }
+            File nuspec = new File(packageFolder, NUSPEC_FILE_NAME);
+            try (InputStream inputStream = new FileInputStream(nuspec)) {
+                nuspecFile = NuspecFile.Parse(inputStream);
+            } catch (JAXBException | SAXException | IOException e) {
+                logger.error("При чтении nuspec-файла произошла ошибка.", e);
             }
         }
         return nuspecFile;
@@ -113,21 +108,9 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
 
     private File getNupkgFile() {
         if (file == null) {
-            for (File curFile : packageFolder.listFiles(new NupkgFileExtensionFilter())) {
-                if (curFile.getName().equalsIgnoreCase(getFileName())) {
-                    file = curFile;
-                }
-            }
+            file = new File(packageFolder, getFileName());
         }
         return file;
-    }
-
-    @Override
-    public Date getUpdated() {
-        if (updated == null) {
-            updated = new Date(file.lastModified());
-        }
-        return updated;
     }
 
     /**
@@ -136,7 +119,7 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
      * @param packageFolder каталог
      * @return true, если каталог содержит nupkg файл
      */
-    private boolean folderContaintsPackageFile(File packageFolder) {
+    private boolean folderContainsPackageFile(File packageFolder) {
         for (String fileName : packageFolder.list()) {
             if (fileName.toLowerCase().endsWith(Nupkg.DEFAULT_EXTENSION)) {
                 return true;
@@ -146,17 +129,14 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
     }
 
     /**
-     * Проверка того, что каталог содержит файл хеша
+     * Проверка того, что каталог содержит файл
      *
      * @param packageFolder каталог
-     * @return true, если каталог содержит файл хеша
+     * @param fileName имя файла
+     * @return true, если каталог содержит файл
      */
-    private boolean folderContaintsHashFile(File packageFolder) {
-        for (String fileName : packageFolder.list()) {
-            if (fileName.toLowerCase().endsWith(HASH_FILE_NAME)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean folderContainsFile(File packageFolder, String fileName) {
+        File testFile = new File(packageFolder, fileName);
+        return testFile.exists();
     }
 }

@@ -26,20 +26,20 @@ public class ClassicNupkg implements Nupkg {
     protected File file;
     protected Version version;
     protected String id;
-    
-    protected ClassicNupkg(){}
+
+    protected ClassicNupkg() {
+    }
 
     public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
         this.file = file;
-        this.updated = new Date(file.lastModified());
         parse(file.getName());
     }
-    
-    public String getId(){
+
+    public String getId() {
         return id;
     }
-    
-    public Version getVersion(){
+
+    public Version getVersion() {
         return version;
     }
 
@@ -57,6 +57,9 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public Date getUpdated() {
+        if (updated == null) {
+            this.updated = new Date(file.lastModified());
+        }
         return updated;
     }
 
