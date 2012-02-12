@@ -151,7 +151,7 @@ public class MavenStylePackageSource implements PackageSource {
             }
 
             // Сохраняем контрольную сумму
-            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE);
+            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
             try (FileOutputStream output = new FileOutputStream(hashFile)) {
                 nupkgFile.getHash().saveTo(output);
             }

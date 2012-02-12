@@ -2,6 +2,7 @@ package ru.aristar.jnuget.sources;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -9,10 +10,12 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
+import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
@@ -51,6 +54,10 @@ public class MavenStylePackageSourceTest {
                     FileChannel targetChannel = new FileOutputStream(targetFile).getChannel();) {
                 TempNupkgFile.fastChannelCopy(sourceChannel, targetChannel);
             }
+            File hashfile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
+            try (FileWriter fileWriter = new FileWriter(hashfile)) {
+                fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
+            }
         }
     }
 
@@ -58,17 +65,23 @@ public class MavenStylePackageSourceTest {
      * Удаление тестового каталога
      */
     @AfterClass
-    public static void removeTestFolder() {
+    public static void removeTestFolder() throws IOException {
         if (testFolder != null && testFolder.exists()) {
-            testFolder.delete();
+            FileUtils.deleteDirectory(testFolder);
         }
-
+        
     }
 
+    /**
+     * Получение списка пакетов с указанным идентификатором
+     */
     @Test
     public void testGetPackagesById() {
+        //GIVEN
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
+        //WHEN
         Collection<Nupkg> result = packageSource.getPackages("NUnit");
+        //THEN
         assertNotNull("Коллекция пакетов", result);
         assertEquals("Пакетов в коллекции", 1, result.size());
         assertEquals("Идентификатор пакета", "NUnit", result.iterator().next().getId());
