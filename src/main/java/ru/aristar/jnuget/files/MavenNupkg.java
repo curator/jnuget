@@ -1,8 +1,10 @@
 package ru.aristar.jnuget.files;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import javax.imageio.IIOException;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,29 +58,11 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
         this.version = Version.parse(packageFolder.getName());;
     }
 
-    /**
-     * Метод читает хеш из файла
-     *
-     * @param file файл с хешем
-     * @return хеш пакета
-     * @throws IOException ошибка чтения пакета
-     */
-    private Hash readHash(File file) throws IOException {
-        try (FileReader fileReader = new FileReader(file)) {
-            char[] buffer = new char[(int) file.length()];
-            int charCount = fileReader.read(buffer);
-            if (charCount == 0) {
-                throw new IIOException("Прочитан пустой файл с контрольной суммой.");
-            }
-            return hash = Hash.parse(String.valueOf(buffer));
-        }
-    }
-
     @Override
     public Hash getHash() throws NoSuchAlgorithmException, IOException {
         if (hash == null) {
             File hashFile = new File(packageFolder, HASH_FILE_NAME);
-            hash = readHash(hashFile);
+            hash = Hash.parse(hashFile);
         }
         return hash;
     }

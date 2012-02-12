@@ -1,9 +1,6 @@
 package ru.aristar.jnuget.files;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Arrays;
 import javax.xml.bind.DatatypeConverter;
 
@@ -35,7 +32,7 @@ public class Hash {
         if (this.digest.length != other.digest.length) {
             return false;
         }
-        
+
         for (int i = 0; i < this.digest.length; i++) {
             if (digest[i] != other.digest[i]) {
                 return false;
@@ -59,5 +56,23 @@ public class Hash {
 
     public static Hash parse(String base64digest) {
         return new Hash(DatatypeConverter.parseBase64Binary(base64digest));
+    }
+
+    /**
+     * Метод читает хеш из файла
+     *
+     * @param file файл с хешем
+     * @return хеш пакета
+     * @throws IOException ошибка чтения пакета
+     */
+    public static Hash parse(File file) throws IOException {
+        try (FileReader fileReader = new FileReader(file)) {
+            char[] buffer = new char[(int) file.length()];
+            int charCount = fileReader.read(buffer);
+            if (charCount == 0) {
+                throw new IOException("Прочитан пустой файл с контрольной суммой.");
+            }
+            return parse(String.valueOf(buffer));
+        }
     }
 }
