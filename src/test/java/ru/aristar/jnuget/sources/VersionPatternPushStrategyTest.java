@@ -2,8 +2,9 @@ package ru.aristar.jnuget.sources;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 

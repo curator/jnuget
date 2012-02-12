@@ -1,13 +1,9 @@
 package ru.aristar.jnuget.sources;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
@@ -183,5 +179,30 @@ public class IndexTest {
         //THEN
         sortNupkgArray(result);
         assertArrayEquals("Версии пакета A", new Nupkg[]{firstA, lastA}, result);
+    }
+
+    /**
+     * Проверка получения всех версий пакета, усли пакета нет в репозитории
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetAllPackageVersionByIdWhenNoPackages() throws Exception {
+        //GIVEN
+        Nupkg[] nupkgs = new Nupkg[]{
+            createNupkg("A", "1.1.0"),
+            createNupkg("A", "1.2.0"),
+            createNupkg("B", "1.1.0"),
+            createNupkg("C", "2.1.0"),
+            createNupkg("C", "5.1.0")
+        };
+
+        Index index = new Index();
+        index.putAll(nupkgs);
+        //WHEN
+        Collection<Nupkg> result = index.getPackageById("E");
+        //THEN
+        assertNotNull(result);
+        assertEquals("Версий пакета E нет", 0, result.size());
     }
 }
