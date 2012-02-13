@@ -2,6 +2,7 @@ package ru.aristar.jnuget.files;
 
 import java.io.*;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
@@ -61,14 +62,18 @@ public class MavenNupkgTest {
         versionFolder.mkdirs();
         File targetFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
-        TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
+        try (FileChannel nupkgChannel = new FileOutputStream(targetFile).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), nupkgChannel);
+        }
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
         try (FileWriter fileWriter = new FileWriter(hashFile)) {
             fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
         }
         File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
         InputStream nuspecStream = this.getClass().getResourceAsStream("/NUnit.nuspec.xml");
-        TempNupkgFile.fastChannelCopy(Channels.newChannel(nuspecStream), new FileOutputStream(nuspecFile).getChannel());
+        try (FileChannel nuspecChannel = new FileOutputStream(nuspecFile).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(nuspecStream), nuspecChannel);
+        }
         //WHEN
         MavenNupkg mavenNupkg = new MavenNupkg(versionFolder);
         //THEN
@@ -125,7 +130,9 @@ public class MavenNupkgTest {
         versionFolder.mkdirs();
         File targetFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
-        TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
+        try (FileChannel nupkgChannel = new FileOutputStream(targetFile).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), nupkgChannel);
+        }
         //WHEN
         MavenNupkg result = new MavenNupkg(versionFolder);
         System.out.println(result);
@@ -144,7 +151,9 @@ public class MavenNupkgTest {
         versionFolder.mkdirs();
         File targetFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
-        TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), new FileOutputStream(targetFile).getChannel());
+        try (FileChannel nupkgChannel = new FileOutputStream(targetFile).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), nupkgChannel);
+        }
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
         try (FileWriter fileWriter = new FileWriter(hashFile)) {
             fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
