@@ -62,8 +62,8 @@ public class PackageSourceFactory {
         }
         if (rootPackageSource.getPushStrategy() == null) {
             rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
-            logger.warn("Для репозитория устанавливается разрешается "
-                    + "публикация пакетов.");
+            logger.warn("Для корневого репозитория разрешается публикация "
+                    + "пакетов. (поведение по умолчанию)");
         }
 
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
