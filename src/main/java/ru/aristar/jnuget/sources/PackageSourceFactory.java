@@ -134,7 +134,7 @@ public class PackageSourceFactory {
      * @return стратегия фиксации
      * @throws Exception ошибка создания стратегии
      */
-    private PushStrategy createPushStrategy(PushStrategyOptions strategyOptions) throws Exception {
+    protected PushStrategy createPushStrategy(PushStrategyOptions strategyOptions) throws Exception {
         //Создание стратегии фиксации
         logger.info("Инициализация стратегии типа {}", new Object[]{strategyOptions.getClassName()});
         Class<?> sourceClass = Class.forName(strategyOptions.getClassName());
@@ -146,6 +146,36 @@ public class PackageSourceFactory {
         setObjectProperties(strategyOptions.getProperties(), newSource);
         logger.info("Стратегия создана");
         return newSource;
+    }
+
+    /**
+     * Возвращает значение для примитивного типа
+     *
+     * @param string строковое значение
+     * @param targetClass тип значения, в которое требуется преобразовать строку
+     * @return преобразованное значение примитивного типа
+     */
+    private Object getPrimitiveValue(String string, Class<?> targetClass) {
+        if (targetClass == java.lang.Boolean.TYPE) {
+            return Boolean.valueOf(string);
+        } else if (targetClass == java.lang.Character.TYPE) {
+            return Character.valueOf(string.charAt(0));
+        } else if (targetClass == java.lang.Byte.TYPE) {
+            return Byte.valueOf(string);
+        } else if (targetClass == java.lang.Short.TYPE) {
+            return Short.valueOf(string);
+        } else if (targetClass == java.lang.Integer.TYPE) {
+            return Integer.valueOf(string);
+        } else if (targetClass == java.lang.Long.TYPE) {
+            return Long.valueOf(string);
+        } else if (targetClass == java.lang.Float.TYPE) {
+            return Float.valueOf(string);
+        } else if (targetClass == java.lang.Double.TYPE) {
+            return Double.valueOf(string);
+        } else {
+            throw new UnsupportedOperationException("Primitive type "
+                    + targetClass + " is unsupported");
+        }
     }
 
     /**
@@ -162,7 +192,12 @@ public class PackageSourceFactory {
             Method method = findSetter(sourceClass, entry.getKey());
             Class<?> valueType = method.getParameterTypes()[0];
             String stringValue = OptionConverter.replaceVariables(entry.getValue());
-            Object value = valueType.getConstructor(String.class).newInstance(stringValue);
+            Object value = null;
+            if (valueType.isPrimitive()) {
+                value = getPrimitiveValue(stringValue, valueType);
+            } else {
+                value = valueType.getConstructor(String.class).newInstance(stringValue);
+            }
             method.invoke(newObject, value);
         }
     }

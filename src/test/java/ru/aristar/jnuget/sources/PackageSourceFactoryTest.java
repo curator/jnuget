@@ -2,6 +2,7 @@ package ru.aristar.jnuget.sources;
 
 import java.io.File;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.PushStrategyOptions;
@@ -43,17 +44,34 @@ public class PackageSourceFactoryTest {
     public void testCreateApiKeyPushStrategy() throws Exception {
         //GIVEN
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
-        StorageOptions storageOptions = new StorageOptions();
-        storageOptions.setClassName(FilePackageSource.class.getCanonicalName());
         final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
         pushStrategyOptions.setClassName(ApiKeyPushStrategy.class.getCanonicalName());
         pushStrategyOptions.getProperties().put("apiKey", "TEST_API_KEY");
-        storageOptions.setStrategyOptions(pushStrategyOptions);
         //WHEN
-        PackageSource result = sourceFactory.createPackageSource(storageOptions);
+        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
         //THEN
-        assertEquals("Класс стратегии", ApiKeyPushStrategy.class, result.getPushStrategy().getClass());
-        assertEquals("Ключ фиксации", "TEST_API_KEY", ((ApiKeyPushStrategy) result.getPushStrategy()).getApiKey());
+        assertEquals("Класс стратегии", ApiKeyPushStrategy.class, result.getClass());
+        assertEquals("Ключ фиксации", "TEST_API_KEY", ((ApiKeyPushStrategy) result).getApiKey());
+    }
+
+    /**
+     * Проверка создания стратегии публикации на основе настроек, содержащих
+     * поле типа boolean
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testCreateSimplePushStrategy() throws Exception {
+        //GIVEN
+        PackageSourceFactory sourceFactory = new PackageSourceFactory();
+        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
+        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
+        pushStrategyOptions.getProperties().put("allow", "true");
+        //WHEN
+        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
+        //THEN
+        assertEquals("Класс стратегии", SimplePushStrategy.class, result.getClass());
+        assertTrue("Фиксация разрешена", ((SimplePushStrategy) result).isAllow());
     }
 
     /**
