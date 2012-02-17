@@ -139,7 +139,8 @@ public class IndexedFilePackageSource implements PackageSource {
         synchronized (monitor) {
             boolean result = packageSource.pushPackage(file, apiKey);
             if (result) {
-                getIndex().put(file);
+                Nupkg localFile = packageSource.getPackage(file.getId(), file.getVersion());
+                getIndex().put(localFile);
             }
             return result;
         }

@@ -3,14 +3,17 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import org.jmock.Mockery;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
@@ -74,5 +77,30 @@ public class IndexedFilePackageSourceTest {
         Nupkg[] result = packageSource.getPackages().toArray(new Nupkg[0]);
         //THEN
         assertEquals("Число пакетов в хранилище", 1, result.length);
+    }
+
+    /**
+     * Проверка помещения файла в хранилище
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testPushPackages() throws Exception {
+        //GIVEN
+        File file = File.createTempFile("tmp", "tst");
+        File localTestFolder = new File(file.getParentFile(), "LocalTestFolder/");
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
+        IndexedFilePackageSource packageSource = new IndexedFilePackageSource();
+        packageSource.setPushStrategy(new SimplePushStrategy(true));
+        packageSource.setFolderName(localTestFolder.getAbsolutePath()).join();
+        //WHEN
+        packageSource.pushPackage(nupkgFile, null);
+        //THEN
+        Nupkg nupkg = packageSource.getPackage("NUnit", Version.parse("2.5.9.10348"));
+        assertNotNull(nupkg);
+        assertEquals(ClassicNupkg.class, nupkg.getClass());
+        ClassicNupkg classicNupkg = (ClassicNupkg) nupkg;
+        assertEquals(localTestFolder, classicNupkg.getLocalFile().getParentFile());
     }
 }

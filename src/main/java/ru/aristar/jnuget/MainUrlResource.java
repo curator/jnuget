@@ -207,6 +207,8 @@ public class MainUrlResource {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
             ResponseBuilder response;
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
+                logger.debug("Помещение пакета {} версии {} в хранилище",
+                        new Object[]{nupkgFile.getId(), nupkgFile.getVersion()});
                 boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
                 if (pushed) {
                     response = Response.status(correctStatus);
