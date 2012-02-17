@@ -35,6 +35,15 @@ public class ClassicNupkg implements Nupkg {
         parse(file.getName());
     }
 
+    /**
+     * Возвращает локальный файл пакета на диске
+     * 
+     * @return локальный файл 
+     */
+    public File getLocalFile() {
+        return file;
+    }
+
     public String getId() {
         return id;
     }
