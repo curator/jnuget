@@ -157,7 +157,7 @@ public class Index {
      *
      * @param nupkgs набор пакетов
      */
-    public void putAll(Iterable<Nupkg> nupkgs) {
+    public void putAll(Iterable<? extends Nupkg> nupkgs) {
         for (Nupkg nupkg : nupkgs) {
             put(nupkg);
         }

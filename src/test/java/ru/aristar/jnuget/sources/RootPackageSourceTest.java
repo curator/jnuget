@@ -53,8 +53,9 @@ public class RootPackageSourceTest {
      */
     @Test
     public void testProxyGetPackages() {
-        //GIVEN        
-        final PackageSource source = context.mock(PackageSource.class);
+        //GIVEN    
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
 
             {
@@ -78,7 +79,8 @@ public class RootPackageSourceTest {
     public void testGetLastVersions() throws Exception {
         //GIVEN
         RootPackageSource rootPackageSource = new RootPackageSource();
-        final PackageSource source1 = context.mock(PackageSource.class, "source1");
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source1 = context.mock(PackageSource.class, "source1");
         context.checking(new Expectations() {
 
             {
@@ -87,7 +89,8 @@ public class RootPackageSourceTest {
             }
         });
 
-        final PackageSource source2 = context.mock(PackageSource.class, "source2");
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source2 = context.mock(PackageSource.class, "source2");
         context.checking(new Expectations() {
 
             {

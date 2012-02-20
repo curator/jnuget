@@ -13,12 +13,12 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class RootPackageSource implements PackageSource {
+public class RootPackageSource implements PackageSource<Nupkg> {
 
     /**
      * Источники пакетов
      */
-    private LinkedList<PackageSource> sources;
+    private LinkedList<PackageSource<Nupkg>> sources;
     /**
      * Стратегия публикации пакетов
      */
@@ -27,7 +27,7 @@ public class RootPackageSource implements PackageSource {
     /**
      * @return Источники пакетов
      */
-    public LinkedList<PackageSource> getSources() {
+    public LinkedList<PackageSource<Nupkg>> getSources() {
         if (sources == null) {
             sources = new LinkedList<>();
         }
@@ -37,14 +37,14 @@ public class RootPackageSource implements PackageSource {
     /**
      * @param sources Источники пакетов
      */
-    public void setSources(LinkedList<PackageSource> sources) {
+    public void setSources(LinkedList<PackageSource<Nupkg>> sources) {
         this.sources = sources;
     }
 
     @Override
     public Collection<Nupkg> getPackages() {
         ArrayList<Nupkg> result = new ArrayList<>();
-        for (PackageSource source : getSources()) {
+        for (PackageSource<Nupkg> source : getSources()) {
             result.addAll(source.getPackages());
         }
         return result;
@@ -53,7 +53,7 @@ public class RootPackageSource implements PackageSource {
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
         HashMap<String, Nupkg> result = new HashMap<>();
-        for (PackageSource source : getSources()) {
+        for (PackageSource<? extends Nupkg> source : getSources()) {
             for (Nupkg nupkgFile : source.getLastVersionPackages()) {
                 String packageId = nupkgFile.getId();
                 Nupkg storedPackage = result.get(packageId);
@@ -69,7 +69,7 @@ public class RootPackageSource implements PackageSource {
     @Override
     public Collection<Nupkg> getPackages(String id) {
         HashMap<Version, Nupkg> result = new HashMap<>();
-        for (PackageSource source : getSources()) {
+        for (PackageSource<? extends Nupkg> source : getSources()) {
             for (Nupkg file : source.getPackages(id)) {
                 if (file != null) {
                     result.put(file.getVersion(), file);
@@ -82,7 +82,7 @@ public class RootPackageSource implements PackageSource {
     @Override
     public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         HashMap<Version, Nupkg> result = new HashMap<>();
-        for (PackageSource source : getSources()) {
+        for (PackageSource<? extends Nupkg> source : getSources()) {
             for (Nupkg file : source.getPackages(id, ignoreCase)) {
                 if (file != null) {
                     result.put(file.getVersion(), file);

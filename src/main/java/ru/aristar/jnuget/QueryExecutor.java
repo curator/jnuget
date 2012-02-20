@@ -14,7 +14,7 @@ class QueryExecutor {
 
     //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
     
-    public Collection<Nupkg> execQuery(PackageSource packageSource, final String filter) {
+    public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
         if (filter == null || "".equals(filter)) {
             return packageSource.getPackages();
         }

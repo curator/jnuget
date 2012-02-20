@@ -9,6 +9,7 @@ import ru.aristar.jnuget.Common.OptionConverter;
 import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.PushStrategyOptions;
 import ru.aristar.jnuget.Common.StorageOptions;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  * Фабрика источников данных
@@ -35,7 +36,7 @@ public class PackageSourceFactory {
     /**
      * Источник пакетов
      */
-    private volatile PackageSource packageSource = null;
+    private volatile PackageSource<Nupkg> packageSource = null;
     /**
      * Логгер
      */
@@ -47,7 +48,7 @@ public class PackageSourceFactory {
      * @param serviceOptions настройки приложения
      * @return хранилище пакетов
      */
-    protected PackageSource createRootPackageSource(Options serviceOptions) {
+    protected PackageSource<Nupkg> createRootPackageSource(Options serviceOptions) {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
@@ -68,7 +69,7 @@ public class PackageSourceFactory {
 
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
-                PackageSource childSource = createPackageSource(storageOptions);
+                PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
                 rootPackageSource.getSources().add(childSource);
             } catch (Exception e) {
                 logger.warn("Ошибка создания хранилища пакетов", e);
@@ -103,7 +104,7 @@ public class PackageSourceFactory {
      * @return хранилище пакетов
      * @throws Exception ошибка создания хранилища
      */
-    protected PackageSource createPackageSource(StorageOptions storageOptions)
+    protected PackageSource<Nupkg> createPackageSource(StorageOptions storageOptions)
             throws Exception {
         //Создание файлового хранилища
         logger.info("Инициализация хранилища типа {}", new Object[]{storageOptions.getClassName()});
@@ -112,7 +113,8 @@ public class PackageSourceFactory {
         if (!(object instanceof PackageSource)) {
             throw new UnsupportedDataTypeException("Класс " + sourceClass + " не является хранилищем пакетов");
         }
-        PackageSource newSource = (PackageSource) object;
+        @SuppressWarnings("unchecked")
+        PackageSource<Nupkg> newSource = (PackageSource) object;
         setObjectProperties(storageOptions.getProperties(), object);
         if (storageOptions.getStrategyOptions() != null) {
             PushStrategy pushStrategy = createPushStrategy(storageOptions.getStrategyOptions());
@@ -224,7 +226,7 @@ public class PackageSourceFactory {
      *
      * @return источник пакетов
      */
-    public PackageSource getPackageSource() {
+    public PackageSource<Nupkg> getPackageSource() {
         if (packageSource == null) {
             //TODO Добавить возможность переинициализации
             synchronized (this) {

@@ -3,6 +3,7 @@ package ru.aristar.jnuget;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -16,7 +17,8 @@ public class QueryExecutorTest {
     @Test
     public void testExecQueryWithNull() throws Exception {
         //GIVEN
-        final PackageSource source = context.mock(PackageSource.class);
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
 
             {
@@ -34,7 +36,8 @@ public class QueryExecutorTest {
     public void testExecQueryWithId() throws Exception {
         //GIVEN
         final String filter = "tolower(id) eq 'package.name'";
-        final PackageSource source = context.mock(PackageSource.class);
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
 
             {
@@ -52,7 +55,8 @@ public class QueryExecutorTest {
     public void testExecQueryWithLastVersion() throws Exception {
         //GIVEN
         final String filter = "isLatestVersion";
-        final PackageSource source = context.mock(PackageSource.class);
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
 
             {

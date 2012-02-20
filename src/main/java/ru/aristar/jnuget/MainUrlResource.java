@@ -190,7 +190,7 @@ public class MainUrlResource {
     /**
      * @return источник пакетов
      */
-    private PackageSource getPackageSource() {
+    private PackageSource<Nupkg> getPackageSource() {
         return PackageSourceFactory.getInstance().getPackageSource();
     }
 
@@ -237,7 +237,7 @@ public class MainUrlResource {
     private PackageFeed getPackageFeed(String filter, String orderBy, int skip, int top) {
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
         //Получить источник пакетов
-        PackageSource packageSource = getPackageSource();
+        PackageSource<Nupkg> packageSource = getPackageSource();
         //Выбрать пакеты по запросу
         QueryExecutor queryExecutor = new QueryExecutor();
         Collection<Nupkg> files = queryExecutor.execQuery(packageSource, filter);

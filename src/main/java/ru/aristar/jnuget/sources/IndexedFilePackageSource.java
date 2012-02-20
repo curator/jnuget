@@ -1,12 +1,14 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -37,6 +39,9 @@ public class IndexedFilePackageSource implements PackageSource {
      */
     private class RefreshIndexThread implements Runnable {
 
+        /**
+         * Основной метод потока, обновляющий индекс
+         */
         @Override
         public void run() {
             try {
@@ -53,10 +58,16 @@ public class IndexedFilePackageSource implements PackageSource {
     private void refreshIndex() {
         synchronized (monitor) {
             logger.info("Инициировано обновление индекса хранилища");
-            Collection<Nupkg> packages = packageSource.getPackages();
+            Collection<ClassicNupkg> packages = packageSource.getPackages();
             Index newIndex = new Index();
-            //TODO Добавить активизацию полной инициализации пакета
-            newIndex.putAll(packages);
+            for (ClassicNupkg nupkg : packages) {
+                try {
+                    nupkg.getHash();
+                    newIndex.put(nupkg);
+                } catch (NoSuchAlgorithmException | IOException e) {
+                    logger.warn("Ошибка инициализации пакета", e);
+                }
+            }
             this.index = newIndex;
             logger.info("Обновление индекса хранилища завершено. Обнаружено {} пакетов", new Object[]{index.size()});
             monitor.notifyAll();

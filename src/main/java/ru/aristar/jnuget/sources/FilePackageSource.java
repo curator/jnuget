@@ -20,7 +20,7 @@ import ru.aristar.jnuget.files.*;
  *
  * @author sviridov
  */
-public class FilePackageSource implements PackageSource {
+public class FilePackageSource implements PackageSource<ClassicNupkg> {
 
     /**
      * Папка с пакетами
@@ -98,11 +98,11 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return Список объектов с информацией
      */
-    private List<Nupkg> getPackageList(FilenameFilter filter) {
-        ArrayList<Nupkg> packages = new ArrayList<>();
+    private List<ClassicNupkg> getPackageList(FilenameFilter filter) {
+        ArrayList<ClassicNupkg> packages = new ArrayList<>();
         for (File file : rootFolder.listFiles(filter)) {
             try {
-                Nupkg pack = new ClassicNupkg(file);
+                ClassicNupkg pack = new ClassicNupkg(file);
                 packages.add(pack);
             } catch (NugetFormatException | JAXBException | IOException | SAXException ex) {
                 logger.warn("Не удалось разобрать имя файла", ex);
@@ -117,20 +117,20 @@ public class FilePackageSource implements PackageSource {
      * @param filter фильтр файлов
      * @return список пакетов
      */
-    private Collection<Nupkg> getPackages(FilenameFilter filter) {
+    private Collection<ClassicNupkg> getPackages(FilenameFilter filter) {
         return getPackageList(filter);
     }
 
     @Override
-    public Collection<Nupkg> getPackages() {
+    public Collection<ClassicNupkg> getPackages() {
         FilenameFilter filenameFilter = new NupkgFileExtensionFilter();
         return getPackages(filenameFilter);
     }
 
     @Override
-    public Nupkg getPackage(final String id, Version version) {
+    public ClassicNupkg getPackage(final String id, Version version) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
-        for (Nupkg pack : getPackages(filenameFilter)) {
+        for (ClassicNupkg pack : getPackages(filenameFilter)) {
             if (pack.getId().equals(id) && pack.getVersion().equals(version)) {
                 return pack;
             }
@@ -139,32 +139,32 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<Nupkg> getLastVersionPackages() {
-        List<Nupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
+    public Collection<ClassicNupkg> getLastVersionPackages() {
+        List<ClassicNupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
         return extractLastVersion(allPackages, true);
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id) {
+    public Collection<ClassicNupkg> getPackages(String id) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
         return getPackages(filenameFilter);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id) {
+    public ClassicNupkg getLastVersionPackage(String id) {
         return getLastVersionPackage(id, true);
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
+    public Collection<ClassicNupkg> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         return getPackages(filenameFilter);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
+    public ClassicNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-        Collection<Nupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+        Collection<ClassicNupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
         if (lastVersion.isEmpty()) {
             return null;
         }
@@ -172,9 +172,9 @@ public class FilePackageSource implements PackageSource {
     }
 
     @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
+    public ClassicNupkg getPackage(String id, Version version, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        for (Nupkg nupkgFile : getPackages(filenameFilter)) {
+        for (ClassicNupkg nupkgFile : getPackages(filenameFilter)) {
             NuspecFile nuspec = nupkgFile.getNuspecFile();
             if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
                 return nupkgFile;
@@ -211,10 +211,10 @@ public class FilePackageSource implements PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
-    protected Collection<Nupkg> extractLastVersion(
-            Collection<Nupkg> list, boolean ignoreCase) {
-        Map<String, Nupkg> map = new HashMap<>();
-        for (Nupkg pack : list) {
+    protected <K extends Nupkg> Collection<K> extractLastVersion(
+            Collection<K> list, boolean ignoreCase) {
+        Map<String, K> map = new HashMap<>();
+        for (K pack : list) {
             String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
             // Указанный пакет еще учитывался
             if (!map.containsKey(packageId)) {

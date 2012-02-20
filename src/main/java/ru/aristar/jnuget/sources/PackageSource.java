@@ -8,23 +8,24 @@ import ru.aristar.jnuget.files.Nupkg;
 /**
  * Контракт источника пакетов
  *
+ * @param <T> тип пакета
  * @author sviridov
  */
-public interface PackageSource {
+public interface PackageSource<T extends Nupkg> {
 
     /**
      * Возвращает полный список пакетов в хранилище
      *
      * @return коллекция файлов пакетов
      */
-    Collection<Nupkg> getPackages();
+    Collection<T> getPackages();
 
     /**
      * Возвращает список пакетов, содержащий только последние версии
      *
      * @return коллекция файлов пакетов
      */
-    Collection<Nupkg> getLastVersionPackages();
+    Collection<T> getLastVersionPackages();
 
     /**
      * Возвращает пакеты с указанным идентификатором
@@ -32,7 +33,7 @@ public interface PackageSource {
      * @param id
      * @return коллекция файлов пакетов
      */
-    Collection<Nupkg> getPackages(String id);
+    Collection<T> getPackages(String id);
 
     /**
      * Возвращает список пакетов с указанным идентификатором
@@ -41,7 +42,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return коллекция файлов пакетов
      */
-    Collection<Nupkg> getPackages(String id, boolean ignoreCase);
+    Collection<T> getPackages(String id, boolean ignoreCase);
 
     /**
      * Возвращает последнюю версию указанного пакета
@@ -49,7 +50,7 @@ public interface PackageSource {
      * @param id идентификатор пакета
      * @return файл пакета
      */
-    Nupkg getLastVersionPackage(String id);
+    T getLastVersionPackage(String id);
 
     /**
      * Возвращает последнюю версию указанного пакета
@@ -58,7 +59,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return файл пакета
      */
-    Nupkg getLastVersionPackage(String id, boolean ignoreCase);
+    T getLastVersionPackage(String id, boolean ignoreCase);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -67,7 +68,7 @@ public interface PackageSource {
      * @param version версия пакета
      * @return файл пакета
      */
-    Nupkg getPackage(String id, Version version);
+    T getPackage(String id, Version version);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -77,7 +78,7 @@ public interface PackageSource {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return файл пакета
      */
-    Nupkg getPackage(String id, Version version, boolean ignoreCase);
+    T getPackage(String id, Version version, boolean ignoreCase);
 
     /**
      * Загружает пакет в хранилище
