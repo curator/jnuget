@@ -15,19 +15,15 @@ import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
- * Тест источника данных, хранящего пакеты в структуре каталогов схожей со
- * структурой Maven
  *
  * @author sviridov
  */
-public class MavenStylePackageSourceTest {
+public class ProxyPackageSourceTest {
 
     /**
      * Тестовая папка с пакетами
@@ -46,7 +42,7 @@ public class MavenStylePackageSourceTest {
         testFolder = new File(file.getParentFile(), "TestFolder/");
         testFolder.mkdir();
         String resource = "/NUnit.2.5.9.10348.nupkg";
-
+        
         Matcher matcher = pattern.matcher(resource);
         matcher.matches();
         File packageFolder = new File(testFolder, matcher.group(1) + "/");
@@ -77,7 +73,6 @@ public class MavenStylePackageSourceTest {
         if (testFolder != null && testFolder.exists()) {
             FileUtils.deleteDirectory(testFolder);
         }
-
     }
 
     /**
@@ -86,9 +81,10 @@ public class MavenStylePackageSourceTest {
      * @throws Exception ошибка в процессетеста
      */
     @Test
-    public void testGetPackagesById() throws Exception {
+    public void testGetPackagesByIdFromLocalStorage() throws Exception {
         //GIVEN
-        MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
+        ProxyPackageSource packageSource = new ProxyPackageSource();
+        packageSource.setRootFolderName(testFolder.getAbsolutePath());
         //WHEN
         Collection<MavenNupkg> result = packageSource.getPackages("NUnit");
         //THEN
@@ -97,23 +93,5 @@ public class MavenStylePackageSourceTest {
         Nupkg resultNupkg = result.iterator().next();
         assertEquals("Идентификатор пакета", "NUnit", resultNupkg.getId());
         assertEquals("Хеш объекта", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", resultNupkg.getHash().toString());
-    }
-
-    /**
-     * проверка получения спецификации пакета
-     *
-     * @throws Exception ошибка в процессе теста
-     */
-    public void testGetPackageSpecification() throws Exception {
-        //GIVEN
-        MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
-        //WHEN
-        Collection<MavenNupkg> nupkgs = packageSource.getPackages("NUnit");
-        NuspecFile result = nupkgs.iterator().next().getNuspecFile();
-        //THEN    
-        assertNotNull("Спецификация пакета", result);
-        assertEquals("Идентификатор пакета", "NUnit", result.getId());
-        assertEquals("Версия пакета", Version.parse("2.5.9.10348"), result.getVersion());
-
     }
 }

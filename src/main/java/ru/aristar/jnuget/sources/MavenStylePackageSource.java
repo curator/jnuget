@@ -21,7 +21,7 @@ import ru.aristar.jnuget.files.*;
  *
  * @author unlocker
  */
-public class MavenStylePackageSource implements PackageSource {
+public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     /**
      * Корневая папка, в которой расположены пакеты
@@ -43,6 +43,20 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     /**
+     * @return имя каталога, в котором находится хранилище пакетов
+     */
+    public String getRootFolderName() {
+        return rootFolder == null ? null : rootFolder.getAbsolutePath();
+    }
+
+    /**
+     * @param folderName имя каталога, в котором находится хранилище пакетов
+     */
+    public void setRootFolderName(String folderName) {
+        rootFolder = new File(folderName);
+    }
+
+    /**
      * @param rootFolder папка с пакетами
      */
     public MavenStylePackageSource(File rootFolder) {
@@ -53,8 +67,8 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<Nupkg> getPackages() {
-        List<Nupkg> list = new ArrayList<>();
+    public Collection<MavenNupkg> getPackages() {
+        List<MavenNupkg> list = new ArrayList<>();
         for (String id : rootFolder.list()) {
             list.addAll(getPackagesById(id));
         }
@@ -62,8 +76,8 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<Nupkg> getLastVersionPackages() {
-        List<Nupkg> list = new ArrayList<>();
+    public Collection<MavenNupkg> getLastVersionPackages() {
+        List<MavenNupkg> list = new ArrayList<>();
         for (String id : rootFolder.list()) {
             list.add(getLastVersionPackage(id));
         }
@@ -71,27 +85,27 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id) {
+    public Collection<MavenNupkg> getPackages(String id) {
         return getPackages(id, true);
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
+    public Collection<MavenNupkg> getPackages(String id, boolean ignoreCase) {
         return getPackagesById(id);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id) {
+    public MavenNupkg getLastVersionPackage(String id) {
         return getLastVersionPackage(id, true);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
+    public MavenNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         File idDir = new File(rootFolder, id);
-        Nupkg lastVersion = null;
+        MavenNupkg lastVersion = null;
         for (File versionDir : idDir.listFiles()) {
             try {
-                Nupkg temp = new MavenNupkg(versionDir);
+                MavenNupkg temp = new MavenNupkg(versionDir);
                 if (lastVersion == null || temp.getVersion().compareTo(lastVersion.getVersion()) > 0) {
                     lastVersion = temp;
                 }
@@ -103,16 +117,16 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     @Override
-    public Nupkg getPackage(String id, Version version) {
+    public MavenNupkg getPackage(String id, Version version) {
         return getPackage(id, version, true);
     }
 
     @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
+    public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
         File idDir = new File(rootFolder, id);
         for (File versionDir : idDir.listFiles()) {
             try {
-                Nupkg temp = new MavenNupkg(versionDir);
+                MavenNupkg temp = new MavenNupkg(versionDir);
                 if (temp.getVersion() == version) {
                     return temp;
                 }
@@ -163,7 +177,8 @@ public class MavenStylePackageSource implements PackageSource {
     }
 
     /**
-     * Проверяет наличие папки для хранения пакета, создает ее в случае необходимости
+     * Проверяет наличие папки для хранения пакета, создает ее в случае
+     * необходимости
      *
      * @param rootFolder Корневая папка хранилища
      * @param source Файл спецификации
@@ -196,10 +211,10 @@ public class MavenStylePackageSource implements PackageSource {
         this.strategy = strategy;
     }
 
-    private Collection<Nupkg> getPackagesById(String id) {
+    private Collection<MavenNupkg> getPackagesById(String id) {
         //TODO Добавть тест, провести рефакторинг
         File idDir = new File(rootFolder, id);
-        List<Nupkg> list = new ArrayList<>();
+        List<MavenNupkg> list = new ArrayList<>();
         for (File versionDir : idDir.listFiles()) {
             try {
                 list.add(new MavenNupkg(versionDir));
