@@ -42,7 +42,7 @@ public class ProxyPackageSourceTest {
         testFolder = new File(file.getParentFile(), "TestFolder/");
         testFolder.mkdir();
         String resource = "/NUnit.2.5.9.10348.nupkg";
-        
+
         Matcher matcher = pattern.matcher(resource);
         matcher.matches();
         File packageFolder = new File(testFolder, matcher.group(1) + "/");
@@ -67,6 +67,8 @@ public class ProxyPackageSourceTest {
 
     /**
      * Удаление тестового каталога
+     *
+     * @throws IOException ошибка удаления тестового каталога
      */
     @AfterClass
     public static void removeTestFolder() throws IOException {

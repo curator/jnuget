@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
@@ -20,7 +22,11 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  */
 public class RssIntegrationTests {
 
-    //TODO Заменить HTTPUnit на HTMLUnit
+    /**
+     * Каталог с пакетами
+     */
+    private static File packageFolder;
+
     /**
      * Инициализация настроек интеграционных тестов
      *
@@ -31,12 +37,24 @@ public class RssIntegrationTests {
         String homeFolderName = System.getProperty("nuget.home");
         File testFolder = new File(homeFolderName);
         testFolder.mkdirs();
-        File packageFolder = new File(testFolder, "Packages");
+        packageFolder = new File(testFolder, "Packages");
         packageFolder.mkdirs();
         File packageFile = new File(packageFolder, "NUnit.2.5.9.10348.nupkg");
         try (InputStream inputStream = RssIntegrationTests.class.getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
                 FileOutputStream outputStream = new FileOutputStream(packageFile)) {
             TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), outputStream.getChannel());
+        }
+    }
+
+    /**
+     * Удаление тестового каталога
+     *
+     * @throws IOException ошибка удаления тестового каталога
+     */
+    @AfterClass
+    public static void TearDown() throws IOException {
+        if (packageFolder != null && packageFolder.exists()) {
+            FileUtils.deleteDirectory(packageFolder);
         }
     }
 
