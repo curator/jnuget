@@ -47,15 +47,15 @@ public class NuPkgToRssTransformer {
         feed.setUpdated(new Date());
         feed.setTitle("Packages");
         List<PackageEntry> packageEntrys = new ArrayList<>();
-        
+
         for (Nupkg nupkg : files) {
             try {
                 PackageEntry entry = context.createPackageEntry(nupkg);
                 entry.getProperties().setIsLatestVersion(Boolean.FALSE);
                 addServerInformationInToEntry(entry);
                 packageEntrys.add(entry);
-            } catch (IOException | NoSuchAlgorithmException e) {
-                logger.warn("Ошибка сбора информации о пакете", e);
+            } catch (Exception e) {
+                logger.warn("Ошибка сбора информации о пакете " + nupkg, e);
             }
         }
         Collections.sort(packageEntrys, new PackageIdAndVersionComparator());
@@ -91,7 +91,7 @@ public class NuPkgToRssTransformer {
             throw e;
         }
     }
-    
+
     private void addServerInformationInToEntry(PackageEntry entry) {
         EntryProperties properties = entry.getProperties();
         //TODO Не факт, что сюда

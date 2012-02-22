@@ -37,8 +37,8 @@ public class ClassicNupkg implements Nupkg {
 
     /**
      * Возвращает локальный файл пакета на диске
-     * 
-     * @return локальный файл 
+     *
+     * @return локальный файл
      */
     public File getLocalFile() {
         return file;
@@ -174,5 +174,10 @@ public class ClassicNupkg implements Nupkg {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ClassicNupkg{" + id + ":" + version + '}';
     }
 }
