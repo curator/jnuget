@@ -4,14 +4,14 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.activation.UnsupportedDataTypeException;
 import javax.xml.bind.JAXBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 
@@ -26,6 +26,10 @@ public class ClassicNupkg implements Nupkg {
     protected File file;
     protected Version version;
     protected String id;
+    /**
+     * Логгер
+     */
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected ClassicNupkg() {
     }
@@ -56,9 +60,10 @@ public class ClassicNupkg implements Nupkg {
     public NuspecFile getNuspecFile() {
         if (nuspecFile == null) {
             try {
-                LoadNuspec();
-            } catch (IOException | JAXBException | SAXException ex) {
-                Logger.getLogger(ClassicNupkg.class.getName()).log(Level.SEVERE, null, ex);
+                loadNuspec();
+            } catch (IOException | JAXBException | SAXException e) {
+                //TODO Добавить выброс exception-а
+                logger.warn("Ошибка чтения файла спецификации", e);
             }
         }
         return nuspecFile;
@@ -155,7 +160,7 @@ public class ClassicNupkg implements Nupkg {
      * @throws JAXBException
      * @throws SAXException
      */
-    private void LoadNuspec() throws IOException, JAXBException, SAXException {
+    private void loadNuspec() throws IOException, JAXBException, SAXException {
         try (ZipInputStream zipInputStream = new ZipInputStream(getStream())) {
             ZipEntry entry;
             loop:
