@@ -9,11 +9,10 @@ import java.nio.channels.WritableByteChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBException;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 
@@ -27,6 +26,10 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     private File file;
     private Date updated;
     private NuspecFile nuspecFile;
+    /**
+     * Логгер
+     */
+    protected org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Копирует данные из одного канала в другой
@@ -74,7 +77,6 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     }
 
     public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException, NugetFormatException {
-        super();
         this.file = createTemporaryFile(inputStream);
         this.updated = updated;
     }
@@ -117,9 +119,10 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     public NuspecFile getNuspecFile() {
         if (nuspecFile == null) {
             try {
-                LoadNuspec();
-            } catch (IOException | JAXBException | SAXException ex) {
-                Logger.getLogger(TempNupkgFile.class.getName()).log(Level.SEVERE, null, ex);
+                loadNuspec();
+            } catch (IOException | JAXBException | SAXException e) {
+                //TODO Добавить выброс exception-а
+                logger.warn("Ошибка чтения файла спецификации", e);
             }
         }
         return nuspecFile;
@@ -139,7 +142,7 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
      * @throws JAXBException
      * @throws SAXException
      */
-    private void LoadNuspec() throws IOException, JAXBException, SAXException {
+    private void loadNuspec() throws IOException, JAXBException, SAXException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
             ZipEntry entry;
             loop:

@@ -115,4 +115,20 @@ public class NuspecFileTest {
         //THEN
         assertEquals("Идентификатор пакета", "NLog", nuspecFile.getId());
     }
+
+    /**
+     * Проверка извлечения информации из спецификации, корневой элемент которой
+     * не имеет пространства имен
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseWithNoNamespaceRootElement() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/PostSharp.nuspec.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        //THEN
+        assertEquals("Идентификатор пакета", "PostSharp", nuspecFile.getId());
+    }
 }
