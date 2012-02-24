@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import ru.aristar.jnuget.*;
+import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
  * Класс, содержащий информацию о пакете NuGet
@@ -281,6 +282,23 @@ public class NuspecFile {
         SAXSource saxSource = new SAXSource(inFilter, inputSource);
         NuspecFile result = (NuspecFile) unmarshaller.unmarshal(saxSource);
         return result;
+    }
+
+    /**
+     * Конструктор по умолчанию
+     */
+    public NuspecFile() {
+    }
+
+    /**
+     * Конструктор для обратного преобразования из RSS
+     *
+     * @param entry пакет в RSS
+     */
+    public NuspecFile(PackageEntry entry) {
+        metadata = new Metadata();
+        metadata.id = entry.getTitle();
+        metadata.version = entry.getProperties().getVersion();
     }
     /**
      * Пространство имен для спецификации пакета NuGet 2011

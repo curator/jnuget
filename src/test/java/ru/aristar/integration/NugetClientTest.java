@@ -8,13 +8,14 @@ import java.nio.channels.Channels;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Hash;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.rss.PackageEntry;
+import ru.aristar.jnuget.rss.PackageFeed;
 
 /**
  *
@@ -69,11 +70,30 @@ public class NugetClientTest {
         NugetClient nugetClient = new NugetClient();
         nugetClient.setUrl("http://localhost:8088/nuget");
         //WHEN
-        InputStream result = nugetClient.getPackage(InputStream.class, "NUnit", "2.5.9.10348");
-        TempNupkgFile nupkgFile = new TempNupkgFile(result);
+        TempNupkgFile result = nugetClient.getPackage("NUnit", Version.parse("2.5.9.10348"));
         //THEN
-        assertEquals("Идентификатор пакета", "NUnit", nupkgFile.getId());
-        assertEquals("Версия пакета", Version.parse("2.5.9.10348"), nupkgFile.getVersion());
-        assertEquals("HASH пакета", Hash.parse("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA=="), nupkgFile.getHash());
+        assertEquals("Идентификатор пакета", "NUnit", result.getId());
+        assertEquals("Версия пакета", Version.parse("2.5.9.10348"), result.getVersion());
+        assertEquals("HASH пакета", Hash.parse("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA=="), result.getHash());
+    }
+
+    /**
+     * Получение списка пакетов
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetAllPackages() throws Exception {
+        //GIVEN
+        NugetClient nugetClient = new NugetClient();
+        nugetClient.setUrl("http://localhost:8088/nuget");
+        //WHEN
+        PackageFeed result = nugetClient.getPackages(null, null, null, null, null);
+        //THEN
+        assertEquals("Количество пакетов", 1, result.getEntries().size());
+        PackageEntry entry = result.getEntries().get(0);
+        assertEquals("Версия пакета", Version.parse("2.5.9.10348"), entry.getProperties().getVersion());
+        assertEquals("HASH пакета", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", entry.getProperties().getPackageHash());
+        assertEquals("Идентификатор пакета", "NUnit", entry.getProperties().getTitle());
     }
 }

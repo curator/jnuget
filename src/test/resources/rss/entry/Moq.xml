@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<entry xml:base="http://localhost:8090/nuget/nuget/" 
+           xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" 
+           xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" 
+           xmlns="http://www.w3.org/2005/Atom">
+    <id>http://localhost:8090/nuget/nuget/Packages(Id='Moq',Version='4.0.10827')</id>
+    <title type="text">Moq</title>
+    <summary type="text"></summary>
+    <updated>2011-09-23T05:58:21Z</updated>
+    <author>
+        <name>Moq</name>
+    </author>
+    <link rel="edit-media" title="Package" href="Packages(Id='Moq',Version='4.0.10827')/$value" />
+    <link rel="edit" title="Package" href="Packages(Id='Moq',Version='4.0.10827')" />
+    <category term="NuGet.Server.DataServices.Package" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://localhost:8090/nuget/download/Moq/4.0.10827" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+        <d:Version>4.0.10827</d:Version>
+        <d:Title m:null="true"></d:Title>
+        <d:IconUrl m:null="true"></d:IconUrl>
+        <d:LicenseUrl m:null="true"></d:LicenseUrl>
+        <d:ProjectUrl m:null="true"></d:ProjectUrl>
+        <d:ReportAbuseUrl m:null="true"></d:ReportAbuseUrl>
+        <d:DownloadCount m:type="Edm.Int32">-1</d:DownloadCount>
+        <d:VersionDownloadCount m:type="Edm.Int32">-1</d:VersionDownloadCount>
+        <d:RatingsCount m:type="Edm.Int32">0</d:RatingsCount>
+        <d:VersionRatingsCount m:type="Edm.Int32">-1</d:VersionRatingsCount>
+        <d:Rating m:type="Edm.Double">-1</d:Rating>
+        <d:VersionRating m:type="Edm.Double">-1</d:VersionRating>
+        <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+        <d:Description>Mock для unit тестов</d:Description>
+        <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+        <d:Language m:null="true"></d:Language>
+        <d:Published m:type="Edm.DateTime">2011-09-23T05:58:43.8858747Z</d:Published>
+        <d:Price m:type="Edm.Decimal">0</d:Price>
+        <d:Dependencies></d:Dependencies>
+        <d:PackageHash>eoLGkBGTbHl1QsfOcTAx4mmIuTRs8e+wvxhaERmEuqjUSHiTdmiqRrtE1+exxR3Rh5ar0H3QXbGPpR9XsIqK2Q==</d:PackageHash>
+        <d:PackageSize m:type="Edm.Int64">543005</d:PackageSize>
+        <d:ExternalPackageUri m:null="true"></d:ExternalPackageUri>
+        <d:Categories m:null="true"></d:Categories>
+        <d:Copyright m:null="true"></d:Copyright>
+        <d:PackageType m:null="true"></d:PackageType>
+        <d:Tags xml:space="preserve"> Unit test Mock </d:Tags>
+        <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+        <d:Summary m:null="true"></d:Summary>
+    </m:properties>
+</entry>
+ 

@@ -35,58 +35,58 @@ public class ProxyPackageSource implements PackageSource<MavenNupkg> {
     public void setRootFolderName(String folderName) {
         hostedSource.setRootFolderName(folderName);
     }
-
+    
     @Override
     public Collection<MavenNupkg> getPackages() {
-        remoteStorage.getPackages(null, null, null, null, null, null, null, null);
+        remoteStorage.getPackages(null, null, null, null, null);
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Collection<MavenNupkg> getLastVersionPackages() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Collection<MavenNupkg> getPackages(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public Collection<MavenNupkg> getPackages(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public MavenNupkg getLastVersionPackage(String id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public MavenNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public MavenNupkg getPackage(String id, Version version) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     @Override
     public PushStrategy getPushStrategy() {
         return hostedSource.getPushStrategy();
     }
-
+    
     @Override
     public void setPushStrategy(PushStrategy strategy) {
         hostedSource.setPushStrategy(strategy);

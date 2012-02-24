@@ -5,13 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Reference;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
  *
  * @author sviridov
  */
 public class NuspecFileTest {
-
+    
     @Test
     public void testParseMethod() throws Exception {
         final String fileName = "/test.nuspec.xml";
@@ -25,7 +26,7 @@ public class NuspecFileTest {
         assertEquals("Описание", "Реализация контрактов уровня изоляции ProjecWise API", result.getDescription());
         assertEquals("Права", "НЕОЛАНТ", result.getCopyright());
     }
-
+    
     @Test
     public void testParseWithReferences() throws Exception {
         // GIVEN
@@ -51,7 +52,7 @@ public class NuspecFileTest {
         assertEquals("Количество ссылок", references.length, result.getReferences().size());
         assertArrayEquals("Ссылки", references, result.getReferences().toArray());
     }
-
+    
     @Test
     public void testParseWithDependencies() throws Exception {
         // GIVEN
@@ -130,5 +131,23 @@ public class NuspecFileTest {
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN
         assertEquals("Идентификатор пакета", "PostSharp", nuspecFile.getId());
+    }
+
+    /**
+     * Тест создания спецификации пакета из RSS описания пакета
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testCreateFromPAckageEntry() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/rss/entry/Moq.xml");
+        PackageEntry entry = PackageEntry.parse(inputStream);
+        //WHEN
+        NuspecFile nuspecFile = new NuspecFile(entry);
+        //THEN
+        assertEquals("Идентификатор пакета", "Moq", nuspecFile.getId());
+        assertEquals("Версия пакета", Version.parse("4.0.10827"), nuspecFile.getVersion());
+        fail("Тест не дописан");
     }
 }
