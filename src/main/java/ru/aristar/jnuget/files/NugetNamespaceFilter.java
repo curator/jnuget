@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.files;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -11,9 +13,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
 public class NugetNamespaceFilter extends XMLFilterImpl {
 
     /**
-     * URI, который следует заменить
+     * Список URI, которые следует заменить
      */
-    private final String sourceUri;
+    private final HashSet<String> sourceUris = new HashSet<>();
     /**
      * URI на который следует заменить
      */
@@ -23,22 +25,22 @@ public class NugetNamespaceFilter extends XMLFilterImpl {
      * Конструктор, использующий пространства имен по умолчанию
      */
     public NugetNamespaceFilter() {
-        this(NuspecFile.NUSPEC_XML_NAMESPACE_2010, NuspecFile.NUSPEC_XML_NAMESPACE_2011);
+        this(new String[]{NuspecFile.NUSPEC_XML_NAMESPACE_2010, NuspecFile.NUSPEC_XML_NAMESPACE_EMPTY},
+                NuspecFile.NUSPEC_XML_NAMESPACE_2011);
     }
 
     /**
-     *
-     * @param sourceUri URI, который следует заменить
+     * @param sourceUris список URI, которые следует заменить
      * @param targetUri URI на который следует заменить
      */
-    public NugetNamespaceFilter(String sourceUri, String targetUri) {
-        this.sourceUri = sourceUri;
+    public NugetNamespaceFilter(String[] sourceUris, String targetUri) {
+        this.sourceUris.addAll(Arrays.asList(sourceUris));
         this.targetUri = targetUri;
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (sourceUri.equals(uri)) {
+        if (sourceUris.contains(uri)) {
             uri = targetUri;
         }
         super.endElement(uri, localName, qName);
@@ -46,7 +48,7 @@ public class NugetNamespaceFilter extends XMLFilterImpl {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-        if (sourceUri.equals(uri)) {
+        if (sourceUris.contains(uri)) {
             uri = targetUri;
         }
         super.startElement(uri, localName, qName, atts);

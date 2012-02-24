@@ -291,6 +291,10 @@ public class NuspecFile {
      */
     public static final String NUSPEC_XML_NAMESPACE_2010 = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
     /**
+     * Пустое пространство имен
+     */
+    public static final String NUSPEC_XML_NAMESPACE_EMPTY = "";
+    /**
      * Расширение файла
      */
     public static final String DEFAULT_FILE_EXTENSION = ".nuspec";
