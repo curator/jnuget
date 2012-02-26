@@ -68,7 +68,7 @@ public class EntryPropertiesTest {
     @Test
     public void testParseProperties() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.properties.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/rss/entry/properties/NUnit.properties.xml");
         //WHEN
         EntryProperties entryProperties = EntryProperties.parse(inputStream);
         //THEN

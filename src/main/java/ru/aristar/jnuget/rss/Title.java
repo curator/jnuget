@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "title")
+@XmlRootElement(name = "title", namespace = PackageFeed.ATOM_XML_NAMESPACE)
 public class Title {
 
     @XmlAttribute(name = "type")

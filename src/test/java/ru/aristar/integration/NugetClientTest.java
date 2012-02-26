@@ -94,6 +94,6 @@ public class NugetClientTest {
         PackageEntry entry = result.getEntries().get(0);
         assertEquals("Версия пакета", Version.parse("2.5.9.10348"), entry.getProperties().getVersion());
         assertEquals("HASH пакета", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", entry.getProperties().getPackageHash());
-        assertEquals("Идентификатор пакета", "NUnit", entry.getProperties().getTitle());
+        assertEquals("Идентификатор пакета", "NUnit", entry.getTitle());
     }
 }

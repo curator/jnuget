@@ -31,7 +31,7 @@ public class PackageFeedTest {
     @Test
     public void testUnmarshallFeed() throws Exception {
         //GIVEN
-        InputStream inputStream = PackageFeedTest.class.getResourceAsStream("/rss_feed.xml");
+        InputStream inputStream = PackageFeedTest.class.getResourceAsStream("/rss/rss_feed.xml");
         //WHEN
         PackageFeed packageFeed = PackageFeed.parse(inputStream);
         //THEN

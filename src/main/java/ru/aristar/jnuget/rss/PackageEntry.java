@@ -88,7 +88,7 @@ public class PackageEntry {
 
     public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
         this.nugetContext = nugetContext;
-        title = new Title(nuspecFile.getId());
+        this.title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
