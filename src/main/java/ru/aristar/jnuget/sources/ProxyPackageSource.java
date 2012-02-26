@@ -3,7 +3,6 @@ package ru.aristar.jnuget.sources;
 import java.io.IOException;
 import java.util.Collection;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -20,7 +19,7 @@ public class ProxyPackageSource implements PackageSource<MavenNupkg> {
     /**
      * Удаленное хранилище пакетов
      */
-    private NugetClient remoteStorage;
+    private RemotePackageSource remoteSource = new RemotePackageSource();
 
     /**
      * @return имя каталога, в котором находится хранилище пакетов
@@ -39,7 +38,7 @@ public class ProxyPackageSource implements PackageSource<MavenNupkg> {
     @Override
     public Collection<MavenNupkg> getPackages() {
         try {
-            remoteStorage.getPackages(null, null, null, null, null);
+            Collection<Nupkg> nupkgs = remoteSource.getPackages();
         } catch (Exception e) {
         }
         throw new UnsupportedOperationException("Not supported yet.");
