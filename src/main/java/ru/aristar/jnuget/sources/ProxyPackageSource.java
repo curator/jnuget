@@ -1,7 +1,11 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
@@ -10,16 +14,20 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class ProxyPackageSource implements PackageSource<MavenNupkg> {
+public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     /**
      * Локальное хранилище пакетов
      */
-    private MavenStylePackageSource hostedSource = new MavenStylePackageSource();
+    protected MavenStylePackageSource hostedSource = new MavenStylePackageSource();
     /**
      * Удаленное хранилище пакетов
      */
-    private RemotePackageSource remoteSource = new RemotePackageSource();
+    protected RemotePackageSource remoteSource = new RemotePackageSource();
+    /**
+     * Логгер
+     */
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @return имя каталога, в котором находится хранилище пакетов
@@ -36,26 +44,41 @@ public class ProxyPackageSource implements PackageSource<MavenNupkg> {
     }
 
     @Override
-    public Collection<MavenNupkg> getPackages() {
+    public Collection<Nupkg> getPackages() {
+        ArrayList<Nupkg> nupkgs = new ArrayList<>();
         try {
-            Collection<Nupkg> nupkgs = remoteSource.getPackages();
+            nupkgs.addAll(remoteSource.getPackages());
         } catch (Exception e) {
+            logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
         }
+        nupkgs.addAll(hostedSource.getPackages());
+        return nupkgs;
+    }
+
+    @Override
+    public Collection<Nupkg> getLastVersionPackages() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<MavenNupkg> getLastVersionPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Collection<Nupkg> getPackages(String id) {
+        HashMap<Version, Nupkg> packages = new HashMap<>();
+        try {
+            for (Nupkg nupkg : remoteSource.getPackages(id)) {
+                packages.put(nupkg.getVersion(), nupkg);
+            }
+        } catch (Exception e) {
+            logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
+        }
+        for (Nupkg nupkg : hostedSource.getPackages(id)) {
+            packages.put(nupkg.getVersion(), nupkg);
+        }
+        return packages.values();
+
     }
 
     @Override
-    public Collection<MavenNupkg> getPackages(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Collection<MavenNupkg> getPackages(String id, boolean ignoreCase) {
+    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

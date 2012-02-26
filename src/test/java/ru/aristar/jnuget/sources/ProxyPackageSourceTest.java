@@ -87,8 +87,9 @@ public class ProxyPackageSourceTest {
         //GIVEN
         ProxyPackageSource packageSource = new ProxyPackageSource();
         packageSource.setRootFolderName(testFolder.getAbsolutePath());
+        packageSource.remoteSource = null;
         //WHEN
-        Collection<MavenNupkg> result = packageSource.getPackages("NUnit");
+        Collection<Nupkg> result = packageSource.getPackages("NUnit");
         //THEN
         assertNotNull("Коллекция пакетов", result);
         assertEquals("Пакетов в коллекции", 1, result.size());
