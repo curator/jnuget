@@ -12,7 +12,7 @@ import ru.aristar.jnuget.rss.PackageEntry;
  * @author sviridov
  */
 public class NuspecFileTest {
-    
+
     @Test
     public void testParseMethod() throws Exception {
         final String fileName = "/test.nuspec.xml";
@@ -26,7 +26,7 @@ public class NuspecFileTest {
         assertEquals("Описание", "Реализация контрактов уровня изоляции ProjecWise API", result.getDescription());
         assertEquals("Права", "НЕОЛАНТ", result.getCopyright());
     }
-    
+
     @Test
     public void testParseWithReferences() throws Exception {
         // GIVEN
@@ -52,7 +52,7 @@ public class NuspecFileTest {
         assertEquals("Количество ссылок", references.length, result.getReferences().size());
         assertArrayEquals("Ссылки", references, result.getReferences().toArray());
     }
-    
+
     @Test
     public void testParseWithDependencies() throws Exception {
         // GIVEN
@@ -148,6 +148,13 @@ public class NuspecFileTest {
         //THEN
         assertEquals("Идентификатор пакета", "Moq", nuspecFile.getId());
         assertEquals("Версия пакета", Version.parse("4.0.10827"), nuspecFile.getVersion());
+        assertEquals("Краткое описание", "", nuspecFile.getSummary());
+        assertEquals("Права", "", nuspecFile.getCopyright());
+        assertArrayEquals("Метки", new String[]{"Unit", "test", "Mock"}, nuspecFile.getTags().toArray());
         fail("Тест не дописан");
+    }
+
+    @Test
+    public void testParseDependencyList() throws Exception {
     }
 }

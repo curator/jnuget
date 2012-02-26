@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,6 +21,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import ru.aristar.jnuget.*;
+import ru.aristar.jnuget.rss.EntryProperties;
 import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
@@ -294,11 +296,17 @@ public class NuspecFile {
      * Конструктор для обратного преобразования из RSS
      *
      * @param entry пакет в RSS
+     * @throws NugetFormatException ошибка в формате версии
      */
-    public NuspecFile(PackageEntry entry) {
+    public NuspecFile(PackageEntry entry) throws NugetFormatException {
         metadata = new Metadata();
         metadata.id = entry.getTitle();
-        metadata.version = entry.getProperties().getVersion();
+        EntryProperties properties = entry.getProperties();
+        metadata.version = properties.getVersion();
+        metadata.tags = properties.getTags();
+        metadata.summary = properties.getSummary();
+        metadata.copyright = properties.getCopyright();
+        metadata.dependencies = properties.getDependenciesList();
     }
     /**
      * Пространство имен для спецификации пакета NuGet 2011

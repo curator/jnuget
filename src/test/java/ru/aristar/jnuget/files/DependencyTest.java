@@ -25,4 +25,20 @@ public class DependencyTest {
         //THEN
         assertEquals("toString - конкатенация идентификатора и версии", "PACKAGE_ID:1.2.3", dependency.toString());
     }
+
+    /**
+     * Проверка распознавания зависимости из строки
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParse() throws Exception {
+        //GIVEN
+        final String dependencyString = "PACKAGE_ID:1.2.3";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
+        assertEquals("Версия пакета", Version.parse("1.2.3"), result.version);
+    }
 }

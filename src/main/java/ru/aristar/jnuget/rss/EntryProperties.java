@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Dependency;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -402,7 +403,7 @@ public class EntryProperties {
         this.releaseNotes = "";
         this.language = "";
         this.price = Double.valueOf(0);
-        this.dependencies = dependenciesListToString(nuspecFile.getDependencies());
+        setDependenciesList(nuspecFile.getDependencies());
         this.externalPackageUri = "";
         this.categories = "";
         this.copyright = nuspecFile.getCopyright();
@@ -656,21 +657,36 @@ public class EntryProperties {
     }
 
     /**
-     * Преобразует список зависимостей в строку с разделителем ","
-     *
      * @param dependencies список зависимостей
-     * @return строка
      */
-    protected String dependenciesListToString(List<Dependency> dependencies) {
+    public void setDependenciesList(List<Dependency> dependencies) {
         if (dependencies == null || dependencies.isEmpty()) {
-            return "";
+            this.dependencies = "";
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append(dependencies.get(0).toString());
+            for (int i = 1; i < dependencies.size(); i++) {
+                builder.append(", ");
+                builder.append(dependencies.get(i).toString());
+            }
+            this.dependencies = builder.toString();
         }
-        StringBuilder builder = new StringBuilder();
-        builder.append(dependencies.get(0).toString());
-        for (int i = 1; i < dependencies.size(); i++) {
-            builder.append(", ");
-            builder.append(dependencies.get(i).toString());
+    }
+
+    /**
+     * @return список зависимостей пакета
+     * @throws NugetFormatException ошибка в формате версии
+     */
+    public List<Dependency> getDependenciesList() throws NugetFormatException {
+        ArrayList<Dependency> list = new ArrayList<>();
+        if (dependencies == null || dependencies.equals("")) {
+            return list;
         }
-        return builder.toString();
+        String cleanDependencies = dependencies.replaceAll(" ", "");
+        for (String dependencyString : cleanDependencies.split(",")) {
+            Dependency dependency = Dependency.parseString(dependencyString);
+            list.add(dependency);
+        }
+        return list;
     }
 }

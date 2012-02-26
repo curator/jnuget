@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
@@ -49,7 +50,7 @@ public class NugetClient {
         return webResource.path("PublishedPackages/Publish").type(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, requestEntity);
     }
 
-    public PackageFeed getPackages(String filter, String searchTerm, String top, String targetFramework, String skip) throws UniformInterfaceException {
+    public PackageFeed getPackages(String filter, String searchTerm, String top, String targetFramework, String skip) throws UniformInterfaceException, NugetFormatException {
         WebResource resource = webResource;
         resource = resource.queryParam("$orderby", "id");
         if (filter != null) {

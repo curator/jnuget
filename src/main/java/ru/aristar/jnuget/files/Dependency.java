@@ -30,13 +30,17 @@ public class Dependency {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Dependency)) {
+        if (getClass() != obj.getClass()) {
             return false;
-        } else {
-            Dependency o = (Dependency) obj;
-            return this.id.equals(o.id)
-                    && this.version.equals(o.version);
         }
+        final Dependency other = (Dependency) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.version, other.version)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -50,5 +54,21 @@ public class Dependency {
     @Override
     public String toString() {
         return id + ":" + version;
+    }
+
+    /**
+     * Распознает строковое представление зависимости в RSS
+     *
+     * @param dependencyString строка с данными зависимости
+     * @return распознанное значение
+     * @throws NugetFormatException ошибка формата версии
+     */
+    public static Dependency parseString(String dependencyString) throws NugetFormatException {
+        Dependency dependency = new Dependency();
+        String id = dependencyString.substring(0, dependencyString.indexOf(":"));
+        String versionString = dependencyString.substring(dependencyString.indexOf(":") + 1);
+        dependency.id = id;
+        dependency.version = Version.parse(versionString);
+        return dependency;
     }
 }

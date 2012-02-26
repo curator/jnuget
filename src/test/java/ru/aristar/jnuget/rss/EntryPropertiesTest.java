@@ -1,9 +1,11 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.Dependency;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -53,7 +55,7 @@ public class EntryPropertiesTest {
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         EntryProperties properties = new EntryProperties();
         //WHEN        
-        properties.setNuspec(nuspecFile);    
+        properties.setNuspec(nuspecFile);
         //THEN
         assertEquals("Зависимости пакета", "NLog:2.0.0.2000", properties.getDependencies());
     }
@@ -98,5 +100,44 @@ public class EntryPropertiesTest {
         assertArrayEquals("Теги пакета", new String[]{"Unit test"}, entryProperties.getTags().toArray());
         assertEquals("Это последняя версия", true, entryProperties.getIsLatestVersion());
         assertEquals("Общее описание", "", entryProperties.getSummary());
+    }
+
+    /**
+     * Тест получения списка зависимостей, состоящего из одного элемента
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetDependenciesListFromOneElement() throws Exception {
+        //GIVEN        
+        EntryProperties properties = new EntryProperties();
+        properties.setDependencies("A:1.2.3.4");
+        //WHEN
+        List<Dependency> result = properties.getDependenciesList();
+        //THEN
+        assertArrayEquals("Список зависимостей",
+                new Dependency[]{Dependency.parseString("A:1.2.3.4")},
+                result.toArray(new Dependency[0]));
+
+    }
+
+    /**
+     * Тест получения списка зависимостей, состоящего из нескольких элементов
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetDependenciesList() throws Exception {
+        //GIVEN        
+        EntryProperties properties = new EntryProperties();
+        properties.setDependencies("A:1.2.3.4, B:1.2.3.4");
+        //WHEN
+        List<Dependency> result = properties.getDependenciesList();
+        //THEN
+        assertArrayEquals("Список зависимостей",
+                new Dependency[]{Dependency.parseString("A:1.2.3.4"),
+                    Dependency.parseString("B:1.2.3.4")},
+                result.toArray(new Dependency[0]));
+
     }
 }
