@@ -1,9 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -118,6 +115,30 @@ public class MavenStylePackageSourceTest {
         assertNotNull("Спецификация пакета", result);
         assertEquals("Идентификатор пакета", "NUnit", result.getId());
         assertEquals("Версия пакета", Version.parse("2.5.9.10348"), result.getVersion());
+    }
 
+    /**
+     * Проверка помещения и извлечения пакета из хранилища. Пакет не должен
+     * изменятся
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testPushAndGet() throws Exception {
+        //GIVEN        
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
+        File packageFolder = new File(testFolder, tempNupkgFile.getId());
+        if (packageFolder.exists()) {
+            FileUtils.deleteDirectory(packageFolder);
+        }
+        MavenStylePackageSource mavenStylePackageSource = new MavenStylePackageSource(testFolder);
+        mavenStylePackageSource.setPushStrategy(new SimplePushStrategy(true));
+        mavenStylePackageSource.pushPackage(tempNupkgFile, null);
+        //WHEN
+        MavenNupkg result = mavenStylePackageSource.getPackage(tempNupkgFile.getId(), tempNupkgFile.getVersion());
+        //THEN
+        assertEquals("Идентификатор пакета", tempNupkgFile.getId(), result.getId());
+        assertEquals("Версия пакета", tempNupkgFile.getVersion(), result.getVersion());
     }
 }
