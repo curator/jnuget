@@ -11,12 +11,25 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  */
 public class StringListTypeAdapter extends XmlAdapter<String, List<String>> {
 
-    private String delimeter = " ";
+    /**
+     * Разделитель по умолчанию
+     */
+    private String delimeter = "\\s+";
+    /**
+     * Удалять пробелы, или нет
+     */
     private boolean trimSpaces = false;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public StringListTypeAdapter() {
     }
 
+    /**
+     * @param delimeter REGEXP разделителя
+     * @param trimSpaces удалять или нет пробелы
+     */
     public StringListTypeAdapter(String delimeter, boolean trimSpaces) {
         this.delimeter = delimeter;
         this.trimSpaces = trimSpaces;
