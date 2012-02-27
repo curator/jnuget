@@ -151,10 +151,7 @@ public class NuspecFileTest {
         assertEquals("Краткое описание", "", nuspecFile.getSummary());
         assertEquals("Права", "", nuspecFile.getCopyright());
         assertArrayEquals("Метки", new String[]{"Unit", "test", "Mock"}, nuspecFile.getTags().toArray());
-        fail("Тест не дописан");
-    }
-
-    @Test
-    public void testParseDependencyList() throws Exception {
+        assertEquals("Описание", "Mock для unit тестов", nuspecFile.getDescription());
+        assertEquals("Требуется подтверждение лицензии", false, nuspecFile.isRequireLicenseAcceptance());
     }
 }

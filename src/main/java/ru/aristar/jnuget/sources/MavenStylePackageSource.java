@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,15 +124,17 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
-        File idDir = new File(rootFolder, id);
-        for (File versionDir : idDir.listFiles()) {
-            try {
-                MavenNupkg temp = new MavenNupkg(versionDir);
-                if (temp.getVersion() == version) {
-                    return temp;
+        File idDir = new File(rootFolder, id.toLowerCase());
+        if (idDir.exists()) {
+            for (File versionDir : idDir.listFiles()) {
+                try {
+                    MavenNupkg nupkg = new MavenNupkg(versionDir);
+                    if (Objects.equals(nupkg.getVersion(), version)) {
+                        return nupkg;
+                    }
+                } catch (NugetFormatException ex) {
+                    logger.error("Не удалось считать информацию о пакете.", ex);
                 }
-            } catch (NugetFormatException ex) {
-                logger.error("Не удалось считать информацию о пакете.", ex);
             }
         }
         return null;

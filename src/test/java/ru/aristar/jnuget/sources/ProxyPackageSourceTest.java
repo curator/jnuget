@@ -1,9 +1,6 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -11,10 +8,15 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.api.Expectation;
+import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
@@ -29,6 +31,15 @@ public class ProxyPackageSourceTest {
      * Тестовая папка с пакетами
      */
     private static File testFolder;
+    /**
+     * Контекст для создания заглушек
+     */
+    private Mockery context = new Mockery() {
+
+        {
+            setImposteriser(ClassImposteriser.INSTANCE);
+        }
+    };
 
     /**
      * Создание тестового каталога и наполнение его файлами
@@ -80,7 +91,7 @@ public class ProxyPackageSourceTest {
     /**
      * Получение списка пакетов с указанным идентификатором
      *
-     * @throws Exception ошибка в процессетеста
+     * @throws Exception ошибка в процессе теста
      */
     @Test
     public void testGetPackagesByIdFromLocalStorage() throws Exception {
@@ -96,5 +107,52 @@ public class ProxyPackageSourceTest {
         Nupkg resultNupkg = result.iterator().next();
         assertEquals("Идентификатор пакета", "NUnit", resultNupkg.getId());
         assertEquals("Хеш объекта", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", resultNupkg.getHash().toString());
+    }
+
+    /**
+     * Тест публикации пакетов
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testPushPackage() throws Exception {
+        //GIVEN
+        ProxyPackageSource packageSource = new ProxyPackageSource();
+        //WHEN
+        boolean result = packageSource.pushPackage(null, null);
+        //THEN
+        assertFalse("Запрещена публикация пакетов", result);
+    }
+
+    /**
+     * Получение пакета с заданными идентификатором и версией из удаленного
+     * хранилища и сохранение его в локальном
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetPackageStream() throws Exception {
+        //GIVEN
+        FileUtils.deleteDirectory(new File(testFolder, "NUnit"));
+        final RemotePackageSource remotePackageSource = context.mock(RemotePackageSource.class);
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        try (final TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream)) {
+            context.checking(new Expectations() {
+
+                {
+                    atLeast(1).of(remotePackageSource).getPackage("NUnit", Version.parse("2.5.9.10348"));
+                    will(returnValue(tempNupkgFile));
+                }
+            });
+            ProxyPackageSource packageSource = new ProxyPackageSource();
+            packageSource.setRootFolderName(testFolder.getAbsolutePath());
+            packageSource.remoteSource = remotePackageSource;
+            //WHEN
+            MavenNupkg result = packageSource.getPackage("NUnit", Version.parse("2.5.9.10348"));
+            //THEN
+            assertTrue("Создан каталог в хранилище", new File(testFolder, "NUnit".toLowerCase()).exists());
+            assertEquals("Идентификатор пакета", "NUnit", result.getId());
+            assertEquals("Версия пакета", Version.parse("2.5.9.10348"), result.getVersion());
+        }
     }
 }

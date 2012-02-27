@@ -307,6 +307,8 @@ public class NuspecFile {
         metadata.summary = properties.getSummary();
         metadata.copyright = properties.getCopyright();
         metadata.dependencies = properties.getDependenciesList();
+        metadata.description = properties.getDescription();
+        metadata.requireLicenseAcceptance = properties.getRequireLicenseAcceptance();
     }
     /**
      * Пространство имен для спецификации пакета NuGet 2011

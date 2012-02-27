@@ -30,6 +30,13 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
+     * Конструктор по умолчанию
+     */
+    public ProxyPackageSource() {
+        hostedSource.setPushStrategy(new SimplePushStrategy(true));
+    }
+
+    /**
      * @return имя каталога, в котором находится хранилище пакетов
      */
     public String getRootFolderName() {
@@ -94,17 +101,27 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public MavenNupkg getPackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackage(id, version, true);
     }
 
     @Override
     public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        MavenNupkg nupkg = hostedSource.getPackage(id, version);
+        if (nupkg == null) {
+            try {
+                Nupkg remoteNupkg = remoteSource.getPackage(id, version);
+                hostedSource.pushPackage(remoteNupkg, null);
+                nupkg = hostedSource.getPackage(id, version);
+            } catch (Exception e) {
+                logger.warn("Ошибка помещения файла в локальное хранилище", e);
+            }
+        }
+        return nupkg;
     }
 
     @Override
     public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return false;
     }
 
     @Override
