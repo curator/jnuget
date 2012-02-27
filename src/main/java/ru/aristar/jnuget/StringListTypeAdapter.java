@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  */
 public class StringListTypeAdapter extends XmlAdapter<String, List<String>> {
 
-    private String delimeter = ",";
-    private boolean trimSpaces = true;
+    private String delimeter = " ";
+    private boolean trimSpaces = false;
 
     public StringListTypeAdapter() {
     }

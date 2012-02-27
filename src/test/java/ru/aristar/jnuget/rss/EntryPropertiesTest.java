@@ -39,7 +39,7 @@ public class EntryPropertiesTest {
         assertEquals("Категории", "", properties.getCategories());
         assertEquals("Права", "Copyright 2011", properties.getCopyright());
         assertEquals("Тип пакета", "", properties.getPackageType());
-        assertArrayEquals("Теги пакета", new String[]{"Unit test"}, properties.getTags().toArray());
+        assertArrayEquals("Теги пакета", new String[]{"Unit", "test"}, properties.getTags().toArray());
         assertEquals("Общее описание", "", properties.getSummary());
     }
 
@@ -97,7 +97,7 @@ public class EntryPropertiesTest {
         assertEquals("Категории", "", entryProperties.getCategories());
         assertEquals("Права", "", entryProperties.getCopyright());
         assertEquals("Тип пакета", "", entryProperties.getPackageType());
-        assertArrayEquals("Теги пакета", new String[]{"Unit test"}, entryProperties.getTags().toArray());
+        assertArrayEquals("Теги пакета", new String[]{"Unit", "test"}, entryProperties.getTags().toArray());
         assertEquals("Это последняя версия", true, entryProperties.getIsLatestVersion());
         assertEquals("Общее описание", "", entryProperties.getSummary());
     }

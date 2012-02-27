@@ -34,7 +34,7 @@ public class NuspecFileTest {
         Reference dll = new Reference().setFile("nunit.framework.dll");
         Reference xml = new Reference().setFile("nunit.framework.xml");
         Reference[] references = new Reference[]{dll, xml};
-        String[] tags = new String[]{"Unit test"};
+        String[] tags = new String[]{"Unit", "test"};
 
         // WHEN
         NuspecFile result = NuspecFile.Parse(NuspecFileTest.class.getResourceAsStream(fileName));

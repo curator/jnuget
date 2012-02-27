@@ -11,7 +11,7 @@
     <description>NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.</description>
     <summary>NHibernate is a mature, open source object-relational mapper for the .NET framework. It's actively developed , fully featured and used in thousands of successful projects.</summary>
     <language>en-US</language>
-    <tags>ORM, DataBase, DAL, ObjectRelationalMapping</tags>
+    <tags>ORM DataBase DAL ObjectRelationalMapping</tags>
     <dependencies>
       <dependency id="Iesi.Collections" version="3.2.0.4000" />
     </dependencies>
