@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -52,6 +53,17 @@ public class ClassicNupkgTest {
             }
             packageFiles[i] = targetFile;
         }
+    }
+
+    /**
+     * Удаление тестового каталога
+     */
+    @AfterClass
+    public static void removeTestFolder() throws IOException {
+        if (testFolder != null && testFolder.exists()) {
+            FileUtils.deleteDirectory(testFolder);
+        }
+
     }
 
     /**

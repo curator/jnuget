@@ -44,6 +44,7 @@ public class MavenStylePackageSourceTest {
         File file = File.createTempFile("tmp", "tst");
         Pattern pattern = Pattern.compile("/(.+)\\.(\\d+\\.\\d+\\.\\d+\\.\\d+)\\.nupkg", Pattern.CASE_INSENSITIVE);
         testFolder = new File(file.getParentFile(), "TestFolder/");
+        removeTestFolder();
         testFolder.mkdir();
         String resource = "/NUnit.2.5.9.10348.nupkg";
 
@@ -71,6 +72,8 @@ public class MavenStylePackageSourceTest {
 
     /**
      * Удаление тестового каталога
+     *
+     * @throws IOException ошибка удаления временного каталога
      */
     @AfterClass
     public static void removeTestFolder() throws IOException {
@@ -104,6 +107,7 @@ public class MavenStylePackageSourceTest {
      *
      * @throws Exception ошибка в процессе теста
      */
+    @Test
     public void testGetPackageSpecification() throws Exception {
         //GIVEN
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);

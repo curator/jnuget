@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.AfterClass;
@@ -34,7 +35,6 @@ public class FilePackageSourceTest {
     /**
      * Контекст создания заглушек
      */
-    
     private Mockery context = new Mockery();
     /**
      * Идентификатор заглушки
@@ -71,7 +71,7 @@ public class FilePackageSourceTest {
      */
     @BeforeClass
     public static void createTestFolder() throws IOException {
-       File file = File.createTempFile("tmp", "tst");
+        File file = File.createTempFile("tmp", "tst");
         testFolder = new File(file.getParentFile(), "TestFolder/");
         testFolder.mkdir();
         String[] resources = new String[]{"/NUnit.2.5.9.10348.nupkg"};
@@ -88,11 +88,10 @@ public class FilePackageSourceTest {
      * Удаление тестового каталога
      */
     @AfterClass
-    public static void removeTestFolder() {
+    public static void removeTestFolder() throws IOException {
         if (testFolder != null && testFolder.exists()) {
-            testFolder.delete();
+            FileUtils.deleteDirectory(testFolder);
         }
-
     }
 
     /**
@@ -110,7 +109,8 @@ public class FilePackageSourceTest {
     }
 
     /**
-     * Проверка метода, извлекающего из списка идентификаторов последние версии пакетов
+     * Проверка метода, извлекающего из списка идентификаторов последние версии
+     * пакетов
      *
      * @throws Exception ошибка в процессе теста
      */

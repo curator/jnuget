@@ -191,12 +191,10 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
         // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
         File finalDest = new File(rootFolder, nupkgFile.getFileName());
-        FileChannel dest;
-        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream())) {
-            dest = new FileOutputStream(tmpDest).getChannel();
+        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream());
+                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
             TempNupkgFile.fastChannelCopy(src, dest);
         }
-        dest.close();
         if (!renameFile(tmpDest, finalDest)) {
             throw new IOException("Не удалось переименовать файл " + tmpDest
                     + " в " + finalDest);
