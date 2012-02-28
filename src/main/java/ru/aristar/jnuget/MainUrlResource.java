@@ -158,7 +158,7 @@ public class MainUrlResource {
     @PUT
     @Path("")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response putPackage(@HeaderParam("X-NuGet-ApiKey") String apiKey,
+    public Response putPackage(@HeaderParam(API_KEY_HEADER_NAME) String apiKey,
             @FormDataParam("package") InputStream inputStream) {
         return pushPackage(apiKey, inputStream, Response.Status.CREATED);
     }
@@ -247,4 +247,8 @@ public class MainUrlResource {
         PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
         return feed;
     }
+    /**
+     * Имя заголовка запроса с ключем доступа
+     */
+    public static final String API_KEY_HEADER_NAME = "X-NuGet-ApiKey";
 }

@@ -2,9 +2,12 @@ package ru.aristar.jnuget.sources;
 
 import java.io.IOException;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  *
@@ -15,7 +18,29 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
     /**
      * Удаленное хранилище пакетов
      */
-    private NugetClient remoteStorage;
+    private NugetClient remoteStorage = new NugetClient();
+    /**
+     * Логгер
+     */
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Стратегия публикации пакетов
+     */
+    protected PushStrategy pushStrategy = new SimplePushStrategy(false);
+
+    /**
+     * @param url URL удаленного хранилища
+     */
+    public void setUrl(String url) {
+        remoteStorage.setUrl(url);
+    }
+
+    /**
+     * @return URL удаленного хранилища
+     */
+    public String getUrl() {
+        return remoteStorage.getUrl();
+    }
 
     @Override
     public Nupkg getLastVersionPackage(String id) {
@@ -33,13 +58,18 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public Nupkg getPackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public TempNupkgFile getPackage(String id, Version version) {
+        return getPackage(id, version, true);
     }
 
     @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public TempNupkgFile getPackage(String id, Version version, boolean ignoreCase) {
+        try {
+            return remoteStorage.getPackage(id, version);
+        } catch (Exception e) {
+            logger.warn("Ошибка получения пакета из удаленного хранилища", e);
+            return null;
+        }
     }
 
     @Override
@@ -59,16 +89,22 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public PushStrategy getPushStrategy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return pushStrategy;
     }
 
     @Override
     public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            remoteStorage.putPackage(file, apiKey);
+            return true;
+        } catch (Exception e) {
+            logger.warn("Ошибка помещения пакета в удаленное хранилище", e);
+            return false;
+        }
     }
 
     @Override
     public void setPushStrategy(PushStrategy strategy) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.pushStrategy = strategy;
     }
 }

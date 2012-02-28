@@ -69,6 +69,11 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getPackages(String id) {
+        return getPackages(id, true);
+    }
+
+    @Override
+    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         HashMap<Version, Nupkg> packages = new HashMap<>();
         try {
             for (Nupkg nupkg : remoteSource.getPackages(id)) {
@@ -81,22 +86,26 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
             packages.put(nupkg.getVersion(), nupkg);
         }
         return packages.values();
-
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Nupkg getLastVersionPackage(String id) {
+        return getLastVersionPackage(id, true);
     }
 
     @Override
-    public MavenNupkg getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public MavenNupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
+        Collection<Nupkg> nupkgs = getPackages(id);
+        if (nupkgs == null || nupkgs.isEmpty()) {
+            return null;
+        }
+        Nupkg result = null;
+        for (Nupkg nupkg : nupkgs) {
+            if (result == null || result.getVersion().compareTo(nupkg.getVersion()) < 0) {
+                result = nupkg;
+            }
+        }
+        return result;
     }
 
     @Override

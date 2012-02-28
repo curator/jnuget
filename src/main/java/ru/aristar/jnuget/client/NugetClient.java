@@ -4,9 +4,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -44,10 +46,6 @@ public class NugetClient {
 
     public String getUrl() {
         return webResource == null ? null : webResource.getURI().toString();
-    }
-
-    public ClientResponse postPackageMetadata(Object requestEntity) throws UniformInterfaceException {
-        return webResource.path("PublishedPackages/Publish").type(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(ClientResponse.class, requestEntity);
     }
 
     public PackageFeed getPackages(String filter, String searchTerm, String top, String targetFramework, String skip) throws UniformInterfaceException, NugetFormatException {
@@ -94,8 +92,19 @@ public class NugetClient {
         return nupkgFile;
     }
 
-    public ClientResponse putPackage() throws UniformInterfaceException {
-        return webResource.put(ClientResponse.class);
+    /**
+     * Отправляет пакет на сервер
+     *
+     * @param nupkg пакет
+     * @param apiKey ключ доступа (пароль)
+     * @return ответ сервера
+     * @throws UniformInterfaceException
+     * @throws IOException ошибка чтения локального пакета
+     */
+    public ClientResponse putPackage(Nupkg nupkg, String apiKey)
+            throws UniformInterfaceException, IOException {
+        webResource.header(MainUrlResource.API_KEY_HEADER_NAME, apiKey);
+        return webResource.put(ClientResponse.class, nupkg.getStream());
     }
 
     public <T> T getRootXml(Class<T> responseType) throws UniformInterfaceException {
