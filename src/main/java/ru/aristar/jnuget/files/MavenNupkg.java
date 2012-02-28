@@ -52,10 +52,9 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
         if (!folderContainsFile(packageFolder, NUSPEC_FILE_NAME)) {
             throw new NugetFormatException(String.format("Каталог '%s' не содержит файла спецификации.", packageFolder.getAbsolutePath()));
         }
-        String parsedId = packageFolder.getParentFile().getName();
-        this.id = parsedId;
         this.packageFolder = packageFolder;
-        this.version = Version.parse(packageFolder.getName());;
+        this.version = Version.parse(packageFolder.getName());
+        this.id = MavenNupkg.this.getNuspecFile().getId();
     }
 
     @Override
