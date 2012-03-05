@@ -103,4 +103,12 @@ public interface PackageSource<T extends Nupkg> {
      * @param strategy стратегия помещения пакетов
      */
     void setPushStrategy(PushStrategy strategy);
+
+    /**
+     * Удаляет выбранный пакет из хранилища.
+     *
+     * @param id Идентификатор пакета.
+     * @param version Версия пакета.
+     */
+    void removePackage(String id, Version version);
 }

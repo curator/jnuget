@@ -227,4 +227,9 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         }
         return list;
     }
+
+    @Override
+    public void removePackage(String id, Version version) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

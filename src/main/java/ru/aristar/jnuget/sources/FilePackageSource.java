@@ -240,4 +240,9 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     public void setPushStrategy(PushStrategy strategy) {
         this.strategy = strategy;
     }
+
+    @Override
+    public void removePackage(String id, Version version) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

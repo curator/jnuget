@@ -142,4 +142,9 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public void setPushStrategy(PushStrategy strategy) {
         hostedSource.setPushStrategy(strategy);
     }
+
+    @Override
+    public void removePackage(String id, Version version) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

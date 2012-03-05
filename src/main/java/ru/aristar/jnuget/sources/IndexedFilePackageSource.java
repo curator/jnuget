@@ -34,6 +34,11 @@ public class IndexedFilePackageSource implements PackageSource {
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Override
+    public void removePackage(String id, Version version) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     /**
      * Поторк, обновляющий индекс
      */
