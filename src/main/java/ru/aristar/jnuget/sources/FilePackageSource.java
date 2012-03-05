@@ -36,8 +36,7 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     private PushStrategy strategy;
 
     /**
-     * Устанавливает корневую папку хранилища (если папка не существует -
-     * производит попытку создать ее)
+     * Устанавливает корневую папку хранилища (если папка не существует - производит попытку создать ее)
      *
      * @param rootFolder корневая пака хранилища
      */
@@ -243,6 +242,11 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
 
     @Override
     public void removePackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        File pack = new File(rootFolder, id + "." + version.toString() + Nupkg.DEFAULT_EXTENSION);
+        if (!pack.exists()) {
+            logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + id + ", version: " + version + ")");
+            return;
+        }
+        pack.delete();
     }
 }
