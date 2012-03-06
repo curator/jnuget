@@ -97,7 +97,7 @@ public class ProxyPackageSourceTest {
     public void testGetPackagesByIdFromLocalStorage() throws Exception {
         //GIVEN
         ProxyPackageSource packageSource = new ProxyPackageSource();
-        packageSource.setRootFolderName(testFolder.getAbsolutePath());
+        packageSource.setFolderName(testFolder.getAbsolutePath());
         packageSource.remoteSource = null;
         //WHEN
         Collection<Nupkg> result = packageSource.getPackages("NUnit");
@@ -145,7 +145,7 @@ public class ProxyPackageSourceTest {
                 }
             });
             ProxyPackageSource packageSource = new ProxyPackageSource();
-            packageSource.setRootFolderName(testFolder.getAbsolutePath());
+            packageSource.setFolderName(testFolder.getAbsolutePath());
             packageSource.remoteSource = remotePackageSource;
             //WHEN
             MavenNupkg result = packageSource.getPackage("NUnit", Version.parse("2.5.9.10348"));

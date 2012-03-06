@@ -39,15 +39,29 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     /**
      * @return имя каталога, в котором находится хранилище пакетов
      */
-    public String getRootFolderName() {
+    public String getFolderName() {
         return hostedSource.getRootFolderName();
     }
 
     /**
      * @param folderName имя каталога, в котором находится хранилище пакетов
      */
-    public void setRootFolderName(String folderName) {
+    public void setFolderName(String folderName) {
         hostedSource.setRootFolderName(folderName);
+    }
+
+    /**
+     * @param url URL удаленного хранилища
+     */
+    public void setUrl(String url) {
+        remoteSource.setUrl(url);
+    }
+
+    /**
+     * @return URL удаленного хранилища
+     */
+    public String getUrl() {
+        return remoteSource.getUrl();
     }
 
     @Override
