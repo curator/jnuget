@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
-import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.RemoteNupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.rss.PackageFeed;
 
@@ -30,6 +33,25 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
      * Стратегия публикации пакетов
      */
     protected PushStrategy pushStrategy = new SimplePushStrategy(false);
+
+    private Collection<Nupkg> getPackagesFromRemoteStorage(String filter) {
+        try {
+            PackageFeed feed = remoteStorage.getPackages(filter, null, null, null, null);
+            ArrayList<Nupkg> result = new ArrayList<>();
+            for (PackageEntry entry : feed.getEntries()) {
+                try {
+                    RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
+                    result.add(remoteNupkg);
+                } catch (NugetFormatException e) {
+                    logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
+                }
+            }
+            return result;
+        } catch (NugetFormatException | UniformInterfaceException e) {
+            logger.warn("Ошибка получения пакета из удаленного хранилища", e);
+            return new ArrayList<>();
+        }
+    }
 
     /**
      * @param url URL удаленного хранилища
@@ -57,7 +79,7 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackagesFromRemoteStorage("IsLatestVersion");
     }
 
     @Override
@@ -77,27 +99,12 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getPackages() {
-        try {
-            PackageFeed feed = remoteStorage.getPackages(null, null, null, null, null);
-            ArrayList<Nupkg> result = new ArrayList<>();
-            for (PackageEntry entry : feed.getEntries()) {
-                try {
-                    RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
-                    result.add(remoteNupkg);
-                } catch (NugetFormatException e) {
-                    logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
-                }
-            }
-            return result;
-        } catch (NugetFormatException | UniformInterfaceException e) {
-            logger.warn("Ошибка получения пакета из удаленного хранилища", e);
-            return new ArrayList<>();
-        }
+        return getPackagesFromRemoteStorage(null);
     }
 
     @Override
     public Collection<Nupkg> getPackages(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getPackages(id, true);
     }
 
     @Override
