@@ -243,6 +243,7 @@ public class PackageSourceFactory {
      */
     private void initializeProxyOptions(ProxyOptions proxyOptions) {
         if (proxyOptions.getUseSystemProxy() != null && proxyOptions.getUseSystemProxy()) {
+            logger.info("Используется системный прокси");
             System.setProperty("java.net.useSystemProxies", "true");
         }
     }

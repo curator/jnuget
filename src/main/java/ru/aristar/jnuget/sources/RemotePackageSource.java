@@ -1,13 +1,16 @@
 package ru.aristar.jnuget.sources;
 
+import com.sun.jersey.api.client.UniformInterfaceException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
-import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.rss.PackageEntry;
+import ru.aristar.jnuget.rss.PackageFeed;
 
 /**
  *
@@ -74,7 +77,22 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            PackageFeed feed = remoteStorage.getPackages(null, null, null, null, null);
+            ArrayList<Nupkg> result = new ArrayList<>();
+            for (PackageEntry entry : feed.getEntries()) {
+                try {
+                    RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
+                    result.add(remoteNupkg);
+                } catch (NugetFormatException e) {
+                    logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
+                }
+            }
+            return result;
+        } catch (NugetFormatException | UniformInterfaceException e) {
+            logger.warn("Ошибка получения пакета из удаленного хранилища", e);
+            return new ArrayList<>();
+        }
     }
 
     @Override
