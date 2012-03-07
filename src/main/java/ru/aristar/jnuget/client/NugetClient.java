@@ -4,17 +4,15 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
-import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.rss.PackageFeed;
 
 /**
@@ -28,26 +26,53 @@ import ru.aristar.jnuget.rss.PackageFeed;
  *
  * @author sviridov
  */
-public class NugetClient {
+public class NugetClient implements AutoCloseable {
 
     private WebResource webResource;
+    /**
+     * REST клиент
+     */
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/resources";
+    /**
+     * URL хранилища по умолчанию
+     */
+    private static final String DEFAULT_REMOTE_STORAGE_URL = "http://localhost:8080/resources";
 
+    /**
+     * Конструктор по умолчанию
+     */
     public NugetClient() {
-        com.sun.jersey.api.client.config.ClientConfig config = new com.sun.jersey.api.client.config.DefaultClientConfig();
+        ClientConfig config = new DefaultClientConfig();
         client = Client.create(config);
-        webResource = client.resource(BASE_URI);
+        webResource = client.resource(DEFAULT_REMOTE_STORAGE_URL);
     }
 
+    /**
+     * @param url URL удаленного хранилища
+     */
     public void setUrl(String url) {
         webResource = client.resource(url);
     }
 
+    /**
+     * @return URL удаленного хранилища
+     */
     public String getUrl() {
         return webResource == null ? null : webResource.getURI().toString();
     }
 
+    /**
+     * Возвращает список пакетов
+     *
+     * @param filter параметр фильтрации
+     * @param searchTerm условие поиска
+     * @param top количество запрашиваемых пакетов
+     * @param targetFramework фреймворк, для которого собраны пакеты
+     * @param skip пропустить пакетов
+     * @return
+     * @throws UniformInterfaceException
+     * @throws NugetFormatException
+     */
     public PackageFeed getPackages(String filter, String searchTerm, String top, String targetFramework, String skip) throws UniformInterfaceException, NugetFormatException {
         WebResource resource = webResource;
         resource = resource.queryParam("$orderby", "id");
@@ -68,11 +93,6 @@ public class NugetClient {
         }
         resource = resource.path("nuget/Packages");
         PackageFeed feed = resource.accept(javax.ws.rs.core.MediaType.APPLICATION_XML).get(PackageFeed.class);
-        ArrayList<Nupkg> result = new ArrayList<>();
-        for (PackageEntry entry : feed.getEntries()) {
-            NuspecFile nuspecFile = new NuspecFile(entry);
-            result.add(null);
-        }
         return feed;
     }
 
@@ -107,11 +127,6 @@ public class NugetClient {
         return webResource.put(ClientResponse.class, nupkg.getStream());
     }
 
-    public <T> T getRootXml(Class<T> responseType) throws UniformInterfaceException {
-        WebResource resource = webResource;
-        return resource.accept(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
     public ClientResponse postPackage(String apiKey) throws UniformInterfaceException {
         return webResource.path(java.text.MessageFormat.format("PackageFiles/{0}/nupkg", new Object[]{apiKey})).post(ClientResponse.class);
     }
@@ -140,6 +155,7 @@ public class NugetClient {
         return resource.accept(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
     }
 
+    @Override
     public void close() {
         client.destroy();
     }

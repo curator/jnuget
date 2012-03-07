@@ -5,10 +5,7 @@ import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.Common.OptionConverter;
-import ru.aristar.jnuget.Common.Options;
-import ru.aristar.jnuget.Common.PushStrategyOptions;
-import ru.aristar.jnuget.Common.StorageOptions;
+import ru.aristar.jnuget.Common.*;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -56,16 +53,16 @@ public class PackageSourceFactory {
         try {
             if (serviceOptions.getStrategyOptions() != null) {
                 pushStrategy = createPushStrategy(serviceOptions.getStrategyOptions());
-                rootPackageSource.setPushStrategy(pushStrategy);
             }
         } catch (Exception e) {
             logger.error("Ошибка создания стратегии фиксации", e);
         }
-        if (rootPackageSource.getPushStrategy() == null) {
-            rootPackageSource.setPushStrategy(new SimplePushStrategy(true));
+        if (pushStrategy == null) {
+            pushStrategy = new SimplePushStrategy(true);
             logger.warn("Для корневого репозитория разрешается публикация "
                     + "пакетов. (поведение по умолчанию)");
         }
+        rootPackageSource.setPushStrategy(pushStrategy);
 
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
@@ -194,7 +191,7 @@ public class PackageSourceFactory {
             Method method = findSetter(sourceClass, entry.getKey());
             Class<?> valueType = method.getParameterTypes()[0];
             String stringValue = OptionConverter.replaceVariables(entry.getValue());
-            Object value = null;
+            Object value;
             if (valueType.isPrimitive()) {
                 value = getPrimitiveValue(stringValue, valueType);
             } else {
@@ -231,10 +228,23 @@ public class PackageSourceFactory {
             //TODO Добавить возможность переинициализации
             synchronized (this) {
                 if (packageSource == null) {
+                    initializeProxyOptions(options.getProxyOptions());
                     packageSource = createRootPackageSource(options);
                 }
             }
         }
         return packageSource;
+    }
+
+    /**
+     * Инициализация настроек прокси
+     *
+     * @param proxyOptions настройки прокси сервера
+     */
+    private void initializeProxyOptions(ProxyOptions proxyOptions) {
+        if (proxyOptions.getUseSystemProxy() != null && proxyOptions.getUseSystemProxy()) {
+            logger.info("Используется системный прокси");
+            System.setProperty("java.net.useSystemProxies", "true");
+        }
     }
 }

@@ -57,6 +57,11 @@ public class Options {
      */
     private static Logger logger = LoggerFactory.getLogger(Options.class);
     /**
+     * Настройки прокси сервера
+     */
+    @XmlElement(name = "proxy")
+    private ProxyOptions proxyOptions;
+    /**
      * Стратегия фиксации для всего хранилища
      */
     @XmlElement(name = "pushStrategy")
@@ -100,6 +105,24 @@ public class Options {
     }
 
     /**
+     * @return настройки прокси сервера
+     */
+    public ProxyOptions getProxyOptions() {
+        if (proxyOptions == null) {
+            proxyOptions = new ProxyOptions();
+            proxyOptions.setUseSystemProxy(Boolean.TRUE);
+        }
+        return proxyOptions;
+    }
+
+    /**
+     * @param proxyOptions настройки прокси сервера
+     */
+    public void setProxyOptions(ProxyOptions proxyOptions) {
+        this.proxyOptions = proxyOptions;
+    }
+
+    /**
      * Сохраняет настройки в файл
      *
      * @param file файл, в который производится сохранение
@@ -109,7 +132,7 @@ public class Options {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         saveOptions(fileOutputStream);
     }
-
+    
     public void saveOptions(OutputStream outputStream) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Marshaller marshaller = context.createMarshaller();
@@ -137,7 +160,7 @@ public class Options {
      * @return настройки
      * @throws JAXBException ошибка распознавания XML
      */
-    public static final Options parse(InputStream inputStream) throws JAXBException {
+    public static Options parse(InputStream inputStream) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         return (Options) unmarshaller.unmarshal(inputStream);
@@ -148,7 +171,7 @@ public class Options {
      *
      * @return
      */
-    public static final Options loadOptions() {
+    public static Options loadOptions() {
         String homeFolderName = (String) System.getProperties().get("nuget.home");
         File homeFolder = new File(homeFolderName);
         homeFolder.mkdirs();
