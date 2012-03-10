@@ -180,7 +180,8 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
     }
 
     /**
-     * Проверяет наличие папки для хранения пакета, создает ее в случае необходимости
+     * Проверяет наличие папки для хранения пакета, создает ее в случае
+     * необходимости
      *
      * @param rootFolder Корневая папка хранилища
      * @param source Файл спецификации
@@ -229,13 +230,8 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public void removePackage(String id, Version version) {
-        // Проверка наличия папки с идентификатором
+        // Проверка наличия папки с пакетом
         File idDir = new File(rootFolder, id);
-        if (!idDir.exists()) {
-            logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + id + ", version: " + version + ")");
-            return;
-        }
-        // Проверка наличия папки с версией.
         File versionDir = new File(idDir, version.toString());
         if (!versionDir.exists()) {
             logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + id + ", version: " + version + ")");

@@ -63,7 +63,7 @@ public class Version implements Comparable<Version> {
         }
         Matcher matcher = pattern.matcher(input);
         if (!matcher.find()) {
-            throw new NugetFormatException("Аргумент неправильный. " + input);
+            throw new NugetFormatException("Строка не соответствует формату версии. " + input);
         }
         Integer major = parseInt(matcher.group(1));
         Integer minor = parseInt(matcher.group(2));

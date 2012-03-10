@@ -141,4 +141,73 @@ public class MavenStylePackageSourceTest {
         assertEquals("Идентификатор пакета", tempNupkgFile.getId(), result.getId());
         assertEquals("Версия пакета", tempNupkgFile.getVersion(), result.getVersion());
     }
+
+    /**
+     * Проверка удаления не последнего пакета с данным идентификатором из
+     * репозитория
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testRemovePackage() throws Exception {
+        final String packageId = "TEST_PACKAGE";
+        final String packageVersionString1 = "1.2.3.4";
+        final String packageVersionString2 = "1.2.3.5";
+        //GIVEN
+        File idFolder = new File(testFolder, packageId);
+
+        File versionFolder1 = new File(idFolder, packageVersionString1);
+        versionFolder1.mkdirs();
+        File versionFolder2 = new File(idFolder, packageVersionString2);
+        versionFolder2.mkdirs();
+        File packageFile1 = new File(versionFolder1, packageId + "." + packageVersionString1 + Nupkg.DEFAULT_EXTENSION);
+        File packageFile2 = new File(versionFolder2, packageId + "." + packageVersionString2 + Nupkg.DEFAULT_EXTENSION);
+
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+                FileChannel targetChanel = new FileOutputStream(packageFile1).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), targetChanel);
+        }
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+                FileChannel targetChanel = new FileOutputStream(packageFile2).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), targetChanel);
+        }
+        MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
+        //WHEN
+        packageSource.removePackage(packageId, Version.parse(packageVersionString2));
+        //THEN
+        assertTrue("Файл пакета не удален", packageFile1.exists());
+        assertTrue("Каталог с версией не удален", versionFolder1.exists());
+        assertTrue("Каталог идентификатора не удален", idFolder.exists());
+        assertFalse("Файл пакета удален", packageFile2.exists());
+        assertFalse("Каталог с версией удален", versionFolder2.exists());
+    }
+
+    /**
+     * Проверка удаления последнего пакета с данным идентификатором из
+     * репозитория (должна удалиться папка идентификатора пакета)
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testRemoveLastPackage() throws Exception {
+        final String packageId = "TEST_PACKAGE";
+        final String packageVersionString = "1.2.3.4";
+        //GIVEN
+        File idFolder = new File(testFolder, packageId);
+
+        File versionFolder = new File(idFolder, packageVersionString);
+        File packageFile = new File(versionFolder, packageId + "." + packageVersionString + Nupkg.DEFAULT_EXTENSION);
+        versionFolder.mkdirs();
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+                FileChannel targetChanel = new FileOutputStream(packageFile).getChannel()) {
+            TempNupkgFile.fastChannelCopy(Channels.newChannel(inputStream), targetChanel);
+        }
+        MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
+        //WHEN
+        packageSource.removePackage(packageId, Version.parse(packageVersionString));
+        //THEN
+        assertFalse("Файл пакета удален", packageFile.exists());
+        assertFalse("Каталог с версией удален", versionFolder.exists());
+        assertFalse("Каталог идентификатора удален", idFolder.exists());
+    }
 }
