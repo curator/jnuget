@@ -218,11 +218,13 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         //TODO Добавть тест, провести рефакторинг
         File idDir = new File(rootFolder, id);
         List<MavenNupkg> list = new ArrayList<>();
-        for (File versionDir : idDir.listFiles()) {
-            try {
-                list.add(new MavenNupkg(versionDir));
-            } catch (NugetFormatException ex) {
-                logger.error("Не удалось считать информацию о пакете.", ex);
+        if (idDir.exists()) {
+            for (File versionDir : idDir.listFiles()) {
+                try {
+                    list.add(new MavenNupkg(versionDir));
+                } catch (NugetFormatException ex) {
+                    logger.error("Не удалось считать информацию о пакете.", ex);
+                }
             }
         }
         return list;
