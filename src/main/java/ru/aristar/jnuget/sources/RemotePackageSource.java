@@ -69,7 +69,7 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Nupkg getLastVersionPackage(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getLastVersionPackage(id, true);
     }
 
     @Override
@@ -109,7 +109,8 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String filter = "tolower(Id) eq '" + id + "'";
+        return getPackagesFromRemoteStorage(filter);
     }
 
     @Override
@@ -122,7 +123,7 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
         try {
             remoteStorage.putPackage(file, apiKey);
             return true;
-        } catch (Exception e) {
+        } catch (UniformInterfaceException e) {
             logger.warn("Ошибка помещения пакета в удаленное хранилище", e);
             return false;
         }

@@ -87,6 +87,7 @@ public class MainUrlResource {
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
+            //TODO targetFramework='net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40'
             logger.debug("Запрос пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
@@ -247,6 +248,9 @@ public class MainUrlResource {
         PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
         return feed;
     }
+    
+    //TODO nuget delete <package Id> <package version> [API Key] [options]
+    
     /**
      * Имя заголовка запроса с ключем доступа
      */

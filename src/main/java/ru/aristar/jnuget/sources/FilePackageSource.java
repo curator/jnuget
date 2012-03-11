@@ -36,7 +36,8 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     private PushStrategy strategy;
 
     /**
-     * Устанавливает корневую папку хранилища (если папка не существует - производит попытку создать ее)
+     * Устанавливает корневую папку хранилища (если папка не существует -
+     * производит попытку создать ее)
      *
      * @param rootFolder корневая пака хранилища
      */
@@ -208,7 +209,7 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
-    protected <K extends Nupkg> Collection<K> extractLastVersion(
+    public static <K extends Nupkg> Collection<K> extractLastVersion(
             Collection<K> list, boolean ignoreCase) {
         Map<String, K> map = new HashMap<>();
         for (K pack : list) {

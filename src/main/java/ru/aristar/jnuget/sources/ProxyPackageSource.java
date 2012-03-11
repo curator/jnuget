@@ -78,7 +78,15 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Collection<Nupkg> getLastVersionPackages() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Collection<Nupkg> nupkgs = new ArrayList<>();
+        try {
+            nupkgs.addAll(remoteSource.getLastVersionPackages());
+        } catch (Exception e) {
+            logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
+        }
+        nupkgs.addAll(hostedSource.getLastVersionPackages());
+        nupkgs = FilePackageSource.extractLastVersion(nupkgs, true);
+        return nupkgs;
     }
 
     @Override

@@ -12,12 +12,12 @@ import ru.aristar.jnuget.sources.PackageSource;
  */
 class QueryExecutor {
 
-    //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
+    //TODO filter=((((((tolower(Id) eq 'neolant.projectwise.api') or (tolower(Id) eq 'neolant.projectwise.api')) or (tolower(Id) eq 'neolant.projectwise.controls')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp')
     
     public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
         if (filter == null || "".equals(filter)) {
             return packageSource.getPackages();
-        }
+        }        
         if (filter.toLowerCase().startsWith("tolower(id) eq")) {
             Pattern pattern = Pattern.compile("(\\w+)\\((\\w+)\\)\\s+(\\w+)\\s+'?([^']+)'?");
             Matcher matcher = pattern.matcher(filter);
