@@ -215,7 +215,6 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
     }
 
     private Collection<MavenNupkg> getPackagesById(String id) {
-        //TODO Добавть тест, провести рефакторинг
         File idDir = new File(rootFolder, id);
         List<MavenNupkg> list = new ArrayList<>();
         if (idDir.exists()) {

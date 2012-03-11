@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  *
@@ -140,9 +141,18 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
         MavenNupkg nupkg = hostedSource.getPackage(id, version);
         if (nupkg == null) {
             try {
-                Nupkg remoteNupkg = remoteSource.getPackage(id, version);
-                hostedSource.pushPackage(remoteNupkg, null);
-                nupkg = hostedSource.getPackage(id, version);
+                logger.debug("Получение файла пакета {}:{} из удаленного хранилища", new Object[]{id, version});
+                TempNupkgFile remoteNupkg = remoteSource.getPackage(id, version);
+                if (remoteNupkg == null) {
+                    return null;
+                }
+                boolean result = hostedSource.pushPackage(remoteNupkg, null);
+                if (result) {
+                    nupkg = hostedSource.getPackage(id, version);
+                } else {
+                    logger.warn("Не удалось поместить пакет {}:{} в локальное хранилище",
+                            new Object[]{remoteNupkg.getId(), remoteNupkg.getVersion()});
+                }
             } catch (Exception e) {
                 logger.warn("Ошибка помещения файла в локальное хранилище", e);
             }
