@@ -100,6 +100,22 @@ public class MavenStylePackageSourceTest {
     }
 
     /**
+     * Получение списка пакетов с указанным идентификатором
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetPackagesByIdIfNotExist() throws Exception {
+        //GIVEN
+        MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
+        //WHEN
+        Collection<MavenNupkg> result = packageSource.getPackages("NO_PACKAGE_IN_STORAGE");
+        //THEN
+        assertNotNull("Коллекция пакетов", result);
+        assertTrue("Коллекция пуста", result.isEmpty());
+    }
+
+    /**
      * проверка получения спецификации пакета
      *
      * @throws Exception ошибка в процессе теста
