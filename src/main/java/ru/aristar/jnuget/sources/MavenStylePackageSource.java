@@ -173,6 +173,8 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         } catch (JAXBException | NoSuchAlgorithmException ex) {
             throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
         }
+        logger.debug("Пакет {}:{} добавлен в хранилище",
+                new Object[]{nupkgFile.getNuspecFile().getId(), nupkgFile.getNuspecFile().getVersion()});
         return true;
     }
 
