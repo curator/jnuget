@@ -95,8 +95,11 @@ public class MavenStylePackageSourceTest {
         assertNotNull("Коллекция пакетов", result);
         assertEquals("Пакетов в коллекции", 1, result.size());
         Nupkg resultNupkg = result.iterator().next();
-        assertEquals("Идентификатор пакета", "NUnit", resultNupkg.getId());
-        assertEquals("Хеш объекта", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", resultNupkg.getHash().toString());
+        try (InputStream nupkgStream = resultNupkg.getStream()) {
+            assertEquals("Идентификатор пакета", "NUnit", resultNupkg.getId());
+            assertEquals("Хеш объекта", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", resultNupkg.getHash().toString());
+            assertNotNull("Поток с данными пакета получен", nupkgStream);
+        }
     }
 
     /**

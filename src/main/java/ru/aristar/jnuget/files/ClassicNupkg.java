@@ -79,10 +79,10 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public InputStream getStream() throws IOException {
-        if (file != null) {
-            return new FileInputStream(file);
-        } else {
+        if (file == null || !file.exists()) {
             throw new UnsupportedDataTypeException("Не найден файл пакета");
+        } else {
+            return new FileInputStream(file);
         }
     }
 
@@ -101,7 +101,7 @@ public class ClassicNupkg implements Nupkg {
         byte[] buffer = new byte[1024];
 
         try (InputStream inputStream = getStream()) {
-            int len = 0;
+            int len;
             while ((len = inputStream.read(buffer)) >= 0) {
                 md.update(buffer, 0, len);
             }

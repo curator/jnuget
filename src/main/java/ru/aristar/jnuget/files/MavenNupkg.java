@@ -55,6 +55,7 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
         this.packageFolder = packageFolder;
         this.version = Version.parse(packageFolder.getName());
         this.id = MavenNupkg.this.getNuspecFile().getId();
+        this.file = new File(packageFolder, MavenNupkg.this.getFileName());
     }
 
     @Override
@@ -81,19 +82,12 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
 
     @Override
     public Long getSize() {
-        return getNupkgFile().length();
+        return file.length();
     }
 
     @Override
     public InputStream getStream() throws IOException {
         return super.getStream();
-    }
-
-    private File getNupkgFile() {
-        if (file == null) {
-            file = new File(packageFolder, getFileName());
-        }
-        return file;
     }
 
     /**
