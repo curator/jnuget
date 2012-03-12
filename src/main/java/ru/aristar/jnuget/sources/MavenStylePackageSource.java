@@ -142,7 +142,6 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
-
         if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
             return false;
         }

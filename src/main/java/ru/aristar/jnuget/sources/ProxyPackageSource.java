@@ -172,7 +172,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public void setPushStrategy(PushStrategy strategy) {
-        hostedSource.setPushStrategy(strategy);
+        remoteSource.setPushStrategy(strategy);
     }
 
     @Override
