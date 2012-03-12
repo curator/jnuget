@@ -48,10 +48,29 @@ public class Hash {
         return hash;
     }
 
+    /**
+     * Сохраняет HASH в поток
+     *
+     * @param outputStream поток, в который будет записан HASH
+     * @throws IOException ошибка записи в поток
+     */
     public void saveTo(OutputStream outputStream) throws IOException {
         Writer writer = new OutputStreamWriter(outputStream);
-        writer.write(toString());
+        writer.write(this.toString());
+        writer.flush();
         outputStream.flush();
+    }
+
+    /**
+     * Сохраняет Hash в файл
+     *
+     * @param hashFile файл, в который будет сохранен HASH
+     * @throws IOException ошибка записи на диск
+     */
+    public void saveTo(File hashFile) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(hashFile)) {
+            saveTo(fileOutputStream);
+        }
     }
 
     public static Hash parse(String base64digest) {

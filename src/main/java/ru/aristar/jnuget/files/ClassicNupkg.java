@@ -82,7 +82,7 @@ public class ClassicNupkg implements Nupkg {
         if (file != null) {
             return new FileInputStream(file);
         } else {
-            throw new UnsupportedDataTypeException("Файл с данными не установлен");
+            throw new UnsupportedDataTypeException("Не найден файл пакета");
         }
     }
 

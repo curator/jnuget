@@ -168,9 +168,7 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
             // Сохраняем контрольную сумму
             File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
-            try (FileOutputStream output = new FileOutputStream(hashFile)) {
-                nupkgFile.getHash().saveTo(output);
-            }
+            nupkgFile.getHash().saveTo(hashFile);
 
         } catch (JAXBException | NoSuchAlgorithmException ex) {
             throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
@@ -190,12 +188,9 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         String id = source.getId();
         Version version = source.getVersion();
         File packageFolder = new File(rootFolder, id.toLowerCase());
-        if (!packageFolder.exists()) {
-            packageFolder.mkdir();
-        }
         File versionFolder = new File(packageFolder, version.toString());
         if (!versionFolder.exists()) {
-            versionFolder.mkdir();
+            versionFolder.mkdirs();
         }
         return versionFolder;
     }
