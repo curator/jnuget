@@ -1,6 +1,9 @@
 package ru.aristar.jnuget.files;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -10,40 +13,14 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import javax.xml.bind.JAXBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 
 /**
+ * Пакет, хранящий данные во временном файле
  *
  * @author sviridov
  */
-public class TempNupkgFile implements Nupkg, AutoCloseable {
-
-    /**
-     * Хеш пакета
-     */
-    private Hash hash;
-    /**
-     * файл пакета
-     */
-    private File file;
-    /**
-     * Дата обновления пакета
-     */
-    private Date updated;
-    /**
-     * Файл спецификации пакета
-     */
-    private NuspecFile nuspecFile;
-    /**
-     * Логгер
-     */
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable {
 
     /**
      * Копирует данные из одного канала в другой
@@ -118,91 +95,29 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     }
 
     @Override
-    public Date getUpdated() {
-        return updated;
-    }
-
-    @Override
     public void close() throws Exception {
         file.delete();
     }
 
     @Override
-    public Hash getHash() {
-        return hash;
-    }
-
-    @Override
-    public InputStream getStream() throws FileNotFoundException {
-        return new FileInputStream(file);
-    }
-
-    @Override
-    public NuspecFile getNuspecFile() {
-        if (nuspecFile == null) {
-            try {
-                loadNuspec();
-            } catch (IOException | JAXBException | SAXException e) {
-                //TODO Добавить выброс exception-а
-                logger.warn("Ошибка чтения файла спецификации", e);
-            }
-        }
-        return nuspecFile;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
-    public void setNuspecFile(NuspecFile nuspecFile) {
-        this.nuspecFile = nuspecFile;
-    }
-
-    private void loadNuspec() throws IOException, JAXBException, SAXException {
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
-            ZipEntry entry;
-            loop:
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (!entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION)) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while ((len = zipInputStream.read(buffer)) >= 0) {
-                        outputStream.write(buffer, 0, len);
-                    }
-                    outputStream.flush();
-                    outputStream.close();
-                    nuspecFile = NuspecFile.Parse(outputStream.toByteArray());
-                    break loop;
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getFileName() {
-        return getId() + "." + getVersion().toString() + DEFAULT_EXTENSION;
-    }
-
-    @Override
-    public Long getSize() {
-        if (file == null) {
-            return null;
-        }
-        return file.length();
-    }
-
-    @Override
     public String getId() {
-        return getNuspecFile().getId();
+        if (this.id == null) {
+            this.id = getNuspecFile().getId();
+        }
+        return this.id;
     }
 
     @Override
     public Version getVersion() {
-        return getNuspecFile().getVersion();
+        if (this.version == null) {
+            this.version = getNuspecFile().getVersion();
+        }
+        return this.version;
     }
 
     @Override
     public void load() throws IOException {
+        getId();
+        getVersion();
     }
 }

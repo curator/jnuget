@@ -21,11 +21,29 @@ import ru.aristar.jnuget.Version;
  */
 public class ClassicNupkg implements Nupkg {
 
+    /**
+     * Файл спецификации пакета
+     */
     protected NuspecFile nuspecFile;
+    /**
+     * Дата обновления пакета
+     */
     protected Date updated;
+    /**
+     * файл пакета
+     */
     protected File file;
+    /**
+     * Версия пакета
+     */
     protected Version version;
+    /**
+     * Идентификатор пакета
+     */
     protected String id;
+    /**
+     * Хеш пакета
+     */
     protected Hash hash;
     /**
      * Логгер
@@ -150,7 +168,7 @@ public class ClassicNupkg implements Nupkg {
         }
     }
 
-    private void loadNuspec() throws IOException, JAXBException, SAXException {
+    protected void loadNuspec() throws IOException, JAXBException, SAXException {
         try (ZipInputStream zipInputStream = new ZipInputStream(getStream())) {
             ZipEntry entry;
             loop:
@@ -173,7 +191,7 @@ public class ClassicNupkg implements Nupkg {
 
     @Override
     public String toString() {
-        return "ClassicNupkg{" + id + ":" + version + '}';
+        return this.getClass().getSimpleName() + "{" + id + ":" + version + '}';
     }
 
     @Override

@@ -23,7 +23,6 @@ public class PackageEntryTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         final Date date = new Date();
         TempNupkgFile nupkgFile = new TempNupkgFile(inputStream, date);
-        nupkgFile.setUpdated(date);
         //WHEN
         NugetContext context = new NugetContext(new URI("http://localhost:8090/"));
         PackageEntry entry = context.createPackageEntry(nupkgFile);
