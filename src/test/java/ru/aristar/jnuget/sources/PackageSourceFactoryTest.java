@@ -26,6 +26,7 @@ public class PackageSourceFactoryTest {
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
         StorageOptions storageOptions = new StorageOptions();
         storageOptions.setClassName(FilePackageSource.class.getCanonicalName());
+        storageOptions.setIndexed(false);
         storageOptions.getProperties().put("folderName", "${user.home}/Packages/");
         //WHEN
         PackageSource result = sourceFactory.createPackageSource(storageOptions);

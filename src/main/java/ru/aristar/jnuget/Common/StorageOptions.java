@@ -20,6 +20,14 @@ public class StorageOptions {
      */
     @XmlAttribute(name = "class")
     private String className;
+    /**
+     * Будет ли индексироваться хранилище
+     */
+    @XmlAttribute(name = "indexed")
+    private Boolean indexed;
+    /**
+     * Список настроек вида ключ/значение
+     */
     @XmlJavaTypeAdapter(PropertiesTypeAdapter.class)
     @XmlElement(name = "properties")
     private Map<String, String> properties;
@@ -65,5 +73,22 @@ public class StorageOptions {
      */
     public void setStrategyOptions(PushStrategyOptions strategyOptions) {
         this.strategyOptions = strategyOptions;
+    }
+
+    /**
+     * @return будет ли индексироваться хранилище
+     */
+    public boolean isIndexed() {
+        if (indexed == null) {
+            indexed = true;
+        }
+        return indexed;
+    }
+
+    /**
+     * @param indexed будет ли индексироваться хранилище
+     */
+    public void setIndexed(boolean indexed) {
+        this.indexed = indexed;
     }
 }

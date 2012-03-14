@@ -12,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.ClassicNupkg;
@@ -23,7 +22,7 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  *
  * @author sviridov
  */
-public class IndexedFilePackageSourceTest {
+public class IndexedPackageSourceTest {
 
     /**
      * Тестовая папка с пакетами
@@ -71,8 +70,9 @@ public class IndexedFilePackageSourceTest {
     @Test
     public void testGetAllPackages() throws Exception {
         //GIVEN
-        IndexedFilePackageSource packageSource = new IndexedFilePackageSource();
-        packageSource.setFolderName(testFolder.getAbsolutePath()).join();
+        IndexedPackageSource packageSource = new IndexedPackageSource();
+        FilePackageSource filePackageSource = new FilePackageSource(testFolder);
+        packageSource.setUnderlyingSource(filePackageSource).join();
         //WHEN
         Collection<Nupkg> result = packageSource.getPackages();
         //THEN
@@ -94,9 +94,10 @@ public class IndexedFilePackageSourceTest {
         }
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
-            IndexedFilePackageSource packageSource = new IndexedFilePackageSource();
+            IndexedPackageSource packageSource = new IndexedPackageSource();
+            FilePackageSource filePackageSource = new FilePackageSource(localTestFolder);
+            packageSource.setUnderlyingSource(filePackageSource).join();
             packageSource.setPushStrategy(new SimplePushStrategy(true));
-            packageSource.setFolderName(localTestFolder.getAbsolutePath()).join();
             //WHEN
             packageSource.pushPackage(nupkgFile, null);
             //THEN

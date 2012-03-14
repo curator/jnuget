@@ -13,7 +13,7 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class IndexedFilePackageSource implements PackageSource {
+public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     /**
      * Монитор, обеспечивающий блокировку вставки пакетов при обновлении индекса
@@ -26,7 +26,7 @@ public class IndexedFilePackageSource implements PackageSource {
     /**
      * Индексируемый источник пакетов
      */
-    protected FilePackageSource packageSource = new FilePackageSource();
+    private PackageSource<? extends Nupkg> packageSource;
     /**
      * Логгер
      */
@@ -45,7 +45,7 @@ public class IndexedFilePackageSource implements PackageSource {
             try {
                 refreshIndex();
             } catch (Exception e) {
-                logger.error("Ошибка оновления индекса для хранилища " + getFolderName(), e);
+                logger.error("Ошибка оновления индекса для хранилища " + packageSource, e);
             }
         }
     }
@@ -171,20 +171,20 @@ public class IndexedFilePackageSource implements PackageSource {
     }
 
     /**
-     * @param folderName полное имя папки с пакетами
-     * @return поток обновления индекса
+     * @return источник пакетов, подлежащий индексированию
      */
-    public Thread setFolderName(String folderName) {
-        packageSource.setFolderName(folderName);
-        Thread thread = new Thread(new RefreshIndexThread());
-        thread.start();
-        return thread;
+    public PackageSource<? extends Nupkg> getUnderlyingSource() {
+        return packageSource;
     }
 
     /**
-     * @return полное имя папки с пакетами
+     * @param packageSource источник пакетов, подлежащий индексированию
+     * @return поток обновления индекса
      */
-    public String getFolderName() {
-        return packageSource.getFolderName();
+    public Thread setUnderlyingSource(PackageSource<? extends Nupkg> packageSource) {
+        this.packageSource = packageSource;
+        Thread thread = new Thread(new IndexedPackageSource.RefreshIndexThread());
+        thread.start();
+        return thread;
     }
 }

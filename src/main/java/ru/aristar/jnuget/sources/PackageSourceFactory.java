@@ -121,7 +121,12 @@ public class PackageSourceFactory {
             newSource.setPushStrategy(new SimplePushStrategy(false));
             logger.warn("Используется стратегия фиксации по умолчанию");
         }
-
+        if (storageOptions.isIndexed()) {
+            logger.debug("Создание индекса для хранилища");
+            IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
+            indexedPackageSource.setUnderlyingSource(newSource);
+            newSource = indexedPackageSource;
+        }
         logger.info("Хранилище создано");
         return newSource;
     }
