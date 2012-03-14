@@ -240,5 +240,9 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         }
         // Удаляем саму папку с версией
         versionDir.delete();
+        //Если версий не осталось удаляем папку с идентификатором
+        if (idDir.listFiles().length == 0) {
+            idDir.delete();
+        }
     }
 }

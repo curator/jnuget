@@ -26,6 +26,7 @@ public class ClassicNupkg implements Nupkg {
     protected File file;
     protected Version version;
     protected String id;
+    protected Hash hash;
     /**
      * Логгер
      */
@@ -125,12 +126,6 @@ public class ClassicNupkg implements Nupkg {
         }
         return name.toLowerCase().endsWith(Nupkg.DEFAULT_EXTENSION);
     }
-    protected Hash hash;
-    /**
-     * Выражение разбора строки имени файла
-     */
-    private static Pattern parser =
-            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + Nupkg.DEFAULT_EXTENSION + "$");
 
     /**
      * Разбирает строку названия файла пакета
@@ -155,12 +150,6 @@ public class ClassicNupkg implements Nupkg {
         }
     }
 
-    /**
-     *
-     * @throws IOException
-     * @throws JAXBException
-     * @throws SAXException
-     */
     private void loadNuspec() throws IOException, JAXBException, SAXException {
         try (ZipInputStream zipInputStream = new ZipInputStream(getStream())) {
             ZipEntry entry;
@@ -195,4 +184,9 @@ public class ClassicNupkg implements Nupkg {
             throw new IOException(ex);
         }
     }
+    /**
+     * Выражение разбора строки имени файла
+     */
+    private final static Pattern parser =
+            Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + Nupkg.DEFAULT_EXTENSION + "$");
 }
