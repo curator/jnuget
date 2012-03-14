@@ -96,7 +96,7 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
         if (hash != null) {
             return hash;
         }
-
+        //TODO реализовать получение HASH при создании файла
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         byte[] buffer = new byte[1024];
 
@@ -184,5 +184,15 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     @Override
     public Version getVersion() {
         return getNuspecFile().getVersion();
+    }
+
+    @Override
+    public void load() throws IOException {
+        //TODO Убрать после реализации получения хеша при созданиии файла
+        try {
+            this.getHash();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IOException(ex);
+        }
     }
 }

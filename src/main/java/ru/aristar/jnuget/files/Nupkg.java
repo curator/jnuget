@@ -61,4 +61,11 @@ public interface Nupkg {
      * @return версия пакета
      */
     Version getVersion();
+
+    /**
+     * Загружает все ленивые поля пакета
+     *
+     * @throws IOException ошибка получения данных
+     */
+    void load() throws IOException;
 }

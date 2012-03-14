@@ -1,14 +1,12 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -34,11 +32,6 @@ public class IndexedFilePackageSource implements PackageSource {
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Override
-    public void removePackage(String id, Version version) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     /**
      * Поторк, обновляющий индекс
      */
@@ -63,13 +56,13 @@ public class IndexedFilePackageSource implements PackageSource {
     private void refreshIndex() {
         synchronized (monitor) {
             logger.info("Инициировано обновление индекса хранилища");
-            Collection<ClassicNupkg> packages = packageSource.getPackages();
+            Collection<? extends Nupkg> packages = packageSource.getPackages();
             Index newIndex = new Index();
-            for (ClassicNupkg nupkg : packages) {
+            for (Nupkg nupkg : packages) {
                 try {
-                    nupkg.getHash();
+                    nupkg.load();
                     newIndex.put(nupkg);
-                } catch (NoSuchAlgorithmException | IOException e) {
+                } catch (IOException e) {
                     logger.warn("Ошибка инициализации пакета", e);
                 }
             }
@@ -170,6 +163,11 @@ public class IndexedFilePackageSource implements PackageSource {
     @Override
     public void setPushStrategy(PushStrategy strategy) {
         packageSource.setPushStrategy(strategy);
+    }
+
+    @Override
+    public void removePackage(String id, Version version) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

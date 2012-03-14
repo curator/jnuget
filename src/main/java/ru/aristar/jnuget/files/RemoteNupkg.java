@@ -81,4 +81,8 @@ public class RemoteNupkg implements Nupkg {
     public Version getVersion() {
         return nuspec.getVersion();
     }
+
+    @Override
+    public void load() throws IOException {
+    }
 }

@@ -186,4 +186,13 @@ public class ClassicNupkg implements Nupkg {
     public String toString() {
         return "ClassicNupkg{" + id + ":" + version + '}';
     }
+
+    @Override
+    public void load() throws IOException {
+        try {
+            this.getHash();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IOException(ex);
+        }
+    }
 }
