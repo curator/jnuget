@@ -9,10 +9,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.activation.UnsupportedDataTypeException;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 
 /**
@@ -53,7 +51,11 @@ public class ClassicNupkg implements Nupkg {
     protected ClassicNupkg() {
     }
 
-    public ClassicNupkg(File file) throws JAXBException, IOException, SAXException, NugetFormatException {
+    /**
+     * @param file файл пакета
+     * @throws NugetFormatException файл пакета не соответствует формату NuGet
+     */
+    public ClassicNupkg(File file) throws NugetFormatException {
         this.file = file;
         parse(file.getName());
     }
@@ -67,10 +69,12 @@ public class ClassicNupkg implements Nupkg {
         return file;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public Version getVersion() {
         return version;
     }
@@ -137,6 +141,12 @@ public class ClassicNupkg implements Nupkg {
         return file.length();
     }
 
+    /**
+     * Проверяет является ли имя файла пакета валидным
+     *
+     * @param name имя файла
+     * @return true, если имя файла соответствует формату
+     */
     public static boolean isValidFileName(String name) {
         if (name == null) {
             return false;
@@ -187,8 +197,7 @@ public class ClassicNupkg implements Nupkg {
      * спецификации NuGet
      */
     protected NuspecFile loadNuspec(InputStream packageStream) throws IOException, NugetFormatException {
-        try (ZipInputStream zipInputStream = new ZipInputStream(packageStream);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(packageStream);) {
             ZipEntry entry;
             do {
                 entry = zipInputStream.getNextEntry();
@@ -196,13 +205,7 @@ public class ClassicNupkg implements Nupkg {
             if (entry == null) {
                 return null;
             }
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = zipInputStream.read(buffer)) >= 0) {
-                outputStream.write(buffer, 0, len);
-            }
-            outputStream.flush();
-            return NuspecFile.Parse(outputStream.toByteArray());
+            return NuspecFile.Parse(zipInputStream);
         }
     }
 
