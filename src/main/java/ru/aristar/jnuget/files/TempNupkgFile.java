@@ -6,12 +6,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.bind.JAXBException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
@@ -22,14 +24,26 @@ import ru.aristar.jnuget.Version;
  */
 public class TempNupkgFile implements Nupkg, AutoCloseable {
 
+    /**
+     * Хеш пакета
+     */
     private Hash hash;
+    /**
+     * файл пакета
+     */
     private File file;
+    /**
+     * Дата обновления пакета
+     */
     private Date updated;
+    /**
+     * Файл спецификации пакета
+     */
     private NuspecFile nuspecFile;
     /**
      * Логгер
      */
-    protected org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Копирует данные из одного канала в другой
@@ -55,30 +69,52 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
      * Создает временный файл на основе потока
      *
      * @param inputStream поток с данными
+     * @param targetFile файл, в который необходимо скопировать пакет
      * @return файл с данными
      * @throws IOException ошибка чтения/записи
+     * @throws NoSuchAlgorithmException в системе не установлен алгоритм для
+     * расчета значения HASH
      */
-    private static File createTemporaryFile(InputStream inputStream) throws IOException {
-        File file = File.createTempFile("nupkg", "jnuget");
-        ReadableByteChannel src = Channels.newChannel(inputStream);
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        FileChannel dest = fileOutputStream.getChannel();
-        try {
+    private static Hash copyDataAndCalculateHash(InputStream inputStream, File targetFile) throws IOException, NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+        DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
+        FileOutputStream fileOutputStream = new FileOutputStream(targetFile);
+        try (ReadableByteChannel src = Channels.newChannel(digestInputStream);
+                FileChannel dest = fileOutputStream.getChannel();) {
             fastChannelCopy(src, dest);
-        } finally {
-            src.close();
-            dest.close();
+            return new Hash(digestInputStream.getMessageDigest().digest());
         }
-        return file;
     }
 
-    public TempNupkgFile(InputStream inputStream) throws IOException, JAXBException, SAXException, NugetFormatException {
+    /**
+     * Создает пакет NuGet из потока
+     *
+     * @param inputStream поток с пакетом
+     * @throws IOException ошибка чтения данных
+     * @throws NugetFormatException поток не содержит пакет NuGet или формат
+     * пакета - не соответствует стандарту
+     */
+    public TempNupkgFile(InputStream inputStream) throws IOException, NugetFormatException {
         this(inputStream, new Date());
     }
 
-    public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, JAXBException, SAXException, NugetFormatException {
-        this.file = createTemporaryFile(inputStream);
-        this.updated = updated;
+    /**
+     * Создает пакет NuGet из потока
+     *
+     * @param inputStream поток с пакетом
+     * @param updated дата обновления пакета
+     * @throws IOException ошибка чтения данных
+     * @throws NugetFormatException поток не содержит пакет NuGet или формат
+     * пакета - не соответствует стандарту
+     */
+    public TempNupkgFile(InputStream inputStream, Date updated) throws IOException, NugetFormatException {
+        try {
+            this.file = File.createTempFile("nupkg", "jnuget");
+            this.hash = copyDataAndCalculateHash(inputStream, this.file);
+            this.updated = updated;
+        } catch (NoSuchAlgorithmException ex) {
+            throw new NugetFormatException("Не удается подсчитать HASH пакета", ex);
+        }
     }
 
     @Override
@@ -92,21 +128,7 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
     }
 
     @Override
-    public Hash getHash() throws NoSuchAlgorithmException, IOException {
-        if (hash != null) {
-            return hash;
-        }
-        //TODO реализовать получение HASH при создании файла
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        byte[] buffer = new byte[1024];
-
-        InputStream inputStream = getStream();
-        int len = 0;
-        while ((len = inputStream.read(buffer)) >= 0) {
-            md.update(buffer, 0, len);
-        }
-        byte[] mdbytes = md.digest();
-        hash = new Hash(mdbytes);
+    public Hash getHash() {
         return hash;
     }
 
@@ -136,12 +158,6 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
         this.nuspecFile = nuspecFile;
     }
 
-    /**
-     *
-     * @throws IOException
-     * @throws JAXBException
-     * @throws SAXException
-     */
     private void loadNuspec() throws IOException, JAXBException, SAXException {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
             ZipEntry entry;
@@ -188,11 +204,5 @@ public class TempNupkgFile implements Nupkg, AutoCloseable {
 
     @Override
     public void load() throws IOException {
-        //TODO Убрать после реализации получения хеша при созданиии файла
-        try {
-            this.getHash();
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IOException(ex);
-        }
     }
 }
