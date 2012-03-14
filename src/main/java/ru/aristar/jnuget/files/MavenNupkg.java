@@ -5,10 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import javax.xml.bind.JAXBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 
 /**
@@ -26,17 +22,12 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
      */
     public static final String NUSPEC_FILE_NAME = "nuspec.xml";
     /**
-     * Логгер
-     */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
      * Каталог с файлами пакета и хешем
      */
     private File packageFolder;
 
     /**
      * @param packageFolder папка с файлами пакета
-     *
      * @throws NugetFormatException некорректный формат папки
      */
     public MavenNupkg(File packageFolder) throws NugetFormatException {
@@ -73,7 +64,7 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
             File nuspec = new File(packageFolder, NUSPEC_FILE_NAME);
             try (InputStream inputStream = new FileInputStream(nuspec)) {
                 nuspecFile = NuspecFile.Parse(inputStream);
-            } catch (JAXBException | SAXException | IOException e) {
+            } catch (NugetFormatException | IOException e) {
                 logger.error("При чтении nuspec-файла произошла ошибка.", e);
             }
         }

@@ -79,8 +79,8 @@ public class ClassicNupkg implements Nupkg {
     public NuspecFile getNuspecFile() {
         if (nuspecFile == null) {
             try {
-                loadNuspec();
-            } catch (IOException | JAXBException | SAXException e) {
+                nuspecFile = loadNuspec(getStream());
+            } catch (NugetFormatException | IOException e) {
                 //TODO Добавить выброс exception-а
                 logger.warn("Ошибка чтения файла спецификации", e);
             }
@@ -168,24 +168,42 @@ public class ClassicNupkg implements Nupkg {
         }
     }
 
-    protected void loadNuspec() throws IOException, JAXBException, SAXException {
-        try (ZipInputStream zipInputStream = new ZipInputStream(getStream())) {
+    /**
+     * ZIP вложение является XML спецификацией Nuspec
+     *
+     * @param entry ZIP вложение
+     * @return true если вложение соответствует вложению со спецификацией
+     */
+    protected boolean isNuspecZipEntry(ZipEntry entry) {
+        return !entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION);
+    }
+
+    /**
+     * Извлечение файла спецификации из потока с пакетом NuPkg
+     *
+     * @param packageStream поток с пакетом
+     * @return файл спецификации
+     * @throws IOException ошибка чтения
+     * @throws NugetFormatException XML в архиве пакета не соответствует
+     * спецификации NuGet
+     */
+    protected NuspecFile loadNuspec(InputStream packageStream) throws IOException, NugetFormatException {
+        try (ZipInputStream zipInputStream = new ZipInputStream(packageStream);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();) {
             ZipEntry entry;
-            loop:
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (!entry.isDirectory() && entry.getName().endsWith(NuspecFile.DEFAULT_FILE_EXTENSION)) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while ((len = zipInputStream.read(buffer)) >= 0) {
-                        outputStream.write(buffer, 0, len);
-                    }
-                    outputStream.flush();
-                    outputStream.close();
-                    nuspecFile = NuspecFile.Parse(outputStream.toByteArray());
-                    break;
-                }
+            do {
+                entry = zipInputStream.getNextEntry();
+            } while (entry != null && !isNuspecZipEntry(entry));
+            if (entry == null) {
+                return null;
             }
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = zipInputStream.read(buffer)) >= 0) {
+                outputStream.write(buffer, 0, len);
+            }
+            outputStream.flush();
+            return NuspecFile.Parse(outputStream.toByteArray());
         }
     }
 

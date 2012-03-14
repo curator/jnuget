@@ -1,11 +1,9 @@
 package ru.aristar.jnuget.files;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,7 +18,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-import ru.aristar.jnuget.*;
+import ru.aristar.jnuget.Reference;
+import ru.aristar.jnuget.StringListTypeAdapter;
+import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.VersionTypeAdapter;
 import ru.aristar.jnuget.rss.EntryProperties;
 import ru.aristar.jnuget.rss.PackageEntry;
 
@@ -257,10 +258,9 @@ public class NuspecFile {
      *
      * @param data XML
      * @return распознанная информация о пакете
-     * @throws JAXBException ошибка преобразования XML
-     * @throws SAXException ошибка фильтра SAX
+     * @throws NugetFormatException XML не соответствует спецификации NuGet
      */
-    public static NuspecFile Parse(byte[] data) throws JAXBException, SAXException {
+    public static NuspecFile Parse(byte[] data) throws NugetFormatException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
         return Parse(inputStream);
     }
@@ -271,19 +271,22 @@ public class NuspecFile {
      *
      * @param inputStream XML
      * @return распознанная информация о пакете
-     * @throws JAXBException ошибка преобразования XML
-     * @throws SAXException ошибка фильтра SAX
+     * @throws NugetFormatException XML не соответствует спецификации NuGet
      */
-    public static NuspecFile Parse(InputStream inputStream) throws JAXBException, SAXException {
-        JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        XMLReader reader = XMLReaderFactory.createXMLReader();
-        NugetNamespaceFilter inFilter = new NugetNamespaceFilter();
-        inFilter.setParent(reader);
-        InputSource inputSource = new InputSource(inputStream);
-        SAXSource saxSource = new SAXSource(inFilter, inputSource);
-        NuspecFile result = (NuspecFile) unmarshaller.unmarshal(saxSource);
-        return result;
+    public static NuspecFile Parse(InputStream inputStream) throws NugetFormatException {
+        try {
+            JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            NugetNamespaceFilter inFilter = new NugetNamespaceFilter();
+            inFilter.setParent(reader);
+            InputSource inputSource = new InputSource(inputStream);
+            SAXSource saxSource = new SAXSource(inFilter, inputSource);
+            NuspecFile result = (NuspecFile) unmarshaller.unmarshal(saxSource);
+            return result;
+        } catch (JAXBException | SAXException e) {
+            throw new NugetFormatException("Ошибка чтения спецификации пакета из XML потока", e);
+        }
     }
 
     /**
