@@ -116,10 +116,9 @@ public class ClassicNupkg implements Nupkg {
             return hash;
         }
 
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        byte[] buffer = new byte[1024];
-
+        MessageDigest md = MessageDigest.getInstance(Hash.ALGORITHM_NAME);
         try (InputStream inputStream = getStream()) {
+            byte[] buffer = new byte[1024];
             int len;
             while ((len = inputStream.read(buffer)) >= 0) {
                 md.update(buffer, 0, len);
