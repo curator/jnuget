@@ -1,6 +1,9 @@
 package ru.aristar.jnuget.files;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -48,6 +51,9 @@ public class ClassicNupkg implements Nupkg {
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * Конструктор используется в классах потомках для пустой инициализации
+     */
     protected ClassicNupkg() {
     }
 
