@@ -53,7 +53,7 @@ public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable 
      * расчета значения HASH
      */
     private static Hash copyDataAndCalculateHash(InputStream inputStream, File targetFile) throws IOException, NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+        MessageDigest messageDigest = MessageDigest.getInstance(Hash.ALGORITHM_NAME);
         DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
         FileOutputStream fileOutputStream = new FileOutputStream(targetFile);
         try (ReadableByteChannel src = Channels.newChannel(digestInputStream);

@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.files;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -250,19 +249,6 @@ public class NuspecFile {
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(this, outputStream);
-    }
-
-    //TODO Добавить проверку схемы
-    /**
-     * Восстанавливает информацию о пакете из XML
-     *
-     * @param data XML
-     * @return распознанная информация о пакете
-     * @throws NugetFormatException XML не соответствует спецификации NuGet
-     */
-    public static NuspecFile Parse(byte[] data) throws NugetFormatException {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-        return Parse(inputStream);
     }
 
     //TODO Добавить проверку схемы

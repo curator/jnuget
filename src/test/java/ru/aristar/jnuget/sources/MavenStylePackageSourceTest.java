@@ -191,7 +191,7 @@ public class MavenStylePackageSourceTest {
         //GIVEN        
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
-        File packageFolder = new File(testFolder, tempNupkgFile.getId());
+        File packageFolder = new File(testFolder, tempNupkgFile.getId().toLowerCase());
         if (packageFolder.exists()) {
             FileUtils.deleteDirectory(packageFolder);
         }
@@ -203,11 +203,11 @@ public class MavenStylePackageSourceTest {
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
         File packageFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
+        //THEN        
+        assertTrue("Файл пакета создан", packageFile.exists());
+        assertTrue("Файл спецификации создан", nuspecFile.exists());
+        assertTrue("Файл хеша создан", hashFile.exists());
         try (FileChannel hashChanel = new FileInputStream(hashFile).getChannel()) {
-            //THEN
-            assertTrue("Файл хеша создан", hashFile.exists());
-            assertTrue("Файл пакета создан", packageFile.exists());
-            assertTrue("Файл спецификации создан", nuspecFile.exists());
             assertTrue("Хеш сгенерирован", hashChanel.size() > 0);
         }
     }

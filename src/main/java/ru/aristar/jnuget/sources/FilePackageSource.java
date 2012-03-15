@@ -8,10 +8,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.*;
 
@@ -104,7 +102,7 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
             try {
                 ClassicNupkg pack = new ClassicNupkg(file);
                 packages.add(pack);
-            } catch (NugetFormatException | JAXBException | IOException | SAXException ex) {
+            } catch (NugetFormatException ex) {
                 logger.warn("Не удалось разобрать имя файла", ex);
             }
         }

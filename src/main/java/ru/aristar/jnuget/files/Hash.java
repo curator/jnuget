@@ -94,4 +94,8 @@ public class Hash {
             return parse(String.valueOf(buffer));
         }
     }
+    /**
+     * Алгоритм, по которому вычисляется HASH
+     */
+    public static final String ALGORITHM_NAME = "SHA-512";
 }
