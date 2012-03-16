@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import java.lang.reflect.Method;
+import java.net.Authenticator;
+import java.net.ProxySelector;
 import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
@@ -250,6 +252,20 @@ public class PackageSourceFactory {
         if (proxyOptions.getUseSystemProxy() != null && proxyOptions.getUseSystemProxy()) {
             logger.info("Используется системный прокси");
             System.setProperty("java.net.useSystemProxies", "true");
+        } else if (proxyOptions.getNoProxy() != null && proxyOptions.getNoProxy()) {
+            logger.info("Прокси отключен");
+            ProxySelector.setDefault(new CustomProxySelector());
+        } else {
+            logger.info("Используется прокси {}:{}",
+                    new Object[]{proxyOptions.getHost(), proxyOptions.getPort()});
+            ProxySelector.setDefault(new CustomProxySelector(
+                    proxyOptions.getHost(),
+                    proxyOptions.getPort(),
+                    proxyOptions.getLogin(),
+                    proxyOptions.getPassword()));
+            Authenticator.setDefault(new CustomProxyAuthenticator(
+                    proxyOptions.getLogin(),
+                    proxyOptions.getPassword()));
         }
     }
 }
