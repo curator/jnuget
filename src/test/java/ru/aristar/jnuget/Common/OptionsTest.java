@@ -50,10 +50,12 @@ public class OptionsTest {
         assertEquals("Свойство стратегии фиксации", "value_g", options.getStrategyOptions().getProperties().get("property_g"));
         assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
         assertEquals("Класс хранилища 1", "TEST_CLASS_1", options.getStorageOptionsList().get(0).getClassName());
+        assertFalse("Xранилище 1 индексируется", options.getStorageOptionsList().get(0).isIndexed());
         assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
         assertEquals("Ключ доступа хранилища 1", "value_1", options.getStorageOptionsList().get(0).getStrategyOptions().getProperties().get("property_1"));
         assertEquals("Класс стратегии хранилища 1", "PUSH_CLASS_1", options.getStorageOptionsList().get(0).getStrategyOptions().getClassName());
         assertEquals("Класс хранилища 2", "TEST_CLASS_2", options.getStorageOptionsList().get(1).getClassName());
+        assertTrue("Xранилище 2 индексируется", options.getStorageOptionsList().get(1).isIndexed());
         assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName"));
         assertNull("Стратегия хранилища 2", options.getStorageOptionsList().get(1).getStrategyOptions());
     }

@@ -6,7 +6,7 @@
         </properties>                
     </pushStrategy>
     <storages>
-        <storage class="TEST_CLASS_1">
+        <storage class="TEST_CLASS_1" indexed="false">
             <properties>
                 <property name="folderName" value="TEST_FOLDER_1"/>
             </properties>
@@ -16,7 +16,7 @@
                 </properties>                
             </pushStrategy>
         </storage>
-        <storage class="TEST_CLASS_2">
+        <storage class="TEST_CLASS_2" indexed="true">
             <properties>
                 <property name="folderName" value="TEST_FOLDER_2"/>
             </properties>
