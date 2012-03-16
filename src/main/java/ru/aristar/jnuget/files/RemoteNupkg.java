@@ -1,7 +1,13 @@
 package ru.aristar.jnuget.files;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import ru.aristar.jnuget.Version;
@@ -30,16 +36,25 @@ public class RemoteNupkg implements Nupkg {
      * Дата обновления пакета
      */
     private final Date updated;
+    /**
+     * URL, по которому можно получить поток с пакетом
+     */
+    private URI sourceUri;
 
     /**
      * @param entry RSS сообщение с данными пакета
      * @throws NugetFormatException ошибка в формате RSS сообщения
      */
     public RemoteNupkg(PackageEntry entry) throws NugetFormatException {
-        this.nuspec = new NuspecFile(entry);
-        this.hash = Hash.parse(entry.getProperties().getPackageHash());
-        this.size = entry.getProperties().getPackageSize();
-        this.updated = entry.getUpdated();
+        try {
+            this.nuspec = new NuspecFile(entry);
+            this.hash = Hash.parse(entry.getProperties().getPackageHash());
+            this.sourceUri = new URI(entry.getContent().getSrc());
+            this.size = entry.getProperties().getPackageSize();
+            this.updated = entry.getUpdated();
+        } catch (URISyntaxException e) {
+            throw new NugetFormatException("Некорректный формат URI пакета", e);
+        }
     }
 
     @Override
@@ -64,7 +79,14 @@ public class RemoteNupkg implements Nupkg {
 
     @Override
     public InputStream getStream() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            ClientConfig config = new DefaultClientConfig();
+            Client client = Client.create(config);
+            WebResource webResource = client.resource(sourceUri);
+            return webResource.get(InputStream.class);
+        } catch (Exception e) {
+            throw new IOException("Ошибка получения потока пакета из удаленного ресурса", e);
+        }
     }
 
     @Override

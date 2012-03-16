@@ -31,6 +31,9 @@ public class AtomElement {
         this.scheme = scheme;
     }
 
+    /**
+     * @return URL по которому можно получить поток с пакетом
+     */
     public String getSrc() {
         return src;
     }
