@@ -34,18 +34,30 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
      */
     protected PushStrategy pushStrategy = new SimplePushStrategy(false);
 
+    /**
+     * Получает список пакетов из удаленного хранилища
+     *
+     * @param filter фильтр отбора пактов
+     * @return список пакетов
+     */
     private Collection<Nupkg> getPackagesFromRemoteStorage(String filter) {
         try {
-            PackageFeed feed = remoteStorage.getPackages(filter, null, null, null, null);
+            PackageFeed feed;
             ArrayList<Nupkg> result = new ArrayList<>();
-            for (PackageEntry entry : feed.getEntries()) {
-                try {
-                    RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
-                    result.add(remoteNupkg);
-                } catch (NugetFormatException e) {
-                    logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
+            int groupCount = 200;
+            int skip = 0;
+            do {
+                feed = remoteStorage.getPackages(filter, null, groupCount, null, skip);
+                for (PackageEntry entry : feed.getEntries()) {
+                    try {
+                        RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
+                        result.add(remoteNupkg);
+                    } catch (NugetFormatException e) {
+                        logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
+                    }
                 }
-            }
+                skip = skip + groupCount;
+            } while (feed != null && !feed.getEntries().isEmpty());
             return result;
         } catch (NugetFormatException | UniformInterfaceException e) {
             logger.warn("Ошибка получения пакета из удаленного хранилища", e);

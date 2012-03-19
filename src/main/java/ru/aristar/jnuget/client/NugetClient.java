@@ -4,10 +4,13 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.ws.rs.core.HttpHeaders;
 import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
@@ -44,6 +47,7 @@ public class NugetClient implements AutoCloseable {
     public NugetClient() {
         ClientConfig config = new DefaultClientConfig();
         client = Client.create(config);
+        client.addFilter(new GZIPContentEncodingFilter());
         webResource = client.resource(DEFAULT_REMOTE_STORAGE_URL);
     }
 
@@ -73,9 +77,9 @@ public class NugetClient implements AutoCloseable {
      * @throws UniformInterfaceException
      * @throws NugetFormatException
      */
-    public PackageFeed getPackages(String filter, String searchTerm, String top, String targetFramework, String skip) throws UniformInterfaceException, NugetFormatException {
+    public PackageFeed getPackages(String filter, String searchTerm, Integer top, String targetFramework, Integer skip) throws UniformInterfaceException, NugetFormatException {
         WebResource resource = webResource;
-        resource = resource.queryParam("$orderby", "id");
+        resource = resource.queryParam("$orderby", "Id");
         if (filter != null) {
             resource = resource.queryParam("$filter", filter);
         }
@@ -83,16 +87,17 @@ public class NugetClient implements AutoCloseable {
             resource = resource.queryParam("searchTerm", searchTerm);
         }
         if (top != null) {
-            resource = resource.queryParam("$top", top);
+            resource = resource.queryParam("$top", top.toString());
         }
         if (targetFramework != null) {
             resource = resource.queryParam("targetFramework", targetFramework);
         }
         if (skip != null) {
-            resource = resource.queryParam("$skip", skip);
+            resource = resource.queryParam("$skip", skip.toString());
         }
-        resource = resource.path("nuget/Packages");
-        PackageFeed feed = resource.accept(javax.ws.rs.core.MediaType.APPLICATION_XML).get(PackageFeed.class);
+        resource = resource.path("Packages");
+        Builder builder = resource.header(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        PackageFeed feed = builder.get(PackageFeed.class);
         return feed;
     }
 

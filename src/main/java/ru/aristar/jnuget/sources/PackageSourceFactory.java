@@ -260,9 +260,7 @@ public class PackageSourceFactory {
                     new Object[]{proxyOptions.getHost(), proxyOptions.getPort()});
             ProxySelector.setDefault(new CustomProxySelector(
                     proxyOptions.getHost(),
-                    proxyOptions.getPort(),
-                    proxyOptions.getLogin(),
-                    proxyOptions.getPassword()));
+                    proxyOptions.getPort()));
             Authenticator.setDefault(new CustomProxyAuthenticator(
                     proxyOptions.getLogin(),
                     proxyOptions.getPassword()));

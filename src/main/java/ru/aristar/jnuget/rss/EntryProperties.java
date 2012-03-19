@@ -255,28 +255,28 @@ public class EntryProperties {
         this.licenseUrl = hashMap.get("LicenseUrl").getTextContent();
         this.projectUrl = hashMap.get("ProjectUrl").getTextContent();
         this.reportAbuseUrl = hashMap.get("ReportAbuseUrl").getTextContent();
-        this.downloadCount = Integer.decode(hashMap.get("DownloadCount").getTextContent());
-        this.versionDownloadCount = Integer.decode(hashMap.get("VersionDownloadCount").getTextContent());
-        this.ratingsCount = Integer.decode(hashMap.get("RatingsCount").getTextContent());
-        this.versionRatingsCount = Integer.decode(hashMap.get("VersionRatingsCount").getTextContent());
-        this.rating = Double.parseDouble(hashMap.get("Rating").getTextContent());
-        this.versionRating = Double.parseDouble(hashMap.get("VersionRating").getTextContent());
-        this.requireLicenseAcceptance = Boolean.parseBoolean(hashMap.get("RequireLicenseAcceptance").getTextContent());
+        this.downloadCount = getIntegerContent(hashMap.get("DownloadCount"));
+        this.versionDownloadCount = getIntegerContent(hashMap.get("VersionDownloadCount"));
+        this.ratingsCount = getIntegerContent(hashMap.get("RatingsCount"));
+        this.versionRatingsCount = getIntegerContent(hashMap.get("VersionRatingsCount"));
+        this.rating = getDoubleContent(hashMap.get("Rating"));
+        this.versionRating = getDoubleContent(hashMap.get("VersionRating"));
+        this.requireLicenseAcceptance = getBooleanContent(hashMap.get("RequireLicenseAcceptance"));
         this.description = hashMap.get("Description").getTextContent();
         this.releaseNotes = hashMap.get("ReleaseNotes").getTextContent();
         this.language = hashMap.get("Language").getTextContent();
         this.published = javax.xml.bind.DatatypeConverter.parseDateTime(hashMap.get("Published").getTextContent()).getTime();
-        this.price = Double.parseDouble(hashMap.get("Price").getTextContent());
+        this.price = getDoubleContent(hashMap.get("Price"));
         this.dependencies = hashMap.get("Dependencies").getTextContent();
         this.packageHash = hashMap.get("PackageHash").getTextContent();
-        this.packageSize = Long.decode(hashMap.get("PackageSize").getTextContent());
-        this.externalPackageUri = hashMap.get("ExternalPackageUri").getTextContent();
-        this.categories = hashMap.get("Categories").getTextContent();
-        this.copyright = hashMap.get("Copyright").getTextContent();
-        this.packageType = hashMap.get("PackageType").getTextContent();
+        this.packageSize = getLongContent(hashMap.get("PackageSize"));
+        this.externalPackageUri = getStringContent(hashMap.get("ExternalPackageUri"));
+        this.categories = getStringContent(hashMap.get("Categories"));
+        this.copyright = getStringContent(hashMap.get("Copyright"));
+        this.packageType = getStringContent(hashMap.get("PackageType"));
         this.tags = adapter.unmarshal(hashMap.get("Tags").getTextContent());
-        this.isLatestVersion = Boolean.parseBoolean(hashMap.get("IsLatestVersion").getTextContent());
-        this.summary = hashMap.get("Summary") == null ? null : hashMap.get("Summary").getTextContent();
+        this.isLatestVersion = getBooleanContent(hashMap.get("IsLatestVersion"));
+        this.summary = getStringContent(hashMap.get("Summary"));
     }
     /**
      * Версия пакета
@@ -688,5 +688,70 @@ public class EntryProperties {
             list.add(dependency);
         }
         return list;
+    }
+
+    /**
+     * Извлекает целочисленое значение содержимого элемента
+     *
+     * @param element элемент XML
+     * @return целочисленное значение
+     */
+    private Integer getIntegerContent(Element element) {
+        if (element == null || element.getTextContent() == null) {
+            return null;
+        }
+        return Integer.decode(element.getTextContent());
+    }
+
+    /**
+     * Извлекает целочисленое значение повышенной точности содержимого элемента
+     *
+     * @param element элемент XML
+     * @return целочисленое значение повышенной точности
+     */
+    private Long getLongContent(Element element) {
+        if (element == null || element.getTextContent() == null) {
+            return null;
+        }
+        return Long.decode(element.getTextContent());
+    }
+
+    /**
+     * Извлекает значение содержимого элемента в виде числа с плавающей точкой
+     *
+     * @param element элемент XML
+     * @return число с плавающей точкой
+     */
+    private Double getDoubleContent(Element element) {
+        if (element == null || element.getTextContent() == null) {
+            return null;
+        }
+        return Double.parseDouble(element.getTextContent());
+    }
+
+    /**
+     * Извлекает значение содержимого элемента в виде boolean
+     *
+     * @param element элемент XML
+     * @return boolean
+     */
+    private Boolean getBooleanContent(Element element) {
+        if (element == null || element.getTextContent() == null) {
+            return null;
+        }
+        return Boolean.parseBoolean(element.getTextContent());
+    }
+
+    /**
+     * Извлекает значение содержимого элемента в виде строки
+     *
+     * @param element элемент XML
+     * @return строка
+     */
+    private String getStringContent(Element element) {
+        if (element == null) {
+            return null;
+        }
+        return element.getTextContent();
     }
 }

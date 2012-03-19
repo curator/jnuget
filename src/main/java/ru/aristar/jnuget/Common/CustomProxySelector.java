@@ -30,10 +30,8 @@ public class CustomProxySelector extends ProxySelector {
      *
      * @param host хост прокси сервера
      * @param port порт прокси сервера
-     * @param login логин на сервере
-     * @param password пароль на сервере
      */
-    public CustomProxySelector(String host, int port, String login, String password) {
+    public CustomProxySelector(String host, int port) {
         SocketAddress address = new InetSocketAddress(host, port);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
         proxys.add(proxy);
