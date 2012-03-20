@@ -1,16 +1,17 @@
 package ru.aristar.jnuget.files;
 
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.VersionTypeAdapter;
 
 /**
  * Описание зависимости
  *
  * @author Unlocker
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public class Dependency {
 
     /**
@@ -21,9 +22,26 @@ public class Dependency {
     /**
      * Версия пакета
      */
-    @XmlAttribute(name = "version")
-    @XmlJavaTypeAdapter(value = VersionTypeAdapter.class)
     public Version version;
+
+    /**
+     * @return строковое представление диапазона версий
+     */
+    @XmlAttribute(name = "version")
+    public String getVersionRangeString() {
+        if (version == null) {
+            return null;
+        }
+        return version.toString();
+    }
+
+    /**
+     * @param versionString строковое представление диапазона версий
+     * @throws NugetFormatException некорректный формат версии
+     */
+    public void setVersionRangeString(String versionString) throws NugetFormatException {
+        this.version = Version.parse(versionString);
+    }
 
     @Override
     public boolean equals(Object obj) {
