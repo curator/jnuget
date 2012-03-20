@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.files;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
 
 /**
@@ -15,6 +17,15 @@ public class VersionRange {
      * Разделитель границ отрезка
      */
     public static final String BORDER_DELIMETER = ",";
+    /**
+     * Полный шаблон диапазона версий
+     */
+    public static final String FULL_VERSION_RANGE_PATTERN = "^([\\(\\[])([\\d\\.]*)"
+            + BORDER_DELIMETER + "([\\d\\.]*)([\\)\\]])$";
+    /**
+     * Шаблон фиксированной версии
+     */
+    public static final String FIXED_VERSION_RANGE_PATTERN = "^\\[([\\d\\.]+)\\]$";
     /**
      * Версия на нижней границе
      */
@@ -35,7 +46,7 @@ public class VersionRange {
     /**
      * @return диапазон указывает на последнюю версию пакета
      */
-    public boolean isLastVersion() {
+    public boolean isLatestVersion() {
         return lowVersion == null && topVersion == null;
     }
 
@@ -58,6 +69,25 @@ public class VersionRange {
     }
 
     /**
+     * Конструктор по умолчанию (все поля null)
+     */
+    public VersionRange() {
+    }
+
+    /**
+     * @param lowVersion Версия на нижней границе
+     * @param lowBorderType Тип нижней границы
+     * @param topVersion Версия на верхней границе
+     * @param topBorderType Тип верхней границы
+     */
+    public VersionRange(Version lowVersion, BorderType lowBorderType, Version topVersion, BorderType topBorderType) {
+        this.lowVersion = lowVersion;
+        this.lowBorderType = lowBorderType;
+        this.topBorderType = topBorderType;
+        this.topVersion = topVersion;
+    }
+
+    /**
      * Тип границы диапазона
      */
     public enum BorderType {
@@ -70,6 +100,26 @@ public class VersionRange {
          * Граница исключается
          */
         EXCLUDE("(", ")");
+
+        /**
+         * Распознает тип границы
+         *
+         * @param borderSymbol
+         * @return тип границы
+         */
+        private static BorderType getBorderType(String borderSymbol) {
+            if (borderSymbol == null || borderSymbol.equals("")) {
+                return null;
+            } else if (borderSymbol.equals(INCLUDE.lowBorderSymbol)
+                    || borderSymbol.equals(INCLUDE.topBorderSymbol)) {
+                return INCLUDE;
+            } else if (borderSymbol.equals(EXCLUDE.lowBorderSymbol)
+                    || borderSymbol.equals(EXCLUDE.topBorderSymbol)) {
+                return EXCLUDE;
+            } else {
+                return null;
+            }
+        }
         /**
          * Символ нижней границы
          */
@@ -164,7 +214,7 @@ public class VersionRange {
      */
     @Override
     public String toString() {
-        if (isLastVersion()) {
+        if (isLatestVersion()) {
             return "";
         }
 
@@ -193,7 +243,48 @@ public class VersionRange {
         return builder.toString();
     }
 
-    private static VersionRange parse(String versionRangeString) {
+    /**
+     * Распознает строку и возвращает диапазон версий
+     *
+     * @param versionRangeString строка диапазона версий
+     * @return диапазон версий
+     * @throws NugetFormatException некорректный формат версии
+     */
+    public static VersionRange parse(String versionRangeString) throws NugetFormatException {
+        if (versionRangeString == null || versionRangeString.equals("")) {
+            return new VersionRange();
+        }
+        if (Version.isValidVersionString(versionRangeString)) {
+            Version version = Version.parse(versionRangeString);
+            return new VersionRange(version, BorderType.INCLUDE, null, null);
+        }
+
+        Pattern fixedVersionPattern = Pattern.compile(FIXED_VERSION_RANGE_PATTERN);
+        Matcher fixedVersionMatcher = fixedVersionPattern.matcher(versionRangeString);
+        if (fixedVersionMatcher.matches()) {
+            Version version = Version.parse(fixedVersionMatcher.group(1));
+            return new VersionRange(version, BorderType.INCLUDE, version, BorderType.INCLUDE);
+        }
+
+        Pattern pattern = Pattern.compile(FULL_VERSION_RANGE_PATTERN);
+        Matcher matcher = pattern.matcher(versionRangeString);
+        if (matcher.matches()) {
+            Version lowVersion = null;
+            BorderType lowBorder = null;
+            String lowVersionString = matcher.group(2);
+            if (!lowVersionString.equals("")) {
+                lowVersion = Version.parse(lowVersionString);
+                lowBorder = BorderType.getBorderType(matcher.group(1));
+            }
+            Version topVersion = null;
+            BorderType topBorder = null;
+            String topVersionString = matcher.group(3);
+            if (!topVersionString.equals("")) {
+                topVersion = Version.parse(matcher.group(3));
+                topBorder = BorderType.getBorderType(matcher.group(4));
+            }
+            return new VersionRange(lowVersion, lowBorder, topVersion, topBorder);
+        }
         return null;
     }
 }

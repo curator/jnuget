@@ -72,6 +72,17 @@ public class Version implements Comparable<Version> {
         return new Version(major, minor, build, revision);
     }
 
+    /**
+     * Проверка на то, является ли строка корректной строкой версии
+     *
+     * @param versionRangeString строка
+     * @return true, если это корректное строковое представление версии
+     */
+    public static boolean isValidVersionString(String versionRangeString) {
+        Matcher matcher = pattern.matcher(versionRangeString);
+        return matcher.matches();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
