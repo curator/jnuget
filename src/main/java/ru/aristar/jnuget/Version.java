@@ -16,7 +16,7 @@ public class Version implements Comparable<Version> {
     /**
      * Выражение разбора
      */
-    private static Pattern pattern = Pattern.compile(VERSION_FORMAT);
+    private static Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
 
     private static Integer parseInt(String group) {
         if (group == null || group.isEmpty()) {

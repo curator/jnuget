@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.files;
 
 import java.io.InputStream;
+import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Reference;
@@ -153,5 +154,34 @@ public class NuspecFileTest {
         assertArrayEquals("Метки", new String[]{"Unit", "test", "Mock"}, nuspecFile.getTags().toArray());
         assertEquals("Описание", "Mock для unit тестов", nuspecFile.getDescription());
         assertEquals("Требуется подтверждение лицензии", false, nuspecFile.isRequireLicenseAcceptance());
+    }
+
+    /**
+     * Тест создания спецификации пакета с фиксированной версией зависимости
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testCreateWithFixedDependencyVersion() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/fixed.dependency.nuspec.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        List<Dependency> dependencys = nuspecFile.getDependencies();
+        //THEN
+        assertEquals("Количество зависимостей", dependencys.size(), 1);
+    }
+
+    /**
+     * Тест создания спецификации пакета с некорректной версией
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test(expected = NugetFormatException.class)
+    public void testCreateWithIncorrectVersion() throws Exception {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/incorrect.version.nuspec.xml");
+        //WHEN
+        NuspecFile.Parse(inputStream);
     }
 }

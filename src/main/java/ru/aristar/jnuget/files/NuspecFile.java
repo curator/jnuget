@@ -4,10 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +28,17 @@ import ru.aristar.jnuget.rss.PackageEntry;
  */
 @XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE_2011)
 public class NuspecFile {
+
+    /**
+     * Класс, обеспечивающий валидацию ошибок в XML структуре файла NuSpec
+     */
+    private static class NuspecXmlValidationEventHandler implements ValidationEventHandler {
+
+        @Override
+        public boolean handleEvent(ValidationEvent event) {
+            return false;
+        }
+    }
 
     /**
      * Класс содержащий метаанные пакета NuGet
@@ -63,6 +71,21 @@ public class NuspecFile {
          */
         @XmlElement(name = "owners", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String owners;
+        /**
+         * URL лицензии
+         */
+        @XmlElement(name = "licenseUrl", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private String licenseUrl;
+        /**
+         * URL проекта
+         */
+        @XmlElement(name = "projectUrl", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private String projectUrl;
+        /**
+         * URL иконки
+         */
+        @XmlElement(name = "iconUrl", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private String iconUrl;
         /**
          * Требуется ли запрос лицензии
          */
@@ -172,6 +195,26 @@ public class NuspecFile {
     }
 
     /**
+     * @return URL лицензии
+     */
+    public String getLicenseUrl() {
+        return metadata.licenseUrl;
+    }
+
+    /**
+     * @return URL проекта
+     */
+    public String getProjectUrl() {
+        return metadata.projectUrl;
+    }
+    /**
+     * @return URL иконки
+     */
+    public String getIconUrl() {
+        return metadata.iconUrl;
+    }
+
+    /**
      *
      * @return примечания к релизу
      */
@@ -263,6 +306,7 @@ public class NuspecFile {
         try {
             JAXBContext context = JAXBContext.newInstance(NuspecFile.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
+            unmarshaller.setEventHandler(new NuspecXmlValidationEventHandler());
             XMLReader reader = XMLReaderFactory.createXMLReader();
             NugetNamespaceFilter inFilter = new NugetNamespaceFilter();
             inFilter.setParent(reader);
