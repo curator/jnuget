@@ -678,12 +678,13 @@ public class EntryProperties {
      * @throws NugetFormatException ошибка в формате версии
      */
     public List<Dependency> getDependenciesList() throws NugetFormatException {
+        //TODO Добавить распознавание диапазона версий
         ArrayList<Dependency> list = new ArrayList<>();
         if (dependencies == null || dependencies.equals("")) {
             return list;
         }
         String cleanDependencies = dependencies.replaceAll(" ", "");
-        for (String dependencyString : cleanDependencies.split(",")) {
+        for (String dependencyString : cleanDependencies.split("[,\\|]")) {
             Dependency dependency = Dependency.parseString(dependencyString);
             list.add(dependency);
         }

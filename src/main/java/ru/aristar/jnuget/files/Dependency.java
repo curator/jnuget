@@ -64,6 +64,9 @@ public class Dependency {
      * @throws NugetFormatException ошибка формата версии
      */
     public static Dependency parseString(String dependencyString) throws NugetFormatException {
+        if (!dependencyString.matches(DEPENDENCY_FORMAT)) {
+            throw new NugetFormatException("Строка зависимостей не соответствует формату RSS NuGet: " + dependencyString);
+        }
         Dependency dependency = new Dependency();
         String id = dependencyString.substring(0, dependencyString.indexOf(":"));
         String versionString = dependencyString.substring(dependencyString.indexOf(":") + 1);
@@ -71,4 +74,12 @@ public class Dependency {
         dependency.version = Version.parse(versionString);
         return dependency;
     }
+    /**
+     * Формат строки идентификатора пакета
+     */
+    private static final String PACKAGE_ID_FORMAT = "[\\w\\.\\-]+";
+    /**
+     * Формат строки зависимости
+     */
+    private static final String DEPENDENCY_FORMAT = "^" + PACKAGE_ID_FORMAT + ":" + Version.VERSION_FORMAT + "$";
 }

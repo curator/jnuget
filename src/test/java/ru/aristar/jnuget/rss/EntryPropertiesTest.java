@@ -2,10 +2,12 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.util.List;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Dependency;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.NuspecFile;
 
 /**
@@ -139,5 +141,47 @@ public class EntryPropertiesTest {
                     Dependency.parseString("B:1.2.3.4")},
                 result.toArray(new Dependency[0]));
 
+    }
+
+    /**
+     * Тест получения списка зависимостей, состоящего из нескольких элементов
+     * разделенных вертикальной чертой
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testGetDependenciesListPipeLinrSeparated() throws Exception {
+        //GIVEN        
+        EntryProperties properties = new EntryProperties();
+        properties.setDependencies("adjunct-System.DataStructures.SparsePascalSet:2.2.0|"
+                + "adjunct-XUnit.Should.BooleanExtensions:2.0.0|"
+                + "adjunct-XUnit.Should.ObjectExtensions:2.0.0|"
+                + "xunit:1.8.0.1549");
+        //WHEN
+        List<Dependency> result = properties.getDependenciesList();
+        //THEN
+        assertArrayEquals("Список зависимостей",
+                new Dependency[]{
+                    Dependency.parseString("adjunct-System.DataStructures.SparsePascalSet:2.2.0"),
+                    Dependency.parseString("adjunct-XUnit.Should.BooleanExtensions:2.0.0"),
+                    Dependency.parseString("adjunct-XUnit.Should.ObjectExtensions:2.0.0"),
+                    Dependency.parseString("xunit:1.8.0.1549")
+                },
+                result.toArray(new Dependency[0]));
+
+    }
+
+    /**
+     * Тест получения списка зависимостей, для некорректного списка зависимостей
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test(expected = NugetFormatException.class)
+    public void testGetDependenciesListFromEmptyString() throws Exception {
+        //GIVEN        
+        EntryProperties properties = new EntryProperties();
+        properties.setDependencies("eres");
+        //WHEN
+        properties.getDependenciesList();
     }
 }
