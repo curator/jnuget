@@ -12,6 +12,9 @@ import ru.aristar.jnuget.files.NugetFormatException;
  */
 public class Version implements Comparable<Version> {
 
+    /**
+     * Шаблон строки версии
+     */
     public static final String VERSION_FORMAT = "(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?(.*)";
     /**
      * Выражение разбора

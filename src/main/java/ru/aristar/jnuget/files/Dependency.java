@@ -43,6 +43,10 @@ public class Dependency {
         this.versionRange = VersionRange.parse(versionRangeString);
     }
 
+    /**
+     * @param obj объект, с которым производится сравнение
+     * @return true, если зависимости идентичны
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -61,6 +65,9 @@ public class Dependency {
         return true;
     }
 
+    /**
+     * @return HASH код объекта
+     */
     @Override
     public int hashCode() {
         int hash = 5;
@@ -69,6 +76,10 @@ public class Dependency {
         return hash;
     }
 
+    /**
+     * @return строковое представление зависимости вида ID:Диапазон версий
+     * @see VersionRange
+     */
     @Override
     public String toString() {
         return id + ":" + versionRange;

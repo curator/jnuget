@@ -14,6 +14,11 @@ import ru.aristar.jnuget.rss.PackageEntry;
  */
 public class NuspecFileTest {
 
+    /**
+     * Тест разбора файла спецификации из XML
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testParseMethod() throws Exception {
         final String fileName = "/test.nuspec.xml";

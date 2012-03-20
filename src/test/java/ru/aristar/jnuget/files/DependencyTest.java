@@ -2,7 +2,6 @@ package ru.aristar.jnuget.files;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import ru.aristar.jnuget.Version;
 
 /**
  *

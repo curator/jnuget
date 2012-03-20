@@ -6,9 +6,17 @@ import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
 
 /**
- * 1.0 = 1.0 ≤ x </p> (,1.0] = x ≤ 1.0 </p> (,1.0) = x < 1.0 </p> [1.0] = x ==
- * 1.0 </p> (1.0) = invalid </p> (1.0,) = 1.0 < x </p> (1.0,2.0) = 1.0 < x < 2.0
- * </p> [1.0,2.0] = 1.0 ≤ x ≤ 2.0 </p> empty = latest version.
+ * Диапазон версий
+ *
+ * <p> 1.0 = 1.0 ≤ x</p> 
+ * <p>(,1.0] = x ≤ 1.0</p> 
+ * <p>(,1.0) = x < 1.0</p> 
+ * <p>[1.0] = x == 1.0</p> 
+ * <p>(1.0) = invalid</p> 
+ * <p>(1.0,) = 1.0 < x</p>
+ * <p>(1.0,2.0) = 1.0< x < 2.0</p> 
+ * <p>[1.0,2.0] = 1.0 ≤ x ≤ 2.0</p> 
+ * <p>empty = latest version</p>.
  *
  * @author sviridov
  */
