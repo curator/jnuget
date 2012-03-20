@@ -22,25 +22,25 @@ public class Dependency {
     /**
      * Версия пакета
      */
-    public Version version;
+    public VersionRange versionRange;
 
     /**
      * @return строковое представление диапазона версий
      */
     @XmlAttribute(name = "version")
     public String getVersionRangeString() {
-        if (version == null) {
+        if (versionRange == null) {
             return null;
         }
-        return version.toString();
+        return versionRange.toString();
     }
 
     /**
-     * @param versionString строковое представление диапазона версий
+     * @param versionRangeString строковое представление диапазона версий
      * @throws NugetFormatException некорректный формат версии
      */
-    public void setVersionRangeString(String versionString) throws NugetFormatException {
-        this.version = Version.parse(versionString);
+    public void setVersionRangeString(String versionRangeString) throws NugetFormatException {
+        this.versionRange = VersionRange.parse(versionRangeString);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Dependency {
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        if (!Objects.equals(this.version, other.version)) {
+        if (!Objects.equals(this.versionRange, other.versionRange)) {
             return false;
         }
         return true;
@@ -65,13 +65,13 @@ public class Dependency {
     public int hashCode() {
         int hash = 5;
         hash = 97 * hash + Objects.hashCode(this.id);
-        hash = 97 * hash + Objects.hashCode(this.version);
+        hash = 97 * hash + Objects.hashCode(this.versionRange);
         return hash;
     }
 
     @Override
     public String toString() {
-        return id + ":" + version;
+        return id + ":" + versionRange;
     }
 
     /**
@@ -87,9 +87,9 @@ public class Dependency {
         }
         Dependency dependency = new Dependency();
         String id = dependencyString.substring(0, dependencyString.indexOf(":"));
-        String versionString = dependencyString.substring(dependencyString.indexOf(":") + 1);
+        String versionRangeString = dependencyString.substring(dependencyString.indexOf(":") + 1);
         dependency.id = id;
-        dependency.version = Version.parse(versionString);
+        dependency.versionRange = VersionRange.parse(versionRangeString);
         return dependency;
     }
     /**
@@ -99,5 +99,8 @@ public class Dependency {
     /**
      * Формат строки зависимости
      */
-    private static final String DEPENDENCY_FORMAT = "^" + PACKAGE_ID_FORMAT + ":" + Version.VERSION_FORMAT + "$";
+    private static final String DEPENDENCY_FORMAT = "^" + PACKAGE_ID_FORMAT
+            + ":(?:" + Version.VERSION_FORMAT + "|"
+            + VersionRange.FIXED_VERSION_RANGE_PATTERN
+            + "|" + VersionRange.FULL_VERSION_RANGE_PATTERN + ")$";
 }

@@ -21,7 +21,7 @@ public class DependencyTest {
         Dependency dependency = new Dependency();
         //WHEN
         dependency.id = "PACKAGE_ID";
-        dependency.version = Version.parse("1.2.3");
+        dependency.versionRange = VersionRange.parse("1.2.3");
         //THEN
         assertEquals("toString - конкатенация идентификатора и версии", "PACKAGE_ID:1.2.3", dependency.toString());
     }
@@ -39,7 +39,7 @@ public class DependencyTest {
         Dependency result = Dependency.parseString(dependencyString);
         //THEN
         assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
-        assertEquals("Версия пакета", Version.parse("1.2.3"), result.version);
+        assertEquals("Версия пакета", VersionRange.parse("1.2.3"), result.versionRange);
     }
 
     /**
@@ -55,6 +55,6 @@ public class DependencyTest {
         Dependency result = Dependency.parseString(dependencyString);
         //THEN
         assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
-        assertEquals("Версия пакета", Version.parse("1.2.3"), result.version);
+        assertEquals("Версия пакета", VersionRange.parse("[1.2.3]"), result.versionRange);
     }
 }

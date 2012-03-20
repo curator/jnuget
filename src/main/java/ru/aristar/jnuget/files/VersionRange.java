@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
@@ -20,12 +21,12 @@ public class VersionRange {
     /**
      * Полный шаблон диапазона версий
      */
-    public static final String FULL_VERSION_RANGE_PATTERN = "^([\\(\\[])([\\d\\.]*)"
-            + BORDER_DELIMETER + "([\\d\\.]*)([\\)\\]])$";
+    public static final String FULL_VERSION_RANGE_PATTERN = "([\\(\\[])([\\d\\.]*)"
+            + BORDER_DELIMETER + "([\\d\\.]*)([\\)\\]])";
     /**
      * Шаблон фиксированной версии
      */
-    public static final String FIXED_VERSION_RANGE_PATTERN = "^\\[([\\d\\.]+)\\]$";
+    public static final String FIXED_VERSION_RANGE_PATTERN = "\\[([\\d\\.]+)\\]";
     /**
      * Версия на нижней границе
      */
@@ -259,14 +260,14 @@ public class VersionRange {
             return new VersionRange(version, BorderType.INCLUDE, null, null);
         }
 
-        Pattern fixedVersionPattern = Pattern.compile(FIXED_VERSION_RANGE_PATTERN);
+        Pattern fixedVersionPattern = Pattern.compile("^" + FIXED_VERSION_RANGE_PATTERN + "$");
         Matcher fixedVersionMatcher = fixedVersionPattern.matcher(versionRangeString);
         if (fixedVersionMatcher.matches()) {
             Version version = Version.parse(fixedVersionMatcher.group(1));
             return new VersionRange(version, BorderType.INCLUDE, version, BorderType.INCLUDE);
         }
 
-        Pattern pattern = Pattern.compile(FULL_VERSION_RANGE_PATTERN);
+        Pattern pattern = Pattern.compile("^" + FULL_VERSION_RANGE_PATTERN + "$");
         Matcher matcher = pattern.matcher(versionRangeString);
         if (matcher.matches()) {
             Version lowVersion = null;
@@ -286,5 +287,46 @@ public class VersionRange {
             return new VersionRange(lowVersion, lowBorder, topVersion, topBorder);
         }
         return null;
+    }
+
+    /**
+     * @param obj объект, с которым производится сравнение
+     * @return true, если диапазоны версий идентичны
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final VersionRange other = (VersionRange) obj;
+        if (!Objects.equals(this.lowVersion, other.lowVersion)) {
+            return false;
+        }
+        if (this.lowBorderType != other.lowBorderType) {
+            return false;
+        }
+        if (this.topBorderType != other.topBorderType) {
+            return false;
+        }
+        if (!Objects.equals(this.topVersion, other.topVersion)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return HASH код объекта
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.lowVersion);
+        hash = 59 * hash + (this.lowBorderType != null ? this.lowBorderType.hashCode() : 0);
+        hash = 59 * hash + (this.topBorderType != null ? this.topBorderType.hashCode() : 0);
+        hash = 59 * hash + Objects.hashCode(this.topVersion);
+        return hash;
     }
 }

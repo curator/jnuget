@@ -60,7 +60,7 @@ public class NuspecFileTest {
         final String fileName = "/NHibernate.nuspec.xml";
         Dependency dep = new Dependency();
         dep.id = "Iesi.Collections";
-        dep.version = Version.parse("3.2.0.4000");
+        dep.versionRange = VersionRange.parse("3.2.0.4000");
         Dependency[] dependencies = new Dependency[]{dep};
         String[] tags = new String[]{"ORM", "DataBase", "DAL", "ObjectRelationalMapping"};
 
