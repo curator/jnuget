@@ -83,6 +83,7 @@ public class RemoteNupkg implements Nupkg {
             ClientConfig config = new DefaultClientConfig();
             Client client = Client.create(config);
             WebResource webResource = client.resource(sourceUri);
+            //TODO Caused by: com.sun.jersey.api.client.UniformInterfaceException: GET http://nuget.org/api/v2/package/xTrace/0.9.2 returned a response status of 302 
             return webResource.get(InputStream.class);
         } catch (Exception e) {
             throw new IOException("Ошибка получения потока пакета из удаленного ресурса", e);

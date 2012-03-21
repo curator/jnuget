@@ -9,9 +9,9 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import ru.aristar.jnuget.sources.FilePackageSourceTest;
 
 /**
