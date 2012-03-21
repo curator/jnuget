@@ -248,4 +248,9 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
             idDir.delete();
         }
     }
+
+    @Override
+    public String toString() {
+        return "MavenStylePackageSource{" + rootFolder + '}';
+    }
 }

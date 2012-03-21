@@ -203,6 +203,7 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     /**
      * Извлекает информацию о последних версиях всех пакетов
      *
+     * @param <K> Тип пакета NuGet
      * @param list общий список всех пакетов
      * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
@@ -247,5 +248,10 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
             return;
         }
         pack.delete();
+    }
+
+    @Override
+    public String toString() {
+        return "FilePackageSource{" + rootFolder + '}';
     }
 }

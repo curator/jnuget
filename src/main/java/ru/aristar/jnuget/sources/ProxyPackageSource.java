@@ -180,4 +180,9 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public void removePackage(String id, Version version) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public String toString() {
+        return "ProxyPackageSource{" + remoteSource + '}';
+    }
 }

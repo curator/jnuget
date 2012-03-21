@@ -58,6 +58,8 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
                 }
                 skip = skip + groupCount;
             } while (feed != null && !feed.getEntries().isEmpty());
+            logger.debug("Завершено получение пакетов. Статус: skip={}; feed.entries={}",
+                    new Object[]{skip, feed == null ? null : feed.getEntries().size()});
             return result;
         } catch (NugetFormatException | UniformInterfaceException e) {
             logger.warn("Ошибка получения пакета из удаленного хранилища", e);
@@ -149,5 +151,10 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
     @Override
     public void removePackage(String id, Version version) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String toString() {
+        return "RemotePackageSource{" + remoteStorage.getUrl() + '}';
     }
 }

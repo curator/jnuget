@@ -55,7 +55,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      */
     private void refreshIndex() {
         synchronized (monitor) {
-            logger.info("Инициировано обновление индекса хранилища");
+            logger.info("Инициировано обновление индекса хранилища {}", new Object[]{packageSource});
             Collection<? extends Nupkg> packages = packageSource.getPackages();
             Index newIndex = new Index();
             for (Nupkg nupkg : packages) {
@@ -67,7 +67,8 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                 }
             }
             this.index = newIndex;
-            logger.info("Обновление индекса хранилища завершено. Обнаружено {} пакетов", new Object[]{index.size()});
+            logger.info("Обновление индекса хранилища {} завершено. Обнаружено {} пакетов",
+                    new Object[]{packageSource, index.size()});
             monitor.notifyAll();
         }
     }
@@ -108,7 +109,12 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
         ArrayList<Nupkg> result = new ArrayList<>();
         Iterator<Nupkg> iterator = getIndex().getLastVersions();
         while (iterator.hasNext()) {
-            result.add(iterator.next());
+            Nupkg nupkg = iterator.next();
+            if (nupkg != null) {
+                result.add(nupkg);
+            } else {
+                logger.warn("Индекс для хранилища {} содержит null пакеты", new Object[]{packageSource});
+            }
         }
         return result;
     }

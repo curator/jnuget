@@ -207,6 +207,7 @@ public class NuspecFile {
     public String getProjectUrl() {
         return metadata.projectUrl;
     }
+
     /**
      * @return URL иконки
      */
@@ -329,12 +330,17 @@ public class NuspecFile {
      * Конструктор для обратного преобразования из RSS
      *
      * @param entry пакет в RSS
-     * @throws NugetFormatException ошибка в формате версии
+     * @throws NugetFormatException ошибка в формате версии, или не указаны
+     * идентификатор и версия
      */
     public NuspecFile(PackageEntry entry) throws NugetFormatException {
+        EntryProperties properties = entry.getProperties();
+        if (entry.getTitle() == null || properties.getVersion() == null) {
+            throw new NugetFormatException("Идентификатор и версия пакета должны"
+                    + " быть указаны: " + entry.getTitle() + ':' + properties.getVersion());
+        }
         metadata = new Metadata();
         metadata.id = entry.getTitle();
-        EntryProperties properties = entry.getProperties();
         metadata.version = properties.getVersion();
         metadata.tags = properties.getTags();
         metadata.summary = properties.getSummary();

@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -21,6 +23,7 @@ public class Index {
      */
     public class LastVersionIterator implements Iterator<Nupkg> {
 
+        private Logger logger = LoggerFactory.getLogger(this.getClass());
         /**
          * Итератор групп пакетов (по идентификаторам)
          */
@@ -42,7 +45,12 @@ public class Index {
         public Nupkg next() {
             SortedMap<Version, Nupkg> packageGroup = iterator.next();
             Version key = packageGroup.lastKey();
-            return packageGroup.get(key);
+            final Nupkg nupkg = packageGroup.get(key);
+            if (nupkg == null) {
+                logger.warn("Для ключа {} в хранилище содержится пустой пакет",
+                        new Object[]{key});
+            }
+            return nupkg;
         }
 
         @Override

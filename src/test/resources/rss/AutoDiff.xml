@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="https://nuget.org/api/v2/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>https://nuget.org/api/v2/Packages</id>
+  <updated>2012-03-21T10:36:25Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>https://nuget.org/api/v2/Packages(Id='AutoDiff',Version='0.5.4321.2401')</id>
+    <title type="text">AutoDiff</title>
+    <summary type="text">High-performance and high-accuracy automatic function-differentiation library suitable for optimization and numeric computing.</summary>
+    <updated>2011-10-30T23:33:06Z</updated>
+    <author>
+      <name>Alex Shtof</name>
+    </author>
+    <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='AutoDiff',Version='0.5.4321.2401')/$value" />
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id='AutoDiff',Version='0.5.4321.2401')" />
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://nuget.org/api/v2/package/AutoDiff/0.5.4321.2401" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>0.5.4321.2401</d:Version>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-10-30T23:33:06.92</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>High-performance and high-accuracy automatic function-differentiation library suitable for optimization and numeric computing.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">437</d:DownloadCount>
+      <d:GalleryDetailsUrl>http://nuget.org/packages/AutoDiff/0.5.4321.2401</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Published m:type="Edm.DateTime">2011-10-30T23:33:08.073</d:Published>
+      <d:Language m:null="true"></d:Language>
+      <d:LicenseUrl>http://autodiff.codeplex.com/license</d:LicenseUrl>
+      <d:PackageHash>ctpUAdbnYuDu1+ylnLMYU0TJw0LS/lk9BG7V24Tx7M380cfbyjOKblB+LRF7PQ4FT+oxLl9iMUecLv07ILMKxA==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">40143</d:PackageSize>
+      <d:ProjectUrl>http://autodiff.codeplex.com/</d:ProjectUrl>
+      <d:ReportAbuseUrl>http://nuget.org/package/ReportAbuse/AutoDiff/0.5.4321.2401</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Title>AutoDiff</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">24</d:VersionDownloadCount>
+    </m:properties>
+  </entry>
+</feed>

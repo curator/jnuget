@@ -143,20 +143,27 @@ public class Version implements Comparable<Version> {
         return buffer.toString();
     }
 
-    public int compareTo(Version o) {
-        if (this.equals(o)) {
-            return 0;
-        } else {
-            if (this.major > o.major
-                    || (this.major == o.major && compareIntegerPossibleNull(this.minor, o.minor) > 0)
-                    || (this.major == o.major && this.minor == o.minor && compareIntegerPossibleNull(this.build, o.build) > 0)
-                    || (this.major == o.major && this.minor == o.minor && this.build == o.build
-                    && compareStringPossibleNull(this.revision, o.revision) > 0)) {
-                return 1;
-            } else {
-                return -1;
-            }
+    @Override
+    public int compareTo(Version other) {
+        if (other == null) {
+            return 1;
         }
+        int majorCompare = compareIntegerPossibleNull(this.major, other.major);
+        if (majorCompare != 0) {
+            return majorCompare;
+        }
+
+        int minorCompare = compareIntegerPossibleNull(this.minor, other.minor);
+        if (minorCompare != 0) {
+            return minorCompare;
+        }
+
+        int buildCompare = compareIntegerPossibleNull(this.build, other.build);
+        if (buildCompare != 0) {
+            return buildCompare;
+        }
+
+        return compareStringPossibleNull(this.revision, other.revision);
     }
 
     private int compareStringPossibleNull(String str1, String str2) {
