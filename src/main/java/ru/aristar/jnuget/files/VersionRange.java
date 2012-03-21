@@ -29,8 +29,10 @@ public class VersionRange {
     /**
      * Полный шаблон диапазона версий
      */
-    public static final String FULL_VERSION_RANGE_PATTERN = "([\\(\\[])([\\d\\.]*)"
-            + BORDER_DELIMETER + "([\\d\\.]*)([\\)\\]])";
+    public static final String FULL_VERSION_RANGE_PATTERN = "(?<leftBorder>[\\(\\[])(?<left>("
+            + Version.VERSION_FORMAT + ")?)"
+            + BORDER_DELIMETER
+            + "(?<right>(" + Version.VERSION_FORMAT + ")?)(?<rightBorder>[\\)\\]])";
     /**
      * Шаблон фиксированной версии
      */
@@ -280,17 +282,17 @@ public class VersionRange {
         if (matcher.matches()) {
             Version lowVersion = null;
             BorderType lowBorder = null;
-            String lowVersionString = matcher.group(2);
+            String lowVersionString = matcher.group("left");
             if (!lowVersionString.equals("")) {
                 lowVersion = Version.parse(lowVersionString);
-                lowBorder = BorderType.getBorderType(matcher.group(1));
+                lowBorder = BorderType.getBorderType(matcher.group("leftBorder"));
             }
             Version topVersion = null;
             BorderType topBorder = null;
-            String topVersionString = matcher.group(3);
+            String topVersionString = matcher.group("right");
             if (!topVersionString.equals("")) {
-                topVersion = Version.parse(matcher.group(3));
-                topBorder = BorderType.getBorderType(matcher.group(4));
+                topVersion = Version.parse(topVersionString);
+                topBorder = BorderType.getBorderType(matcher.group("rightBorder"));
             }
             return new VersionRange(lowVersion, lowBorder, topVersion, topBorder);
         }

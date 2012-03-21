@@ -92,4 +92,24 @@ public class DependencyTest {
         assertTrue("Это фиксированная версия", result.versionRange.isFixedVersion());
         assertEquals("Версия пакета", Version.parse("3.0.0.1029-rc"), result.versionRange.getLowVersion());
     }
+
+    /**
+     * Проверка распознавания зависимости из строки для не релизной версии и
+     * незамкнутого сверху интервала
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseNonReleaseDependency() throws Exception {
+        //GIVEN
+        final String dependencyString = "PACKAGE.ID:[2.5-a,3.0)";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE.ID", result.id);
+        assertEquals("Нижняя граница диапазона", Version.parse("2.5-a"), result.versionRange.getLowVersion());
+        assertEquals("Тип нижней границы диапазона", VersionRange.BorderType.INCLUDE, result.versionRange.getLowBorderType());
+        assertEquals("Верхняя граница диапазона", Version.parse("3.0"), result.versionRange.getTopVersion());
+        assertEquals("Тип верхней границы диапазона", VersionRange.BorderType.EXCLUDE, result.versionRange.getTopBorderType());
+    }
 }
