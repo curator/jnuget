@@ -11,7 +11,6 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
-import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.rss.PackageFeed;
 
@@ -19,7 +18,7 @@ import ru.aristar.jnuget.rss.PackageFeed;
  *
  * @author sviridov
  */
-public class RemotePackageSource implements PackageSource<Nupkg> {
+public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     /**
      * Удаленное хранилище пакетов
@@ -40,10 +39,10 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
      * @param filter фильтр отбора пактов
      * @return список пакетов
      */
-    private Collection<Nupkg> getPackagesFromRemoteStorage(String filter) {
+    private Collection<RemoteNupkg> getPackagesFromRemoteStorage(String filter) {
         try {
             PackageFeed feed;
-            ArrayList<Nupkg> result = new ArrayList<>();
+            ArrayList<RemoteNupkg> result = new ArrayList<>();
             int groupCount = 200;
             int skip = 0;
             do {
@@ -82,47 +81,48 @@ public class RemotePackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id) {
+    public RemoteNupkg getLastVersionPackage(String id) {
         return getLastVersionPackage(id, true);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
+    public RemoteNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Collection<Nupkg> getLastVersionPackages() {
+    public Collection<RemoteNupkg> getLastVersionPackages() {
         return getPackagesFromRemoteStorage("IsLatestVersion");
     }
 
     @Override
-    public TempNupkgFile getPackage(String id, Version version) {
+    public RemoteNupkg getPackage(String id, Version version) {
         return getPackage(id, version, true);
     }
 
     @Override
-    public TempNupkgFile getPackage(String id, Version version, boolean ignoreCase) {
-        try {
-            return remoteStorage.getPackage(id, version);
-        } catch (Exception e) {
-            logger.warn("Ошибка получения пакета из удаленного хранилища", e);
-            return null;
+    public RemoteNupkg getPackage(String id, Version version, boolean ignoreCase) {
+        Collection<RemoteNupkg> nupkgs = getPackages(id);
+        for (RemoteNupkg remoteNupkg : nupkgs) {
+            if (version.equals(remoteNupkg.getVersion())) {
+                return remoteNupkg;
+            }
         }
+        return null;
     }
 
     @Override
-    public Collection<Nupkg> getPackages() {
+    public Collection<RemoteNupkg> getPackages() {
         return getPackagesFromRemoteStorage(null);
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id) {
+    public Collection<RemoteNupkg> getPackages(String id) {
         return getPackages(id, true);
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
+    public Collection<RemoteNupkg> getPackages(String id, boolean ignoreCase) {
         String filter = "tolower(Id) eq '" + id + "'";
         return getPackagesFromRemoteStorage(filter);
     }

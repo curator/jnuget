@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.files.ProxyNupkg;
+import ru.aristar.jnuget.files.RemoteNupkg;
 
 /**
  *
@@ -70,7 +71,9 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public Collection<Nupkg> getPackages() {
         ArrayList<Nupkg> nupkgs = new ArrayList<>();
         try {
-            nupkgs.addAll(remoteSource.getPackages());
+            for (RemoteNupkg remoteNupkg : remoteSource.getPackages()) {
+                nupkgs.add(new ProxyNupkg(hostedSource, remoteNupkg));
+            }
         } catch (Exception e) {
             logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
         }
@@ -82,7 +85,9 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public Collection<Nupkg> getLastVersionPackages() {
         Collection<Nupkg> nupkgs = new HashSet<>();
         try {
-            nupkgs.addAll(remoteSource.getLastVersionPackages());
+            for (RemoteNupkg remoteNupkg : remoteSource.getLastVersionPackages()) {
+                nupkgs.add(new ProxyNupkg(hostedSource, remoteNupkg));
+            }
         } catch (Exception e) {
             logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
         }
@@ -100,8 +105,8 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         HashMap<Version, Nupkg> packages = new HashMap<>();
         try {
-            for (Nupkg nupkg : remoteSource.getPackages(id)) {
-                packages.put(nupkg.getVersion(), nupkg);
+            for (RemoteNupkg remoteNupkg : remoteSource.getPackages(id)) {
+                packages.put(remoteNupkg.getVersion(), new ProxyNupkg(hostedSource, remoteNupkg));
             }
         } catch (Exception e) {
             logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
@@ -143,7 +148,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
         if (nupkg == null) {
             try {
                 logger.debug("Получение файла пакета {}:{} из удаленного хранилища", new Object[]{id, version});
-                TempNupkgFile remoteNupkg = remoteSource.getPackage(id, version);
+                RemoteNupkg remoteNupkg = remoteSource.getPackage(id, version);
                 if (remoteNupkg == null) {
                     return null;
                 }

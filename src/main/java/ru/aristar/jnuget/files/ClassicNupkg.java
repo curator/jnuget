@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -218,6 +219,17 @@ public class ClassicNupkg implements Nupkg {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "{" + id + ":" + version + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int intHash = 7;
+        try {
+            intHash = 61 * intHash + Objects.hashCode(this.getHash());
+        } catch (NoSuchAlgorithmException | IOException e) {
+            intHash = 61 * intHash + Objects.hashCode(this.id) + Objects.hashCode(this.version);
+        }
+        return intHash;
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Objects;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.rss.PackageEntry;
 
@@ -82,8 +83,8 @@ public class RemoteNupkg implements Nupkg {
         try {
             ClientConfig config = new DefaultClientConfig();
             Client client = Client.create(config);
+            client.setFollowRedirects(Boolean.TRUE);
             WebResource webResource = client.resource(sourceUri);
-            //TODO Caused by: com.sun.jersey.api.client.UniformInterfaceException: GET http://nuget.org/api/v2/package/xTrace/0.9.2 returned a response status of 302 
             return webResource.get(InputStream.class);
         } catch (Exception e) {
             throw new IOException("Ошибка получения потока пакета из удаленного ресурса", e);
@@ -107,5 +108,16 @@ public class RemoteNupkg implements Nupkg {
 
     @Override
     public void load() throws IOException {
+    }
+
+    @Override
+    public int hashCode() {
+        int intHash = 7;
+        try {
+            intHash = 61 * intHash + Objects.hashCode(this.getHash());
+        } catch (NoSuchAlgorithmException | IOException e) {
+            intHash = 61 * intHash + Objects.hashCode(this.getId()) + Objects.hashCode(this.getVersion());
+        }
+        return intHash;
     }
 }

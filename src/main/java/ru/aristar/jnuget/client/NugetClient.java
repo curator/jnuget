@@ -47,6 +47,7 @@ public class NugetClient implements AutoCloseable {
     public NugetClient() {
         ClientConfig config = new DefaultClientConfig();
         client = Client.create(config);
+        client.setFollowRedirects(Boolean.TRUE);
         client.addFilter(new GZIPContentEncodingFilter());
         webResource = client.resource(DEFAULT_REMOTE_STORAGE_URL);
     }
