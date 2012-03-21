@@ -1,9 +1,12 @@
 package ru.aristar.jnuget.files;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import ru.aristar.jnuget.Version;
 
 /**
+ * Тест класса зависимостей
  *
  * @author sviridov
  */
@@ -38,11 +41,11 @@ public class DependencyTest {
         Dependency result = Dependency.parseString(dependencyString);
         //THEN
         assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
-        assertEquals("Версия пакета", VersionRange.parse("1.2.3"), result.versionRange);
+        assertEquals("Диапазон версий пакета", VersionRange.parse("1.2.3"), result.versionRange);
     }
 
     /**
-     * Проверка распознавания зависимости из строки
+     * Проверка распознавания зависимости из строки для конкретной версии
      *
      * @throws Exception ошибка в процессе теста
      */
@@ -54,6 +57,39 @@ public class DependencyTest {
         Dependency result = Dependency.parseString(dependencyString);
         //THEN
         assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
-        assertEquals("Версия пакета", VersionRange.parse("[1.2.3]"), result.versionRange);
+        assertEquals("Диапазон версий пакета", VersionRange.parse("[1.2.3]"), result.versionRange);
+    }
+
+    /**
+     * Проверка распознавания зависимости из строки для последней версии
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseLastVersionDependency() throws Exception {
+        //GIVEN
+        final String dependencyString = "PACKAGE_ID:";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
+        assertTrue("Это последняя версия", result.versionRange.isLatestVersion());
+    }
+
+    /**
+     * Проверка распознавания зависимости из строки для не релизной версии
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseNonReleaseVersionDependency() throws Exception {
+        //GIVEN
+        final String dependencyString = "PACKAGE.ID:[3.0.0.1029-rc]";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE.ID", result.id);
+        assertTrue("Это фиксированная версия", result.versionRange.isFixedVersion());
+        assertEquals("Версия пакета", Version.parse("3.0.0.1029-rc"), result.versionRange.getLowVersion());
     }
 }

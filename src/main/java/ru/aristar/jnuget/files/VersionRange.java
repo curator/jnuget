@@ -34,7 +34,7 @@ public class VersionRange {
     /**
      * Шаблон фиксированной версии
      */
-    public static final String FIXED_VERSION_RANGE_PATTERN = "\\[([\\d\\.]+)\\]";
+    public static final String FIXED_VERSION_RANGE_PATTERN = "\\[(" + Version.VERSION_FORMAT + ")\\]";
     /**
      * Версия на нижней границе
      */

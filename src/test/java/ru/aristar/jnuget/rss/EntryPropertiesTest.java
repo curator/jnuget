@@ -132,7 +132,7 @@ public class EntryPropertiesTest {
     public void testGetDependenciesList() throws Exception {
         //GIVEN        
         EntryProperties properties = new EntryProperties();
-        properties.setDependencies("A:1.2.3.4, B:1.2.3.4");
+        properties.setDependencies("A:1.2.3.4|B:1.2.3.4");
         //WHEN
         List<Dependency> result = properties.getDependenciesList();
         //THEN

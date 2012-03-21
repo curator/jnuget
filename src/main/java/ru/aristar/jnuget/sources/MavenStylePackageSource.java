@@ -80,7 +80,10 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
     public Collection<MavenNupkg> getLastVersionPackages() {
         List<MavenNupkg> list = new ArrayList<>();
         for (String id : rootFolder.list()) {
-            list.add(getLastVersionPackage(id));
+            final MavenNupkg lastVersionPackage = getLastVersionPackage(id);
+            if (lastVersionPackage != null) {
+                list.add(lastVersionPackage);
+            }
         }
         return list;
     }

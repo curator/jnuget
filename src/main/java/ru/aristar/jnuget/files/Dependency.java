@@ -113,5 +113,5 @@ public class Dependency {
     private static final String DEPENDENCY_FORMAT = "^" + PACKAGE_ID_FORMAT
             + ":(?:" + Version.VERSION_FORMAT + "|"
             + VersionRange.FIXED_VERSION_RANGE_PATTERN
-            + "|" + VersionRange.FULL_VERSION_RANGE_PATTERN + ")$";
+            + "|" + VersionRange.FULL_VERSION_RANGE_PATTERN + ")?$";
 }

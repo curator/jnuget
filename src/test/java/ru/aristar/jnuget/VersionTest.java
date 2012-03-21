@@ -111,4 +111,58 @@ public class VersionTest {
         //THEN
         assertEquals("Версия не должна измениться", sourceVersion, version.toString());
     }
+
+    /**
+     * Преобразование строки в версию для неполной релизной версии
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testNonReleaseVersion() throws Exception {
+        //GIVEN
+        final String sourceVersion = "2.5-a";
+        //WHEN
+        Version version = Version.parse(sourceVersion);
+        //THEN
+        assertEquals("Major", Integer.valueOf(2), version.getMajor());
+        assertEquals("Minor", Integer.valueOf(5), version.getMinor());
+        assertNull("Build", version.getBuild());
+        assertEquals("Revision", "-a", version.getRevision());
+    }
+
+    /**
+     * Преобразование строки в версию для неполной релизной версии
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testFullNonReleaseVersion() throws Exception {
+        //GIVEN
+        final String sourceVersion = "3.0.0.1034-rc";
+        //WHEN
+        Version version = Version.parse(sourceVersion);
+        //THEN
+        assertEquals("Major", Integer.valueOf(3), version.getMajor());
+        assertEquals("Minor", Integer.valueOf(0), version.getMinor());
+        assertEquals("Build", Integer.valueOf(0), version.getBuild());
+        assertEquals("Revision", "1034-rc", version.getRevision());
+    }
+
+    /**
+     * Преобразование строки в версию для неполной версии
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testNonReleaseVersionNoBuild() throws Exception {
+        //GIVEN
+        final String sourceVersion = "10.0.0-prerelease";
+        //WHEN
+        Version version = Version.parse(sourceVersion);
+        //THEN
+        assertEquals("Major", Integer.valueOf(10), version.getMajor());
+        assertEquals("Minor", Integer.valueOf(0), version.getMinor());
+        assertEquals("Build", Integer.valueOf(0), version.getBuild());
+        assertEquals("Revision", "-prerelease", version.getRevision());
+    }
 }
