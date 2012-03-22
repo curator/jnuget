@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.sources.PackageSource;
 
@@ -27,6 +29,10 @@ public class ProxyNupkg implements Nupkg {
      * Пакет из удаленного хранилища
      */
     private final RemoteNupkg remoteNupkg;
+    /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @param localPackageSource локальное хранилище пакетов
@@ -62,6 +68,8 @@ public class ProxyNupkg implements Nupkg {
         if (localNupkg != null) {
             return localNupkg.getStream();
         }
+        logger.debug("Получение данных для пакета {}:{} в удаленном репозитории",
+                new Object[]{getId(), getVersion()});
         localPackageSource.pushPackage(remoteNupkg, null);
         localNupkg = localPackageSource.getPackage(remoteNupkg.getId(), remoteNupkg.getVersion());
         return localNupkg.getStream();
