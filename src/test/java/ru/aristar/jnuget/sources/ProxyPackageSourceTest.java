@@ -10,16 +10,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.jmock.api.Expectation;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.RemoteNupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
@@ -132,18 +131,29 @@ public class ProxyPackageSourceTest {
      * @throws Exception ошибка в процессе теста
      */
     @Test
-    @Ignore("Необходимо починить тест. Вместо TempNupkgFile хранилище должно возвращать RemoteNupkg")
     public void testGetPackageStream() throws Exception {
         //GIVEN
         FileUtils.deleteDirectory(new File(testFolder, "NUnit"));
         final RemotePackageSource remotePackageSource = context.mock(RemotePackageSource.class);
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         try (final TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream)) {
+            final RemoteNupkg remoteNupkg = new RemoteNupkg(
+                    tempNupkgFile.getNuspecFile(),
+                    tempNupkgFile.getHash(),
+                    tempNupkgFile.getSize(),
+                    tempNupkgFile.getUpdated(),
+                    null) {
+
+                @Override
+                public InputStream getStream() throws IOException {
+                    return tempNupkgFile.getStream();
+                }
+            };
             context.checking(new Expectations() {
 
                 {
                     atLeast(1).of(remotePackageSource).getPackage("NUnit", Version.parse("2.5.9.10348"));
-                    will(returnValue(tempNupkgFile));
+                    will(returnValue(remoteNupkg));
                 }
             });
             ProxyPackageSource packageSource = new ProxyPackageSource();

@@ -40,7 +40,7 @@ public class RemoteNupkg implements Nupkg {
     /**
      * URL, по которому можно получить поток с пакетом
      */
-    private URI sourceUri;
+    private final URI sourceUri;
 
     /**
      * @param entry RSS сообщение с данными пакета
@@ -56,6 +56,21 @@ public class RemoteNupkg implements Nupkg {
         } catch (URISyntaxException e) {
             throw new NugetFormatException("Некорректный формат URI пакета", e);
         }
+    }
+
+    /**
+     * @param nuspec спецификация пакета
+     * @param hash HASH пакета
+     * @param size размер пакета
+     * @param updated дата обновления пакета
+     * @param sourceUri URI источника
+     */
+    public RemoteNupkg(NuspecFile nuspec, Hash hash, long size, Date updated, URI sourceUri) {
+        this.nuspec = nuspec;
+        this.hash = hash;
+        this.size = size;
+        this.updated = updated;
+        this.sourceUri = sourceUri;
     }
 
     @Override
