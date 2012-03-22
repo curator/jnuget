@@ -16,10 +16,16 @@ import ru.aristar.jnuget.files.NuspecFile;
  */
 public class EntryPropertiesTest {
 
+    /**
+     * Проверка преобразования файла спецификации в свойства вложения в RSS
+     * сообщении
+     *
+     * @throws NugetFormatException данные в ресурсе не соответствуют формату NuGet
+     */
     @Test
-    public void testConvertNuspecToEntryProperties() throws Exception {
+    public void testConvertNuspecToEntryProperties() throws NugetFormatException  {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.nuspec.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/nuspec/NUnit.nuspec.xml");
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         EntryProperties properties = new EntryProperties();
         //WHEN        
@@ -53,7 +59,7 @@ public class EntryPropertiesTest {
     @Test
     public void testConvertNuspecWithDependencies() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/Dependencies.nuspec.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/nuspec/Dependencies.nuspec.xml");
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         EntryProperties properties = new EntryProperties();
         //WHEN        

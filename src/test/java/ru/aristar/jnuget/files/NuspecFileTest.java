@@ -21,7 +21,7 @@ public class NuspecFileTest {
      */
     @Test
     public void testParseMethod() throws Exception {
-        final String fileName = "/test.nuspec.xml";
+        final String fileName = "/nuspec/test.nuspec.xml";
         NuspecFile result = NuspecFile.Parse(NuspecFileTest.class.getResourceAsStream(fileName));
         assertEquals("Идентификатор пакета", "Neolant.ProjectWise.IsolationLevel.Implementation", result.getId());
         assertEquals("Версия пакета", Version.parse("1.4.7.550"), result.getVersion());
@@ -33,10 +33,15 @@ public class NuspecFileTest {
         assertEquals("Права", "НЕОЛАНТ", result.getCopyright());
     }
 
+    /**
+     * Разбор файла спецификации из XML, если указаны ссылки на файлы
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testParseWithReferences() throws Exception {
         // GIVEN
-        final String fileName = "/NUnit.nuspec.xml";
+        final String fileName = "/nuspec/NUnit.nuspec.xml";
         Reference dll = new Reference().setFile("nunit.framework.dll");
         Reference xml = new Reference().setFile("nunit.framework.xml");
         Reference[] references = new Reference[]{dll, xml};
@@ -59,10 +64,15 @@ public class NuspecFileTest {
         assertArrayEquals("Ссылки", references, result.getReferences().toArray());
     }
 
+    /**
+     * Разбор файла спецификации из XML, если указаны зависимости пакета
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testParseWithDependencies() throws Exception {
         // GIVEN
-        final String fileName = "/NHibernate.nuspec.xml";
+        final String fileName = "/nuspec/NHibernate.nuspec.xml";
         Dependency dep = new Dependency();
         dep.id = "Iesi.Collections";
         dep.versionRange = VersionRange.parse("3.2.0.4000");
@@ -98,7 +108,7 @@ public class NuspecFileTest {
     @Test
     public void testParseReleaseNotes() throws Exception {
         //GIVEN
-        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/FluentAssertions.nuspec.xml");
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/FluentAssertions.nuspec.xml");
         //WHEN
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN
@@ -116,7 +126,7 @@ public class NuspecFileTest {
     @Test
     public void testParseOldScheme() throws Exception {
         //GIVEN
-        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/NLog.nuspec.xml");
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/NLog.nuspec.xml");
         //WHEN
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN
@@ -132,7 +142,7 @@ public class NuspecFileTest {
     @Test
     public void testParseWithNoNamespaceRootElement() throws Exception {
         //GIVEN
-        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/PostSharp.nuspec.xml");
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/PostSharp.nuspec.xml");
         //WHEN
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
         //THEN

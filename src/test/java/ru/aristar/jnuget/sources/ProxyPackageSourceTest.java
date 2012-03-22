@@ -70,7 +70,7 @@ public class ProxyPackageSourceTest {
             fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
         }
         File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
-        try (ReadableByteChannel sourceChannel = Channels.newChannel(MavenStylePackageSourceTest.class.getResourceAsStream("/NUnit.nuspec.xml"));
+        try (ReadableByteChannel sourceChannel = Channels.newChannel(MavenStylePackageSourceTest.class.getResourceAsStream("/nuspec/NUnit.nuspec.xml"));
                 FileChannel targetChannel = new FileOutputStream(nuspecFile).getChannel()) {
             TempNupkgFile.fastChannelCopy(sourceChannel, targetChannel);
         }

@@ -40,6 +40,8 @@ public class MavenNupkgTest {
 
     /**
      * Удаление тестового каталога
+     *
+     * @throws IOException ошибка удаления каталога
      */
     @After
     public void removeTestFolder() throws IOException {
@@ -70,7 +72,7 @@ public class MavenNupkgTest {
             fileWriter.write("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==");
         }
         File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
-        InputStream nuspecStream = this.getClass().getResourceAsStream("/NUnit.nuspec.xml");
+        InputStream nuspecStream = this.getClass().getResourceAsStream("/nuspec/NUnit.nuspec.xml");
         try (FileChannel nuspecChannel = new FileOutputStream(nuspecFile).getChannel()) {
             TempNupkgFile.fastChannelCopy(Channels.newChannel(nuspecStream), nuspecChannel);
         }

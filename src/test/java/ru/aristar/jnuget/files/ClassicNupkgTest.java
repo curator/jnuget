@@ -59,6 +59,8 @@ public class ClassicNupkgTest {
 
     /**
      * Удаление тестового каталога
+     *
+     * @throws IOException ошибка удаления каталога
      */
     @AfterClass
     public static void removeTestFolder() throws IOException {

@@ -27,7 +27,7 @@ public class NugetNamespaceFilterTest {
     @Test
     public void testChangeUri() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/NLog.nuspec.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/nuspec/NLog.nuspec.xml");
         InputSource inputSource = new InputSource(inputStream);
 
         XMLReader reader = XMLReaderFactory.createXMLReader();

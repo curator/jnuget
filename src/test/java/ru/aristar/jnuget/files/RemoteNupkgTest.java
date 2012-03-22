@@ -8,6 +8,7 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.rss.PackageFeed;
 
 /**
+ * Тесты пакета в удаленном репозитории
  *
  * @author sviridov
  */
@@ -21,13 +22,14 @@ public class RemoteNupkgTest {
     @Test
     public void testCreateRemoteNupkg() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/rss/AutoDiff.xml");
-        PackageFeed packageFeed = PackageFeed.parse(inputStream);
-        //WHEN
-        RemoteNupkg remoteNupkg = new RemoteNupkg(packageFeed.getEntries().get(0));
-        remoteNupkg.load();
-        //THEN
-        assertThat("Идентификатор пакета", remoteNupkg.getId(), is("AutoDiff"));
-        assertThat("Версия пакета", remoteNupkg.getVersion(), is(Version.parse("0.5.4321.2401")));
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/rss/AutoDiff.xml")) {
+            PackageFeed packageFeed = PackageFeed.parse(inputStream);
+            //WHEN
+            RemoteNupkg remoteNupkg = new RemoteNupkg(packageFeed.getEntries().get(0));
+            remoteNupkg.load();
+            //THEN
+            assertThat("Идентификатор пакета", remoteNupkg.getId(), is("AutoDiff"));
+            assertThat("Версия пакета", remoteNupkg.getVersion(), is(Version.parse("0.5.4321.2401")));
+        }
     }
 }
