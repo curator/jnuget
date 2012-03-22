@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.sources;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
@@ -232,5 +234,24 @@ public class Index {
             result = result + a.size();
         }
         return result;
+    }
+
+    /**
+     * Сохранить индекс в поток
+     *
+     * @param outputStream поток для сохранения
+     */
+    public void saveTo(OutputStream outputStream) {
+        throw new UnsupportedOperationException("Метод не реализован");
+    }
+
+    /**
+     * Загрузить ранее сохраненный индекс из потока
+     *
+     * @param inputStream поток для чтения индекса
+     * @return загруженый объект индекса
+     */
+    public static Index loadFrom(InputStream inputStream) {
+        throw new UnsupportedOperationException("Метод не реализован");
     }
 }

@@ -1,5 +1,8 @@
 package ru.aristar.jnuget.sources;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -7,6 +10,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  * Тесты для индекса пакетов
@@ -204,5 +208,26 @@ public class IndexTest {
         //THEN
         assertNotNull(result);
         assertEquals("Версий пакета E нет", 0, result.size());
+    }
+
+    /**
+     * Проверка возможности сериализации индекса
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSaveEmptyIndex() throws Exception {
+        //GIVEN
+        File file = File.createTempFile("index", "index");
+        file.delete();
+        assertFalse(file.exists());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            Index index = new Index();
+            //WHEN
+            index.saveTo(fileOutputStream);
+            //THEN
+            assertTrue("Файл индекса создан", file.exists());
+            assertTrue("Размер файла не равен 0", file.getTotalSpace() > 0);
+        }
     }
 }
