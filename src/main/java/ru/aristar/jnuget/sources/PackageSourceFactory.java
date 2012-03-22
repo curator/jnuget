@@ -228,11 +228,11 @@ public class PackageSourceFactory {
     /**
      * Возвращает источник пакетов
      *
+     * @param reinitialize необходима переинициализация
      * @return источник пакетов
      */
-    public PackageSource<Nupkg> getPackageSource() {
-        if (packageSource == null) {
-            //TODO Добавить возможность переинициализации
+    public PackageSource<Nupkg> getPackageSource(boolean reinitialize) {
+        if (reinitialize || packageSource == null) {
             synchronized (this) {
                 if (packageSource == null) {
                     initializeProxyOptions(options.getProxyOptions());
@@ -241,6 +241,15 @@ public class PackageSourceFactory {
             }
         }
         return packageSource;
+    }
+
+    /**
+     * Возвращает источник пакетов
+     *
+     * @return источник пакетов
+     */
+    public PackageSource<Nupkg> getPackageSource() {
+        return getPackageSource(false);
     }
 
     /**
