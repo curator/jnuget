@@ -19,18 +19,14 @@ import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.PackageFeed;
 
 /**
- * Jersey REST client generated for REST resource:MainUrlResource<br> USAGE:
- * <pre>
- *        NugetClient client = new NugetClient();
- *        Object response = client.XXX(...);
- *        // do whatever with response
- *        client.close();
- * </pre>
  *
  * @author sviridov
  */
 public class NugetClient implements AutoCloseable {
 
+    /**
+     * Ресурс, к которому осуществляется подключение REST клиента
+     */
     private WebResource webResource;
     /**
      * REST клиент

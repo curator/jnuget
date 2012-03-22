@@ -94,13 +94,8 @@ public class NuPkgToRssTransformer {
 
     private void addServerInformationInToEntry(PackageEntry entry) {
         EntryProperties properties = entry.getProperties();
-        //TODO Не факт, что сюда
-        //****************************
-        properties.setIconUrl("");
-        properties.setLicenseUrl("");
-        properties.setProjectUrl("");
+        //TODO Разобраться что это за URL
         properties.setReportAbuseUrl("");
-        //***************************
         properties.setDownloadCount(-1);
         properties.setVersionDownloadCount(-1);
         properties.setRatingsCount(0);

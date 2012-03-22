@@ -391,12 +391,27 @@ public class EntryProperties {
      */
     private String summary;
 
+    /**
+     * Если значение равно NULL заменяет его на пустую строку
+     *
+     * @param value исходное значение
+     * @return исходное значение или пустая строка
+     */
+    private String getValueOrEmtyString(String value) {
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Устанавливает свойства из спецификации пакета
+     *
+     * @param nuspecFile спецификация пакета
+     */
     public void setNuspec(NuspecFile nuspecFile) {
         this.version = nuspecFile.getVersion();
-        this.title = nuspecFile.getTitle() == null ? "" : nuspecFile.getTitle();
-        this.iconUrl = "";
-        this.licenseUrl = "";
-        this.projectUrl = "";
+        this.title = getValueOrEmtyString(nuspecFile.getTitle());
+        this.iconUrl = getValueOrEmtyString(nuspecFile.getIconUrl());
+        this.licenseUrl = getValueOrEmtyString(nuspecFile.getLicenseUrl());
+        this.projectUrl = getValueOrEmtyString(nuspecFile.getProjectUrl());
         this.reportAbuseUrl = "";
         this.requireLicenseAcceptance = nuspecFile.isRequireLicenseAcceptance();
         this.description = nuspecFile.getDescription();
@@ -678,7 +693,6 @@ public class EntryProperties {
      * @throws NugetFormatException ошибка в формате версии
      */
     public List<Dependency> getDependenciesList() throws NugetFormatException {
-        //TODO Добавить распознавание диапазона версий
         ArrayList<Dependency> list = new ArrayList<>();
         if (dependencies == null || dependencies.equals("")) {
             return list;
