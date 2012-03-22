@@ -7,11 +7,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,26 +20,6 @@ import org.slf4j.LoggerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Options {
 
-    /**
-     * Если установлено свойство Java машины nuget.home - используется оно,
-     * иначе смотрим переменную окружения NUGET_HOME, иначе используем домашнюю
-     * папку текущего пользователя
-     */
-    static {
-        String nugetHome = (String) System.getProperties().get("nuget.home");
-        String fileSeparator = (String) System.getProperties().get("file.separator");
-        if (nugetHome == null) {
-            nugetHome = System.getenv("NUGET_HOME");
-            if (nugetHome == null) {
-                nugetHome = (String) System.getProperties().get("user.home");
-                if (!nugetHome.endsWith(fileSeparator)) {
-                    nugetHome = nugetHome + fileSeparator;
-                }
-                nugetHome = nugetHome + ".nuget";
-            }
-            System.getProperties().setProperty("nuget.home", nugetHome);
-        }
-    }
     /**
      * Имя файла с настройками
      */
@@ -132,7 +108,7 @@ public class Options {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         saveOptions(fileOutputStream);
     }
-    
+
     public void saveOptions(OutputStream outputStream) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Marshaller marshaller = context.createMarshaller();
@@ -172,6 +148,7 @@ public class Options {
      * @return
      */
     public static Options loadOptions() {
+        readSystemProperties();
         String homeFolderName = (String) System.getProperties().get("nuget.home");
         File homeFolder = new File(homeFolderName);
         homeFolder.mkdirs();
@@ -198,5 +175,27 @@ public class Options {
             }
         }
         return null;
+    }
+
+    /**
+     * Если установлено свойство Java машины nuget.home - используется оно,
+     * иначе смотрим переменную окружения NUGET_HOME, иначе используем домашнюю
+     * папку текущего пользователя
+     */
+    private static void readSystemProperties() {
+        String nugetHome = (String) System.getProperties().get("nuget.home");
+        String fileSeparator = (String) System.getProperties().get("file.separator");
+        if (nugetHome == null || nugetHome.equals("")) {
+            nugetHome = System.getenv("NUGET_HOME");
+            if (nugetHome == null || nugetHome.equals("")) {
+                nugetHome = (String) System.getProperties().get("user.home");
+                if (!nugetHome.endsWith(fileSeparator)) {
+                    nugetHome = nugetHome + fileSeparator;
+                }
+                nugetHome = nugetHome + ".nuget";
+                System.out.println(nugetHome);
+            }
+            System.getProperties().setProperty("nuget.home", nugetHome);
+        }
     }
 }

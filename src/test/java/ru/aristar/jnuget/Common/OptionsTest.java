@@ -13,18 +13,23 @@ public class OptionsTest {
 
     /**
      * проверка загрузки настроек по умолчанию
+     *
+     * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testGetDefaultOptions() {
+    public void testGetDefaultOptions() throws Exception {
         //GIVEN
-        //TODO Переделать тест так, чтобы он не заменял файл в папке пользователя
-        final String userHome = System.getProperty("user.home");
-        File file = new File(userHome + "/.nuget/" + Options.DEFAULT_OPTIONS_FILE_NAME);
+        File tempFolder = File.createTempFile("tmp", "tmp").getParentFile();
+        String oldHome = System.getProperty("user.home");
+        System.setProperty("user.home", tempFolder.getAbsolutePath());
+        System.setProperty("nuget.home", "");
+        File nugetHome = new File(tempFolder, ".nuget");
+        File file = new File(nugetHome, Options.DEFAULT_OPTIONS_FILE_NAME);
         file.delete();
         assertFalse("Файла с настройками не должно существовать перед тестом", file.exists());
         //WHEN
         Options options = Options.loadOptions();
-        //THEN        
+        //THEN 
         assertTrue("Файл с настройками должен быть создан", file.exists());
         assertNull("Стратегия корневого хранилища не устанавливается", options.getStrategyOptions());
         assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
@@ -32,6 +37,8 @@ public class OptionsTest {
         assertNull("По умолчанию стратегия пула не задается", options.getStorageOptionsList().get(0).getStrategyOptions());
         //TEARDOWN
         file.delete();
+        nugetHome.delete();
+        System.setProperty("user.home", oldHome);
     }
 
     /**
