@@ -2,6 +2,7 @@ package ru.aristar.jnuget.files;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.*;
@@ -27,7 +28,7 @@ import ru.aristar.jnuget.rss.PackageEntry;
  * @author sviridov
  */
 @XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE_2011)
-public class NuspecFile {
+public class NuspecFile implements Serializable{
 
     /**
      * Класс, обеспечивающий валидацию ошибок в XML структуре файла NuSpec
@@ -43,7 +44,7 @@ public class NuspecFile {
     /**
      * Класс содержащий метаанные пакета NuGet
      */
-    public static class Metadata {
+    public static class Metadata implements Serializable{
 
         /**
          * Уникальный идентификатор пакета

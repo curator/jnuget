@@ -1,22 +1,27 @@
 package ru.aristar.jnuget;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Ссылка на файл.
+ *
  * @author Unlocker
  */
-public class Reference {
-    
-    public Reference(){}
+public class Reference implements Serializable {
 
+    /**
+     * Конструктор по умолчанию
+     */
+    public Reference() {
+    }
     /**
      * Название файла ссылки.
      */
     @XmlAttribute(name = "file")
     private String file;
-    
+
 //    /**
 //     * Возвращает имя файла ссылки.
 //     * @return Имя файла ссылки.
@@ -24,13 +29,13 @@ public class Reference {
 //    public String getFile(){
 //        return this.file;
 //    }
-    
     /**
      * Устанавлтвает имя файла ссылки.
+     *
      * @param file Новое имя файла.
      * @return Ссылка.
      */
-    public Reference setFile(String file){
+    public Reference setFile(String file) {
         this.file = file;
         return this;
     }

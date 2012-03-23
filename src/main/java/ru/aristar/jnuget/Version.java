@@ -1,5 +1,6 @@
 package ru.aristar.jnuget;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +11,7 @@ import ru.aristar.jnuget.files.NugetFormatException;
  *
  * @author unlocker
  */
-public class Version implements Comparable<Version> {
+public class Version implements Comparable<Version>, Serializable {
 
     /**
      * Шаблон строки версии
@@ -19,7 +20,7 @@ public class Version implements Comparable<Version> {
     /**
      * Выражение разбора
      */
-    private static Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
+    private static transient Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
 
     private static Integer parseInt(String group) {
         if (group == null || group.isEmpty()) {

@@ -9,7 +9,7 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author Unlocker
  */
-public class Hash {
+public class Hash implements Serializable{
 
     private byte[] digest;
 

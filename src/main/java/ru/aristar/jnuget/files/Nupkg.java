@@ -2,6 +2,7 @@ package ru.aristar.jnuget.files;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import ru.aristar.jnuget.Version;
@@ -11,7 +12,7 @@ import ru.aristar.jnuget.Version;
  *
  * @author Unlocker
  */
-public interface Nupkg {
+public interface Nupkg extends Serializable{
 
     /**
      * Расширение по умолчанию

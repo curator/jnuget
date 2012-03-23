@@ -45,7 +45,7 @@ public class RemoteNupkg implements Nupkg {
     /**
      * Логгер
      */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private transient Logger logger;
 
     /**
      * @param entry RSS сообщение с данными пакета
@@ -111,7 +111,7 @@ public class RemoteNupkg implements Nupkg {
      * @throws IOException ошибка чтения данных
      */
     private InputStream getStream(URI uri) throws IOException {
-        logger.debug("Загрузка пакета из {}", new Object[]{uri});
+        getLogger().debug("Загрузка пакета из {}", new Object[]{uri});
         try {
             DefaultClientConfig config = new DefaultClientConfig();
             config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
@@ -125,7 +125,7 @@ public class RemoteNupkg implements Nupkg {
                 }
                 case FOUND:
                 case MOVED_PERMANENTLY: {
-                    logger.debug("Получено перенаправление");
+                    getLogger().debug("Получено перенаправление");
                     String redirectUriString = response.getHeaders().get("Location").get(0);
                     URI redirectUri = new URI(redirectUriString);
                     return getStream(redirectUri);
@@ -166,5 +166,15 @@ public class RemoteNupkg implements Nupkg {
             intHash = 61 * intHash + Objects.hashCode(this.getId()) + Objects.hashCode(this.getVersion());
         }
         return intHash;
+    }
+
+    /**
+     * @return the logger
+     */
+    private Logger getLogger() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(this.getClass());
+        }
+        return logger;
     }
 }

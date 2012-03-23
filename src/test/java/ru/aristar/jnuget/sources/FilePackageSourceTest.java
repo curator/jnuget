@@ -117,7 +117,6 @@ public class FilePackageSourceTest {
     @Test
     public void testGetLastVersions() throws Exception {
         //GIVEN
-        FilePackageSource filePackageSource = new FilePackageSource();
         Collection<Nupkg> idList = new ArrayList<>();
         idList.add(createNupkg("A", "1.1.1"));
         idList.add(createNupkg("A", "1.1.2"));
@@ -128,7 +127,7 @@ public class FilePackageSourceTest {
         Nupkg lastB = createNupkg("B", "5.1.1");
         idList.add(lastB);
         //WHEN
-        Collection<Nupkg> result = filePackageSource.extractLastVersion(idList, true);
+        Collection<Nupkg> result = FilePackageSource.extractLastVersion(idList, true);
         Nupkg[] resArr = result.toArray(new Nupkg[0]);
         Arrays.sort(resArr, new Comparator<Nupkg>() {
 

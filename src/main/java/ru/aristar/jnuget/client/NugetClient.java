@@ -22,6 +22,7 @@ import ru.aristar.jnuget.rss.PackageFeed;
  *
  * @author sviridov
  */
+//TODO реализовать редирект как в RemoteNupkg
 public class NugetClient implements AutoCloseable {
 
     /**

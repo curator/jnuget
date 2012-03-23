@@ -145,6 +145,7 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
+        //TODO если при помещении в хранилище файла возникла ошибка необходимо удалить папки
         if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
             return false;
         }

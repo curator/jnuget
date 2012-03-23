@@ -1,9 +1,9 @@
 package ru.aristar.jnuget.sources;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -11,7 +11,7 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class Index {
+public class Index implements Serializable {
 
     /**
      * Индекс пакетов
@@ -240,9 +240,12 @@ public class Index {
      * Сохранить индекс в поток
      *
      * @param outputStream поток для сохранения
+     * @throws IOException ошибка записи в поток
      */
-    public void saveTo(OutputStream outputStream) {
-        throw new UnsupportedOperationException("Метод не реализован");
+    public void saveTo(OutputStream outputStream) throws IOException {
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(this);
+        objectOutputStream.flush();
     }
 
     /**
@@ -250,8 +253,16 @@ public class Index {
      *
      * @param inputStream поток для чтения индекса
      * @return загруженый объект индекса
+     * @throws IOException ошибка чтения из потока
+     * @throws NugetFormatException данные в потоке не содержат корректного
+     * индекса
      */
-    public static Index loadFrom(InputStream inputStream) {
-        throw new UnsupportedOperationException("Метод не реализован");
+    public static Index loadFrom(InputStream inputStream) throws IOException, NugetFormatException {
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            return (Index) objectInputStream.readObject();
+        } catch (ClassNotFoundException ex) {
+            throw new NugetFormatException("Поток не содержит данные индекса", ex);
+        }
     }
 }

@@ -1,8 +1,10 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -10,6 +12,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.ProxyNupkg;
+import ru.aristar.jnuget.files.RemoteNupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
@@ -39,7 +43,7 @@ public class IndexTest {
     private Nupkg createNupkg(final String id, final String version) throws Exception {
         final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
-
+            
             {
                 atLeast(0).of(pack).getId();
                 will(returnValue(id));
@@ -47,7 +51,7 @@ public class IndexTest {
                 will(returnValue(Version.parse(version)));
             }
         });
-
+        
         return pack;
     }
 
@@ -59,7 +63,7 @@ public class IndexTest {
      */
     private void sortNupkgArray(Nupkg[] result) {
         Arrays.sort(result, new Comparator<Nupkg>() {
-
+            
             @Override
             public int compare(Nupkg o1, Nupkg o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());
@@ -96,7 +100,7 @@ public class IndexTest {
             createNupkg("C", "2.1.0"),
             createNupkg("C", "5.1.0")
         };
-
+        
         Index index = new Index();
         index.putAll(nupkgs);
 
@@ -123,7 +127,7 @@ public class IndexTest {
             createNupkg("C", "2.1.0"),
             createNupkg("C", "5.1.0")
         };
-
+        
         Index index = new Index();
         //WHEN
         index.putAll(nupkgs);
@@ -147,7 +151,7 @@ public class IndexTest {
             createNupkg("C", "2.1.0"),
             lastC = createNupkg("C", "5.1.0")
         };
-
+        
         Index index = new Index();
         index.putAll(nupkgs);
 
@@ -174,7 +178,7 @@ public class IndexTest {
             createNupkg("C", "2.1.0"),
             createNupkg("C", "5.1.0")
         };
-
+        
         Index index = new Index();
         index.putAll(nupkgs);
 
@@ -200,7 +204,7 @@ public class IndexTest {
             createNupkg("C", "2.1.0"),
             createNupkg("C", "5.1.0")
         };
-
+        
         Index index = new Index();
         index.putAll(nupkgs);
         //WHEN
@@ -211,9 +215,9 @@ public class IndexTest {
     }
 
     /**
-     * Проверка возможности сериализации индекса
+     * Проверка возможности сериализации пустого индекса
      *
-     * @throws Exception
+     * @throws Exception ошибка в процессе теста
      */
     @Test
     public void testSaveEmptyIndex() throws Exception {
@@ -221,13 +225,65 @@ public class IndexTest {
         File file = File.createTempFile("index", "index");
         file.delete();
         assertFalse(file.exists());
+        
+        Index index = new Index();
+        //WHEN
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            index.saveTo(fileOutputStream);
+        }
+        //THEN
+        assertTrue("Файл индекса создан", file.exists());
+        assertTrue("Размер файла не равен 0", file.getTotalSpace() > 0);
+    }
+
+    /**
+     * Проверка возможности сериализации непустого индекса
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testSaveNonEmptyIndex() throws Exception {
+        //GIVEN
+        File file = File.createTempFile("index", "index");
+        file.delete();
+        assertFalse(file.exists());
+        
+        Index index = new Index();
+        TempNupkgFile tempNupkgFile = new TempNupkgFile(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"));
+        RemoteNupkg remoteNupkg = new RemoteNupkg(tempNupkgFile.getNuspecFile(), tempNupkgFile.getHash(), mockId, tempNupkgFile.getUpdated(), new URI("http://site.org"));
+        ProxyNupkg proxyNupkg = new ProxyNupkg(null, remoteNupkg);
+        index.put(proxyNupkg);
+
+        //WHEN
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            index.saveTo(fileOutputStream);
+        }
+        //THEN
+        assertTrue("Файл индекса создан", file.exists());
+        assertTrue("Размер файла не равен 0", file.getTotalSpace() > 0);
+    }
+
+    /**
+     * Проверка возможности чтения пустого индекса из файла
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testLoadEmptyIndex() throws Exception {
+        //GIVEN
+        File file = File.createTempFile("index", "index");
+        file.delete();
+        assertFalse(file.exists());
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             Index index = new Index();
-            //WHEN
             index.saveTo(fileOutputStream);
+        }
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            //WHEN
+            Index index = Index.loadFrom(fileInputStream);
             //THEN
-            assertTrue("Файл индекса создан", file.exists());
-            assertTrue("Размер файла не равен 0", file.getTotalSpace() > 0);
+            assertNotNull("Индекс прочитан из файла", index);
+            assertFalse("Индекс не содержит пакетов", index.getAllPackages().hasNext());
         }
     }
 }

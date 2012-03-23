@@ -32,7 +32,7 @@ public class ProxyNupkg implements Nupkg {
     /**
      * Логгер
      */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private transient Logger logger;
 
     /**
      * @param localPackageSource локальное хранилище пакетов
@@ -66,9 +66,11 @@ public class ProxyNupkg implements Nupkg {
     @Override
     public InputStream getStream() throws IOException {
         if (localNupkg != null) {
+            getLogger().debug("Пакет выгружается {}:{} из локального хранилища",
+                    new Object[]{getId(), getVersion()});
             return localNupkg.getStream();
         }
-        logger.debug("Получение данных для пакета {}:{} в удаленном репозитории",
+        getLogger().debug("Получение данных для пакета {}:{} в удаленном репозитории",
                 new Object[]{getId(), getVersion()});
         localPackageSource.pushPackage(remoteNupkg, null);
         localNupkg = localPackageSource.getPackage(remoteNupkg.getId(), remoteNupkg.getVersion());
@@ -103,5 +105,15 @@ public class ProxyNupkg implements Nupkg {
             intHash = 61 * intHash + Objects.hashCode(this.getId()) + Objects.hashCode(this.getVersion());
         }
         return intHash;
+    }
+
+    /**
+     * @return the logger
+     */
+    private Logger getLogger() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(this.getClass());
+        }
+        return logger;
     }
 }
