@@ -111,4 +111,11 @@ public interface PackageSource<T extends Nupkg> {
      * @param version Версия пакета.
      */
     void removePackage(String id, Version version);
+
+    /**
+     * Обновить информацию о пакете
+     *
+     * @param nupkg пакет
+     */
+    void refreshPackage(Nupkg nupkg);
 }

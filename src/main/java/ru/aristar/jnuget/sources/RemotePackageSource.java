@@ -157,4 +157,8 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     public String toString() {
         return "RemotePackageSource{" + remoteStorage.getUrl() + '}';
     }
+
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+    }
 }

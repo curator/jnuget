@@ -26,6 +26,18 @@ public class StorageOptions {
     @XmlAttribute(name = "indexed")
     private Boolean indexed;
     /**
+     * Имя хранилища. Если задано - то индекс будет сохраняться
+     */
+    @XmlAttribute(name = "storageName")
+    private String storageName;
+    /**
+     * Интервал обновления информации о хранилище в минутах. Если задан - то
+     * переодически опрашивается индексируемое хранилище на предмет изменения
+     * данных.
+     */
+    @XmlAttribute(name = "refreshInterval")
+    private Integer refreshInterval;
+    /**
      * Список настроек вида ключ/значение
      */
     @XmlJavaTypeAdapter(PropertiesTypeAdapter.class)
@@ -90,5 +102,34 @@ public class StorageOptions {
      */
     public void setIndexed(boolean indexed) {
         this.indexed = indexed;
+    }
+
+    /**
+     * @return Интервал обновления информации о хранилище в минутах.
+     */
+    public Integer getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    /**
+     * @param refreshInterval Интервал обновления информации о хранилище в
+     * минутах.
+     */
+    public void setRefreshInterval(Integer refreshInterval) {
+        this.refreshInterval = refreshInterval;
+    }
+
+    /**
+     * @return Имя хранилища
+     */
+    public String getStorageName() {
+        return storageName;
+    }
+
+    /**
+     * @param storageName Имя хранилища
+     */
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
     }
 }

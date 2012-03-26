@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.sources;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.ProxySelector;
@@ -125,8 +126,17 @@ public class PackageSourceFactory {
         }
         if (storageOptions.isIndexed()) {
             logger.debug("Создание индекса для хранилища");
+            Integer refreshInterval = storageOptions.getRefreshInterval();
+            if (refreshInterval != null) {
+            }
             IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
             indexedPackageSource.setUnderlyingSource(newSource);
+            String storageName = storageOptions.getStorageName();
+            if (storageName != null) {
+                File storageFile = new File(Options.getNugetHome(), storageName + ".idx");
+                indexedPackageSource.setIndexStoreFile(storageFile);                
+            }
+
             newSource = indexedPackageSource;
         }
         logger.info("Хранилище создано");

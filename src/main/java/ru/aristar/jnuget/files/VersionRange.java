@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ import ru.aristar.jnuget.Version;
  *
  * @author sviridov
  */
-public class VersionRange {
+public class VersionRange implements Serializable{
 
     /**
      * Разделитель границ отрезка

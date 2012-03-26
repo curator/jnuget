@@ -190,4 +190,12 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     public String toString() {
         return "ProxyPackageSource{" + remoteSource + '}';
     }
+
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+        if (nupkg instanceof ProxyNupkg) {
+            ProxyNupkg proxyNupkg = (ProxyNupkg) nupkg;
+            proxyNupkg.setPackageSource(hostedSource);
+        }
+    }
 }

@@ -254,4 +254,8 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     public String toString() {
         return "FilePackageSource{" + rootFolder + '}';
     }
+
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+    }
 }

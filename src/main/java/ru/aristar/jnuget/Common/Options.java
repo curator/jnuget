@@ -103,12 +103,19 @@ public class Options {
      *
      * @param file файл, в который производится сохранение
      * @throws JAXBException ошибка сохранения
+     * @throws FileNotFoundException папка для сохранения не найдена
      */
     public void saveOptions(File file) throws JAXBException, FileNotFoundException {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         saveOptions(fileOutputStream);
     }
 
+    /**
+     * Сохраняет настройки в поток
+     *
+     * @param outputStream поток, в который необходимо сохранить настройки
+     * @throws JAXBException ошибка сохранения XML
+     */
     public void saveOptions(OutputStream outputStream) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(Options.class);
         Marshaller marshaller = context.createMarshaller();
@@ -123,8 +130,9 @@ public class Options {
      * @param file файл с настройками
      * @return настройки
      * @throws JAXBException ошибка распознавания XML
+     * @throws FileNotFoundException файл настроек не найден
      */
-    public static final Options parse(File file) throws JAXBException, FileNotFoundException {
+    public static Options parse(File file) throws JAXBException, FileNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(file);
         return parse(fileInputStream);
     }
@@ -145,14 +153,12 @@ public class Options {
     /**
      * Загружает настройки из файла или восстанавливает настройки по умолчанию
      *
-     * @return
+     * @return настройки приложения
      */
     public static Options loadOptions() {
         readSystemProperties();
-        String homeFolderName = (String) System.getProperties().get("nuget.home");
-        File homeFolder = new File(homeFolderName);
-        homeFolder.mkdirs();
-        File file = new File(homeFolder, DEFAULT_OPTIONS_FILE_NAME);
+        getNugetHome().mkdirs();
+        File file = new File(getNugetHome(), DEFAULT_OPTIONS_FILE_NAME);
         //Попытка загрузки настроек
         if (file.exists()) {
             try {
@@ -183,19 +189,31 @@ public class Options {
      * папку текущего пользователя
      */
     private static void readSystemProperties() {
-        String nugetHome = (String) System.getProperties().get("nuget.home");
+        String nugetHomeName = (String) System.getProperties().get("nuget.home");
         String fileSeparator = (String) System.getProperties().get("file.separator");
-        if (nugetHome == null || nugetHome.equals("")) {
-            nugetHome = System.getenv("NUGET_HOME");
-            if (nugetHome == null || nugetHome.equals("")) {
-                nugetHome = (String) System.getProperties().get("user.home");
-                if (!nugetHome.endsWith(fileSeparator)) {
-                    nugetHome = nugetHome + fileSeparator;
+        if (nugetHomeName == null || nugetHomeName.equals("")) {
+            nugetHomeName = System.getenv("NUGET_HOME");
+            if (nugetHomeName == null || nugetHomeName.equals("")) {
+                nugetHomeName = (String) System.getProperties().get("user.home");
+                if (!nugetHomeName.endsWith(fileSeparator)) {
+                    nugetHomeName = nugetHomeName + fileSeparator;
                 }
-                nugetHome = nugetHome + ".nuget";
-                System.out.println(nugetHome);
+                nugetHomeName = nugetHomeName + ".nuget";
+                System.out.println(nugetHomeName);
             }
-            System.getProperties().setProperty("nuget.home", nugetHome);
+            System.getProperties().setProperty("nuget.home", nugetHomeName);
         }
+        nugetHome = new File(nugetHomeName);
+    }
+    /**
+     * Домашняя папка NuGet
+     */
+    private static File nugetHome;
+
+    /**
+     * @return Домашняя папка NuGet
+     */
+    public static File getNugetHome() {
+        return nugetHome;
     }
 }

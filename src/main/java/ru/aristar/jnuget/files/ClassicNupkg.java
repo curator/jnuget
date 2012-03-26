@@ -50,7 +50,7 @@ public class ClassicNupkg implements Nupkg {
     /**
      * Логгер
      */
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected transient Logger logger;
 
     /**
      * Конструктор используется в классах потомках для пустой инициализации
@@ -93,7 +93,7 @@ public class ClassicNupkg implements Nupkg {
                 nuspecFile = loadNuspec(getStream());
             } catch (NugetFormatException | IOException e) {
                 //TODO Добавить выброс exception-а
-                logger.warn("Ошибка чтения файла спецификации", e);
+                getLogger().warn("Ошибка чтения файла спецификации", e);
             }
         }
         return nuspecFile;
@@ -245,4 +245,14 @@ public class ClassicNupkg implements Nupkg {
      */
     private final static Pattern parser =
             Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + Nupkg.DEFAULT_EXTENSION + "$");
+
+    /**
+     * @return the logger
+     */
+    protected Logger getLogger() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(this.getClass());
+        }
+        return logger;
+    }
 }

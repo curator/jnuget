@@ -159,4 +159,8 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     public void removePackage(String id, Version version) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+    }
 }

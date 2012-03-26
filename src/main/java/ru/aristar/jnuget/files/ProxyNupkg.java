@@ -20,7 +20,7 @@ public class ProxyNupkg implements Nupkg {
     /**
      * Локальное хранилище пакетов
      */
-    private final PackageSource localPackageSource;
+    private transient PackageSource localPackageSource;
     /**
      * Пакет из локального хранилища
      */
@@ -115,5 +115,12 @@ public class ProxyNupkg implements Nupkg {
             logger = LoggerFactory.getLogger(this.getClass());
         }
         return logger;
+    }
+
+    /**
+     * @param localPackageSource хранилище пакетов
+     */
+    public void setPackageSource(PackageSource localPackageSource) {
+        this.localPackageSource = localPackageSource;
     }
 }

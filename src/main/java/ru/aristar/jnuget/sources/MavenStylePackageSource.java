@@ -254,4 +254,8 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
     public String toString() {
         return "MavenStylePackageSource{" + rootFolder + '}';
     }
+
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+    }
 }

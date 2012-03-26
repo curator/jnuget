@@ -12,7 +12,7 @@ import ru.aristar.jnuget.Version;
  *
  * @author Unlocker
  */
-public interface Nupkg extends Serializable{
+public interface Nupkg extends Serializable {
 
     /**
      * Расширение по умолчанию

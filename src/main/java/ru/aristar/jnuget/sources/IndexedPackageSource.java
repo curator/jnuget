@@ -1,9 +1,10 @@
 package ru.aristar.jnuget.sources;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
@@ -28,14 +29,23 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      */
     private PackageSource<? extends Nupkg> packageSource;
     /**
+     * Имя файла индекса
+     */
+    private File indexStoreFile = null;
+    /**
      * Логгер
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Override
+    public void refreshPackage(Nupkg nupkg) {
+        packageSource.refreshPackage(nupkg);
+    }
+
     /**
-     * Поторк, обновляющий индекс
+     * Поток, обновляющий индекс
      */
-    private class RefreshIndexThread implements Runnable {
+    private class RefreshIndexThread extends TimerTask {
 
         /**
          * Основной метод потока, обновляющий индекс
@@ -67,6 +77,13 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                 }
             }
             this.index = newIndex;
+            if (indexStoreFile != null) {
+                try (FileOutputStream fileOutputStream = new FileOutputStream(indexStoreFile)) {
+                    index.saveTo(fileOutputStream);
+                } catch (Exception e) {
+                    logger.warn("Не удалось сохранить локальную копию индекса", e);
+                }
+            }
             logger.info("Обновление индекса хранилища {} завершено. Обнаружено {} пакетов",
                     new Object[]{packageSource, index.size()});
             monitor.notifyAll();
@@ -192,5 +209,46 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
         Thread thread = new Thread(new IndexedPackageSource.RefreshIndexThread());
         thread.start();
         return thread;
+    }
+
+    /**
+     * Устанавливает интервал обновления информации о хранилище
+     *
+     * @param refreshInterval интервал обновления информации в минутах
+     */
+    public void setRefreshInterval(Integer refreshInterval) {
+        if (refreshInterval == null) {
+            return;
+        }
+        final long intervalMs = refreshInterval * 60000;
+        RefreshIndexThread indexThread = new IndexedPackageSource.RefreshIndexThread();
+        Timer timer = new Timer();
+        timer.schedule(indexThread, intervalMs, intervalMs);
+    }
+
+    /**
+     * @param indexStoreFile файл для хранения индекса
+     */
+    public void setIndexStoreFile(File indexStoreFile) {
+        this.indexStoreFile = indexStoreFile;
+
+        if (this.indexStoreFile != null && this.indexStoreFile.exists()) {
+            logger.info("Обнаружен локально сохраненный файл индекса");
+            try (FileInputStream fileInputStream = new FileInputStream(this.indexStoreFile)) {
+                this.index = Index.loadFrom(fileInputStream);
+                logger.info("Индекс загружен в память");
+                Iterator<Nupkg> iterator = this.index.getAllPackages();
+                while (iterator.hasNext()) {
+                    Nupkg nupkg = iterator.next();
+                    this.packageSource.refreshPackage(nupkg);
+                }
+                logger.info("Индекс загружен из локального файла. Обнаружено "
+                        + "{} пакетов", new Object[]{index.size()});
+            } catch (Exception e) {
+                logger.warn("Не удалось прочитать локально сохраненный индекс", e);
+            }
+        } else {
+            logger.info("Локально сохраненный файл индекса не обнаружен");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,7 +13,7 @@ import ru.aristar.jnuget.Version;
  * @author Unlocker
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class Dependency {
+public class Dependency implements Serializable {
 
     /**
      * Идентификатор пакета
