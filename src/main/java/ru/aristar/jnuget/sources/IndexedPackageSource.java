@@ -233,7 +233,8 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
         this.indexStoreFile = indexStoreFile;
 
         if (this.indexStoreFile != null && this.indexStoreFile.exists()) {
-            logger.info("Обнаружен локально сохраненный файл индекса");
+            logger.info("Для хранилища {} обнаружен локально сохраненный файл "
+                    + "индекса", new Object[]{packageSource});
             try (FileInputStream fileInputStream = new FileInputStream(this.indexStoreFile)) {
                 this.index = Index.loadFrom(fileInputStream);
                 logger.info("Индекс загружен в память");
@@ -242,13 +243,14 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                     Nupkg nupkg = iterator.next();
                     this.packageSource.refreshPackage(nupkg);
                 }
-                logger.info("Индекс загружен из локального файла. Обнаружено "
-                        + "{} пакетов", new Object[]{index.size()});
+                logger.info("Индекс загружен из локального файла {}. Обнаружено "
+                        + "{} пакетов", new Object[]{this.indexStoreFile, index.size()});
             } catch (Exception e) {
                 logger.warn("Не удалось прочитать локально сохраненный индекс", e);
             }
         } else {
-            logger.info("Локально сохраненный файл индекса не обнаружен");
+            logger.info("Локально сохраненный файл индекса для хранилища {} не "
+                    + "обнаружен", new Object[]{packageSource});
         }
     }
 }

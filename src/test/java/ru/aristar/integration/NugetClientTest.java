@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import org.apache.commons.io.FileUtils;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
@@ -92,8 +94,8 @@ public class NugetClientTest {
         //THEN
         assertEquals("Количество пакетов", 1, result.getEntries().size());
         PackageEntry entry = result.getEntries().get(0);
-        assertEquals("Версия пакета", Version.parse("2.5.9.10348"), entry.getProperties().getVersion());
-        assertEquals("HASH пакета", "kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==", entry.getProperties().getPackageHash());
-        assertEquals("Идентификатор пакета", "NUnit", entry.getTitle());
+        assertThat("Версия пакета", entry.getProperties().getVersion(), is(equalTo(Version.parse("2.5.9.10348"))));
+        assertThat("HASH пакета", entry.getProperties().getPackageHash(), is(equalTo("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==")));        
+        assertThat("Идентификатор пакета", entry.getTitle(), is(equalTo("NUnit")));
     }
 }

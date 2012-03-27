@@ -43,6 +43,27 @@ public class PackageSourceFactory {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
+     * Создает индексируемую обертку для хранилища пакетов
+     *
+     * @param packageSource хранилище, которое необходимо индексировать
+     * @param storageName имя, используемое для сохранения индекса
+     * @param refreshInterval интервал обновления информации в индекск
+     * @return индексируемое хранилище
+     */
+    protected PackageSource<Nupkg> createIndexForStorage(PackageSource<Nupkg> packageSource,
+            String storageName, Integer refreshInterval) {
+        logger.debug("Создание индекса для хранилища {}", new Object[]{packageSource});
+        IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
+        indexedPackageSource.setUnderlyingSource(packageSource);
+        if (storageName != null) {
+            File storageFile = new File(Options.getNugetHome(), storageName + ".idx");
+            indexedPackageSource.setIndexStoreFile(storageFile);
+        }
+        indexedPackageSource.setRefreshInterval(refreshInterval);
+        return indexedPackageSource;
+    }
+
+    /**
      * Создание нового корневого хранилища на основе настроек
      *
      * @param serviceOptions настройки приложения
@@ -125,19 +146,7 @@ public class PackageSourceFactory {
             logger.warn("Используется стратегия фиксации по умолчанию");
         }
         if (storageOptions.isIndexed()) {
-            logger.debug("Создание индекса для хранилища");
-            Integer refreshInterval = storageOptions.getRefreshInterval();
-            if (refreshInterval != null) {
-            }
-            IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
-            indexedPackageSource.setUnderlyingSource(newSource);
-            String storageName = storageOptions.getStorageName();
-            if (storageName != null) {
-                File storageFile = new File(Options.getNugetHome(), storageName + ".idx");
-                indexedPackageSource.setIndexStoreFile(storageFile);                
-            }
-
-            newSource = indexedPackageSource;
+            newSource = createIndexForStorage(newSource, storageOptions.getStorageName(), storageOptions.getRefreshInterval());
         }
         logger.info("Хранилище создано");
         return newSource;

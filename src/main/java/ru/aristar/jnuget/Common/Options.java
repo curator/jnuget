@@ -198,11 +198,11 @@ public class Options {
                 if (!nugetHomeName.endsWith(fileSeparator)) {
                     nugetHomeName = nugetHomeName + fileSeparator;
                 }
-                nugetHomeName = nugetHomeName + ".nuget";
-                System.out.println(nugetHomeName);
+                nugetHomeName = nugetHomeName + ".nuget";                
             }
             System.getProperties().setProperty("nuget.home", nugetHomeName);
-        }
+        }        
+        logger.info("Домашняя папка NuGet установлена в {}", new Object[]{nugetHomeName});
         nugetHome = new File(nugetHomeName);
     }
     /**
