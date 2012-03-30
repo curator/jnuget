@@ -1,6 +1,5 @@
-package ru.aristar.jnuget.sources;
+package ru.aristar.jnuget.sources.push;
 
-import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**

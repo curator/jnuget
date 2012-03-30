@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 

@@ -56,7 +56,7 @@ public class ProxyPackageSourceTest {
 
         Matcher matcher = pattern.matcher(resource);
         matcher.matches();
-        File packageFolder = new File(testFolder, matcher.group(1) + "/");
+        File packageFolder = new File(testFolder, matcher.group(1).toLowerCase() + "/");
         packageFolder.mkdirs();
         File versionFolder = new File(packageFolder, matcher.group(2) + "/");
         versionFolder.mkdirs();

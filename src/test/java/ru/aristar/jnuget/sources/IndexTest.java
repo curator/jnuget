@@ -3,7 +3,6 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 import org.jmock.Expectations;

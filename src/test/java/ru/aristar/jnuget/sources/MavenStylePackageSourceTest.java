@@ -17,6 +17,7 @@ import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Тест источника данных, хранящего пакеты в структуре каталогов схожей со

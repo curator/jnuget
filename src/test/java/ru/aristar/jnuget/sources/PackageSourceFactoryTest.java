@@ -7,6 +7,9 @@ import org.junit.Test;
 import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.PushStrategyOptions;
 import ru.aristar.jnuget.Common.StorageOptions;
+import ru.aristar.jnuget.sources.push.ApiKeyPushStrategy;
+import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  *

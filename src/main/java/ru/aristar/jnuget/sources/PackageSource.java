@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 
 /**
  * Контракт источника пакетов

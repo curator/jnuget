@@ -12,6 +12,8 @@ import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.ProxyNupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
+import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  *

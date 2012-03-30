@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.sources;
+package ru.aristar.jnuget.sources.push;
 
 import java.util.Objects;
 import ru.aristar.jnuget.files.Nupkg;

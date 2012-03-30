@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Хранилище пакетов, имитирующее структуру хранилища Maven.
@@ -95,6 +97,9 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public Collection<MavenNupkg> getPackages(String id, boolean ignoreCase) {
+        if (ignoreCase) {
+            id = id.toLowerCase();
+        }
         return getPackagesById(id);
     }
 
@@ -216,6 +221,7 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     private Collection<MavenNupkg> getPackagesById(String id) {
         File idDir = new File(rootFolder, id);
+
         List<MavenNupkg> list = new ArrayList<>();
         if (idDir.exists()) {
             for (File versionDir : idDir.listFiles()) {
