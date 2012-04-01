@@ -12,32 +12,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.xml.bind.JAXBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.*;
-import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Хранилище пакетов, имитирующее структуру хранилища Maven.
  *
  * @author unlocker
  */
-public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
+public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> implements PackageSource<MavenNupkg> {
 
     /**
      * Корневая папка, в которой расположены пакеты
      */
     private File rootFolder;
-    /**
-     * Логгер
-     */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
-     * Стратегия помещения пакета в хранилище
-     */
-    private PushStrategy strategy;
 
     /**
      * Конструктор по умолчанию
@@ -148,45 +136,6 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         return null;
     }
 
-    @Override
-    public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
-        //TODO если при помещении в хранилище файла возникла ошибка необходимо удалить папки
-        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
-            return false;
-        }
-        File packageFolder = verifyPackageDestination(rootFolder, nupkgFile.getNuspecFile());
-
-        // Открывает временный файл, копирует его в место постоянного хранения.
-        File tmpDest = new File(packageFolder, nupkgFile.getFileName() + ".tmp");
-        File finalDest = new File(packageFolder, nupkgFile.getFileName());
-        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream());
-                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
-            TempNupkgFile.fastChannelCopy(src, dest);
-        }
-
-        if (!tmpDest.renameTo(finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
-        }
-        try {
-            // Сохраняем nuspec
-            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE_NAME);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
-                nupkgFile.getNuspecFile().saveTo(fileOutputStream);
-            }
-
-            // Сохраняем контрольную сумму
-            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
-            nupkgFile.getHash().saveTo(hashFile);
-
-        } catch (JAXBException | NoSuchAlgorithmException ex) {
-            throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
-        }
-        logger.debug("Пакет {}:{} добавлен в хранилище",
-                new Object[]{nupkgFile.getNuspecFile().getId(), nupkgFile.getNuspecFile().getVersion()});
-        return true;
-    }
-
     /**
      * Проверяет наличие папки для хранения пакета, создает ее в случае
      * необходимости
@@ -206,19 +155,12 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
         return versionFolder;
     }
 
-    @Override
-    public PushStrategy getPushStrategy() {
-        if (strategy == null) {
-            strategy = new SimplePushStrategy(false);
-        }
-        return strategy;
-    }
-
-    @Override
-    public void setPushStrategy(PushStrategy strategy) {
-        this.strategy = strategy;
-    }
-
+    /**
+     * Возвращает коллекцию пакетов с указанным идентификатором
+     *
+     * @param id идентификатор пакета
+     * @return коллекция пакетов
+     */
     private Collection<MavenNupkg> getPackagesById(String id) {
         File idDir = new File(rootFolder, id);
 
@@ -263,5 +205,38 @@ public class MavenStylePackageSource implements PackageSource<MavenNupkg> {
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
+    }
+
+    @Override
+    protected void pushPackage(Nupkg nupkg) throws IOException {
+        File packageFolder = verifyPackageDestination(rootFolder, nupkg.getNuspecFile());
+        // Открывает временный файл, копирует его в место постоянного хранения.
+        File tmpDest = new File(packageFolder, nupkg.getFileName() + ".tmp");
+        File finalDest = new File(packageFolder, nupkg.getFileName());
+        try (ReadableByteChannel src = Channels.newChannel(nupkg.getStream());
+                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
+            TempNupkgFile.fastChannelCopy(src, dest);
+        }
+
+        if (!tmpDest.renameTo(finalDest)) {
+            throw new IOException("Не удалось переименовать файл " + tmpDest
+                    + " в " + finalDest);
+        }
+        try {
+            // Сохраняем nuspec
+            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE_NAME);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
+                nupkg.getNuspecFile().saveTo(fileOutputStream);
+            }
+
+            // Сохраняем контрольную сумму
+            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
+            nupkg.getHash().saveTo(hashFile);
+
+        } catch (JAXBException | NoSuchAlgorithmException ex) {
+            throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
+        }
+        logger.debug("Пакет {}:{} добавлен в хранилище",
+                new Object[]{nupkg.getNuspecFile().getId(), nupkg.getNuspecFile().getVersion()});
     }
 }
