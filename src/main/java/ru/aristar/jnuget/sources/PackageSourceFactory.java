@@ -4,6 +4,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.ProxySelector;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
@@ -171,10 +173,30 @@ public class PackageSourceFactory {
             throw new UnsupportedDataTypeException("Класс " + sourceClass
                     + " не является " + PushStrategy.class.getCanonicalName());
         }
-        PushStrategy newSource = (PushStrategy) object;
-        setObjectProperties(strategyOptions.getProperties(), newSource);
+        PushStrategy pushStrategy = (PushStrategy) object;
+        setObjectProperties(strategyOptions.getProperties(), pushStrategy);
+        //Триггеры BEFORE
+        pushStrategy.getBeforeTriggers().addAll(createTriggers(strategyOptions.getBeforeTriggersOptions()));
+        //Триггеры Afther
+        pushStrategy.getAftherTriggers().addAll(createTriggers(strategyOptions.getAftherTriggersOptions()));
         logger.info("Стратегия создана");
-        return newSource;
+        return pushStrategy;
+    }
+
+    /**
+     * Создает коллекцию триггеров из коллекции настроек
+     *
+     * @param options коллекция настроек
+     * @return коллекция настроек
+     * @throws Exception ошибка создания триггера
+     */
+    protected Collection<PushTrigger> createTriggers(Collection<TriggerOptions> options) throws Exception {
+        ArrayList<PushTrigger> pushTriggers = new ArrayList<>();
+        for (TriggerOptions triggerOptions : options) {
+            PushTrigger pushTrigger = createPushTrigger(triggerOptions);
+            pushTriggers.add(pushTrigger);
+        }
+        return pushTriggers;
     }
 
     /**

@@ -11,7 +11,7 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class VersionPatternPushStrategy implements PushStrategy {
+public class VersionPatternPushStrategy extends AbstractPushStrategy implements PushStrategy {
 
     /**
      * Шаблон версии
@@ -41,15 +41,5 @@ public class VersionPatternPushStrategy implements PushStrategy {
         String strVersion = version.toString();
         Matcher matcher = pattern.matcher(strVersion);
         return matcher.matches();
-    }
-
-    @Override
-    public List<PushTrigger> getBeforeTriggers() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public List<PushTrigger> getAftherTriggers() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
