@@ -86,7 +86,7 @@ public class OptionsTest {
         assertThat("Создан набор настроек для хранилища", storageOptions.size(), equalTo(1));
         PushStrategyOptions pushStrategyOptions = storageOptions.get(0).getStrategyOptions();
         assertThat("Создана стратегия фиксации пакета", pushStrategyOptions, is(notNullValue()));
-        assertThat("Созданы настройки триггера, выполняющегося до вставки",
+        assertThat("Количество настроек триггеров, выполняющихся до вставки",
                 pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
         TriggerOptions beforeTriggerOptions = pushStrategyOptions.getBeforeTriggersOptions().get(0);
         assertThat("Имя класса триггера", beforeTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_1"));
@@ -94,17 +94,17 @@ public class OptionsTest {
                 beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
                 equalTo(new String[]{"property_2"}));
         assertThat("Значения свойств триггера",
-                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                beforeTriggerOptions.getProperties().values().toArray(new String[]{}),
                 equalTo(new String[]{"value_2"}));
-        assertThat("Созданы настройки триггера, выполняющегося после вставки",
+        assertThat("Количество настроек триггеров, выполняющихся после вставки",
                 pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
         TriggerOptions aftherTriggerOptions = pushStrategyOptions.getAftherTriggersOptions().get(0);
         assertThat("Имя класса триггера", aftherTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_2"));
         assertThat("Названия свойств триггера",
-                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                aftherTriggerOptions.getProperties().keySet().toArray(new String[]{}),
                 equalTo(new String[]{"property_3"}));
         assertThat("Значения свойств триггера",
-                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                aftherTriggerOptions.getProperties().values().toArray(new String[]{}),
                 equalTo(new String[]{"value_3"}));
     }
 }
