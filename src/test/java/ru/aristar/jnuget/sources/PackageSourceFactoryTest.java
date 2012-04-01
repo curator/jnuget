@@ -77,7 +77,7 @@ public class PackageSourceFactoryTest {
         RemoveOldVersionTrigger removeOldVersionTrigger = (RemoveOldVersionTrigger) pushTrigger;
         assertThat("Количество пакетов, разрешенных для сохранения",
                 removeOldVersionTrigger.getMaxPackageCount(),
-                equalTo(1));
+                equalTo(5));
     }
 
     /**

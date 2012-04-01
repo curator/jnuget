@@ -168,7 +168,8 @@ public class PackageSourceFactory {
         Class<?> sourceClass = Class.forName(strategyOptions.getClassName());
         Object object = sourceClass.newInstance();
         if (!(object instanceof PushStrategy)) {
-            throw new UnsupportedDataTypeException("Класс " + sourceClass + " не является стратегией публикации");
+            throw new UnsupportedDataTypeException("Класс " + sourceClass
+                    + " не является " + PushStrategy.class.getCanonicalName());
         }
         PushStrategy newSource = (PushStrategy) object;
         setObjectProperties(strategyOptions.getProperties(), newSource);
@@ -181,9 +182,20 @@ public class PackageSourceFactory {
      *
      * @param triggerOptions настройки триггера
      * @return триггер
+     * @throws Exception ошибка создания триггера
      */
-    protected PushTrigger createPushTrigger(TriggerOptions triggerOptions) {
-        throw new UnsupportedOperationException("Метод не реализован");
+    protected PushTrigger createPushTrigger(TriggerOptions triggerOptions) throws Exception {
+        logger.info("Создание триггера типа {}", new Object[]{triggerOptions.getClassName()});
+        Class<?> sourceClass = Class.forName(triggerOptions.getClassName());
+        Object object = sourceClass.newInstance();
+        if (!(object instanceof PushTrigger)) {
+            throw new UnsupportedDataTypeException("Класс " + sourceClass
+                    + " не является " + PushTrigger.class.getCanonicalName());
+        }
+        PushTrigger pushTrigger = (PushTrigger) object;
+        setObjectProperties(triggerOptions.getProperties(), pushTrigger);
+        logger.info("Триггер создан");
+        return pushTrigger;
     }
 
     /**

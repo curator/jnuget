@@ -98,6 +98,7 @@ public class RemoveOldVersionTriggerTest {
      * @throws Exception ошибка в процессе теста
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testRemoveFromEmptyStorage() throws Exception {
         //GIVEN
         Nupkg nupkg = createNupkgList("Nupkg", "0.0.1").get(0);
@@ -137,6 +138,7 @@ public class RemoveOldVersionTriggerTest {
      * @throws Exception ошибка впроцессе теста
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void testRemoveOnePackageWhenMaxCountExceeded() throws Exception {
         //GIVEN
         final List<Nupkg> nupkgs = createNupkgList("Nupkg",
