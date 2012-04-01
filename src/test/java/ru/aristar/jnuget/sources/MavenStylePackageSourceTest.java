@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -48,7 +49,8 @@ public class MavenStylePackageSourceTest {
 
         Matcher matcher = pattern.matcher(resource);
         matcher.matches();
-        File packageFolder = new File(testFolder, matcher.group(1) + "/");
+        String packageId = matcher.group(1).toLowerCase();
+        File packageFolder = new File(testFolder, packageId + "/");
         packageFolder.mkdirs();
         File versionFolder = new File(packageFolder, matcher.group(2) + "/");
         versionFolder.mkdirs();
@@ -150,8 +152,9 @@ public class MavenStylePackageSourceTest {
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
         //WHEN
         Collection<MavenNupkg> nupkgs = packageSource.getPackages("NUnit");
-        NuspecFile result = nupkgs.iterator().next().getNuspecFile();
         //THEN    
+        assertThat("Пакет найден", nupkgs.size(), equalTo(1));
+        NuspecFile result = nupkgs.iterator().next().getNuspecFile();
         assertNotNull("Спецификация пакета", result);
         assertEquals("Идентификатор пакета", "NUnit", result.getId());
         assertEquals("Версия пакета", Version.parse("2.5.9.10348"), result.getVersion());
