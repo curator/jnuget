@@ -26,7 +26,7 @@ import ru.aristar.jnuget.files.TempNupkgFile;
  *
  * @author sviridov
  */
-public class FilePackageSourceTest {
+public class ClassicPackageSourceTest {
 
     /**
      * Тестовая папка с пакетами
@@ -77,7 +77,7 @@ public class FilePackageSourceTest {
         String[] resources = new String[]{"/NUnit.2.5.9.10348.nupkg"};
         for (String resource : resources) {
             File targetFile = new File(testFolder, resource.substring(1));
-            try (ReadableByteChannel sourceChannel = Channels.newChannel(FilePackageSourceTest.class.getResourceAsStream(resource));
+            try (ReadableByteChannel sourceChannel = Channels.newChannel(ClassicPackageSourceTest.class.getResourceAsStream(resource));
                     FileChannel targetChannel = new FileOutputStream(targetFile).getChannel();) {
                 TempNupkgFile.fastChannelCopy(sourceChannel, targetChannel);
             }
@@ -100,7 +100,7 @@ public class FilePackageSourceTest {
     @Test
     public void testReadFilesFromFolder() {
         //GIVEN
-        FilePackageSource packageSource = new FilePackageSource(testFolder);
+        ClassicPackageSource packageSource = new ClassicPackageSource(testFolder);
         //WHEN
         Collection<ClassicNupkg> packages = packageSource.getPackages();
         //THEN
@@ -127,7 +127,7 @@ public class FilePackageSourceTest {
         Nupkg lastB = createNupkg("B", "5.1.1");
         idList.add(lastB);
         //WHEN
-        Collection<Nupkg> result = FilePackageSource.extractLastVersion(idList, true);
+        Collection<Nupkg> result = ClassicPackageSource.extractLastVersion(idList, true);
         Nupkg[] resArr = result.toArray(new Nupkg[0]);
         Arrays.sort(resArr, new Comparator<Nupkg>() {
 

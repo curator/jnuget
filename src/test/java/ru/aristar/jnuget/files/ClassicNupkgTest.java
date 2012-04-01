@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.sources.FilePackageSourceTest;
+import ru.aristar.jnuget.sources.ClassicPackageSourceTest;
 
 /**
  *
@@ -47,7 +47,7 @@ public class ClassicNupkgTest {
         testFolder.mkdir();
         for (int i = 0; i < resources.length; i++) {
             String resource = resources[i];
-            InputStream inputStream = FilePackageSourceTest.class.getResourceAsStream(resource);
+            InputStream inputStream = ClassicPackageSourceTest.class.getResourceAsStream(resource);
             File targetFile = new File(testFolder, resource.substring(1));
             try (ReadableByteChannel source = Channels.newChannel(inputStream);
                     FileChannel target = new FileOutputStream(targetFile).getChannel()) {

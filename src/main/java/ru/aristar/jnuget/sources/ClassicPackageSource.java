@@ -20,7 +20,7 @@ import ru.aristar.jnuget.sources.push.SimplePushStrategy;
  *
  * @author sviridov
  */
-public class FilePackageSource implements PackageSource<ClassicNupkg> {
+public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
 
     /**
      * Папка с пакетами
@@ -54,13 +54,13 @@ public class FilePackageSource implements PackageSource<ClassicNupkg> {
     /**
      * Конструктор по умолчанию
      */
-    public FilePackageSource() {
+    public ClassicPackageSource() {
     }
 
     /**
      * @param rootFolder папка с пакетами
      */
-    public FilePackageSource(File rootFolder) {
+    public ClassicPackageSource(File rootFolder) {
         setRootFolder(rootFolder);
     }
 

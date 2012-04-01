@@ -27,15 +27,15 @@ public class PackageSourceFactoryTest {
         final String userHomeFolder = System.getProperty("user.home");
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
         StorageOptions storageOptions = new StorageOptions();
-        storageOptions.setClassName(FilePackageSource.class.getCanonicalName());
+        storageOptions.setClassName(ClassicPackageSource.class.getCanonicalName());
         storageOptions.setIndexed(false);
         storageOptions.getProperties().put("folderName", "${user.home}/Packages/");
         //WHEN
         PackageSource result = sourceFactory.createPackageSource(storageOptions);
         final File expectedFolder = new File(userHomeFolder + "/Packages/");
         //THEN        
-        assertEquals("Класс хранилища", FilePackageSource.class, result.getClass());
-        assertEquals("Корневой каталог хранилища", expectedFolder.getAbsolutePath(), ((FilePackageSource) result).getFolderName());
+        assertEquals("Класс хранилища", ClassicPackageSource.class, result.getClass());
+        assertEquals("Корневой каталог хранилища", expectedFolder.getAbsolutePath(), ((ClassicPackageSource) result).getFolderName());
     }
 
     /**

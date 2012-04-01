@@ -56,7 +56,7 @@ public class IndexedPackageSourceTest {
         String[] resources = new String[]{"/NUnit.2.5.9.10348.nupkg"};
         for (String resource : resources) {
             File targetFile = new File(testFolder, resource.substring(1));
-            try (ReadableByteChannel sourceChannel = Channels.newChannel(FilePackageSourceTest.class.getResourceAsStream(resource));
+            try (ReadableByteChannel sourceChannel = Channels.newChannel(ClassicPackageSourceTest.class.getResourceAsStream(resource));
                     FileChannel targetChannel = new FileOutputStream(targetFile).getChannel();) {
                 TempNupkgFile.fastChannelCopy(sourceChannel, targetChannel);
             }
@@ -72,7 +72,7 @@ public class IndexedPackageSourceTest {
     public void testGetAllPackages() throws Exception {
         //GIVEN
         IndexedPackageSource packageSource = new IndexedPackageSource();
-        FilePackageSource filePackageSource = new FilePackageSource(testFolder);
+        ClassicPackageSource filePackageSource = new ClassicPackageSource(testFolder);
         packageSource.setUnderlyingSource(filePackageSource).join();
         //WHEN
         Collection<Nupkg> result = packageSource.getPackages();
@@ -96,7 +96,7 @@ public class IndexedPackageSourceTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
             IndexedPackageSource packageSource = new IndexedPackageSource();
-            FilePackageSource filePackageSource = new FilePackageSource(localTestFolder);
+            ClassicPackageSource filePackageSource = new ClassicPackageSource(localTestFolder);
             packageSource.setUnderlyingSource(filePackageSource).join();
             packageSource.setPushStrategy(new SimplePushStrategy(true));
             //WHEN

@@ -94,7 +94,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
             logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
         }
         nupkgs.addAll(hostedSource.getLastVersionPackages());
-        nupkgs = FilePackageSource.extractLastVersion(nupkgs, true);
+        nupkgs = ClassicPackageSource.extractLastVersion(nupkgs, true);
         return nupkgs;
     }
 
