@@ -12,7 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -188,16 +190,22 @@ public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
         if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
             return false;
         }
-        // Открывает временный файл, копирует его в место постоянного хранения.
-        File tmpDest = new File(rootFolder, nupkgFile.getFileName() + ".tmp");
-        File finalDest = new File(rootFolder, nupkgFile.getFileName());
-        try (ReadableByteChannel src = Channels.newChannel(nupkgFile.getStream());
-                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
-            TempNupkgFile.fastChannelCopy(src, dest);
+        try {
+            for (PushTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
+                pushTrigger.doAction(nupkgFile, this);
+            }
+        } catch (NugetPushException e) {
+            logger.error("Ошибка при обработке afther триггеров", e);
+            return false;
         }
-        if (!renameFile(tmpDest, finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
+        pushPackage(nupkgFile);
+        try {
+            for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
+                pushTrigger.doAction(nupkgFile, this);
+            }
+        } catch (NugetPushException e) {
+            logger.error("Ошибка при обработке afther триггеров", e);
+            return false;
         }
         return true;
     }
@@ -259,5 +267,25 @@ public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
+    }
+
+    /**
+     * Помещает пакет в хранилище
+     *
+     * @param nupkg пакет
+     * @throws IOException ошибка записи
+     */
+    protected void pushPackage(Nupkg nupkg) throws IOException {
+        // Открывает временный файл, копирует его в место постоянного хранения.
+        File tmpDest = new File(rootFolder, nupkg.getFileName() + ".tmp");
+        File finalDest = new File(rootFolder, nupkg.getFileName());
+        try (ReadableByteChannel src = Channels.newChannel(nupkg.getStream());
+                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
+            TempNupkgFile.fastChannelCopy(src, dest);
+        }
+        if (!renameFile(tmpDest, finalDest)) {
+            throw new IOException("Не удалось переименовать файл " + tmpDest
+                    + " в " + finalDest);
+        }
     }
 }
