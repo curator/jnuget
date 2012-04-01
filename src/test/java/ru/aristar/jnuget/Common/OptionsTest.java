@@ -2,10 +2,13 @@ package ru.aristar.jnuget.Common;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
+ * Тест настроек сервера
  *
  * @author sviridov
  */
@@ -65,5 +68,43 @@ public class OptionsTest {
         assertTrue("Xранилище 2 индексируется", options.getStorageOptionsList().get(1).isIndexed());
         assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName"));
         assertNull("Стратегия хранилища 2", options.getStorageOptionsList().get(1).getStrategyOptions());
+    }
+
+    /**
+     * Проверка чтения настроек триггеров из файла.
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testParseTriggerOptions() throws Exception {
+        //GIVEN
+        InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.push.trigger.config.xml");
+        //WHEN 
+        Options options = Options.parse(inputStream);
+        //THEN
+        List<StorageOptions> storageOptions = options.getStorageOptionsList();
+        assertThat("Создан набор настроек для хранилища", storageOptions.size(), equalTo(1));
+        PushStrategyOptions pushStrategyOptions = storageOptions.get(0).getStrategyOptions();
+        assertThat("Создана стратегия фиксации пакета", pushStrategyOptions, is(notNullValue()));
+        assertThat("Созданы настройки триггера, выполняющегося до вставки",
+                pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
+        TriggerOptions beforeTriggerOptions = pushStrategyOptions.getBeforeTriggersOptions().get(0);
+        assertThat("Имя класса триггера", beforeTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_1"));
+        assertThat("Названия свойств триггера",
+                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                equalTo(new String[]{"property_2"}));
+        assertThat("Значения свойств триггера",
+                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                equalTo(new String[]{"value_2"}));
+        assertThat("Созданы настройки триггера, выполняющегося после вставки",
+                pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
+        TriggerOptions aftherTriggerOptions = pushStrategyOptions.getAftherTriggersOptions().get(0);
+        assertThat("Имя класса триггера", aftherTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_2"));
+        assertThat("Названия свойств триггера",
+                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                equalTo(new String[]{"property_3"}));
+        assertThat("Значения свойств триггера",
+                beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
+                equalTo(new String[]{"value_3"}));
     }
 }

@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.Common;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -45,5 +46,13 @@ public class PushStrategyOptions {
             properties = new HashMap<>();
         }
         return properties;
+    }
+
+    public List<TriggerOptions> getAftherTriggersOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public List<TriggerOptions> getBeforeTriggersOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

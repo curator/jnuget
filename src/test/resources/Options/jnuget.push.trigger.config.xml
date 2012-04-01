@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<options>  
+    <storages>
+        <storage class="TEST_CLASS_1" indexed="false">
+            <properties>
+                <property name="folderName" value="TEST_FOLDER_1"/>
+            </properties>
+            <pushStrategy class="PUSH_CLASS_1">
+                <properties>
+                    <property name="property_1" value="value_1"/>
+                </properties> 
+                <before>
+                    <trigger class="TRIGGER_CLASS_1">
+                        <properties>
+                            <property name="property_2" value="value_2"/>
+                        </properties>
+                    </trigger>
+                </before>
+                <after>
+                    <trigger class="TRIGGER_CLASS_2">
+                        <properties>
+                            <property name="property_3" value="value_3"/>
+                        </properties>
+                    </trigger>                    
+                </after>
+            </pushStrategy>
+        </storage>
+    </storages>
+</options>

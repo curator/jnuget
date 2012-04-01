@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.sources.push;
 
 /**
+ * Ошибка помещения пакета в хранилище.
  *
  * @author sviridov
  */
