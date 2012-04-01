@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.sources.push;
 
+import java.util.List;
 import java.util.Objects;
 import ru.aristar.jnuget.files.Nupkg;
 
@@ -47,5 +48,15 @@ public class ApiKeyPushStrategy implements PushStrategy {
      */
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    @Override
+    public List<PushTrigger> getBeforeTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<PushTrigger> getAftherTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

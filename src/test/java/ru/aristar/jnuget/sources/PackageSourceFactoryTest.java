@@ -101,6 +101,43 @@ public class PackageSourceFactoryTest {
     }
 
     /**
+     * Проверка создания стратегии публикации на основе настроек, содержащих
+     * триггеры
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testCreatePushStrategyWithTriggers() throws Exception {
+        //GIVEN
+        PackageSourceFactory sourceFactory = new PackageSourceFactory();
+        //Триггер после помещения пакета
+        final TriggerOptions aftherTriggerOptions = new TriggerOptions();
+        aftherTriggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
+        aftherTriggerOptions.getProperties().put("maxPackageCount", "5");
+        //Триггер до помещения пакета
+        final TriggerOptions beforeTriggerOptions = new TriggerOptions();
+        beforeTriggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
+        beforeTriggerOptions.getProperties().put("maxPackageCount", "15");
+        //Стратегия фиксации
+        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
+        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
+        pushStrategyOptions.getAftherTriggersOptions().add(aftherTriggerOptions);
+        pushStrategyOptions.getBeforeTriggersOptions().add(beforeTriggerOptions);
+        //WHEN
+        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
+        //THEN
+        assertThat("Стратегия фиксации", result, instanceOf(PushStrategy.class));
+        assertThat("Количество созданых before тригеров", result.getBeforeTriggers().size(), equalTo(1));
+        assertThat("Количество созданых afther тригеров", result.getAftherTriggers().size(), equalTo(1));
+        assertThat("Триггер before", result.getBeforeTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
+        RemoveOldVersionTrigger beforeTrigger = (RemoveOldVersionTrigger) result.getBeforeTriggers().get(0);
+        assertThat("Количество пакетов триггера before ", beforeTrigger.getMaxPackageCount(), equalTo(15));
+        assertThat("Триггер afther", result.getAftherTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
+        RemoveOldVersionTrigger aftherTrigger = (RemoveOldVersionTrigger) result.getAftherTriggers().get(0);
+        assertThat("Количество пакетов триггера afther ", aftherTrigger.getMaxPackageCount(), equalTo(5));
+    }
+
+    /**
      * Создание корневого хранилища
      *
      * @throws Exception ошибка в процессе теста

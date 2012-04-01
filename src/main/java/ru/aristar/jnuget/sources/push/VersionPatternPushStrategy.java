@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.sources.push;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
@@ -40,5 +41,15 @@ public class VersionPatternPushStrategy implements PushStrategy {
         String strVersion = version.toString();
         Matcher matcher = pattern.matcher(strVersion);
         return matcher.matches();
+    }
+
+    @Override
+    public List<PushTrigger> getBeforeTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<PushTrigger> getAftherTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

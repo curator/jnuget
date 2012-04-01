@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.sources.push;
 
+import java.util.List;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -44,5 +45,15 @@ public class SimplePushStrategy implements PushStrategy {
     @Override
     public boolean canPush(Nupkg nupkgFile, String apiKey) {
         return isAllow();
+    }
+
+    @Override
+    public List<PushTrigger> getBeforeTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<PushTrigger> getAftherTriggers() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
