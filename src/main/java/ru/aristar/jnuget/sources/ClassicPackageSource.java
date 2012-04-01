@@ -7,35 +7,23 @@ import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.*;
-import ru.aristar.jnuget.sources.push.NugetPushException;
-import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushTrigger;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Хранилище пакетов, использующее стандартную для NuGet конфигурацию
  *
  * @author sviridov
  */
-public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
+public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> implements PackageSource<ClassicNupkg> {
 
     /**
      * Папка с пакетами
      */
     private File rootFolder;
-    /**
-     * Логгер
-     */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
-     * Стратегия помещения пакета в хранилище
-     */
-    private PushStrategy strategy;
 
     /**
      * Устанавливает корневую папку хранилища (если папка не существует -
@@ -186,71 +174,6 @@ public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
     }
 
     @Override
-    public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
-        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
-            return false;
-        }
-        try {
-            for (PushTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
-                pushTrigger.doAction(nupkgFile, this);
-            }
-        } catch (NugetPushException e) {
-            logger.error("Ошибка при обработке afther триггеров", e);
-            return false;
-        }
-        pushPackage(nupkgFile);
-        try {
-            for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
-                pushTrigger.doAction(nupkgFile, this);
-            }
-        } catch (NugetPushException e) {
-            logger.error("Ошибка при обработке afther триггеров", e);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Извлекает информацию о последних версиях всех пакетов
-     *
-     * @param <K> Тип пакета NuGet
-     * @param list общий список всех пакетов
-     * @param ignoreCase нужно ли игнорировать регистр символов
-     * @return список последних версий пакетов
-     */
-    public static <K extends Nupkg> Collection<K> extractLastVersion(
-            Collection<K> list, boolean ignoreCase) {
-        Map<String, K> map = new HashMap<>();
-        for (K pack : list) {
-            String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
-            // Указанный пакет еще учитывался
-            if (!map.containsKey(packageId)) {
-                map.put(packageId, pack);
-            } else { // Пакет уже попадался, сравниваем версии
-                Version saved = map.get(packageId).getVersion();
-                // Версия пакета новее, чем сохраненная
-                if (saved.compareTo(pack.getVersion()) < 0) {
-                    map.put(packageId, pack);
-                }
-            }
-        }
-        return map.values();
-    }
-
-    @Override
-    public PushStrategy getPushStrategy() {
-        if (strategy == null) {
-            strategy = new SimplePushStrategy(false);
-        }
-        return strategy;
-    }
-
-    @Override
-    public void setPushStrategy(PushStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    @Override
     public void removePackage(String id, Version version) {
         File pack = new File(rootFolder, id + "." + version.toString() + Nupkg.DEFAULT_EXTENSION);
         if (!pack.exists()) {
@@ -269,12 +192,7 @@ public class ClassicPackageSource implements PackageSource<ClassicNupkg> {
     public void refreshPackage(Nupkg nupkg) {
     }
 
-    /**
-     * Помещает пакет в хранилище
-     *
-     * @param nupkg пакет
-     * @throws IOException ошибка записи
-     */
+    @Override
     protected void pushPackage(Nupkg nupkg) throws IOException {
         // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkg.getFileName() + ".tmp");
