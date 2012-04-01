@@ -34,6 +34,13 @@ public class TriggerOptions {
     }
 
     /**
+     * @param className имя класса триггера
+     */
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    /**
      * @return значение свойств тгриггера
      */
     public Map<String, String> getProperties() {

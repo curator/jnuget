@@ -26,7 +26,7 @@ public class RemoveOldVersionTrigger implements PushTrigger {
      * @return Максимально допустимое число пакетов с одинаковым идентификатором
      * в хранилище.
      */
-    private int getMaxPackageCount() {
+    public int getMaxPackageCount() {
         return maxPackageCount;
     }
 
@@ -44,7 +44,7 @@ public class RemoveOldVersionTrigger implements PushTrigger {
      * версиям
      */
     private static class NupkgReverseVersionComparator implements Comparator<Nupkg> {
-        
+
         @Override
         public int compare(Nupkg o1, Nupkg o2) {
             return (-1) * o1.getVersion().compareTo(o2.getVersion());
@@ -67,7 +67,7 @@ public class RemoveOldVersionTrigger implements PushTrigger {
         Collections.sort(result, new NupkgReverseVersionComparator());
         return result;
     }
-    
+
     @Override
     public void doAction(Nupkg nupkg, PackageSource<? extends Nupkg> packageSource) throws NugetPushException {
         Collection<? extends Nupkg> nupkgs = packageSource.getPackages(nupkg.getId());

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Common.*;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -173,6 +174,16 @@ public class PackageSourceFactory {
         setObjectProperties(strategyOptions.getProperties(), newSource);
         logger.info("Стратегия создана");
         return newSource;
+    }
+
+    /**
+     * Создает триггер фиксации пакета
+     *
+     * @param triggerOptions настройки триггера
+     * @return триггер
+     */
+    protected PushTrigger createPushTrigger(TriggerOptions triggerOptions) {
+        throw new UnsupportedOperationException("Метод не реализован");
     }
 
     /**

@@ -1,15 +1,14 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Test;
+import static org.hamcrest.CoreMatchers.*;
 import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.PushStrategyOptions;
 import ru.aristar.jnuget.Common.StorageOptions;
-import ru.aristar.jnuget.sources.push.ApiKeyPushStrategy;
-import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
+import ru.aristar.jnuget.Common.TriggerOptions;
+import ru.aristar.jnuget.sources.push.*;
 
 /**
  *
@@ -56,6 +55,29 @@ public class PackageSourceFactoryTest {
         //THEN
         assertEquals("Класс стратегии", ApiKeyPushStrategy.class, result.getClass());
         assertEquals("Ключ фиксации", "TEST_API_KEY", ((ApiKeyPushStrategy) result).getApiKey());
+    }
+
+    /**
+     * Проверка создания триггеров стратегии фиксации
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testCreatePushStrategyTriggers() throws Exception {
+        //GIVEN
+        PackageSourceFactory sourceFactory = new PackageSourceFactory();
+        final TriggerOptions triggerOptions = new TriggerOptions();
+        triggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
+        triggerOptions.getProperties().put("maxPackageCount", "5");
+        //WHEN
+        PushTrigger pushTrigger = sourceFactory.createPushTrigger(triggerOptions);
+        //THEN
+        assertThat("Триггер создан", pushTrigger, is(notNullValue()));
+        assertThat("Созданый триггер", pushTrigger, instanceOf(RemoveOldVersionTrigger.class));
+        RemoveOldVersionTrigger removeOldVersionTrigger = (RemoveOldVersionTrigger) pushTrigger;
+        assertThat("Количество пакетов, разрешенных для сохранения",
+                removeOldVersionTrigger.getMaxPackageCount(),
+                equalTo(1));
     }
 
     /**
