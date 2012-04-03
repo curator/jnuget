@@ -3,6 +3,7 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -21,6 +22,7 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  *
@@ -86,6 +88,8 @@ public class ClassicPackageSourceTest {
 
     /**
      * Удаление тестового каталога
+     *
+     * @throws IOException Ошибка удаления тестового каталога
      */
     @AfterClass
     public static void removeTestFolder() throws IOException {
@@ -138,5 +142,19 @@ public class ClassicPackageSourceTest {
         });
         //THEN 
         assertArrayEquals("Должны возвращаться только последние версии", new Nupkg[]{lastA, lastB}, resArr);
+    }
+
+    /**
+     * Проверка срабатывания триггера при помещении пакета в хранилище
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testProcessTrigger() throws Exception {
+        //GIVEN
+        ClassicPackageSource classicPackageSource = new ClassicPackageSource(testFolder);
+        SimplePushStrategy simplePushStrategy = new SimplePushStrategy(true);
+        classicPackageSource.setPushStrategy(simplePushStrategy);
+        fail("Тест не реализован");
     }
 }
