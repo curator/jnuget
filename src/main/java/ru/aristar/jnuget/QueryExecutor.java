@@ -13,6 +13,7 @@ import ru.aristar.jnuget.sources.PackageSource;
 class QueryExecutor {
 
     //TODO filter=((((((tolower(Id) eq 'neolant.projectwise.api') or (tolower(Id) eq 'neolant.projectwise.api')) or (tolower(Id) eq 'neolant.projectwise.controls')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion
+    //TODO Добавить поддержку searchTerm='nug'
     
     public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
         if (filter == null || "".equals(filter)) {
