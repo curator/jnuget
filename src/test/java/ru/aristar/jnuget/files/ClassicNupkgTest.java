@@ -101,4 +101,17 @@ public class ClassicNupkgTest {
         Assert.assertEquals("Неправильный версия пакета", Version.parse(versionStr), result.getVersion());
         Assert.assertEquals("Неправильное имя файла", "NUnit.2.5.9.10348.nupkg", result.getFileName());
     }
+
+    /**
+     * Проверка получения даты обновления файла
+     *
+     * @throws NugetFormatException файл имеет некорректный формат
+     */
+    @Test
+    public void testGetDateUpdated() throws NugetFormatException {
+        //WHEN
+        ClassicNupkg classicNupkg = new ClassicNupkg(packageFiles[0]);
+        //THEN
+        assertNotNull("Дата обновления файла не нулевая", classicNupkg.getUpdated());
+    }
 }

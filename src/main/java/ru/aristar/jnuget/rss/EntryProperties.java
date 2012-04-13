@@ -343,7 +343,7 @@ public class EntryProperties {
      */
     private String language;
     /**
-     * Дата публиуации
+     * Дата публикации пакета
      */
     private Date published;
     /**
@@ -562,10 +562,16 @@ public class EntryProperties {
         this.language = language;
     }
 
+    /**
+     * @return дата публикации пакета
+     */
     public Date getPublished() {
         return published;
     }
 
+    /**
+     * @param published дата публикации пакета
+     */
     public void setPublished(Date published) {
         this.published = published;
     }

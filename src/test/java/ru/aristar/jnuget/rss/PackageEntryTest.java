@@ -1,22 +1,33 @@
 package ru.aristar.jnuget.rss;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static ru.aristar.common.TestHelper.assertOneOfAreEquals;
 import ru.aristar.jnuget.NugetContext;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
+ * Тесты для RSS вложения с информацией о пакете
  *
  * @author sviridov
  */
 public class PackageEntryTest {
 
+    /**
+     * Проверка создания RSS вложения на основе данных пакета
+     *
+     * @throws Exception ошибка в процессе теста
+     */
     @Test
     public void testConvertNuPkgToEntry() throws Exception {
         //GIVEN
@@ -52,5 +63,29 @@ public class PackageEntryTest {
         assertNull("Контент схема", entry.getContent().getScheme());
         assertEquals("Контент источник", "http://localhost:8090/download/NUnit/2.5.9.10348", entry.getContent().getSrc());
         assertEquals("Контент тип", "application/zip", entry.getContent().getType());
+    }
+
+    /**
+     * Проверка свойств вложения RSS, созданных на основе пакета
+     *
+     * @throws IOException ошибка чтения тестового пакета
+     * @throws NugetFormatException тестовый пакет не соответствует стандарту
+     * @throws URISyntaxException тестовый URL ресура не соответствует формату
+     * @throws NoSuchAlgorithmException в системе не установлены библиотеки
+     * вычисления HASH значения
+     */
+    @Test
+    public void testConvertNupkgToEntryProperties() throws IOException,
+            NugetFormatException, URISyntaxException, NoSuchAlgorithmException {
+        //GIVEN
+        InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
+        final Date date = new Date();
+        TempNupkgFile nupkgFile = new TempNupkgFile(inputStream, date);
+        //WHEN
+        NugetContext context = new NugetContext(new URI("http://localhost:8090/"));
+        EntryProperties properties = context.createPackageEntry(nupkgFile).getProperties();
+        //THEN
+        assertThat("Свойства RSS вложения созданы", properties, is(notNullValue()));
+        assertThat("Дата публикации пакета", properties.getPublished(), is(equalTo(date)));
     }
 }

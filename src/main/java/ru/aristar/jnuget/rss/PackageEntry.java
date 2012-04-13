@@ -25,7 +25,6 @@ import ru.aristar.jnuget.files.NuspecFile;
     "category", "content", "properties"})
 public class PackageEntry {
 
-    protected NugetContext nugetContext;
     /**
      * Заголовок вложения
      */
@@ -53,10 +52,18 @@ public class PackageEntry {
     private EntryProperties properties;
     @XmlElement(name = "link", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     private List<Link> links;
-    @XmlElement(name = "category", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    /**
+     * Категория RSS вложения
+     */
     private AtomElement category;
-    @XmlElement(name = "content", namespace = PackageFeed.ATOM_XML_NAMESPACE)
+    /**
+     * Указатель на содержимое (архив) пакета
+     */
     private AtomElement content;
+    /**
+     * Файл спецификации пакета
+     */
+    private NuspecFile nuspecFile;
 
     private String getCombineIdAndVersion() {
         return "(Id='" + getTitle() + "',Version='"
@@ -69,8 +76,8 @@ public class PackageEntry {
     public PackageEntry() {
     }
 
-    public PackageEntry(Nupkg nupkgFile) {
-        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), null);
+    public PackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+        this(nupkgFile, null);
     }
 
     public PackageEntry(Nupkg nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
@@ -81,22 +88,15 @@ public class PackageEntry {
     }
 
     public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
-        this.nugetContext = nugetContext;
+        this.nuspecFile = nuspecFile;
         this.title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
         this.updated = updated;
         this.author = new Author(nuspecFile.getAuthors());
-        this.getLinks().add(new Link("edit-media", "Package",
+        PackageEntry.this.getLinks().add(new Link("edit-media", "Package",
                 "Packages" + getCombineIdAndVersion() + "/$value"));
-        this.getLinks().add(new Link("edit", "Package",
+        PackageEntry.this.getLinks().add(new Link("edit", "Package",
                 "Packages" + getCombineIdAndVersion()));
-        this.category = new AtomElement();
-        category.setTerm("NuGet.Server.DataServices.Package");
-        category.setScheme("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
-        this.content = new AtomElement();
-        content.setType("application/zip");
-        content.setSrc(getRootUri() + "download/" + title.value + "/"
-                + nuspecFile.getVersion());
     }
 
     /**
@@ -108,11 +108,11 @@ public class PackageEntry {
                 + getProperties().getVersion().toString() + "')";
     }
 
-    public String getRootUri() {
-        if (nugetContext == null) {
-            return null;
-        }
-        return nugetContext.getRootUri().toString();
+    /**
+     * @return строковое значение корневого URI хранилища
+     */
+    protected String getRootUri() {
+        return null;
     }
 
     public String getTitle() {
@@ -161,12 +161,45 @@ public class PackageEntry {
         return links;
     }
 
+    /**
+     * @return категория RSS вложения
+     */
+    @XmlElement(name = "category", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public AtomElement getCategory() {
+        if (category == null) {
+            this.category = new AtomElement();
+            category.setTerm("NuGet.Server.DataServices.Package");
+            category.setScheme("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
+        }
         return category;
     }
 
+    /**
+     * @param category категория RSS вложения
+     */
+    protected void setCategory(AtomElement category) {
+        this.category = category;
+    }
+
+    /**
+     * @return указатель на содержимое (архив) пакета
+     */
+    @XmlElement(name = "content", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public AtomElement getContent() {
+        if (content == null) {
+            this.content = new AtomElement();
+            content.setType("application/zip");
+            content.setSrc(getRootUri() + "download/" + title.value + "/"
+                    + nuspecFile.getVersion());
+        }
         return content;
+    }
+
+    /**
+     * @param content указатель на содержимое (архив) пакета
+     */
+    protected void setContent(AtomElement content) {
+        this.content = content;
     }
 
     /**

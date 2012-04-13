@@ -49,7 +49,7 @@ public class NugetContext {
      * @throws IOException ошибка чтения пакета
      */
     public PackageEntry createPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
-        return new PackageEntry(nupkgFile, this);
+        return new ContextPackageEntry(nupkgFile);
     }
 
     /**
@@ -64,11 +64,31 @@ public class NugetContext {
     /**
      * Преобразователь в RSS, содержащий контекст
      */
-    public class ContextNuPkgToRssTransformer extends NuPkgToRssTransformer {
+    private class ContextNuPkgToRssTransformer extends NuPkgToRssTransformer {
 
         @Override
         protected NugetContext getContext() {
             return NugetContext.this;
+        }
+    }
+
+    /**
+     * RSS вложение, содержащее контекст
+     */
+    private class ContextPackageEntry extends PackageEntry {
+
+        /**
+         * @param nupkgFile пакет на основе кторого создается RSS вложение
+         * @throws NoSuchAlgorithmException не указан алгоритм вычисления HASH
+         * @throws IOException ошибка чтения пакета
+         */
+        public ContextPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+            super(nupkgFile);
+        }
+
+        @Override
+        protected String getRootUri() {
+            return NugetContext.this.rootUri.toString();
         }
     }
 }
