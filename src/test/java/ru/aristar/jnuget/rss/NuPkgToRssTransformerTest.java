@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.Version;
 
 /**
@@ -36,7 +37,7 @@ public class NuPkgToRssTransformerTest {
     @Test
     public void testMarkLastVersion() throws Exception {
         //GIVEN        
-        NuPkgToRssTransformer transformer = new NuPkgToRssTransformer(null);
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         ArrayList<PackageEntry> entrys = new ArrayList<>();
         PackageEntry firstA = createPackageEntry("A", "1.2.3");
         entrys.add(firstA);
@@ -68,7 +69,7 @@ public class NuPkgToRssTransformerTest {
         //GIVEN
         List<Object> sources = new ArrayList<>();
         sources.addAll(Collections.nCopies(10, new Object()));
-        NuPkgToRssTransformer transformer = new NuPkgToRssTransformer(null);
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
         //THEN 
@@ -85,10 +86,21 @@ public class NuPkgToRssTransformerTest {
         //GIVEN
         List<Object> sources = new ArrayList<>();
         sources.add(new Object());
-        NuPkgToRssTransformer transformer = new NuPkgToRssTransformer(null);
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
         //THEN 
         assertEquals("Размер обрезанного списка", 1, result.size());
+    }
+
+    /**
+     * Преобразователь пакетов в RSS, не поддерживающий операции с контекстом
+     */
+    private static class NuPkgToRssTransformerNoContext extends NuPkgToRssTransformer {
+
+        @Override
+        protected NugetContext getContext() {
+            throw new UnsupportedOperationException("Тестовый класс не поддерживает этот метод");
+        }
     }
 }

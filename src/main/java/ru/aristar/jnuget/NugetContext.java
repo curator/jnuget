@@ -58,6 +58,17 @@ public class NugetContext {
      * @return преобразователь пакетов в RSS ленту
      */
     public NuPkgToRssTransformer createToRssTransformer() {
-        return new NuPkgToRssTransformer(this);
+        return new ContextNuPkgToRssTransformer();
+    }
+
+    /**
+     * Преобразователь в RSS, содержащий контекст
+     */
+    public class ContextNuPkgToRssTransformer extends NuPkgToRssTransformer {
+
+        @Override
+        protected NugetContext getContext() {
+            return NugetContext.this;
+        }
     }
 }

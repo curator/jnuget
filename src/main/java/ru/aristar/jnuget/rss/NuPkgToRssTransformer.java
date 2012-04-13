@@ -10,23 +10,22 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class NuPkgToRssTransformer {
+public abstract class NuPkgToRssTransformer {
 
     /**
      * Логгер
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    /**
-     * Контекст сервера
-     */
-    private final NugetContext context;
 
     /**
-     *
-     * @param context контекст сервера
+     * @return Контекст сервера
      */
-    public NuPkgToRssTransformer(NugetContext context) {
-        this.context = context;
+    protected abstract NugetContext getContext();
+
+    /**
+     * Конструктор по умолчанию
+     */
+    public NuPkgToRssTransformer() {
     }
 
     /**
@@ -41,14 +40,14 @@ public class NuPkgToRssTransformer {
     public PackageFeed transform(Collection<Nupkg> files, String orderBy, int skip, int top) {
         //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
         PackageFeed feed = new PackageFeed();
-        feed.setId(context.getRootUri().toString());
+        feed.setId(getContext().getRootUri().toString());
         feed.setUpdated(new Date());
         feed.setTitle("Packages");
         List<PackageEntry> packageEntrys = new ArrayList<>();
 
         for (Nupkg nupkg : files) {
             try {
-                PackageEntry entry = context.createPackageEntry(nupkg);
+                PackageEntry entry = getContext().createPackageEntry(nupkg);
                 entry.getProperties().setIsLatestVersion(Boolean.FALSE);
                 addServerInformationInToEntry(entry);
                 packageEntrys.add(entry);
@@ -68,28 +67,35 @@ public class NuPkgToRssTransformer {
     /**
      * Безопасно уменьшает в размерах список пакетов
      *
+     * @param <T> тип объектов, для которых производится обрезание списка
      * @param skip количество пакетов, которые следует пропустить с начала
      * списка
      * @param top количество пакетов, не более которого будет возвращено в
      * обрезаном списке
-     * @param packageEntrys исходный список
+     * @param objects исходный список
      * @return обрезанный список
      */
-    protected <T> List<T> cutPackageList(final int skip, final int top, List<T> packageEntrys) {
-        if (packageEntrys == null || packageEntrys.isEmpty()) {
-            return packageEntrys;
+    protected <T> List<T> cutPackageList(final int skip, final int top, List<T> objects) {
+        if (objects == null || objects.isEmpty()) {
+            return objects;
         }
         try {
-            int newSkip = normalizeSkip(skip, packageEntrys.size());
-            int newTop = normalizeTop(skip, packageEntrys.size(), top);
-            return packageEntrys.subList(skip, newSkip + newTop);
+            int newSkip = normalizeSkip(skip, objects.size());
+            int newTop = normalizeTop(skip, objects.size(), top);
+            return objects.subList(skip, newSkip + newTop);
         } catch (Exception e) {
             logger.error("Ошибка получения подсписка пакетов: "
-                    + "skip={} top={} size={}", new Object[]{skip, top, packageEntrys.size()});
+                    + "skip={} top={} size={}", new Object[]{skip, top, objects.size()});
             throw e;
         }
     }
 
+    /**
+     * Добавляет информацию, доступную только серверу в пакет (рейтинг и число
+     * скачиваний)
+     *
+     * @param entry
+     */
     private void addServerInformationInToEntry(PackageEntry entry) {
         EntryProperties properties = entry.getProperties();
         //TODO Разобраться что это за URL
