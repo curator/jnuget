@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import ru.aristar.jnuget.Author;
-import ru.aristar.jnuget.NugetContext;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 
@@ -76,31 +75,28 @@ public class PackageEntry {
     public PackageEntry() {
     }
 
+    /**
+     * @param nupkgFile файл пакета
+     * @throws NoSuchAlgorithmException не установлены библиотеки подсчета Hash
+     * @throws IOException ошибка чтения файла пакета
+     */
     public PackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
-        this(nupkgFile, null);
-    }
-
-    public PackageEntry(Nupkg nupkgFile, NugetContext context) throws NoSuchAlgorithmException, IOException {
-        this(nupkgFile.getNuspecFile(), nupkgFile.getUpdated(), context);
-        this.getProperties().setPackageHash(nupkgFile.getHash().toString());
-        this.getProperties().setPackageSize(nupkgFile.getSize());
-        this.getProperties().setPublished(nupkgFile.getUpdated());
-    }
-
-    public PackageEntry(NuspecFile nuspecFile, Date updated, NugetContext nugetContext) {
-        this.nuspecFile = nuspecFile;
+        this.nuspecFile = nupkgFile.getNuspecFile();
         this.title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
-        this.updated = updated;
+        this.updated = nupkgFile.getUpdated();
         this.author = new Author(nuspecFile.getAuthors());
         PackageEntry.this.getLinks().add(new Link("edit-media", "Package",
                 "Packages" + getCombineIdAndVersion() + "/$value"));
         PackageEntry.this.getLinks().add(new Link("edit", "Package",
                 "Packages" + getCombineIdAndVersion()));
+        this.getProperties().setPackageHash(nupkgFile.getHash().toString());
+        this.getProperties().setPackageSize(nupkgFile.getSize());
+        this.getProperties().setPublished(nupkgFile.getUpdated());
     }
 
     /**
-     * Идентификатор вложения
+     * @return идентификатор вложения
      */
     @XmlElement(name = "id", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     public String getId() {

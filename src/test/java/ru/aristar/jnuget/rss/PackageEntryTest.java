@@ -87,5 +87,7 @@ public class PackageEntryTest {
         //THEN
         assertThat("Свойства RSS вложения созданы", properties, is(notNullValue()));
         assertThat("Дата публикации пакета", properties.getPublished(), is(equalTo(date)));
+        assertThat("Хеш пакета", properties.getPackageHash(), is(equalTo(nupkgFile.getHash().toString())));
+        assertThat("Размер пакета", properties.getPackageSize(), is(equalTo(nupkgFile.getSize())));
     }
 }
