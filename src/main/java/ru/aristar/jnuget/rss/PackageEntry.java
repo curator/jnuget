@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import ru.aristar.jnuget.Author;
+import ru.aristar.jnuget.files.Hash;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 
@@ -81,18 +82,28 @@ public class PackageEntry {
      * @throws IOException ошибка чтения файла пакета
      */
     public PackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
-        this.nuspecFile = nupkgFile.getNuspecFile();
+        this(nupkgFile.getNuspecFile(), nupkgFile.getHash(), nupkgFile.getSize(), nupkgFile.getUpdated());
+    }
+
+    /**
+     * @param nuspecFile Спецификация пакета
+     * @param packageHash HASH код пакета
+     * @param packageSize размер пакета
+     * @param updateDate дата обновления пакета
+     */
+    public PackageEntry(NuspecFile nuspecFile, Hash packageHash, Long packageSize, Date updateDate) {
+        this.nuspecFile = nuspecFile;
         this.title = new Title(nuspecFile.getId());
         getProperties().setNuspec(nuspecFile);
-        this.updated = nupkgFile.getUpdated();
+        this.updated = updateDate;
         this.author = new Author(nuspecFile.getAuthors());
         PackageEntry.this.getLinks().add(new Link("edit-media", "Package",
                 "Packages" + getCombineIdAndVersion() + "/$value"));
         PackageEntry.this.getLinks().add(new Link("edit", "Package",
                 "Packages" + getCombineIdAndVersion()));
-        this.getProperties().setPackageHash(nupkgFile.getHash().toString());
-        this.getProperties().setPackageSize(nupkgFile.getSize());
-        this.getProperties().setPublished(nupkgFile.getUpdated());
+        this.getProperties().setPackageHash(packageHash.toString());
+        this.getProperties().setPackageSize(packageSize);
+        this.getProperties().setPublished(updateDate);
     }
 
     /**

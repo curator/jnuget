@@ -47,7 +47,7 @@ public class RemoveOldVersionTrigger implements PushTrigger {
 
         @Override
         public int compare(Nupkg o1, Nupkg o2) {
-            return (-1) * o1.getVersion().compareTo(o2.getVersion());
+            return o2.getVersion().compareTo(o1.getVersion());
         }
     }
 

@@ -48,7 +48,7 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>[0.25,)</version>
+                <version>0.26</version>
                 <configuration>
                     <inScopeClasses>
                         <param>ru.aristar.jnuget.*</param>
