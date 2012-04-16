@@ -3,26 +3,28 @@ package ru.aristar.jnuget.sources;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 import org.apache.commons.io.FileUtils;
+import static org.hamcrest.CoreMatchers.*;
+import org.hamcrest.Description;
 import org.jmock.Expectations;
+import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
+import org.jmock.api.Action;
+import org.jmock.api.Invocation;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -114,6 +116,33 @@ public class ClassicPackageSourceTest {
     }
 
     /**
+     * Если публикация запрещена - пакет не публикуется
+     *
+     * @throws IOException ошибка чтения тестового пакета
+     * @throws NugetFormatException ошибка в формате тестового пакета
+     */
+    @Test
+    public void testWhenNotAllow() throws IOException, NugetFormatException {
+        //GIVEN 
+        File tmpFolder = File.createTempFile("NotAllow", "NotAllow");
+        File tmpTestFolder = new File(tmpFolder, "NotAllow");
+        tmpTestFolder.mkdirs();
+        try {
+            ClassicPackageSource classicPackageSource = new ClassicPackageSource(tmpTestFolder);
+            SimplePushStrategy simplePushStrategy = new SimplePushStrategy(false);
+            classicPackageSource.setPushStrategy(simplePushStrategy);
+            TempNupkgFile nupkgFile = new TempNupkgFile(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"));
+            //WHEN
+            boolean success = classicPackageSource.pushPackage(nupkgFile, null);
+            //THEN
+            assertThat("Пакет опубликован", success, is(equalTo(false)));
+            assertThat("В тестовом каталоге не создано пакетов", tmpTestFolder.list(), is(nullValue()));
+        } finally {
+            FileUtils.deleteDirectory(tmpTestFolder);
+        }
+    }
+
+    /**
      * Проверка метода, извлекающего из списка идентификаторов последние версии
      * пакетов
      *
@@ -151,12 +180,62 @@ public class ClassicPackageSourceTest {
      * @throws Exception ошибка в процессе теста
      */
     @Test
-    @Ignore
     public void testProcessTrigger() throws Exception {
         //GIVEN
-        ClassicPackageSource classicPackageSource = new ClassicPackageSource(testFolder);
+        final ClassicPackageSource classicPackageSource = new ClassicPackageSource(testFolder);
         SimplePushStrategy simplePushStrategy = new SimplePushStrategy(true);
         classicPackageSource.setPushStrategy(simplePushStrategy);
-        fail("Тест не реализован");
+        List<Nupkg> pushedPackages = new ArrayList<>();
+        //Пакет
+        final Nupkg nupkg = context.mock(Nupkg.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nupkg).getFileName();
+        expectations.will(returnValue("NUnit.2.5.9.10348.nupkg"));
+        expectations.atLeast(0).of(nupkg).getStream();
+        expectations.will(returnValue(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg")));
+        //Триггер
+        final PushTrigger trigger = context.mock(PushTrigger.class);
+        expectations.atLeast(0).of(trigger).doAction(nupkg, classicPackageSource);
+        expectations.will(new CallBackAction(pushedPackages));
+
+        context.checking(expectations);
+        simplePushStrategy.getBeforeTriggers().add(trigger);
+
+        //WHEN
+        classicPackageSource.pushPackage(nupkg, null);
+        assertArrayEquals("Пакеты для которых вызывался триггер", new Nupkg[]{nupkg}, pushedPackages.toArray(new Nupkg[0]));
+
+    }
+
+    /**
+     * Действие, выполняемое при срабатывание триггера
+     */
+    protected class CallBackAction implements Action {
+
+        /**
+         * Список для добавления удаленных версий
+         */
+        public final List<Nupkg> packages;
+
+        /**
+         * @param packages список, в который помещаются пакеты, для которых
+         * вызывался метод
+         */
+        public CallBackAction(List<Nupkg> packages) {
+            this.packages = packages;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("Собирает список вызовов метода в коллекцию");
+        }
+
+        @Override
+        public Object invoke(Invocation invocation) throws Throwable {
+            Object firstArgument = invocation.getParameter(0);
+            Nupkg nupkg = (Nupkg) firstArgument;
+            packages.add(nupkg);
+            return null;
+        }
     }
 }
