@@ -24,10 +24,12 @@ import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
+ * Тесты классического (все пакеты в одной папке) хранилища NuGet
  *
  * @author sviridov
  */
@@ -52,9 +54,9 @@ public class ClassicPackageSourceTest {
      * @param id идентификатор пакета
      * @param version версия пакета
      * @return идентификатор фала пакета
-     * @throws Exception некорректный формат версии
+     * @throws NugetFormatException некорректный формат версии
      */
-    private Nupkg createNupkg(final String id, final String version) throws Exception {
+    private Nupkg createNupkg(final String id, final String version) throws NugetFormatException {
         final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
 
@@ -72,7 +74,7 @@ public class ClassicPackageSourceTest {
     /**
      * Создание тестового каталога и наполнение его файлами
      *
-     * @throws IOException
+     * @throws IOException Ошибка копирования файла пкета
      */
     @BeforeClass
     public static void createTestFolder() throws IOException {
@@ -146,10 +148,10 @@ public class ClassicPackageSourceTest {
      * Проверка метода, извлекающего из списка идентификаторов последние версии
      * пакетов
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws NugetFormatException некорректный формат версии в тестовых данных
      */
     @Test
-    public void testGetLastVersions() throws Exception {
+    public void testGetLastVersions() throws NugetFormatException {
         //GIVEN
         Collection<Nupkg> idList = new ArrayList<>();
         idList.add(createNupkg("A", "1.1.1"));
@@ -177,10 +179,11 @@ public class ClassicPackageSourceTest {
     /**
      * Проверка срабатывания триггера при помещении пакета в хранилище
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка доступа к тестовому пакету
+     * @throws NugetPushException ошибка публикации пакета в хранилище
      */
     @Test
-    public void testProcessTrigger() throws Exception {
+    public void testProcessTrigger() throws IOException, NugetPushException {
         //GIVEN
         final ClassicPackageSource classicPackageSource = new ClassicPackageSource(testFolder);
         SimplePushStrategy simplePushStrategy = new SimplePushStrategy(true);
@@ -195,7 +198,7 @@ public class ClassicPackageSourceTest {
         expectations.will(returnValue(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg")));
         //Триггер
         final PushTrigger trigger = context.mock(PushTrigger.class);
-        expectations.atLeast(0).of(trigger).doAction(nupkg, classicPackageSource);
+        expectations.one(trigger).doAction(nupkg, classicPackageSource);
         expectations.will(new CallBackAction(pushedPackages));
 
         context.checking(expectations);
