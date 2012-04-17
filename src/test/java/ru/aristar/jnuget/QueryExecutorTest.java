@@ -2,15 +2,17 @@ package ru.aristar.jnuget;
 
 import java.util.Arrays;
 import java.util.Collection;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import org.jmock.Expectations;
+import static org.jmock.Expectations.equal;
+import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
-import static org.jmock.Expectations.*;
-import ru.aristar.jnuget.files.NugetFormatException;
 
 /**
  * Тест класса, ограничивающего выборку пакетов

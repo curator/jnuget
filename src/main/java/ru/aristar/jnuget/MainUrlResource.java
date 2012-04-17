@@ -30,6 +30,9 @@ public class MainUrlResource {
      * Логгер
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Контекст публикации сервиса
+     */
     @Context
     private UriInfo context;
 

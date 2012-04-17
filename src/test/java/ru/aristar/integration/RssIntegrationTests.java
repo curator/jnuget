@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
@@ -61,10 +62,11 @@ public class RssIntegrationTests {
     /**
      * Корневой URL содержит страницу с общей информацией
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка чтения данных из сокета
+     * @throws SAXException ошибка распознования XML
      */
     @Test
-    public void testGetRootPage() throws Exception {
+    public void testGetRootPage() throws IOException, SAXException {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
@@ -76,10 +78,11 @@ public class RssIntegrationTests {
     /**
      * Тест получения заголовка RSS со списком пакетов
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка чтения данных из сокета
+     * @throws SAXException ошибка распознования XML
      */
     @Test
-    public void testGetPackageList() throws Exception {
+    public void testGetPackageList() throws IOException, SAXException {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
@@ -91,10 +94,11 @@ public class RssIntegrationTests {
     /**
      * Тест получения корневого XML
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка чтения данных из сокета
+     * @throws SAXException ошибка распознования XML
      */
     @Test
-    public void testGetMainXml() throws Exception {
+    public void testGetMainXml() throws IOException, SAXException {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
@@ -110,10 +114,11 @@ public class RssIntegrationTests {
     /**
      * Тест получения записи о пакете
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка чтения данных из сокета
+     * @throws SAXException ошибка распознования XML
      */
     @Test
-    public void testGetPackageEntry() throws Exception {
+    public void testGetPackageEntry() throws IOException, SAXException {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
@@ -125,10 +130,11 @@ public class RssIntegrationTests {
     /**
      * Тест получения количества пакетов
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws IOException ошибка чтения данных из сокета
+     * @throws SAXException ошибка распознования XML
      */
     @Test
-    public void testGetPackageCount() throws Exception {
+    public void testGetPackageCount() throws IOException, SAXException {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
