@@ -94,17 +94,12 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
             logger.warn("Не удалось получить пакеты из удаленного хранилища", e);
         }
         nupkgs.addAll(hostedSource.getLastVersionPackages());
-        nupkgs = ClassicPackageSource.extractLastVersion(nupkgs, true);
+        nupkgs = ClassicPackageSource.extractLastVersion(nupkgs);
         return nupkgs;
     }
 
     @Override
     public Collection<Nupkg> getPackages(String id) {
-        return getPackages(id, true);
-    }
-
-    @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
         HashMap<Version, Nupkg> packages = new HashMap<>();
         try {
             for (RemoteNupkg remoteNupkg : remoteSource.getPackages(id)) {
@@ -121,11 +116,6 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public Nupkg getLastVersionPackage(String id) {
-        return getLastVersionPackage(id, true);
-    }
-
-    @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
         Collection<Nupkg> nupkgs = getPackages(id);
         if (nupkgs == null || nupkgs.isEmpty()) {
             return null;
@@ -141,11 +131,6 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public MavenNupkg getPackage(String id, Version version) {
-        return getPackage(id, version, true);
-    }
-
-    @Override
-    public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
         MavenNupkg nupkg = hostedSource.getPackage(id, version);
         if (nupkg == null) {
             try {

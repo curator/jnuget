@@ -80,24 +80,11 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
 
     @Override
     public Collection<MavenNupkg> getPackages(String id) {
-        return getPackages(id, true);
-    }
-
-    @Override
-    public Collection<MavenNupkg> getPackages(String id, boolean ignoreCase) {
-        if (ignoreCase) {
-            id = id.toLowerCase();
-        }
-        return getPackagesById(id);
+        return getPackagesById(id.toLowerCase());
     }
 
     @Override
     public MavenNupkg getLastVersionPackage(String id) {
-        return getLastVersionPackage(id, true);
-    }
-
-    @Override
-    public MavenNupkg getLastVersionPackage(String id, boolean ignoreCase) {
         File idDir = new File(rootFolder, id);
         MavenNupkg lastVersion = null;
         for (File versionDir : idDir.listFiles()) {
@@ -115,11 +102,6 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
 
     @Override
     public MavenNupkg getPackage(String id, Version version) {
-        return getPackage(id, version, true);
-    }
-
-    @Override
-    public MavenNupkg getPackage(String id, Version version, boolean ignoreCase) {
         File idDir = new File(rootFolder, id.toLowerCase());
         if (idDir.exists()) {
             for (File versionDir : idDir.listFiles()) {

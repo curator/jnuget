@@ -69,7 +69,7 @@ public class QueryExecutor {
                 String field = matcher.group(2);
                 String condition = matcher.group(3);
                 String value = matcher.group(4);
-                return packageSource.getPackages(value, true);
+                return packageSource.getPackages(value);
             }
         } else if (filter.toLowerCase().startsWith("islatestversion")) {
             return packageSource.getLastVersionPackages();

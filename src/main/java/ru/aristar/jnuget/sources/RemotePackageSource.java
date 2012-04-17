@@ -86,11 +86,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     @Override
     public RemoteNupkg getLastVersionPackage(String id) {
-        return getLastVersionPackage(id, true);
-    }
-
-    @Override
-    public RemoteNupkg getLastVersionPackage(String id, boolean ignoreCase) {
+        //TODO Доделать
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -101,11 +97,6 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     @Override
     public RemoteNupkg getPackage(String id, Version version) {
-        return getPackage(id, version, true);
-    }
-
-    @Override
-    public RemoteNupkg getPackage(String id, Version version, boolean ignoreCase) {
         Collection<RemoteNupkg> nupkgs = getPackages(id);
         for (RemoteNupkg remoteNupkg : nupkgs) {
             if (version.equals(remoteNupkg.getVersion())) {
@@ -122,11 +113,6 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     @Override
     public Collection<RemoteNupkg> getPackages(String id) {
-        return getPackages(id, true);
-    }
-
-    @Override
-    public Collection<RemoteNupkg> getPackages(String id, boolean ignoreCase) {
         String filter = "tolower(Id) eq '" + id + "'";
         return getPackagesFromRemoteStorage(filter);
     }

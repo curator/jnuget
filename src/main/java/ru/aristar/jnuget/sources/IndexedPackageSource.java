@@ -143,28 +143,13 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        return getPackages(id);
-    }
-
-    @Override
     public Nupkg getLastVersionPackage(String id) {
         return getIndex().getLastVersion(id);
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        return getLastVersionPackage(id);
-    }
-
-    @Override
     public Nupkg getPackage(String id, Version version) {
         return getIndex().getPackage(id, version);
-    }
-
-    @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        return getPackage(id, version);
     }
 
     @Override

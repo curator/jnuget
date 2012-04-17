@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.files.ClassicNupkg;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
  * Хранилище пакетов, использующее стандартную для NuGet конфигурацию
@@ -119,7 +122,7 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
 
     @Override
     public ClassicNupkg getPackage(final String id, Version version) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, true);
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         for (ClassicNupkg pack : getPackages(filenameFilter)) {
             if (pack.getId().equals(id) && pack.getVersion().equals(version)) {
                 return pack;
@@ -131,46 +134,23 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
     @Override
     public Collection<ClassicNupkg> getLastVersionPackages() {
         List<ClassicNupkg> allPackages = getPackageList(new NupkgFileExtensionFilter());
-        return extractLastVersion(allPackages, true);
+        return extractLastVersion(allPackages);
     }
 
     @Override
     public Collection<ClassicNupkg> getPackages(String id) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, false);
+        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
         return getPackages(filenameFilter);
     }
 
     @Override
     public ClassicNupkg getLastVersionPackage(String id) {
-        return getLastVersionPackage(id, true);
-    }
-
-    @Override
-    public Collection<ClassicNupkg> getPackages(String id, boolean ignoreCase) {
         FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        return getPackages(filenameFilter);
-    }
-
-    @Override
-    public ClassicNupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id, ignoreCase);
-        Collection<ClassicNupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter), ignoreCase);
+        Collection<ClassicNupkg> lastVersion = extractLastVersion(getPackageList(filenameFilter));
         if (lastVersion.isEmpty()) {
             return null;
         }
         return lastVersion.iterator().next();
-    }
-
-    @Override
-    public ClassicNupkg getPackage(String id, Version version, boolean ignoreCase) {
-        FilenameFilter filenameFilter = new SingleIdPackageFileFilter(id);
-        for (ClassicNupkg nupkgFile : getPackages(filenameFilter)) {
-            NuspecFile nuspec = nupkgFile.getNuspecFile();
-            if (nuspec.getId().equals(id) && nuspec.getVersion().equals(version)) {
-                return nupkgFile;
-            }
-        }
-        return null;
     }
 
     @Override

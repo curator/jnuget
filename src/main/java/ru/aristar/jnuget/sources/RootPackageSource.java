@@ -80,19 +80,6 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public Collection<Nupkg> getPackages(String id, boolean ignoreCase) {
-        HashMap<Version, Nupkg> result = new HashMap<>();
-        for (PackageSource<? extends Nupkg> source : getSources()) {
-            for (Nupkg file : source.getPackages(id, ignoreCase)) {
-                if (file != null) {
-                    result.put(file.getVersion(), file);
-                }
-            }
-        }
-        return result.values();
-    }
-
-    @Override
     public Nupkg getLastVersionPackage(String id) {
         for (PackageSource source : getSources()) {
             Nupkg nupkgFile = source.getLastVersionPackage(id);
@@ -104,31 +91,9 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public Nupkg getLastVersionPackage(String id, boolean ignoreCase) {
-        for (PackageSource source : getSources()) {
-            Nupkg nupkgFile = source.getLastVersionPackage(id, ignoreCase);
-            if (nupkgFile != null) {
-                return nupkgFile;
-            }
-        }
-        return null;
-    }
-
-    @Override
     public Nupkg getPackage(String id, Version version) {
         for (PackageSource source : getSources()) {
             Nupkg nupkgFile = source.getPackage(id, version);
-            if (nupkgFile != null) {
-                return nupkgFile;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Nupkg getPackage(String id, Version version, boolean ignoreCase) {
-        for (PackageSource source : getSources()) {
-            Nupkg nupkgFile = source.getPackage(id, version, ignoreCase);
             if (nupkgFile != null) {
                 return nupkgFile;
             }

@@ -37,30 +37,12 @@ public interface PackageSource<T extends Nupkg> {
     Collection<T> getPackages(String id);
 
     /**
-     * Возвращает список пакетов с указанным идентификатором
-     *
-     * @param id идентификатор пакета
-     * @param ignoreCase нужно ли игнорировать регистр символов
-     * @return коллекция файлов пакетов
-     */
-    Collection<T> getPackages(String id, boolean ignoreCase);
-
-    /**
      * Возвращает последнюю версию указанного пакета
      *
      * @param id идентификатор пакета
      * @return файл пакета
      */
     T getLastVersionPackage(String id);
-
-    /**
-     * Возвращает последнюю версию указанного пакета
-     *
-     * @param id идентификатор пакета
-     * @param ignoreCase нужно ли игнорировать регистр символов
-     * @return файл пакета
-     */
-    T getLastVersionPackage(String id, boolean ignoreCase);
 
     /**
      * Возвращает пакет с указанной версией и идентификатором
@@ -70,16 +52,6 @@ public interface PackageSource<T extends Nupkg> {
      * @return файл пакета
      */
     T getPackage(String id, Version version);
-
-    /**
-     * Возвращает пакет с указанной версией и идентификатором
-     *
-     * @param id идентификатор пакета
-     * @param version версия пакета
-     * @param ignoreCase нужно ли игнорировать регистр символов
-     * @return файл пакета
-     */
-    T getPackage(String id, Version version, boolean ignoreCase);
 
     /**
      * Загружает пакет в хранилище

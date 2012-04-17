@@ -59,7 +59,7 @@ public class QueryExecutorTest {
         context.checking(new Expectations() {
 
             {
-                oneOf(source).getPackages("package.name", true);
+                oneOf(source).getPackages("package.name");
             }
         });
         QueryExecutor executor = new QueryExecutor();

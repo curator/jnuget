@@ -81,14 +81,13 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
      *
      * @param <K> Тип пакета NuGet
      * @param list общий список всех пакетов
-     * @param ignoreCase нужно ли игнорировать регистр символов
      * @return список последних версий пакетов
      */
     public static <K extends Nupkg> Collection<K> extractLastVersion(
-            Collection<K> list, boolean ignoreCase) {
+            Collection<K> list) {
         Map<String, K> map = new HashMap<>();
         for (K pack : list) {
-            String packageId = ignoreCase ? pack.getId().toLowerCase() : pack.getId();
+            String packageId = pack.getId().toLowerCase();
             // Указанный пакет еще учитывался
             if (!map.containsKey(packageId)) {
                 map.put(packageId, pack);

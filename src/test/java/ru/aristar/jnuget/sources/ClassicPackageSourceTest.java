@@ -163,7 +163,7 @@ public class ClassicPackageSourceTest {
         Nupkg lastB = createNupkg("B", "5.1.1");
         idList.add(lastB);
         //WHEN
-        Collection<Nupkg> result = ClassicPackageSource.extractLastVersion(idList, true);
+        Collection<Nupkg> result = ClassicPackageSource.extractLastVersion(idList);
         Nupkg[] resArr = result.toArray(new Nupkg[0]);
         Arrays.sort(resArr, new Comparator<Nupkg>() {
 

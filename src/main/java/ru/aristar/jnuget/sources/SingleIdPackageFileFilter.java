@@ -14,21 +14,6 @@ public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implemen
      * Идентификатор пакета
      */
     private final String id;
-    /**
-     * Игнорировать ли регистр символов
-     */
-    private final boolean ignoreCase;
-
-    /**
-     * Фильтр файлов пакетов по заданному идентификатору
-     *
-     * @param id Идентификатор пакета
-     * @param ignoreCase Игнорировать ли регистр символов
-     */
-    public SingleIdPackageFileFilter(String id, boolean ignoreCase) {
-        this.id = ignoreCase ? id.toLowerCase() : id;
-        this.ignoreCase = ignoreCase;
-    }
 
     /**
      * Фильтр файлов пакетов по заданному идентификатору, игнорирующий регистр
@@ -37,12 +22,12 @@ public class SingleIdPackageFileFilter extends NupkgFileExtensionFilter implemen
      * @param id Идентификатор пакета
      */
     public SingleIdPackageFileFilter(String id) {
-        this(id, true);
+        this.id = id.toLowerCase();
     }
 
     @Override
     public boolean accept(File dir, String name) {
-        final String path = ignoreCase ? name.toLowerCase() : name;
+        final String path = name.toLowerCase();
         return super.accept(dir, name) && path.startsWith(id);
     }
 }
