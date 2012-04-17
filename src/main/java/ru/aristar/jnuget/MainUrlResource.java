@@ -91,7 +91,7 @@ public class MainUrlResource {
             logger.debug("Запрос пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, orderBy, skip, top);
+            PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
             return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
@@ -113,7 +113,7 @@ public class MainUrlResource {
             logger.debug("Запрос количества пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, orderBy, skip, top);
+            PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
             return Response.ok(Integer.toString(feed.getEntries().size()), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
@@ -230,27 +230,27 @@ public class MainUrlResource {
      * Возвращает объектную реализацию RSS рассылки с пакетами
      *
      * @param filter условие фильтрации
+     * @param searchTerm условие поиска
      * @param orderBy условие упорядочивания
      * @param skip количество пропускаемых записей
      * @param top количество возвращаемых записей
      * @return объектное представление RSS
      */
-    private PackageFeed getPackageFeed(String filter, String orderBy, int skip, int top) {
+    private PackageFeed getPackageFeed(String filter, String searchTerm, String orderBy, int skip, int top) {
+
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
         //Получить источник пакетов
         PackageSource<Nupkg> packageSource = getPackageSource();
         //Выбрать пакеты по запросу
         QueryExecutor queryExecutor = new QueryExecutor();
-        Collection<Nupkg> files = queryExecutor.execQuery(packageSource, filter);
+        Collection<Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm);
         logger.debug("Получено {} пакетов", new Object[]{files.size()});
         //Преобразовать пакеты в RSS
         NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
         PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
         return feed;
     }
-    
     //TODO nuget delete <package Id> <package version> [API Key] [options]
-    
     /**
      * Имя заголовка запроса с ключем доступа
      */

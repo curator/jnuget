@@ -24,6 +24,9 @@ public class QueryExecutorTest {
      */
     private Mockery context = new Mockery();
 
+    /**
+     * Проверка получения списка пакетов для пустого условия
+     */
     @Test
     public void testExecQueryWithNull() {
         //GIVEN
@@ -42,6 +45,9 @@ public class QueryExecutorTest {
         context.assertIsSatisfied();
     }
 
+    /**
+     * Проверка получения списка пакетов для фиксированной версии
+     */
     @Test
     public void testExecQueryWithId() {
         //GIVEN
@@ -61,6 +67,9 @@ public class QueryExecutorTest {
         context.assertIsSatisfied();
     }
 
+    /**
+     * Проверка получения списка пакетов последней версии
+     */
     @Test
     public void testExecQueryWithLastVersion() {
         //GIVEN
@@ -91,6 +100,103 @@ public class QueryExecutorTest {
         //GIVEN
         QueryExecutor executor = new QueryExecutor();
         final String searchTerm = "id";
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        context.checking(new Expectations() {
+
+            {
+                atLeast(0).of(source).getPackages();
+                will(returnValue(Arrays.asList(
+                        createPackageStub("id1", "1.0.1"),
+                        createPackageStub("aaaa", "1.2.3"))));
+            }
+        });
+        //WHEN
+        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
+        //THEN
+        assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
+        assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
+        assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+    }
+
+    /**
+     * Проверка поиска версии с null условием поиска
+     *
+     * @throws NugetFormatException тестовый формат версии не соответствует
+     * формату
+     */
+    @Test
+    public void testExecQueryWithNullSearchTerm() throws NugetFormatException {
+        //GIVEN
+        QueryExecutor executor = new QueryExecutor();
+        final String searchTerm = null;
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        context.checking(new Expectations() {
+
+            {
+                atLeast(0).of(source).getPackages();
+                will(returnValue(Arrays.asList(
+                        createPackageStub("id1", "1.0.1"),
+                        createPackageStub("aaaa", "1.2.3"))));
+            }
+        });
+        //WHEN
+        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
+        //THEN
+        assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(2)));
+        assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
+        assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+        assertThat("Идентификатор пакета", nupkgs[1].getId(), is(equalTo("aaaa")));
+        assertThat("Версия пакета", nupkgs[1].getVersion(), is(equalTo(Version.parse("1.2.3"))));
+    }
+
+    /**
+     * Проверка поиска версии с условием поиска содержащим только пробелы
+     *
+     * @throws NugetFormatException тестовый формат версии не соответствует
+     * формату
+     */
+    @Test
+    public void testExecQueryWithBlankSearchTerm() throws NugetFormatException {
+        //GIVEN
+        QueryExecutor executor = new QueryExecutor();
+        final String searchTerm = "         ";
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        context.checking(new Expectations() {
+
+            {
+                atLeast(0).of(source).getPackages();
+                will(returnValue(Arrays.asList(
+                        createPackageStub("id1", "1.0.1"),
+                        createPackageStub("aaaa", "1.2.3"))));
+            }
+        });
+        //WHEN
+        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
+        //THEN
+        assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(2)));
+        assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
+        assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+        assertThat("Идентификатор пакета", nupkgs[1].getId(), is(equalTo("aaaa")));
+        assertThat("Версия пакета", nupkgs[1].getVersion(), is(equalTo(Version.parse("1.2.3"))));
+    }
+
+    /**
+     * Проверка поиска версии с условием поиска содержащим только пробелы
+     *
+     * @throws NugetFormatException тестовый формат версии не соответствует
+     * формату
+     */
+    @Test
+    public void testExecQueryWithQuotesSearchTerm() throws NugetFormatException {
+        //GIVEN
+        QueryExecutor executor = new QueryExecutor();
+        final String searchTerm = "'id'";
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {

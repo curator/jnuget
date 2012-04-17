@@ -11,11 +11,24 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-class QueryExecutor {
+public class QueryExecutor {
+
+    /**
+     * Удаляет некорректные символы из условия поиска
+     *
+     * @param sourceValue условие поиска
+     * @return нормализованное условие поиска
+     */
+    private String normaliseSearchTerm(String sourceValue) {
+        if (sourceValue == null) {
+            return null;
+        }
+        return sourceValue.replaceAll("['\"]", "");
+    }
 
     //TODO filter=((((((tolower(Id) eq 'neolant.projectwise.api') or (tolower(Id) eq 'neolant.projectwise.api')) or (tolower(Id) eq 'neolant.projectwise.controls')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion
     /**
-     * Получение списка пакетов из хранилиза
+     * Получение списка пакетов из хранилища
      *
      * @param packageSource хранилище пакетов
      * @param filter фильтр пакетов
@@ -24,19 +37,27 @@ class QueryExecutor {
      */
     public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter, final String searchTerm) {
         Collection<Nupkg> nupkgs = execQuery(packageSource, filter);
-        if (searchTerm == null || searchTerm.equals("")) {
+        final String normSearchTerm = normaliseSearchTerm(searchTerm);
+        if (normSearchTerm == null || normSearchTerm.matches("\\s*")) {
             return nupkgs;
         }
         ArrayList<Nupkg> result = new ArrayList<>();
         for (Nupkg nupkg : nupkgs) {
-            if (nupkg.getId().toLowerCase().contains(searchTerm)) {
+            if (nupkg.getId().toLowerCase().contains(normSearchTerm)) {
                 result.add(nupkg);
             }
         }
         return result;
     }
 
-    public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
+    /**
+     * Получение списка пакетов из хранилища
+     *
+     * @param packageSource хранилище пакетов
+     * @param filter фильтр пакетов
+     * @return коллекция пакетов
+     */
+    protected Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
         if (filter == null || "".equals(filter)) {
             return packageSource.getPackages();
         }
