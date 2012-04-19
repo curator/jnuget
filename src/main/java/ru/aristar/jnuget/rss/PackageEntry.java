@@ -207,6 +207,17 @@ public class PackageEntry {
      */
     protected void setContent(AtomElement content) {
         this.content = content;
+
+    }
+
+    /**
+     * @param packageSourceUrl URL, по которому расположен пакет
+     */
+    public void setContent(String packageSourceUrl) {
+        AtomElement newContent = new AtomElement();
+        newContent.setType("application/zip");
+        newContent.setSrc(packageSourceUrl);
+        setContent(newContent);
     }
 
     /**

@@ -13,6 +13,7 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.rss.PackageFeed;
+import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.sources.push.PushTrigger;
@@ -27,7 +28,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     /**
      * Удаленное хранилище пакетов
      */
-    private NugetClient remoteStorage = new NugetClient();
+    protected NugetClient remoteStorage = new NugetClient();
     /**
      * Логгер
      */
@@ -86,8 +87,14 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     @Override
     public RemoteNupkg getLastVersionPackage(String id) {
-        //TODO Доделать
-        throw new UnsupportedOperationException("Not supported yet.");
+        String filter = "tolower(Id) eq '" + id + "'";
+        Collection<RemoteNupkg> nupkgs = getPackagesFromRemoteStorage(filter);
+        Collection<RemoteNupkg> result = extractLastVersion(nupkgs);
+        if (!result.isEmpty()) {
+            return result.iterator().next();
+        } else {
+            return null;
+        }
     }
 
     @Override
