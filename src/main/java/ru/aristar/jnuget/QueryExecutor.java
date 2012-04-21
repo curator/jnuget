@@ -26,7 +26,7 @@ public class QueryExecutor {
         return sourceValue.replaceAll("['\"]", "");
     }
 
-    //TODO filter=((((((tolower(Id) eq 'neolant.projectwise.api') or (tolower(Id) eq 'neolant.projectwise.api')) or (tolower(Id) eq 'neolant.projectwise.controls')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel')) or (tolower(Id) eq 'neolant.projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion
+    //TODO filter=((((((tolower(Id) eq 'projectwise.api') or (tolower(Id) eq 'projectwise.api')) or (tolower(Id) eq 'projectwise.controls')) or (tolower(Id) eq 'projectwise.isolationlevel')) or (tolower(Id) eq 'projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion
     /**
      * Получение списка пакетов из хранилища
      *
