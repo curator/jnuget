@@ -1,7 +1,10 @@
 package ru.aristar.jnuget;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
+import ru.aristar.jnuget.files.Nupkg;
 
 /**
  * Лексический анализатор запросов
@@ -9,6 +12,65 @@ import java.util.List;
  * @author sviridov
  */
 public class QueryLexer {
+
+    public enum Operation {
+
+        AND,
+        OR,
+        EQ
+    }
+
+    public static interface Expression {
+
+        public Operation getOperation();
+
+        public List<Nupkg> execute();
+    }
+
+    public static class GroupExpression implements Expression {
+
+        public Expression innerExpression;
+
+        @Override
+        public Operation getOperation() {
+            return null;
+        }
+
+        @Override
+        public List<Nupkg> execute() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    public static class IdEqIgnoreCase implements Expression {
+
+        public String value;
+
+        @Override
+        public Operation getOperation() {
+            return Operation.EQ;
+        }
+
+        public List<Nupkg> execute() {
+            return null;
+        }
+    }
+
+    public static class OrExpression implements Expression {
+
+        public Expression firstExpression;
+        public Expression secondExpression;
+
+        @Override
+        public Operation getOperation() {
+            return Operation.OR;
+        }
+
+        @Override
+        public List<Nupkg> execute() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
 
     /**
      * @param string проверяемая строка
@@ -90,5 +152,54 @@ public class QueryLexer {
             }
         }
         return tokens;
+    }
+
+    protected Expression parse(Iterator<String> iterator, Stack<Expression> stack) {
+        if (!iterator.hasNext()) {
+            return stack.pop();
+        }
+        String token = iterator.next();
+
+        if (stack == null) {
+            stack = new Stack<>();
+        }
+        switch (token) {
+            case "(": {
+                GroupExpression expression = new GroupExpression();
+                expression.innerExpression = parse(iterator, null);
+                stack.push(expression);
+                return parse(iterator, stack);
+            }
+            case "tolower": {
+                iterator.next(); //(
+                iterator.next(); //id
+                iterator.next(); //)
+                iterator.next(); //eq
+                iterator.next(); //'
+                IdEqIgnoreCase expression = new IdEqIgnoreCase();
+                expression.value = iterator.next();
+                iterator.next(); //'
+                stack.push(expression);
+                return parse(iterator, stack);
+            }
+            case "or": {
+                OrExpression expression = new OrExpression();
+                expression.firstExpression = stack.pop();
+                expression.secondExpression = parse(iterator, null);
+                return expression;
+            }
+
+            case ")": {
+                return stack.pop();
+            }
+            default:
+                throw new UnsupportedOperationException("Токен не поддерживается");
+        }
+    }
+
+    protected Expression parse(String value) {
+        List<String> tokens = split(value);
+        Iterator<String> iterator = tokens.iterator();
+        return parse(iterator, null);
     }
 }
