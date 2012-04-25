@@ -24,15 +24,14 @@ public class OptionsTest {
         //GIVEN
         File tempFolder = File.createTempFile("tmp", "tmp").getParentFile();
         String oldHome = System.getProperty("user.home");
-        System.setProperty("user.home", tempFolder.getAbsolutePath());
-        System.setProperty("nuget.home", "");
         File nugetHome = new File(tempFolder, ".nuget");
+        System.setProperty("nuget.home", nugetHome.getAbsolutePath());
         File file = new File(nugetHome, Options.DEFAULT_OPTIONS_FILE_NAME);
         file.delete();
         assertFalse("Файла с настройками не должно существовать перед тестом", file.exists());
         //WHEN
         Options options = Options.loadOptions();
-        //THEN 
+        //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
         assertNull("Стратегия корневого хранилища не устанавливается", options.getStrategyOptions());
         assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
@@ -55,7 +54,7 @@ public class OptionsTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.test.config.xml");
         //WHEN
         Options options = Options.parse(inputStream);
-        //THEN       
+        //THEN
         assertEquals("Класс корневой стратегии фиксации", "PUSH_CLASS_GLOBAL", options.getStrategyOptions().getClassName());
         assertEquals("Свойство стратегии фиксации", "value_g", options.getStrategyOptions().getProperties().get("property_g"));
         assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
@@ -79,7 +78,7 @@ public class OptionsTest {
     public void testParseTriggerOptions() throws Exception {
         //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.push.trigger.config.xml");
-        //WHEN 
+        //WHEN
         Options options = Options.parse(inputStream);
         //THEN
         List<StorageOptions> storageOptions = options.getStorageOptionsList();
