@@ -8,6 +8,7 @@ import org.junit.Test;
 import ru.aristar.jnuget.QueryLexer.Expression;
 import ru.aristar.jnuget.QueryLexer.GroupExpression;
 import ru.aristar.jnuget.QueryLexer.IdEqIgnoreCase;
+import ru.aristar.jnuget.files.NugetFormatException;
 
 /**
  * Тесты лексического анализатора запросов
@@ -45,7 +46,7 @@ public class QueryLexerTest {
     }
 
     @Test
-    public void testSimpleEqExpression() {
+    public void testSimpleEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
         final String filterString = "tolower(Id) eq 'projectwise.api'";
@@ -58,7 +59,7 @@ public class QueryLexerTest {
     }
 
     @Test
-    public void testSimpleGroupEqExpression() {
+    public void testSimpleGroupEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
         final String filterString = "(tolower(Id) eq 'projectwise.api')";
@@ -74,7 +75,17 @@ public class QueryLexerTest {
     }
 
     @Test
-    public void testOrTwoEqExpression() {
+    public void testLastVErsionAndEqExpression() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        final String filterString = "tolower(Id) eq 'projectwise.api' and isLatestVersion";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.AND)));
+    }
+
+    @Test
+    public void testOrTwoEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
         final String filterString = "(tolower(Id) eq 'projectwise.api') or (tolower(Id) eq 'projectwise.controls')";

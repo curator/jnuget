@@ -1,9 +1,7 @@
 package ru.aristar.jnuget;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -12,6 +10,13 @@ import ru.aristar.jnuget.files.Nupkg;
  * @author sviridov
  */
 public class QueryLexer {
+
+    private void assertToken(String actual, String expected) throws NugetFormatException {
+        if (!Objects.equals(actual, expected)) {
+            throw new NugetFormatException("Встретился токен '" + actual
+                    + "', когда ожидался '" + expected + "'");
+        }
+    }
 
     public enum Operation {
 
@@ -154,7 +159,7 @@ public class QueryLexer {
         return tokens;
     }
 
-    protected Expression parse(Iterator<String> iterator, Stack<Expression> stack) {
+    protected Expression parse(Iterator<String> iterator, Stack<Expression> stack) throws NugetFormatException {
         if (!iterator.hasNext()) {
             return stack.pop();
         }
@@ -171,14 +176,14 @@ public class QueryLexer {
                 return parse(iterator, stack);
             }
             case "tolower": {
-                iterator.next(); //(
-                iterator.next(); //id
-                iterator.next(); //)
-                iterator.next(); //eq
-                iterator.next(); //'
+                assertToken(iterator.next(), "(");
+                assertToken(iterator.next(), "Id");
+                assertToken(iterator.next(), ")");
+                assertToken(iterator.next(), "eq");
+                assertToken(iterator.next(), "'");
                 IdEqIgnoreCase expression = new IdEqIgnoreCase();
                 expression.value = iterator.next();
-                iterator.next(); //'
+                assertToken(iterator.next(), "'");
                 stack.push(expression);
                 return parse(iterator, stack);
             }
@@ -192,12 +197,20 @@ public class QueryLexer {
             case ")": {
                 return stack.pop();
             }
+
+            case "and": {
+                throw new UnsupportedOperationException("Обработка токена 'and' не реализована");
+            }
+
+            case "isLatestVersion": {
+                throw new UnsupportedOperationException("Обработка токена 'isLatestVersion' не реализована");
+            }
             default:
                 throw new UnsupportedOperationException("Токен не поддерживается");
         }
     }
 
-    protected Expression parse(String value) {
+    protected Expression parse(String value) throws NugetFormatException {
         List<String> tokens = split(value);
         Iterator<String> iterator = tokens.iterator();
         return parse(iterator, null);
