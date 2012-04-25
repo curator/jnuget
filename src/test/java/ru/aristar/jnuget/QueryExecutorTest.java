@@ -123,6 +123,37 @@ public class QueryExecutorTest {
     }
 
     /**
+     * Проверка поиска версии с условием поиска в верхнем регистре
+     *
+     * @throws NugetFormatException тестовый формат версии не соответствует
+     * формату
+     */
+    @Test
+    public void testExecQueryWithSearchTermInUpperCase() throws NugetFormatException {
+        //GIVEN
+        QueryExecutor executor = new QueryExecutor();
+        final String searchTerm = "ID";
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        context.checking(new Expectations() {
+
+            {
+                atLeast(0).of(source).getPackages();
+                will(returnValue(Arrays.asList(
+                        createPackageStub("id1", "1.0.1"),
+                        createPackageStub("aaaa", "1.2.3"))));
+            }
+        });
+        //WHEN
+        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
+        //THEN
+        assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
+        assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
+        assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+    }
+
+    /**
      * Проверка поиска версии с null условием поиска
      *
      * @throws NugetFormatException тестовый формат версии не соответствует
