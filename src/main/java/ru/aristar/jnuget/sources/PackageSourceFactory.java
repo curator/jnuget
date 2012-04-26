@@ -145,7 +145,7 @@ public class PackageSourceFactory {
         if (storageOptions.getStrategyOptions() != null) {
             PushStrategy pushStrategy = createPushStrategy(storageOptions.getStrategyOptions());
             newSource.setPushStrategy(pushStrategy);
-            logger.info("Установлена стратегия по фиксации");
+            logger.info("Установлена стратегия фиксации");
         } else {
             newSource.setPushStrategy(new SimplePushStrategy(false));
             logger.warn("Используется стратегия фиксации по умолчанию");
