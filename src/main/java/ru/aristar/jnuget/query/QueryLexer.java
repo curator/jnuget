@@ -17,13 +17,6 @@ public class QueryLexer {
         }
     }
 
-    public enum Operation {
-
-        AND,
-        OR,
-        EQ
-    }
-
     /**
      * @param string проверяемая строка
      * @return является ли строка границой группы

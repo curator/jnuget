@@ -9,8 +9,5 @@ import ru.aristar.jnuget.files.Nupkg;
  */
 public interface Expression {
 
-    public QueryLexer.Operation getOperation();
-
     public List<Nupkg> execute();
-    
 }

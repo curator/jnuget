@@ -13,11 +13,6 @@ public class AndExpression implements Expression {
     public Expression secondExpression;
 
     @Override
-    public QueryLexer.Operation getOperation() {
-        return QueryLexer.Operation.AND;
-    }
-
-    @Override
     public List<Nupkg> execute() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

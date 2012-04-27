@@ -10,12 +10,8 @@ import ru.aristar.jnuget.files.Nupkg;
  * @author sviridov
  */
 public class IdEqIgnoreCase implements Expression {
-    public String value;
 
-    @Override
-    public QueryLexer.Operation getOperation() {
-        return QueryLexer.Operation.EQ;
-    }
+    public String value;
 
     public List<Nupkg> execute() {
         return null;
@@ -32,5 +28,4 @@ public class IdEqIgnoreCase implements Expression {
         QueryLexer.assertToken(tokens.poll(), "'");
         return expression;
     }
-    
 }

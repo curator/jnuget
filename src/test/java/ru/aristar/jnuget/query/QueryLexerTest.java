@@ -5,10 +5,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
-import ru.aristar.jnuget.query.AndExpression;
-import ru.aristar.jnuget.query.Expression;
-import ru.aristar.jnuget.query.GroupExpression;
-import ru.aristar.jnuget.query.IdEqIgnoreCase;
 import ru.aristar.jnuget.files.NugetFormatException;
 
 /**
@@ -53,8 +49,7 @@ public class QueryLexerTest {
         final String filterString = "tolower(Id) eq 'projectwise.api'";
         //WHEN
         Expression expression = lexer.parse(filterString);
-        assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.EQ)));
-        assertThat("Операция сравнения идентификатора пакета", expression, is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Операция верхнего уровня", expression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) expression;
         assertThat("Значение параметра", eqIgnoreCase.value, is(equalTo("projectwise.api")));
     }
@@ -66,8 +61,7 @@ public class QueryLexerTest {
         final String filterString = "(tolower(Id) eq 'projectwise.api')";
         //WHEN
         Expression expression = lexer.parse(filterString);
-        assertThat("Операция верхнего уровня", expression.getOperation(), is(nullValue()));
-        assertThat("Операция групппировки", expression, is(instanceOf(GroupExpression.class)));
+        assertThat("Операция верхнего уровня", expression, is(instanceOf(GroupExpression.class)));
         GroupExpression groupExpression = (GroupExpression) expression;
         Expression level2Expression = groupExpression.innerExpression;
         assertThat("Операция сравнения идентификатора пакета", level2Expression, is(instanceOf(IdEqIgnoreCase.class)));
@@ -82,7 +76,6 @@ public class QueryLexerTest {
         final String filterString = "tolower(Id) eq 'projectwise.api' and isLatestVersion";
         //WHEN
         Expression expression = lexer.parse(filterString);
-        assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.AND)));
         assertThat("Операция верхнего уровня", expression, is(instanceOf(AndExpression.class)));
         AndExpression andExpression = (AndExpression) expression;
         Expression firstExpression = andExpression.firstExpression;
@@ -102,17 +95,14 @@ public class QueryLexerTest {
         //WHEN
         Expression expression = lexer.parse(filterString);
         //THEN
-        assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.OR)));
-        assertThat("Операция сравнения идентификатора пакета", expression, is(instanceOf(OrExpression.class)));
+        assertThat("Операция верхнего уровня", expression, is(instanceOf(OrExpression.class)));
         OrExpression orExpression = (OrExpression) expression;
-        assertThat("Значение первого параметра", orExpression.firstExpression.getOperation(), is(nullValue()));
         assertThat("Класс первого параметра", orExpression.firstExpression, is(instanceOf(GroupExpression.class)));
         GroupExpression firstGroup = (GroupExpression) orExpression.firstExpression;
         assertThat("Класс первой группы", firstGroup.innerExpression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase firstEq = (IdEqIgnoreCase) firstGroup.innerExpression;
         assertThat("Значение параметра", firstEq.value, is(equalTo("projectwise.api")));
 
-        assertThat("Значение второго параметра", orExpression.secondExpression.getOperation(), is(nullValue()));
         assertThat("Класс второго параметра", orExpression.secondExpression, is(instanceOf(GroupExpression.class)));
         GroupExpression secondGroup = (GroupExpression) orExpression.secondExpression;
         assertThat("Класс второй группы", secondGroup.innerExpression, is(instanceOf(IdEqIgnoreCase.class)));

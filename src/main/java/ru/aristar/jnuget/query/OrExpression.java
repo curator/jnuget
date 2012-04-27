@@ -13,11 +13,6 @@ public class OrExpression implements Expression {
     public Expression secondExpression;
 
     @Override
-    public QueryLexer.Operation getOperation() {
-        return QueryLexer.Operation.OR;
-    }
-
-    @Override
     public List<Nupkg> execute() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

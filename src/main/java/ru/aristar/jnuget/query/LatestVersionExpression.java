@@ -10,11 +10,6 @@ import ru.aristar.jnuget.files.Nupkg;
 public class LatestVersionExpression implements Expression {
 
     @Override
-    public QueryLexer.Operation getOperation() {
-        return null;
-    }
-
-    @Override
     public List<Nupkg> execute() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
