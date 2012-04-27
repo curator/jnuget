@@ -11,7 +11,7 @@ import ru.aristar.jnuget.files.Nupkg;
  */
 public class QueryLexer {
 
-    private void assertToken(String actual, String expected) throws NugetFormatException {
+    private static void assertToken(String actual, String expected) throws NugetFormatException {
         if (!Objects.equals(actual, expected)) {
             throw new NugetFormatException("Встретился токен '" + actual
                     + "', когда ожидался '" + expected + "'");
@@ -59,6 +59,18 @@ public class QueryLexer {
         public List<Nupkg> execute() {
             return null;
         }
+
+        public static IdEqIgnoreCase parse(Queue<String> tokens) throws NugetFormatException {
+            IdEqIgnoreCase expression = new IdEqIgnoreCase();
+            assertToken(tokens.poll(), "(");
+            assertToken(tokens.poll(), "Id");
+            assertToken(tokens.poll(), ")");
+            assertToken(tokens.poll(), "eq");
+            assertToken(tokens.poll(), "'");
+            expression.value = tokens.poll();
+            assertToken(tokens.poll(), "'");
+            return expression;
+        }
     }
 
     public static class OrExpression implements Expression {
@@ -69,6 +81,35 @@ public class QueryLexer {
         @Override
         public Operation getOperation() {
             return Operation.OR;
+        }
+
+        @Override
+        public List<Nupkg> execute() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    public static class AndExpression implements Expression {
+
+        public Expression firstExpression;
+        public Expression secondExpression;
+
+        @Override
+        public Operation getOperation() {
+            return Operation.AND;
+        }
+
+        @Override
+        public List<Nupkg> execute() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    public static class LatestVersionExpression implements Expression {
+
+        @Override
+        public Operation getOperation() {
+            return null;
         }
 
         @Override
@@ -159,11 +200,11 @@ public class QueryLexer {
         return tokens;
     }
 
-    protected Expression parse(Iterator<String> iterator, Stack<Expression> stack) throws NugetFormatException {
-        if (!iterator.hasNext()) {
+    protected Expression parse(Queue<String> tokens, Stack<Expression> stack) throws NugetFormatException {
+        if (tokens.isEmpty()) {
             return stack.pop();
         }
-        String token = iterator.next();
+        String token = tokens.poll();
 
         if (stack == null) {
             stack = new Stack<>();
@@ -171,26 +212,25 @@ public class QueryLexer {
         switch (token) {
             case "(": {
                 GroupExpression expression = new GroupExpression();
-                expression.innerExpression = parse(iterator, null);
+                expression.innerExpression = parse(tokens, null);
                 stack.push(expression);
-                return parse(iterator, stack);
+                return parse(tokens, stack);
             }
             case "tolower": {
-                assertToken(iterator.next(), "(");
-                assertToken(iterator.next(), "Id");
-                assertToken(iterator.next(), ")");
-                assertToken(iterator.next(), "eq");
-                assertToken(iterator.next(), "'");
-                IdEqIgnoreCase expression = new IdEqIgnoreCase();
-                expression.value = iterator.next();
-                assertToken(iterator.next(), "'");
+                IdEqIgnoreCase expression = IdEqIgnoreCase.parse(tokens);
                 stack.push(expression);
-                return parse(iterator, stack);
+                return parse(tokens, stack);
             }
             case "or": {
                 OrExpression expression = new OrExpression();
+                Expression secondExpression = parse(tokens, null);
+                String nextToken = tokens.peek();
+                if (nextToken != null && nextToken.equals("and")) {
+                    stack.push(secondExpression);
+                    secondExpression = parse(tokens, stack);
+                }
+                expression.secondExpression = secondExpression;
                 expression.firstExpression = stack.pop();
-                expression.secondExpression = parse(iterator, null);
                 return expression;
             }
 
@@ -199,11 +239,16 @@ public class QueryLexer {
             }
 
             case "and": {
-                throw new UnsupportedOperationException("Обработка токена 'and' не реализована");
+                AndExpression expression = new AndExpression();
+                expression.firstExpression = stack.pop();
+                expression.secondExpression = parse(tokens, null);
+                return expression;
             }
 
             case "isLatestVersion": {
-                throw new UnsupportedOperationException("Обработка токена 'isLatestVersion' не реализована");
+                Expression expression = new LatestVersionExpression();
+                stack.push(expression);
+                return parse(tokens, stack);
             }
             default:
                 throw new UnsupportedOperationException("Токен не поддерживается");
@@ -211,8 +256,7 @@ public class QueryLexer {
     }
 
     protected Expression parse(String value) throws NugetFormatException {
-        List<String> tokens = split(value);
-        Iterator<String> iterator = tokens.iterator();
-        return parse(iterator, null);
+        Queue<String> tokenQueue = new ArrayDeque<>(split(value));
+        return parse(tokenQueue, null);
     }
 }

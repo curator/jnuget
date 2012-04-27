@@ -2,9 +2,10 @@ package ru.aristar.jnuget;
 
 import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
+import ru.aristar.jnuget.QueryLexer.AndExpression;
 import ru.aristar.jnuget.QueryLexer.Expression;
 import ru.aristar.jnuget.QueryLexer.GroupExpression;
 import ru.aristar.jnuget.QueryLexer.IdEqIgnoreCase;
@@ -75,13 +76,22 @@ public class QueryLexerTest {
     }
 
     @Test
-    public void testLastVErsionAndEqExpression() throws NugetFormatException {
+    public void testLastVersionAndEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
         final String filterString = "tolower(Id) eq 'projectwise.api' and isLatestVersion";
         //WHEN
         Expression expression = lexer.parse(filterString);
         assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.AND)));
+        assertThat("Операция верхнего уровня", expression, is(instanceOf(QueryLexer.AndExpression.class)));
+        AndExpression andExpression = (QueryLexer.AndExpression) expression;
+        Expression firstExpression = andExpression.firstExpression;
+        assertThat("Первая операция второго уровня", firstExpression, is(instanceOf(QueryLexer.IdEqIgnoreCase.class)));
+        IdEqIgnoreCase firstEqExpression = (QueryLexer.IdEqIgnoreCase) firstExpression;
+        assertThat("Значение первой операции", firstEqExpression.value, is(equalTo("projectwise.api")));
+
+        Expression secondExpression = andExpression.secondExpression;
+        assertThat("Вторая операция второго уровня", secondExpression, is(instanceOf(QueryLexer.LatestVersionExpression.class)));
     }
 
     @Test
@@ -91,6 +101,7 @@ public class QueryLexerTest {
         final String filterString = "(tolower(Id) eq 'projectwise.api') or (tolower(Id) eq 'projectwise.controls')";
         //WHEN
         Expression expression = lexer.parse(filterString);
+        //THEN
         assertThat("Операция верхнего уровня", expression.getOperation(), is(equalTo(QueryLexer.Operation.OR)));
         assertThat("Операция сравнения идентификатора пакета", expression, is(instanceOf(QueryLexer.OrExpression.class)));
         QueryLexer.OrExpression orExpression = (QueryLexer.OrExpression) expression;
@@ -107,5 +118,18 @@ public class QueryLexerTest {
         assertThat("Класс второй группы", secondGroup.innerExpression, is(instanceOf(QueryLexer.IdEqIgnoreCase.class)));
         IdEqIgnoreCase secondEq = (QueryLexer.IdEqIgnoreCase) secondGroup.innerExpression;
         assertThat("Значение параметра", secondEq.value, is(equalTo("projectwise.controls")));
+    }
+
+    @Test
+    @Ignore
+    public void testMultipleAndOrExpression() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        final String filterString = "tolower(Id) eq 'projectwise.api' or tolower(Id) eq 'projectwise.controls' and tolower(Id) eq 'projectwise.isolationlevel'";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        //THEN
+        assertThat("Операция первого уровня", expression, is(instanceOf(QueryLexer.AndExpression.class)));
+        fail("Тест не дописан");
     }
 }
