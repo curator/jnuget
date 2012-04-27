@@ -2,7 +2,10 @@ package ru.aristar.jnuget.rss;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.NugetContext;
@@ -36,7 +39,7 @@ public class NuPkgToRssTransformerTest {
      */
     @Test
     public void testMarkLastVersion() throws Exception {
-        //GIVEN        
+        //GIVEN
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         ArrayList<PackageEntry> entrys = new ArrayList<>();
         PackageEntry firstA = createPackageEntry("A", "1.2.3");
@@ -72,7 +75,7 @@ public class NuPkgToRssTransformerTest {
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
-        //THEN 
+        //THEN
         assertEquals("Размер обрезанного списка", 10, result.size());
     }
 
@@ -89,8 +92,21 @@ public class NuPkgToRssTransformerTest {
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
-        //THEN 
+        //THEN
         assertEquals("Размер обрезанного списка", 1, result.size());
+    }
+
+    /**
+     * Проверка получения компаратора по умолчанию
+     */
+    @Test
+    public void testGetDefaultTransformer() {
+        //GIVEN
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
+        //WHEN
+        Comparator<PackageEntry> result = transformer.getPackageComparator(null);
+        //THEN
+        assertThat("Компаратор по умолчанию", result, is(instanceOf(PackageIdAndVersionComparator.class)));
     }
 
     /**

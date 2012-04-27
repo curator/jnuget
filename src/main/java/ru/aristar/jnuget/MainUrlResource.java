@@ -80,11 +80,24 @@ public class MainUrlResource {
         return response.build();
     }
 
+    /**
+     * Возвращает HTML ответ с RSS содержащей информацию о пакетах
+     *
+     * @param filter условие выборки пакетов
+     * @param orderBy порядок сортировки пакетов (по умолчанию по дате
+     * публикации)
+     * @param skip количество пакетов, которое необходимо пропустить (по
+     * умолчанию 0)
+     * @param top количество пакетов в выборке
+     * @param searchTerm условие поиска
+     * @param targetFramework фрейморк, для которого предназначен пакет
+     * @return HTML c RSS
+     */
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
-            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
             @QueryParam("$top") @DefaultValue("30") int top,
             @QueryParam("searchTerm") String searchTerm,
