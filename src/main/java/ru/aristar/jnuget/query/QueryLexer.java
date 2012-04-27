@@ -1,8 +1,7 @@
-package ru.aristar.jnuget;
+package ru.aristar.jnuget.query;
 
 import java.util.*;
 import ru.aristar.jnuget.files.NugetFormatException;
-import ru.aristar.jnuget.files.Nupkg;
 
 /**
  * Лексический анализатор запросов
@@ -11,7 +10,7 @@ import ru.aristar.jnuget.files.Nupkg;
  */
 public class QueryLexer {
 
-    private static void assertToken(String actual, String expected) throws NugetFormatException {
+    public static void assertToken(String actual, String expected) throws NugetFormatException {
         if (!Objects.equals(actual, expected)) {
             throw new NugetFormatException("Встретился токен '" + actual
                     + "', когда ожидался '" + expected + "'");
@@ -23,99 +22,6 @@ public class QueryLexer {
         AND,
         OR,
         EQ
-    }
-
-    public static interface Expression {
-
-        public Operation getOperation();
-
-        public List<Nupkg> execute();
-    }
-
-    public static class GroupExpression implements Expression {
-
-        public Expression innerExpression;
-
-        @Override
-        public Operation getOperation() {
-            return null;
-        }
-
-        @Override
-        public List<Nupkg> execute() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    public static class IdEqIgnoreCase implements Expression {
-
-        public String value;
-
-        @Override
-        public Operation getOperation() {
-            return Operation.EQ;
-        }
-
-        public List<Nupkg> execute() {
-            return null;
-        }
-
-        public static IdEqIgnoreCase parse(Queue<String> tokens) throws NugetFormatException {
-            IdEqIgnoreCase expression = new IdEqIgnoreCase();
-            assertToken(tokens.poll(), "(");
-            assertToken(tokens.poll(), "Id");
-            assertToken(tokens.poll(), ")");
-            assertToken(tokens.poll(), "eq");
-            assertToken(tokens.poll(), "'");
-            expression.value = tokens.poll();
-            assertToken(tokens.poll(), "'");
-            return expression;
-        }
-    }
-
-    public static class OrExpression implements Expression {
-
-        public Expression firstExpression;
-        public Expression secondExpression;
-
-        @Override
-        public Operation getOperation() {
-            return Operation.OR;
-        }
-
-        @Override
-        public List<Nupkg> execute() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    public static class AndExpression implements Expression {
-
-        public Expression firstExpression;
-        public Expression secondExpression;
-
-        @Override
-        public Operation getOperation() {
-            return Operation.AND;
-        }
-
-        @Override
-        public List<Nupkg> execute() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    public static class LatestVersionExpression implements Expression {
-
-        @Override
-        public Operation getOperation() {
-            return null;
-        }
-
-        @Override
-        public List<Nupkg> execute() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
     }
 
     /**
