@@ -48,7 +48,7 @@ public class MainUrlResource {
      * @return XML
      */
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget")
     public Response getXml() {
         StringWriter writer = new StringWriter();
@@ -64,7 +64,7 @@ public class MainUrlResource {
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("")
     public Response getRootXml() {
         //TODO Разобраться со структурой приложения (что по какому URL должно находится)
@@ -72,7 +72,7 @@ public class MainUrlResource {
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget/{metadata : [$]metadata}")
     public Response getMetadata() {
         InputStream inputStream = this.getClass().getResourceAsStream("/metadata.xml");
@@ -81,12 +81,12 @@ public class MainUrlResource {
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
-            @QueryParam("$top") @DefaultValue("-1") int top,
+            @QueryParam("$top") @DefaultValue("30") int top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
@@ -95,7 +95,8 @@ public class MainUrlResource {
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
-            return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
+            FeedStreamingOutput streamingOutput = new FeedStreamingOutput(feed);
+            return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);

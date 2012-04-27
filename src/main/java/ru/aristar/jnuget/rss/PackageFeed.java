@@ -1,18 +1,16 @@
 package ru.aristar.jnuget.rss;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.OutputStream;
 import java.util.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -70,7 +68,23 @@ public class PackageFeed {
         this.updated = updated;
     }
 
-    public String getXml() throws JAXBException, SAXException, TransformerConfigurationException, TransformerException {
+    /**
+     * @return представление объекта в виде XML
+     * @throws JAXBException ошибка преобразования в XML
+     */
+    public String getXml() throws JAXBException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        writeXml(byteArrayOutputStream);
+        return new String(byteArrayOutputStream.toByteArray());
+    }
+
+    /**
+     * Записывает созержимое класса в виде XML документа в поток
+     *
+     * @param outputStream поток для записи
+     * @throws JAXBException ошибка преобразования в XML
+     */
+    public void writeXml(OutputStream outputStream) throws JAXBException {
         //Первичная сереализация
         JAXBContext context = JAXBContext.newInstance(this.getClass());
         Marshaller marshaller = context.createMarshaller();
@@ -80,10 +94,8 @@ public class PackageFeed {
         uriToPrefix.put("http://schemas.microsoft.com/ado/2007/08/dataservices/scheme", "ds");
         uriToPrefix.put("http://schemas.microsoft.com/ado/2007/08/dataservices", "d");
         NugetPrefixFilter filter = new NugetPrefixFilter(uriToPrefix);
-        StringWriter writer = new StringWriter();
-        filter.setContentHandler(new XMLSerializer(writer, new OutputFormat()));
+        filter.setContentHandler(new XMLSerializer(outputStream, new OutputFormat()));
         marshaller.marshal(this, filter);
-        return writer.toString();
     }
 
     public static PackageFeed parse(InputStream inputStream) throws JAXBException {
