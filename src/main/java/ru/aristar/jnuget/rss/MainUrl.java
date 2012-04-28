@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -8,6 +10,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import ru.aristar.jnuget.UrlFactory;
+import ru.aristar.jnuget.XmlWritable;
 
 /**
  * Xml корневого узла NuGet
@@ -16,7 +19,7 @@ import ru.aristar.jnuget.UrlFactory;
  */
 @XmlRootElement(name = "service", namespace = "http://www.w3.org/2007/app")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MainUrl {
+public class MainUrl implements XmlWritable {
 
     public static class Collection {
 
@@ -92,11 +95,23 @@ public class MainUrl {
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Записывает XML представление объекта
+     *
+     * @param writer куда писать
+     * @throws JAXBException ошибка преобразования объекта в XML
+     */
     public void writeXml(Writer writer) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(this.getClass());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(this, writer);
+    }
+
+    @Override
+    public void writeXml(OutputStream outputStream) throws JAXBException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        writeXml(writer);
     }
 
     public static MainUrl parse(InputStream inputStream) throws JAXBException {

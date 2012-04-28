@@ -51,16 +51,9 @@ public class MainUrlResource {
     @Produces(MediaType.APPLICATION_XML)
     @Path("nuget")
     public Response getXml() {
-        StringWriter writer = new StringWriter();
-        try {
-            MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
-            mainUrl.writeXml(writer);
-        } catch (JAXBException e) {
-            final String errorMessage = "Ошибка преобразования XML";
-            logger.error(errorMessage, e);
-            return Response.serverError().entity(errorMessage).build();
-        }
-        return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
+        MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
+        XmlStreamingOutput streamingOutput = new XmlStreamingOutput(mainUrl);
+        return Response.ok(streamingOutput, MediaType.APPLICATION_XML).build();
     }
 
     @GET
@@ -108,7 +101,7 @@ public class MainUrlResource {
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
-            FeedStreamingOutput streamingOutput = new FeedStreamingOutput(feed);
+            XmlStreamingOutput streamingOutput = new XmlStreamingOutput(feed);
             return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";

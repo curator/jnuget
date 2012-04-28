@@ -11,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import ru.aristar.jnuget.XmlWritable;
 
 /**
  *
@@ -21,12 +22,21 @@ import org.apache.xml.serialize.XMLSerializer;
 @XmlType(propOrder = {"title", "id", "updated", /*
      * "link",
      */ "entries"})
-public class PackageFeed {
+public class PackageFeed implements XmlWritable {
 
+    /**
+     * Название RSS ленты
+     */
     @XmlElement(name = "title", namespace = ATOM_XML_NAMESPACE)
     private Title title = new Title("Packages");
+    /**
+     * Адрес хранилища пакетов
+     */
     @XmlElement(name = "id", namespace = ATOM_XML_NAMESPACE)
     private String id;
+    /**
+     * Дата последнего изменения в хранилище
+     */
     @XmlElement(name = "updated", type = Date.class, namespace = ATOM_XML_NAMESPACE)
     private Date updated;
     //TODO Добавить Link
@@ -84,6 +94,7 @@ public class PackageFeed {
      * @param outputStream поток для записи
      * @throws JAXBException ошибка преобразования в XML
      */
+    @Override
     public void writeXml(OutputStream outputStream) throws JAXBException {
         //Первичная сереализация
         JAXBContext context = JAXBContext.newInstance(this.getClass());
