@@ -117,7 +117,13 @@ public class QueryLexer {
             }
             case "tolower": {
                 IdEqIgnoreCase expression = IdEqIgnoreCase.parse(tokens);
-                stack.push(expression);
+                if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
+                    AndExpression andExpression = (AndExpression) stack.pop();
+                    andExpression.secondExpression = expression;
+                    stack.push(andExpression);
+                } else {
+                    stack.push(expression);
+                }
                 return parse(tokens, stack);
             }
             case "or": {
@@ -140,13 +146,19 @@ public class QueryLexer {
             case "and": {
                 AndExpression expression = new AndExpression();
                 expression.firstExpression = stack.pop();
-                expression.secondExpression = parse(tokens, null);
-                return expression;
+                stack.push(expression);
+                return parse(tokens, stack);
             }
 
             case "isLatestVersion": {
                 Expression expression = new LatestVersionExpression();
-                stack.push(expression);
+                if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
+                    AndExpression andExpression = (AndExpression) stack.pop();
+                    andExpression.secondExpression = expression;
+                    stack.push(andExpression);
+                } else {
+                    stack.push(expression);
+                }
                 return parse(tokens, stack);
             }
             default:

@@ -2,8 +2,8 @@ package ru.aristar.jnuget.query;
 
 import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import org.junit.Ignore;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 
@@ -111,7 +111,6 @@ public class QueryLexerTest {
     }
 
     @Test
-    @Ignore
     public void testMultipleAndOrExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
@@ -119,7 +118,45 @@ public class QueryLexerTest {
         //WHEN
         Expression expression = lexer.parse(filterString);
         //THEN
-        assertThat("Операция первого уровня", expression, is(instanceOf(AndExpression.class)));
-        fail("Тест не дописан");
+        assertThat("Операция первого уровня", expression, is(instanceOf(OrExpression.class)));
+        OrExpression orExpression = (OrExpression) expression;
+        assertThat("Первое слогаемое", orExpression.firstExpression,
+                is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.firstExpression).value,
+                is(equalTo("projectwise.api")));
+        assertThat("Второе слогаемое", orExpression.secondExpression,
+                is(instanceOf(AndExpression.class)));
+        AndExpression andExpression = (AndExpression) orExpression.secondExpression;
+        assertThat("Умножаемое", andExpression.firstExpression, is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.firstExpression).value,
+                is(equalTo("projectwise.controls")));
+        assertThat("Множитель", andExpression.secondExpression, is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.secondExpression).value,
+                is(equalTo("projectwise.isolationlevel")));
+    }
+
+    @Test
+    public void testOrAndMultipleExpression() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        final String filterString = "tolower(Id) eq 'projectwise.api' and tolower(Id) eq 'projectwise.controls' or tolower(Id) eq 'projectwise.isolationlevel'";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        //THEN
+        assertThat("Операция первого уровня", expression, is(instanceOf(OrExpression.class)));
+        OrExpression orExpression = (OrExpression) expression;
+        assertThat("Первое слогаемое", orExpression.secondExpression,
+                is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.secondExpression).value,
+                is(equalTo("projectwise.isolationlevel")));
+        assertThat("Второе слогаемое", orExpression.firstExpression,
+                is(instanceOf(AndExpression.class)));
+        AndExpression andExpression = (AndExpression) orExpression.firstExpression;
+        assertThat("Умножаемое", andExpression.firstExpression, is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.firstExpression).value,
+                is(equalTo("projectwise.api")));
+        assertThat("Множитель", andExpression.secondExpression, is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.secondExpression).value,
+                is(equalTo("projectwise.controls")));
     }
 }
