@@ -1,9 +1,10 @@
 package ru.aristar.jnuget.query;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Queue;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  *
@@ -11,11 +12,14 @@ import ru.aristar.jnuget.files.Nupkg;
  */
 public class IdEqIgnoreCase implements Expression {
 
-    public String value;
+    public String packageId;
 
-    public List<Nupkg> execute() {
-        return null;
+    @Override
+    public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
+        return packageSource.getPackages(packageId);
     }
+
+ 
 
     public static IdEqIgnoreCase parse(Queue<String> tokens) throws NugetFormatException {
         IdEqIgnoreCase expression = new IdEqIgnoreCase();
@@ -24,7 +28,7 @@ public class IdEqIgnoreCase implements Expression {
         QueryLexer.assertToken(tokens.poll(), ")");
         QueryLexer.assertToken(tokens.poll(), "eq");
         QueryLexer.assertToken(tokens.poll(), "'");
-        expression.value = tokens.poll();
+        expression.packageId = tokens.poll();
         QueryLexer.assertToken(tokens.poll(), "'");
         return expression;
     }

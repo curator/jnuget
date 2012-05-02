@@ -1,7 +1,8 @@
 package ru.aristar.jnuget.query;
 
-import java.util.List;
+import java.util.Collection;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  *
@@ -12,7 +13,7 @@ public class GroupExpression implements Expression {
     public Expression innerExpression;
 
     @Override
-    public List<Nupkg> execute() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
+        return innerExpression.execute(packageSource);
     }
 }

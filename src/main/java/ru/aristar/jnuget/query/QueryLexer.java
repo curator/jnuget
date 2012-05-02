@@ -17,6 +17,16 @@ public class QueryLexer {
         }
     }
 
+    private void checkForAndExpression(Stack<Expression> stack, Expression expression) {
+        if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
+            AndExpression andExpression = (AndExpression) stack.pop();
+            andExpression.secondExpression = expression;
+            stack.push(andExpression);
+        } else {
+            stack.push(expression);
+        }
+    }
+
     /**
      * @param string проверяемая строка
      * @return является ли строка границой группы
@@ -117,13 +127,7 @@ public class QueryLexer {
             }
             case "tolower": {
                 IdEqIgnoreCase expression = IdEqIgnoreCase.parse(tokens);
-                if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
-                    AndExpression andExpression = (AndExpression) stack.pop();
-                    andExpression.secondExpression = expression;
-                    stack.push(andExpression);
-                } else {
-                    stack.push(expression);
-                }
+                checkForAndExpression(stack, expression);
                 return parse(tokens, stack);
             }
             case "or": {
@@ -152,17 +156,11 @@ public class QueryLexer {
 
             case "isLatestVersion": {
                 Expression expression = new LatestVersionExpression();
-                if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
-                    AndExpression andExpression = (AndExpression) stack.pop();
-                    andExpression.secondExpression = expression;
-                    stack.push(andExpression);
-                } else {
-                    stack.push(expression);
-                }
+                checkForAndExpression(stack, expression);
                 return parse(tokens, stack);
             }
             default:
-                throw new UnsupportedOperationException("Токен не поддерживается");
+                throw new NugetFormatException("Токен не поддерживается");
         }
     }
 

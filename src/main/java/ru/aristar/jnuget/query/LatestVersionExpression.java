@@ -1,7 +1,8 @@
 package ru.aristar.jnuget.query;
 
-import java.util.List;
+import java.util.Collection;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  *
@@ -10,7 +11,9 @@ import ru.aristar.jnuget.files.Nupkg;
 public class LatestVersionExpression implements Expression {
 
     @Override
-    public List<Nupkg> execute() {
+    public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    
 }
