@@ -48,23 +48,16 @@ public class MainUrlResource {
      * @return XML
      */
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget")
     public Response getXml() {
-        StringWriter writer = new StringWriter();
-        try {
-            MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
-            mainUrl.writeXml(writer);
-        } catch (JAXBException e) {
-            final String errorMessage = "Ошибка преобразования XML";
-            logger.error(errorMessage, e);
-            return Response.serverError().entity(errorMessage).build();
-        }
-        return Response.ok(writer.toString(), MediaType.APPLICATION_XML).build();
+        MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
+        XmlStreamingOutput streamingOutput = new XmlStreamingOutput(mainUrl);
+        return Response.ok(streamingOutput, MediaType.APPLICATION_XML).build();
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("")
     public Response getRootXml() {
         //TODO Разобраться со структурой приложения (что по какому URL должно находится)
@@ -72,7 +65,7 @@ public class MainUrlResource {
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget/{metadata : [$]metadata}")
     public Response getMetadata() {
         InputStream inputStream = this.getClass().getResourceAsStream("/metadata.xml");
@@ -80,13 +73,26 @@ public class MainUrlResource {
         return response.build();
     }
 
+    /**
+     * Возвращает HTML ответ с RSS содержащей информацию о пакетах
+     *
+     * @param filter условие выборки пакетов
+     * @param orderBy порядок сортировки пакетов (по умолчанию по дате
+     * публикации)
+     * @param skip количество пакетов, которое необходимо пропустить (по
+     * умолчанию 0)
+     * @param top количество пакетов в выборке
+     * @param searchTerm условие поиска
+     * @param targetFramework фрейморк, для которого предназначен пакет
+     * @return HTML c RSS
+     */
     @GET
-    @Produces("application/xml")
+    @Produces(MediaType.APPLICATION_XML)
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
-            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
-            @QueryParam("$top") @DefaultValue("-1") int top,
+            @QueryParam("$top") @DefaultValue("30") int top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
@@ -95,7 +101,8 @@ public class MainUrlResource {
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
             PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
-            return Response.ok(feed.getXml(), MediaType.APPLICATION_ATOM_XML_TYPE).build();
+            XmlStreamingOutput streamingOutput = new XmlStreamingOutput(feed);
+            return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);

@@ -23,7 +23,7 @@ public class QueryExecutor {
         if (sourceValue == null) {
             return null;
         }
-        return sourceValue.replaceAll("['\"]", "");
+        return sourceValue.replaceAll("['\"]", "").toLowerCase();
     }
 
     //TODO filter=((((((tolower(Id) eq 'projectwise.api') or (tolower(Id) eq 'projectwise.api')) or (tolower(Id) eq 'projectwise.controls')) or (tolower(Id) eq 'projectwise.isolationlevel')) or (tolower(Id) eq 'projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion

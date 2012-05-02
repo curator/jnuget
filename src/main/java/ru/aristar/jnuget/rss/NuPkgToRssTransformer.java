@@ -55,7 +55,7 @@ public abstract class NuPkgToRssTransformer {
                 logger.warn("Ошибка сбора информации о пакете " + nupkg, e);
             }
         }
-        Collections.sort(packageEntrys, new PackageIdAndVersionComparator());
+        Collections.sort(packageEntrys, getPackageComparator(orderBy));
         markLastVersion(packageEntrys);
         logger.debug("Получено {} записей о пакетах", new Object[]{packageEntrys.size()});
         packageEntrys = cutPackageList(skip, top, packageEntrys);
@@ -168,5 +168,23 @@ public abstract class NuPkgToRssTransformer {
             top = size - skip;
         }
         return top;
+    }
+
+    /**
+     * Возвращает компаратор пакетов на основе строкового представления условия
+     * поиска
+     *
+     * @param orderByClause строковое представление условия поиска
+     * @return копаратор пакетов
+     */
+    protected Comparator<PackageEntry> getPackageComparator(final String orderByClause) {
+        final String normalOrderBy = orderByClause == null ? "" : orderByClause.toLowerCase();
+        switch (normalOrderBy) {
+            case "updated":
+                return new PackageUpdateDateDescComparator();
+            default:
+                return new PackageIdAndVersionComparator();
+        }
+
     }
 }
