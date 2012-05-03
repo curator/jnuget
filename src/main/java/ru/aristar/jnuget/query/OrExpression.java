@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.query;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
@@ -14,9 +15,12 @@ public class OrExpression implements Expression {
     public Expression secondExpression;
 
     @Override
-    public List<Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
+        ArrayList<Nupkg> result = new ArrayList<>();
+        Collection<? extends Nupkg> firstExpressionResult = firstExpression.execute(packageSource);
+        result.addAll(firstExpressionResult);
+        Collection<? extends Nupkg> secondExpressionResult = secondExpression.execute(packageSource);
+        result.addAll(secondExpressionResult);
+        return result;
     }
-
-
 }

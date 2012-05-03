@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import org.jmock.Expectations;
+import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -208,7 +209,7 @@ public class QueryLexerTest {
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(packageSource).getPackages("projectwise.api");
         Nupkg pwPackage = context.mock(Nupkg.class);
-        expectations.will(Expectations.returnValue(Arrays.asList(pwPackage)));
+        expectations.will(returnValue(Arrays.asList(pwPackage)));
         context.checking(expectations);
         final String filterString = "tolower(Id) eq 'projectwise.api'";
         //WHEN
@@ -216,5 +217,74 @@ public class QueryLexerTest {
         Collection<? extends Nupkg> result = expression.execute(packageSource);
         //THEN
         assertArrayEquals(new Nupkg[]{pwPackage}, result.toArray(new Nupkg[0]));
+    }
+
+    /**
+     * Проверка поиска двух пакетов, с идентификатором, удовлетворяющему условию
+     * поиска
+     *
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testFindTwoOrByIdPackage() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+
+        //Пакеты
+        Nupkg firstPackage = context.mock(Nupkg.class, "first.package");
+        Nupkg secondPackage = context.mock(Nupkg.class, "second.package");
+
+        //Источник пакетов
+        @SuppressWarnings("unchecked")
+        PackageSource<? extends Nupkg> packageSource = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(packageSource).getPackages("first.package");
+        expectations.will(returnValue(Arrays.asList(firstPackage)));
+        expectations.atLeast(0).of(packageSource).getPackages("second.package");
+        expectations.will(returnValue(Arrays.asList(secondPackage)));
+        context.checking(expectations);
+
+        final String filterString = "tolower(Id) eq 'first.package' or tolower(Id) eq 'second.package'";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        Collection<? extends Nupkg> result = expression.execute(packageSource);
+        //THEN
+        Nupkg[] expected = {firstPackage, secondPackage};
+        assertArrayEquals("Список пакетов", expected, result.toArray(new Nupkg[0]));
+    }
+
+    /**
+     * Проверка поиска пакета, с идентификатором, удовлетворяющему условию
+     * поиска и имеющего последнюю версию
+     *
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testFindLastVersionByIdPackage() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+
+        //Пакеты
+        Nupkg firstPackage = context.mock(Nupkg.class, "first.package:1.1.2");
+        Nupkg secondPackage = context.mock(Nupkg.class, "first.package:2.0.0");
+
+        //Источник пакетов
+        @SuppressWarnings("unchecked")
+        PackageSource<? extends Nupkg> packageSource = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(packageSource).getPackages("first.package");
+        expectations.will(returnValue(Arrays.asList(firstPackage, secondPackage)));
+        expectations.atLeast(0).of(packageSource).getLastVersionPackages();
+        expectations.will(returnValue(Arrays.asList(secondPackage)));
+        context.checking(expectations);
+
+        final String filterString = "tolower(Id) eq 'first.package' and isLatestVersion";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        Collection<? extends Nupkg> result = expression.execute(packageSource);
+        //THEN
+        assertArrayEquals(new Nupkg[]{secondPackage}, result.toArray(new Nupkg[0]));
     }
 }

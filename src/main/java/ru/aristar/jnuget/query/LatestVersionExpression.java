@@ -12,8 +12,6 @@ public class LatestVersionExpression implements Expression {
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return packageSource.getLastVersionPackages();
     }
-
-    
 }
