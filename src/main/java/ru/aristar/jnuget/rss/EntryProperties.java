@@ -204,7 +204,7 @@ public class EntryProperties {
      */
     @XmlAnyElement
     public List<Element> getProperties() throws ParserConfigurationException {
-        ArrayList<Element> elements = new ArrayList<Element>();
+        ArrayList<Element> elements = new ArrayList<>();
         elements.add(createMicrosoftElement("Version", false, this.version));
         elements.add(createMicrosoftElement("Title", true, this.title));
         elements.add(createMicrosoftElement("IconUrl", true, this.iconUrl));
@@ -642,7 +642,7 @@ public class EntryProperties {
 
     public List<String> getTags() {
         if (tags == null) {
-            tags = new ArrayList<String>();
+            tags = new ArrayList<>();
         }
         return tags;
     }
@@ -700,7 +700,7 @@ public class EntryProperties {
      */
     public List<Dependency> getDependenciesList() throws NugetFormatException {
         ArrayList<Dependency> list = new ArrayList<>();
-        if (dependencies == null || dependencies.equals("")) {
+        if (dependencies == null || dependencies.isEmpty()) {
             return list;
         }
         String cleanDependencies = dependencies.replaceAll(" ", "");

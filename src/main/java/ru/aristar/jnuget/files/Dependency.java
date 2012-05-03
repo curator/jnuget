@@ -98,8 +98,8 @@ public class Dependency implements Serializable {
             throw new NugetFormatException("Строка зависимостей не соответствует формату RSS NuGet: " + dependencyString);
         }
         Dependency dependency = new Dependency();
-        String id = dependencyString.substring(0, dependencyString.indexOf(":"));
-        String versionRangeString = dependencyString.substring(dependencyString.indexOf(":") + 1);
+        String id = dependencyString.substring(0, dependencyString.indexOf(':'));
+        String versionRangeString = dependencyString.substring(dependencyString.indexOf(':') + 1);
         dependency.id = id;
         dependency.versionRange = VersionRange.parse(versionRangeString);
         return dependency;

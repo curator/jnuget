@@ -163,7 +163,7 @@ public class PackageEntry {
 
     public List<Link> getLinks() {
         if (links == null) {
-            links = new ArrayList<Link>();
+            links = new ArrayList<>();
         }
         return links;
     }

@@ -9,14 +9,14 @@ import ru.aristar.jnuget.Version;
 /**
  * Диапазон версий
  *
- * <p> 1.0 = 1.0 ≤ x</p> 
- * <p>(,1.0] = x ≤ 1.0</p> 
- * <p>(,1.0) = x < 1.0</p> 
- * <p>[1.0] = x == 1.0</p> 
- * <p>(1.0) = invalid</p> 
+ * <p> 1.0 = 1.0 ≤ x</p>
+ * <p>(,1.0] = x ≤ 1.0</p>
+ * <p>(,1.0) = x < 1.0</p>
+ * <p>[1.0] = x == 1.0</p>
+ * <p>(1.0) = invalid</p>
  * <p>(1.0,) = 1.0 < x</p>
- * <p>(1.0,2.0) = 1.0< x < 2.0</p> 
- * <p>[1.0,2.0] = 1.0 ≤ x ≤ 2.0</p> 
+ * <p>(1.0,2.0) = 1.0< x < 2.0</p>
+ * <p>[1.0,2.0] = 1.0 ≤ x ≤ 2.0</p>
  * <p>empty = latest version</p>.
  *
  * @author sviridov
@@ -120,7 +120,7 @@ public class VersionRange implements Serializable{
          * @return тип границы
          */
         private static BorderType getBorderType(String borderSymbol) {
-            if (borderSymbol == null || borderSymbol.equals("")) {
+            if (borderSymbol == null || borderSymbol.isEmpty()) {
                 return null;
             } else if (borderSymbol.equals(INCLUDE.lowBorderSymbol)
                     || borderSymbol.equals(INCLUDE.topBorderSymbol)) {
@@ -263,7 +263,7 @@ public class VersionRange implements Serializable{
      * @throws NugetFormatException некорректный формат версии
      */
     public static VersionRange parse(String versionRangeString) throws NugetFormatException {
-        if (versionRangeString == null || versionRangeString.equals("")) {
+        if (versionRangeString == null || versionRangeString.isEmpty()) {
             return new VersionRange();
         }
         if (Version.isValidVersionString(versionRangeString)) {
@@ -284,14 +284,14 @@ public class VersionRange implements Serializable{
             Version lowVersion = null;
             BorderType lowBorder = null;
             String lowVersionString = matcher.group("left");
-            if (!lowVersionString.equals("")) {
+            if (!lowVersionString.isEmpty()) {
                 lowVersion = Version.parse(lowVersionString);
                 lowBorder = BorderType.getBorderType(matcher.group("leftBorder"));
             }
             Version topVersion = null;
             BorderType topBorder = null;
             String topVersionString = matcher.group("right");
-            if (!topVersionString.equals("")) {
+            if (!topVersionString.isEmpty()) {
                 topVersion = Version.parse(topVersionString);
                 topBorder = BorderType.getBorderType(matcher.group("rightBorder"));
             }
