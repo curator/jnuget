@@ -37,7 +37,7 @@ public abstract class NuPkgToRssTransformer {
      * @param top всего вывести
      * @return RSS структура
      */
-    public PackageFeed transform(Collection<Nupkg> files, String orderBy, int skip, int top) {
+    public PackageFeed transform(Collection<? extends Nupkg> files, String orderBy, int skip, int top) {
         //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
         PackageFeed feed = new PackageFeed();
         feed.setId(getContext().getRootUri().toString());

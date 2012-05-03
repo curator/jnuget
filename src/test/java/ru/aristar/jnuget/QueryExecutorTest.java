@@ -9,6 +9,7 @@ import static org.jmock.Expectations.equal;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -56,12 +57,9 @@ public class QueryExecutorTest {
         final String filter = "tolower(id) eq 'package.name'";
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
-        context.checking(new Expectations() {
-
-            {
-                oneOf(source).getPackages("package.name");
-            }
-        });
+        Expectations expectations = new Expectations();
+        expectations.oneOf(source).getPackages("package.name");
+        context.checking(expectations);
         QueryExecutor executor = new QueryExecutor();
         //WHEN
         executor.execQuery(source, filter);
@@ -114,7 +112,7 @@ public class QueryExecutorTest {
             }
         });
         //WHEN
-        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Collection<? extends Nupkg> result = executor.execQuery(source, null, searchTerm);
         Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
         //THEN
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
@@ -145,7 +143,7 @@ public class QueryExecutorTest {
             }
         });
         //WHEN
-        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Collection<? extends Nupkg> result = executor.execQuery(source, null, searchTerm);
         Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
         //THEN
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
@@ -176,7 +174,7 @@ public class QueryExecutorTest {
             }
         });
         //WHEN
-        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Collection<? extends Nupkg> result = executor.execQuery(source, null, searchTerm);
         Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
         //THEN
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(2)));
@@ -209,7 +207,7 @@ public class QueryExecutorTest {
             }
         });
         //WHEN
-        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Collection<? extends Nupkg> result = executor.execQuery(source, null, searchTerm);
         Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
         //THEN
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(2)));
@@ -242,12 +240,36 @@ public class QueryExecutorTest {
             }
         });
         //WHEN
-        Collection<Nupkg> result = executor.execQuery(source, null, searchTerm);
+        Collection<? extends Nupkg> result = executor.execQuery(source, null, searchTerm);
         Nupkg[] nupkgs = result.toArray(new Nupkg[0]);
         //THEN
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
         assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
         assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+    }
+
+    /**
+     * Проверка получения данных для реального запроса
+     */
+    @Test
+    public void testGetRealQuerry() {
+        //GIVEN
+        final String query = "((((((tolower(Id) eq 'projectwise.api') or "
+                + "(tolower(Id) eq 'projectwise.api')) or (tolower(Id) "
+                + "eq 'projectwise.controls')) or (tolower(Id) "
+                + "eq 'projectwise.isolationlevel')) or (tolower(Id"
+                + " eq 'projectwise.isolationlevel.implementation')) "
+                + "or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') "
+                + "and isLatestVersion";
+
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+
+        //WHEN
+        QueryExecutor executor = new QueryExecutor();
+        executor.execQuery(source, query, null);
+        //THEN
+        fail("Тест не реализован");
     }
 
     /**

@@ -11,7 +11,7 @@ import ru.aristar.jnuget.files.NugetFormatException;
 public class QueryLexer {
 
     public static void assertToken(String actual, String expected) throws NugetFormatException {
-        if (!Objects.equals(actual, expected)) {
+        if (!actual.equalsIgnoreCase(expected)) {
             throw new NugetFormatException("Встретился токен '" + actual
                     + "', когда ожидался '" + expected + "'");
         }
@@ -164,7 +164,7 @@ public class QueryLexer {
         }
     }
 
-    protected Expression parse(String value) throws NugetFormatException {
+    public Expression parse(String value) throws NugetFormatException {
         Queue<String> tokenQueue = new ArrayDeque<>(split(value));
         return parse(tokenQueue, null);
     }

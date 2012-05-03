@@ -2,9 +2,12 @@ package ru.aristar.jnuget;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.query.Expression;
+import ru.aristar.jnuget.query.QueryLexer;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -12,6 +15,11 @@ import ru.aristar.jnuget.sources.PackageSource;
  * @author sviridov
  */
 public class QueryExecutor {
+
+    /**
+     * Логгер
+     */
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Удаляет некорректные символы из условия поиска
@@ -26,7 +34,6 @@ public class QueryExecutor {
         return sourceValue.replaceAll("['\"]", "").toLowerCase();
     }
 
-    //TODO filter=((((((tolower(Id) eq 'projectwise.api') or (tolower(Id) eq 'projectwise.api')) or (tolower(Id) eq 'projectwise.controls')) or (tolower(Id) eq 'projectwise.isolationlevel')) or (tolower(Id) eq 'projectwise.isolationlevel.implementation')) or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion
     /**
      * Получение списка пакетов из хранилища
      *
@@ -35,8 +42,8 @@ public class QueryExecutor {
      * @param searchTerm условие поиска
      * @return коллекция пакетов
      */
-    public Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter, final String searchTerm) {
-        Collection<Nupkg> nupkgs = execQuery(packageSource, filter);
+    public Collection<? extends Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter, final String searchTerm) {
+        Collection<? extends Nupkg> nupkgs = execQuery(packageSource, filter);
         final String normSearchTerm = normaliseSearchTerm(searchTerm);
         if (normSearchTerm == null || normSearchTerm.matches("\\s*")) {
             return nupkgs;
@@ -57,23 +64,17 @@ public class QueryExecutor {
      * @param filter фильтр пакетов
      * @return коллекция пакетов
      */
-    protected Collection<Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
-        if (filter == null || "".equals(filter)) {
+    protected Collection<? extends Nupkg> execQuery(PackageSource<Nupkg> packageSource, final String filter) {
+        if (filter == null || filter.isEmpty()) {
             return packageSource.getPackages();
         }
-        if (filter.toLowerCase().startsWith("tolower(id) eq")) {
-            Pattern pattern = Pattern.compile("(\\w+)\\((\\w+)\\)\\s+(\\w+)\\s+'?([^']+)'?");
-            Matcher matcher = pattern.matcher(filter);
-            if (matcher.find()) {
-                String function = matcher.group(1);
-                String field = matcher.group(2);
-                String condition = matcher.group(3);
-                String value = matcher.group(4);
-                return packageSource.getPackages(value);
-            }
-        } else if (filter.toLowerCase().startsWith("islatestversion")) {
-            return packageSource.getLastVersionPackages();
+        try {
+            QueryLexer queryLexer = new QueryLexer();
+            Expression expression = queryLexer.parse(filter);
+            return expression.execute(packageSource);
+        } catch (NugetFormatException e) {
+            logger.warn("Ошибка разбора запроса пакетов", e);
+            return packageSource.getPackages();
         }
-        return packageSource.getPackages();
     }
 }
