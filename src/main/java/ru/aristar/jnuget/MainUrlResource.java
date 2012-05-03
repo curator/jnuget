@@ -2,12 +2,10 @@ package ru.aristar.jnuget;
 
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.*;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.Nupkg;

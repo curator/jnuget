@@ -191,17 +191,17 @@ public class Options {
     private static void readSystemProperties() {
         String nugetHomeName = (String) System.getProperties().get("nuget.home");
         String fileSeparator = (String) System.getProperties().get("file.separator");
-        if (nugetHomeName == null || nugetHomeName.equals("")) {
+        if (nugetHomeName == null || nugetHomeName.isEmpty()) {
             nugetHomeName = System.getenv("NUGET_HOME");
-            if (nugetHomeName == null || nugetHomeName.equals("")) {
+            if (nugetHomeName == null || nugetHomeName.isEmpty()) {
                 nugetHomeName = (String) System.getProperties().get("user.home");
                 if (!nugetHomeName.endsWith(fileSeparator)) {
                     nugetHomeName = nugetHomeName + fileSeparator;
                 }
-                nugetHomeName = nugetHomeName + ".nuget";                
+                nugetHomeName = nugetHomeName + ".nuget";
             }
             System.getProperties().setProperty("nuget.home", nugetHomeName);
-        }        
+        }
         logger.info("Домашняя папка NuGet установлена в {}", new Object[]{nugetHomeName});
         nugetHome = new File(nugetHomeName);
     }
