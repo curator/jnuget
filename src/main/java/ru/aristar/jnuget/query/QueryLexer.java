@@ -86,6 +86,7 @@ public class QueryLexer {
      * @return список лексем
      */
     protected List<String> split(String value) {
+        //TODO реализовать Tokenizer, c возможностью определять позицию в строке
         char[] chars = value.toCharArray();
         ArrayList<String> tokens = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -134,6 +135,7 @@ public class QueryLexer {
                 OrExpression expression = new OrExpression();
                 Expression secondExpression = parse(tokens, null);
                 String nextToken = tokens.peek();
+                //TODO Это скорее всего лишнее
                 if (nextToken != null && nextToken.equals("and")) {
                     stack.push(secondExpression);
                     secondExpression = parse(tokens, stack);

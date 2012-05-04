@@ -8,8 +8,8 @@ import org.jmock.Expectations;
 import static org.jmock.Expectations.equal;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -92,7 +92,7 @@ public class QueryExecutorTest {
     /**
      * Проверка поиска версии с условием поиска
      *
-     * @throws NugetFormatException тестовый формат версии не соответствует
+     * @throws NugetFormatException версия заглушки пакета не соответствует
      * формату
      */
     @Test
@@ -123,7 +123,7 @@ public class QueryExecutorTest {
     /**
      * Проверка поиска версии с условием поиска в верхнем регистре
      *
-     * @throws NugetFormatException тестовый формат версии не соответствует
+     * @throws NugetFormatException версия заглушки пакета не соответствует
      * формату
      */
     @Test
@@ -154,7 +154,7 @@ public class QueryExecutorTest {
     /**
      * Проверка поиска версии с null условием поиска
      *
-     * @throws NugetFormatException тестовый формат версии не соответствует
+     * @throws NugetFormatException версия заглушки пакета не соответствует
      * формату
      */
     @Test
@@ -187,7 +187,7 @@ public class QueryExecutorTest {
     /**
      * Проверка поиска версии с условием поиска содержащим только пробелы
      *
-     * @throws NugetFormatException тестовый формат версии не соответствует
+     * @throws NugetFormatException версия заглушки пакета не соответствует
      * формату
      */
     @Test
@@ -220,7 +220,7 @@ public class QueryExecutorTest {
     /**
      * Проверка поиска версии с условием поиска содержащим только пробелы
      *
-     * @throws NugetFormatException тестовый формат версии не соответствует
+     * @throws NugetFormatException версия заглушки пакета не соответствует
      * формату
      */
     @Test
@@ -250,26 +250,63 @@ public class QueryExecutorTest {
 
     /**
      * Проверка получения данных для реального запроса
+     *
+     * @throws NugetFormatException версия заглушки пакета не соответствует
+     * формату
      */
     @Test
-    public void testGetRealQuerry() {
+    public void testGetRealQuerry() throws NugetFormatException {
         //GIVEN
-        final String query = "((((((tolower(Id) eq 'projectwise.api') or "
-                + "(tolower(Id) eq 'projectwise.api')) or (tolower(Id) "
-                + "eq 'projectwise.controls')) or (tolower(Id) "
-                + "eq 'projectwise.isolationlevel')) or (tolower(Id"
-                + " eq 'projectwise.isolationlevel.implementation')) "
-                + "or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') "
+        //Строка запроса
+        final String queryString = "((((((tolower(Id) eq 'first.package') or "
+                + "(tolower(Id) eq 'second.package')) "
+                + "or (tolower(Id) eq 'thrid.package')) "
+                + "or (tolower(Id) eq 'fourth.package')) "
+                + "or (tolower(Id) eq 'fifth.package')) "
+                + "or (tolower(Id) eq 'sixth.package')) "
+                + "or (tolower(Id) eq 'seventh.package') "
                 + "and isLatestVersion";
-
+        //Пакеты
+        Nupkg firstPackage = createPackageStub("first.package", "1");
+        Nupkg secondPackage = createPackageStub("second.package", "1");
+        Nupkg thridPackage = createPackageStub("thrid.package", "1");
+        Nupkg fourthPackage = createPackageStub("fourth.package", "1");
+        Nupkg fifthPackage = createPackageStub("fifth.package", "1");
+        Nupkg sixthPackage = createPackageStub("sixth.package", "1");
+        Nupkg seventhFirstPackage = createPackageStub("seventh.package", "1");
+        Nupkg seventhLastPackage = createPackageStub("seventh.package", "2");
+        Nupkg eighthPackage = createPackageStub("eighth.package", "1");
+        //Хранилище
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.oneOf(source).getPackages("first.package");
+        expectations.will(returnValue(Arrays.asList(firstPackage)));
+        expectations.oneOf(source).getPackages("second.package");
+        expectations.will(returnValue(Arrays.asList(secondPackage)));
+        expectations.oneOf(source).getPackages("thrid.package");
+        expectations.will(returnValue(Arrays.asList(thridPackage)));
+        expectations.oneOf(source).getPackages("fourth.package");
+        expectations.will(returnValue(Arrays.asList(fourthPackage)));
+        expectations.oneOf(source).getPackages("fifth.package");
+        expectations.will(returnValue(Arrays.asList(fifthPackage)));
+        expectations.oneOf(source).getPackages("sixth.package");
+        expectations.will(returnValue(Arrays.asList(sixthPackage)));
+        expectations.oneOf(source).getPackages("seventh.package");
+        expectations.will(returnValue(Arrays.asList(seventhFirstPackage, seventhLastPackage)));
+        expectations.oneOf(source).getLastVersionPackages();
+        expectations.will(returnValue(Arrays.asList(firstPackage, secondPackage,
+                thridPackage, fourthPackage, fifthPackage,
+                sixthPackage, seventhLastPackage, eighthPackage)));
 
+        context.checking(expectations);
         //WHEN
         QueryExecutor executor = new QueryExecutor();
-        executor.execQuery(source, query, null);
+        Collection<? extends Nupkg> result = executor.execQuery(source, queryString, null);
         //THEN
-        fail("Тест не реализован");
+        Nupkg[] expecteds = {firstPackage, secondPackage, thridPackage,
+            fourthPackage, fifthPackage, sixthPackage, seventhLastPackage};
+        assertArrayEquals("Пакеты, полученные из хранилища", expecteds, result.toArray(new Nupkg[0]));
     }
 
     /**
