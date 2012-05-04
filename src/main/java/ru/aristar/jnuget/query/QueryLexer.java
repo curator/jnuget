@@ -10,6 +10,13 @@ import ru.aristar.jnuget.files.NugetFormatException;
  */
 public class QueryLexer {
 
+    /**
+     * Сравнивает токен с эталоном
+     *
+     * @param actual токен
+     * @param expected эталон
+     * @throws NugetFormatException токен не соответствует эталону
+     */
     public static void assertToken(String actual, String expected) throws NugetFormatException {
         if (!actual.equalsIgnoreCase(expected)) {
             throw new NugetFormatException("Встретился токен '" + actual
@@ -17,6 +24,13 @@ public class QueryLexer {
         }
     }
 
+    /**
+     * Проверяет наличие в стеке предыдущей операции и если это операция AND
+     * изменяет ее приоритет
+     *
+     * @param stack стек с выражениями
+     * @param expression последнее распознанное выражение
+     */
     private void checkForAndExpression(Stack<Expression> stack, Expression expression) {
         if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
             AndExpression andExpression = (AndExpression) stack.pop();
@@ -110,6 +124,15 @@ public class QueryLexer {
         return tokens;
     }
 
+    /**
+     * Создает дерево выражений, на основе очереди токенов и стека ранее
+     * распознаных выражений
+     *
+     * @param tokens очередь токенов
+     * @param stack стека ранее распознаных выражений
+     * @return дерево выражений
+     * @throws NugetFormatException токен не соответствует формату
+     */
     protected Expression parse(Queue<String> tokens, Stack<Expression> stack) throws NugetFormatException {
         if (tokens.isEmpty()) {
             return stack.pop();
@@ -134,12 +157,6 @@ public class QueryLexer {
             case "or": {
                 OrExpression expression = new OrExpression();
                 Expression secondExpression = parse(tokens, null);
-                String nextToken = tokens.peek();
-                //TODO Это скорее всего лишнее
-                if (nextToken != null && nextToken.equals("and")) {
-                    stack.push(secondExpression);
-                    secondExpression = parse(tokens, stack);
-                }
                 expression.secondExpression = secondExpression;
                 expression.firstExpression = stack.pop();
                 return expression;
@@ -166,6 +183,13 @@ public class QueryLexer {
         }
     }
 
+    /**
+     * Создает дерево выражений на основе строки токенов
+     *
+     * @param value строка с ключевыми словами
+     * @return дерево выражений
+     * @throws NugetFormatException ключевое слово не соответствует формату
+     */
     public Expression parse(String value) throws NugetFormatException {
         Queue<String> tokenQueue = new ArrayDeque<>(split(value));
         return parse(tokenQueue, null);
