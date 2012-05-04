@@ -5,6 +5,7 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
+ * Возвращает последние версии пакетов из хранилища
  *
  * @author sviridov
  */

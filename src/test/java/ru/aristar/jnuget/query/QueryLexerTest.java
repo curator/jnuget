@@ -68,7 +68,7 @@ public class QueryLexerTest {
         Expression expression = lexer.parse(filterString);
         assertThat("Операция верхнего уровня", expression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) expression;
-        assertThat("Значение параметра", eqIgnoreCase.packageId, is(equalTo("projectwise.api")));
+        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("projectwise.api")));
     }
 
     /**
@@ -85,12 +85,9 @@ public class QueryLexerTest {
         final String filterString = "(tolower(Id) eq 'projectwise.api')";
         //WHEN
         Expression expression = lexer.parse(filterString);
-        assertThat("Операция верхнего уровня", expression, is(instanceOf(GroupExpression.class)));
-        GroupExpression groupExpression = (GroupExpression) expression;
-        Expression level2Expression = groupExpression.innerExpression;
-        assertThat("Операция сравнения идентификатора пакета", level2Expression, is(instanceOf(IdEqIgnoreCase.class)));
-        IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) level2Expression;
-        assertThat("Значение параметра", eqIgnoreCase.packageId, is(equalTo("projectwise.api")));
+        assertThat("Операция верхнего уровня", expression, is(instanceOf(IdEqIgnoreCase.class)));
+        IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) expression;
+        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("projectwise.api")));
     }
 
     /**
@@ -109,15 +106,21 @@ public class QueryLexerTest {
         Expression expression = lexer.parse(filterString);
         assertThat("Операция верхнего уровня", expression, is(instanceOf(AndExpression.class)));
         AndExpression andExpression = (AndExpression) expression;
-        Expression firstExpression = andExpression.firstExpression;
+        Expression firstExpression = andExpression.getFirstExpression();
         assertThat("Первая операция второго уровня", firstExpression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase firstEqExpression = (IdEqIgnoreCase) firstExpression;
-        assertThat("Значение первой операции", firstEqExpression.packageId, is(equalTo("projectwise.api")));
+        assertThat("Значение первой операции", firstEqExpression.getPackageId(), is(equalTo("projectwise.api")));
 
-        Expression secondExpression = andExpression.secondExpression;
+        Expression secondExpression = andExpression.getSecondExpression();
         assertThat("Вторая операция второго уровня", secondExpression, is(instanceOf(LatestVersionExpression.class)));
     }
 
+    /**
+     * Два выражения сравнения в скобках и ИЛИ
+     *
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
     @Test
     public void testOrTwoEqExpression() throws NugetFormatException {
         //GIVEN
@@ -128,19 +131,20 @@ public class QueryLexerTest {
         //THEN
         assertThat("Операция верхнего уровня", expression, is(instanceOf(OrExpression.class)));
         OrExpression orExpression = (OrExpression) expression;
-        assertThat("Класс первого параметра", orExpression.firstExpression, is(instanceOf(GroupExpression.class)));
-        GroupExpression firstGroup = (GroupExpression) orExpression.firstExpression;
-        assertThat("Класс первой группы", firstGroup.innerExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        IdEqIgnoreCase firstEq = (IdEqIgnoreCase) firstGroup.innerExpression;
-        assertThat("Значение параметра", firstEq.packageId, is(equalTo("projectwise.api")));
 
-        assertThat("Класс второго параметра", orExpression.secondExpression, is(instanceOf(GroupExpression.class)));
-        GroupExpression secondGroup = (GroupExpression) orExpression.secondExpression;
-        assertThat("Класс второй группы", secondGroup.innerExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        IdEqIgnoreCase secondEq = (IdEqIgnoreCase) secondGroup.innerExpression;
-        assertThat("Значение параметра", secondEq.packageId, is(equalTo("projectwise.controls")));
+        assertThat("Класс первого параметра", orExpression.getFirstExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        IdEqIgnoreCase firstEq = (IdEqIgnoreCase) orExpression.getFirstExpression();
+        assertThat("Значение параметра", firstEq.getPackageId(), is(equalTo("projectwise.api")));
+
+        assertThat("Класс второго параметра", orExpression.getSecondExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        IdEqIgnoreCase secondEq = (IdEqIgnoreCase) orExpression.getSecondExpression();
+        assertThat("Значение параметра", secondEq.getPackageId(), is(equalTo("projectwise.controls")));
     }
 
+    /**
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
     @Test
     public void testMultipleAndOrExpression() throws NugetFormatException {
         //GIVEN
@@ -152,21 +156,25 @@ public class QueryLexerTest {
         //THEN
         assertThat("Операция первого уровня", expression, is(instanceOf(OrExpression.class)));
         OrExpression orExpression = (OrExpression) expression;
-        assertThat("Первое слогаемое", orExpression.firstExpression,
+        assertThat("Первое слогаемое", orExpression.getFirstExpression(),
                 is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.firstExpression).packageId,
+        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.getFirstExpression()).getPackageId(),
                 is(equalTo("projectwise.api")));
-        assertThat("Второе слогаемое", orExpression.secondExpression,
+        assertThat("Второе слогаемое", orExpression.getSecondExpression(),
                 is(instanceOf(AndExpression.class)));
-        AndExpression andExpression = (AndExpression) orExpression.secondExpression;
-        assertThat("Умножаемое", andExpression.firstExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.firstExpression).packageId,
+        AndExpression andExpression = (AndExpression) orExpression.getSecondExpression();
+        assertThat("Умножаемое", andExpression.getFirstExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.getFirstExpression()).getPackageId(),
                 is(equalTo("projectwise.controls")));
-        assertThat("Множитель", andExpression.secondExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.secondExpression).packageId,
+        assertThat("Множитель", andExpression.getSecondExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.getSecondExpression()).getPackageId(),
                 is(equalTo("projectwise.isolationlevel")));
     }
 
+    /**
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
     @Test
     public void testOrAndMultipleExpression() throws NugetFormatException {
         //GIVEN
@@ -178,18 +186,18 @@ public class QueryLexerTest {
         //THEN
         assertThat("Операция первого уровня", expression, is(instanceOf(OrExpression.class)));
         OrExpression orExpression = (OrExpression) expression;
-        assertThat("Первое слогаемое", orExpression.secondExpression,
+        assertThat("Первое слогаемое", orExpression.getSecondExpression(),
                 is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.secondExpression).packageId,
+        assertThat("Первый идентификатор", ((IdEqIgnoreCase) orExpression.getSecondExpression()).getPackageId(),
                 is(equalTo("projectwise.isolationlevel")));
-        assertThat("Второе слогаемое", orExpression.firstExpression,
+        assertThat("Второе слогаемое", orExpression.getFirstExpression(),
                 is(instanceOf(AndExpression.class)));
-        AndExpression andExpression = (AndExpression) orExpression.firstExpression;
-        assertThat("Умножаемое", andExpression.firstExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.firstExpression).packageId,
+        AndExpression andExpression = (AndExpression) orExpression.getFirstExpression();
+        assertThat("Умножаемое", andExpression.getFirstExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.getFirstExpression()).getPackageId(),
                 is(equalTo("projectwise.api")));
-        assertThat("Множитель", andExpression.secondExpression, is(instanceOf(IdEqIgnoreCase.class)));
-        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.secondExpression).packageId,
+        assertThat("Множитель", andExpression.getSecondExpression(), is(instanceOf(IdEqIgnoreCase.class)));
+        assertThat("Второй идентификатор", ((IdEqIgnoreCase) andExpression.getSecondExpression()).getPackageId(),
                 is(equalTo("projectwise.controls")));
     }
 

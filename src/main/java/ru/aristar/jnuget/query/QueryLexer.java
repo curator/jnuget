@@ -34,7 +34,7 @@ public class QueryLexer {
     private void checkForAndExpression(Stack<Expression> stack, Expression expression) {
         if (!stack.isEmpty() && stack.peek() instanceof AndExpression) {
             AndExpression andExpression = (AndExpression) stack.pop();
-            andExpression.secondExpression = expression;
+            andExpression.setSecondExpression(expression);
             stack.push(andExpression);
         } else {
             stack.push(expression);
@@ -144,8 +144,7 @@ public class QueryLexer {
         }
         switch (token) {
             case "(": {
-                GroupExpression expression = new GroupExpression();
-                expression.innerExpression = parse(tokens, null);
+                Expression expression = parse(tokens, null);
                 stack.push(expression);
                 return parse(tokens, stack);
             }
@@ -157,8 +156,8 @@ public class QueryLexer {
             case "or": {
                 OrExpression expression = new OrExpression();
                 Expression secondExpression = parse(tokens, null);
-                expression.secondExpression = secondExpression;
-                expression.firstExpression = stack.pop();
+                expression.setSecondExpression(secondExpression);
+                expression.setFirstExpression(stack.pop());
                 return expression;
             }
 
@@ -168,7 +167,7 @@ public class QueryLexer {
 
             case "and": {
                 AndExpression expression = new AndExpression();
-                expression.firstExpression = stack.pop();
+                expression.setFirstExpression(stack.pop());
                 stack.push(expression);
                 return parse(tokens, stack);
             }
@@ -191,7 +190,12 @@ public class QueryLexer {
      * @throws NugetFormatException ключевое слово не соответствует формату
      */
     public Expression parse(String value) throws NugetFormatException {
-        Queue<String> tokenQueue = new ArrayDeque<>(split(value));
-        return parse(tokenQueue, null);
+        try {
+            Queue<String> tokenQueue = new ArrayDeque<>(split(value));
+            return parse(tokenQueue, null);
+        } catch (NugetFormatException e) {
+            throw new NugetFormatException("Не удалось проанализировать "
+                    + "строку: \"" + value + "\"", e);
+        }
     }
 }
