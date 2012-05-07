@@ -190,8 +190,8 @@ public class QueryLexer {
      * @throws NugetFormatException ключевое слово не соответствует формату
      */
     public Expression parse(String value) throws NugetFormatException {
+        ArrayDeque<String> tokenQueue = new ArrayDeque<>(split(value));
         try {
-            Queue<String> tokenQueue = new ArrayDeque<>(split(value));
             return parse(tokenQueue, null);
         } catch (NugetFormatException e) {
             throw new NugetFormatException("Не удалось проанализировать "
