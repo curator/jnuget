@@ -21,7 +21,7 @@ public class TokenQueue implements Queue<String> {
 
         @Override
         public boolean hasNext() {
-            return currPos < querryChars.length - 1;
+            return currPos < querryChars.length;
         }
 
         @Override
@@ -40,6 +40,7 @@ public class TokenQueue implements Queue<String> {
                 if (!isSkipToken(tokenString)) {
                     builder.append(tokenString);
                     if (currPos == querryChars.length - 1) {
+                        currPos++;
                         return builder.toString();
                     }
                 }
