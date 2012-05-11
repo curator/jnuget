@@ -7,11 +7,15 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
+ * Тест класса очереди токенов
  *
  * @author sviridov
  */
 public class TokenQueueTest {
-    
+
+    /**
+     * Проверка преобразования к типизированному массиву
+     */
     @Test
     public void testToArray() {
         //GIVEN
@@ -35,7 +39,10 @@ public class TokenQueueTest {
         //THEN
         assertArrayEquals("Множество токенов", expected, actual);
     }
-    
+
+    /**
+     * Проверка преобразования к нетипизированному массиву
+     */
     @Test
     public void testToArrayOfObject() {
         //GIVEN
@@ -46,7 +53,10 @@ public class TokenQueueTest {
         //THEN
         assertThat(actual.length, is(equalTo(8)));
     }
-    
+
+    /**
+     * Тест последовательного получения элементов очереди токенов
+     */
     @Test
     public void testPool() {
         //GIVEN
@@ -63,7 +73,10 @@ public class TokenQueueTest {
         assertThat(tokenQueue.poll(), is(equalTo("projectwise.api")));
         assertThat(tokenQueue.poll(), is(equalTo("'")));
     }
-    
+
+    /**
+     * Тест просмотра верхнего элемента из очереди
+     */
     @Test
     public void testPeek() {
         //GIVEN
@@ -73,5 +86,7 @@ public class TokenQueueTest {
         //THEN
         assertThat(tokenQueue.peek(), is(equalTo("tolower")));
         assertThat(tokenQueue.poll(), is(equalTo("tolower")));
+        assertThat(tokenQueue.peek(), is(equalTo("(")));
+        assertThat(tokenQueue.poll(), is(equalTo("(")));
     }
 }

@@ -8,8 +8,17 @@ import java.util.*;
  */
 public class TokenQueue implements Queue<String> {
 
+    /**
+     * Массив исходных символов
+     */
     private final char[] querryChars;
+    /**
+     * Последний извлеченный токен
+     */
     private String lastToken;
+    /**
+     * Итератор по токенам
+     */
     private final TokenIterator iterator;
 
     /**
@@ -17,6 +26,9 @@ public class TokenQueue implements Queue<String> {
      */
     public class TokenIterator implements Iterator<String> {
 
+        /**
+         * Текущая позиция в итераторе
+         */
         private int currPos = 0;
 
         @Override
@@ -107,6 +119,9 @@ public class TokenQueue implements Queue<String> {
         return false;
     }
 
+    /**
+     * @param querryString строка, подлежащая разделению на токены
+     */
     public TokenQueue(String querryString) {
         this.querryChars = querryString.toCharArray();
         iterator = new TokenIterator();
