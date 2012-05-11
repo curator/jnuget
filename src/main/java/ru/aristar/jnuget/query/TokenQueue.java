@@ -172,7 +172,7 @@ public class TokenQueue implements Queue<String> {
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return !iterator.hasNext() && lastToken == null;
     }
 
     @Override
@@ -241,5 +241,12 @@ public class TokenQueue implements Queue<String> {
     @Override
     public void clear() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return текущая позиция в исходной строке (начиная с 0)
+     */
+    public int getCurrentPosition() {
+        return iterator.currPos;
     }
 }

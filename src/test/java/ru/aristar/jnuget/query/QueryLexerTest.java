@@ -2,7 +2,6 @@ package ru.aristar.jnuget.query;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
@@ -24,34 +23,6 @@ public class QueryLexerTest {
      * Контекст для создания заглушек
      */
     private Mockery context = new Mockery();
-
-    /**
-     * Проверка разделения строки на токены
-     */
-    @Test
-    public void testTokenizeString() {
-        //GIVEN
-        QueryLexer lexer = new QueryLexer();
-        final String filterString = "((((((tolower(Id) eq 'projectwise.api') "
-                + "or (tolower(Id) eq 'projectwise.api')) or "
-                + "(tolower(Id) eq 'projectwise.controls')) or "
-                + "(tolower(Id) eq 'projectwise.isolationlevel')) or "
-                + "(tolower(Id) eq 'projectwise.isolationlevel.implementation')) "
-                + "or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion";
-        //WHEN
-        List<String> tokens = lexer.split(filterString);
-        String[] actual = tokens.toArray(new String[0]);
-        String[] expected = new String[]{"(", "(", "(", "(", "(", "(", "tolower", "(",
-            "Id", ")", "eq", "'", "projectwise.api", "'", ")",
-            "or", "(", "tolower", "(", "Id", ")", "eq", "'", "projectwise.api", "'", ")", ")", "or",
-            "(", "tolower", "(", "Id", ")", "eq", "'", "projectwise.controls", "'", ")", ")", "or",
-            "(", "tolower", "(", "Id", ")", "eq", "'", "projectwise.isolationlevel", "'", ")", ")", "or",
-            "(", "tolower", "(", "Id", ")", "eq", "'", "projectwise.isolationlevel.implementation", "'", ")", ")",
-            "or", "(", "tolower", "(", "Id", ")", "eq", "'", "nlog", "'", ")", ")", "or", "(", "tolower", "(",
-            "Id", ")", "eq", "'", "postsharp", "'", ")", "and", "isLatestVersion"};
-        //THEN
-        assertArrayEquals("Множество токенов", expected, actual);
-    }
 
     /**
      * Проверка простого выражения на эквивалентность идентификатора пакета
@@ -294,5 +265,20 @@ public class QueryLexerTest {
         Collection<? extends Nupkg> result = expression.execute(packageSource);
         //THEN
         assertArrayEquals(new Nupkg[]{secondPackage}, result.toArray(new Nupkg[0]));
+    }
+
+    /**
+     * Проверка на обработку строки некорректного формата
+     *
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
+    @Test(expected = ru.aristar.jnuget.files.NugetFormatException.class)
+    public void testIncorrectQuerryString() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        final String filterString = "tolower(Id eq 'projectwise.api'";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
     }
 }

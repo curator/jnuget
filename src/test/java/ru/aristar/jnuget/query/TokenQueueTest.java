@@ -89,4 +89,26 @@ public class TokenQueueTest {
         assertThat(tokenQueue.peek(), is(equalTo("(")));
         assertThat(tokenQueue.poll(), is(equalTo("(")));
     }
+
+    /**
+     * Проверка метода, определяющего пуста ли очередь токенов
+     */
+    @Test
+    public void testIsEmpty() {
+        //GIVEN
+        final String filterString = "tolower(Id)";
+        //WHEN
+        TokenQueue tokenQueue = new TokenQueue(filterString);
+        //THEN
+        assertThat(tokenQueue.poll(), is(equalTo("tolower")));
+        assertThat(tokenQueue.isEmpty(), is(equalTo(false)));
+        assertThat(tokenQueue.poll(), is(equalTo("(")));
+        assertThat(tokenQueue.isEmpty(), is(equalTo(false)));
+        assertThat(tokenQueue.poll(), is(equalTo("Id")));
+        assertThat(tokenQueue.isEmpty(), is(equalTo(false)));
+        assertThat(tokenQueue.peek(), is(equalTo(")")));
+        assertThat(tokenQueue.isEmpty(), is(equalTo(false)));
+        assertThat(tokenQueue.poll(), is(equalTo(")")));
+        assertThat(tokenQueue.isEmpty(), is(equalTo(true)));
+    }
 }
