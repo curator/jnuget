@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.EnumSet;
 import ru.aristar.jnuget.Version;
 
 /**
@@ -62,6 +63,11 @@ public interface Nupkg extends Serializable {
      * @return версия пакета
      */
     Version getVersion();
+
+    /**
+     * @return набор фрейморков для которых есть реализация
+     */
+    EnumSet<Frameworks> getTargetFramework();
 
     /**
      * Загружает все ленивые поля пакета

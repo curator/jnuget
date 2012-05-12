@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,5 +123,10 @@ public class ProxyNupkg implements Nupkg {
      */
     public void setPackageSource(PackageSource localPackageSource) {
         this.localPackageSource = localPackageSource;
+    }
+
+    @Override
+    public EnumSet<Frameworks> getTargetFramework() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

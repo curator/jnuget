@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,6 +169,22 @@ public class RemoteNupkg implements Nupkg {
         return intHash;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RemoteNupkg other = (RemoteNupkg) obj;
+        try {
+            return Objects.equals(this.getHash(), other.getHash());
+        } catch (NoSuchAlgorithmException | IOException e) {
+            return Objects.equals(this.getId(), other.getId()) && Objects.equals(this.getVersion(), other.getVersion());
+        }
+    }
+
     /**
      * @return the logger
      */
@@ -176,5 +193,10 @@ public class RemoteNupkg implements Nupkg {
             logger = LoggerFactory.getLogger(this.getClass());
         }
         return logger;
+    }
+
+    @Override
+    public EnumSet<Frameworks> getTargetFramework() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -254,5 +255,10 @@ public class ClassicNupkg implements Nupkg {
             logger = LoggerFactory.getLogger(this.getClass());
         }
         return logger;
+    }
+
+    @Override
+    public EnumSet<Frameworks> getTargetFramework() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
