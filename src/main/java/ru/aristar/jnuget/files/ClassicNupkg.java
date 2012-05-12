@@ -59,7 +59,7 @@ public class ClassicNupkg implements Nupkg {
     /**
      * Список поддерживаемых фреймворков
      */
-    protected EnumSet<Frameworks> targetFrameworks;
+    protected EnumSet<Framework> targetFrameworks;
     /**
      * Логгер
      */
@@ -274,8 +274,8 @@ public class ClassicNupkg implements Nupkg {
      *
      * @return список фреймворков
      */
-    private EnumSet<Frameworks> readTargetFrameworks() {
-        EnumSet<Frameworks> result = EnumSet.noneOf(Frameworks.class);
+    private EnumSet<Framework> readTargetFrameworks() {
+        EnumSet<Framework> result = EnumSet.noneOf(Framework.class);
         try (InputStream inputStream = getStream()) {
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
             ZipEntry entry;
@@ -284,7 +284,7 @@ public class ClassicNupkg implements Nupkg {
                 Matcher matcher = fameworkFolderPattern.matcher(name);
                 if (matcher.matches()) {
                     String frameworkName = matcher.group(1);
-                    Frameworks framework = Frameworks.valueOf(frameworkName.toLowerCase());
+                    Framework framework = Framework.valueOf(frameworkName.toLowerCase());
                     result.add(framework);
                 }
                 entry.isDirectory();
@@ -296,7 +296,7 @@ public class ClassicNupkg implements Nupkg {
     }
 
     @Override
-    public EnumSet<Frameworks> getTargetFramework() {
+    public EnumSet<Framework> getTargetFramework() {
         if (targetFrameworks == null) {
             targetFrameworks = readTargetFrameworks();
         }

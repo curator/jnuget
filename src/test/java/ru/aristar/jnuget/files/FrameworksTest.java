@@ -26,9 +26,9 @@ public class FrameworksTest {
         InputStream inputStream = FrameworksTest.class.getResourceAsStream("/nupkg/test.package.4.1.0.0.nupkg");
         TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
         //WHEN
-        EnumSet<Frameworks> result = tempNupkgFile.getTargetFramework();
+        EnumSet<Framework> result = tempNupkgFile.getTargetFramework();
         //THEN
-        assertThat(result, is(hasItems(Frameworks.net40, Frameworks.sl4, Frameworks.sl5)));
+        assertThat(result, is(hasItems(Framework.net40, Framework.sl4, Framework.sl5)));
     }
 
     @Test
@@ -36,8 +36,34 @@ public class FrameworksTest {
         //GIVEN
         RemoteNupkg remoteNupkg = new RemoteNupkg(null);
         //WHEN
-        EnumSet<Frameworks> result = remoteNupkg.getTargetFramework();
+        EnumSet<Framework> result = remoteNupkg.getTargetFramework();
         //THEN
-        assertThat(result, is(hasItems(Frameworks.net40)));
+        assertThat(result, is(hasItems(Framework.net40)));
+    }
+
+    /**
+     * Проверка извлечения списка фреймворков из строки запроса
+     */
+    @Test
+    public void testParse() {
+        //GIVEN
+        String targetFramework = "net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40";
+        //WHEN
+        EnumSet<Framework> result = Framework.parse(targetFramework);
+        //THEN
+        assertThat(result, is(hasItems(Framework.net40, Framework.net35)));
+    }
+
+    /**
+     * Проверка извлечения списка фреймворков из пустой строки запроса
+     */
+    @Test
+    public void testParseEmptyString() {
+        //GIVEN
+        String targetFramework = "";
+        //WHEN
+        EnumSet<Framework> result = Framework.parse(targetFramework);
+        //THEN
+        assertThat(result, is(hasItems(Framework.values())));
     }
 }

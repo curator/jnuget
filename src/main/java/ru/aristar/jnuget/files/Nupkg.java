@@ -67,7 +67,7 @@ public interface Nupkg extends Serializable {
     /**
      * @return набор фрейморков для которых есть реализация
      */
-    EnumSet<Frameworks> getTargetFramework();
+    EnumSet<Framework> getTargetFramework();
 
     /**
      * Загружает все ленивые поля пакета

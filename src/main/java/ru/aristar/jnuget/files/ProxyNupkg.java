@@ -126,7 +126,7 @@ public class ProxyNupkg implements Nupkg {
     }
 
     @Override
-    public EnumSet<Frameworks> getTargetFramework() {
+    public EnumSet<Framework> getTargetFramework() {
         return remoteNupkg.getTargetFramework();
     }
 }
