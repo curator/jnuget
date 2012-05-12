@@ -127,6 +127,6 @@ public class ProxyNupkg implements Nupkg {
 
     @Override
     public EnumSet<Frameworks> getTargetFramework() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return remoteNupkg.getTargetFramework();
     }
 }

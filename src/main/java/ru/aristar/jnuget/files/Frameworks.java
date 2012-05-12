@@ -6,5 +6,5 @@ package ru.aristar.jnuget.files;
  */
 public enum Frameworks {
 
-    net40, net35, net20, net10
+    net40, net35, net20, net10, sl4, sl5
 }

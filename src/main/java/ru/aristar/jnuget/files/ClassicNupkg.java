@@ -25,6 +25,14 @@ import ru.aristar.jnuget.Version;
 public class ClassicNupkg implements Nupkg {
 
     /**
+     * Строка шаблона папки с фреймворком в пакете
+     */
+    public static final String FRAMEWORK_FOLDER_PATTERN = "^lib/(.+?)/.+";
+    /**
+     * Шаблон папки с фреймворком в пакете
+     */
+    protected final Pattern fameworkFolderPattern = Pattern.compile(FRAMEWORK_FOLDER_PATTERN, Pattern.CASE_INSENSITIVE);
+    /**
      * Файл спецификации пакета
      */
     protected NuspecFile nuspecFile;
@@ -48,6 +56,10 @@ public class ClassicNupkg implements Nupkg {
      * Хеш пакета
      */
     protected Hash hash;
+    /**
+     * Список поддерживаемых фреймворков
+     */
+    protected EnumSet<Frameworks> targetFrameworks;
     /**
      * Логгер
      */
@@ -257,8 +269,37 @@ public class ClassicNupkg implements Nupkg {
         return logger;
     }
 
+    /**
+     * Читает список фреймворков из архива пакета
+     *
+     * @return список фреймворков
+     */
+    private EnumSet<Frameworks> readTargetFrameworks() {
+        EnumSet<Frameworks> result = EnumSet.noneOf(Frameworks.class);
+        try (InputStream inputStream = getStream()) {
+            ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                String name = entry.getName();
+                Matcher matcher = fameworkFolderPattern.matcher(name);
+                if (matcher.matches()) {
+                    String frameworkName = matcher.group(1);
+                    Frameworks framework = Frameworks.valueOf(frameworkName.toLowerCase());
+                    result.add(framework);
+                }
+                entry.isDirectory();
+            }
+        } catch (IOException e) {
+            logger.warn("Ошибка чтения файла пакета", e);
+        }
+        return result;
+    }
+
     @Override
     public EnumSet<Frameworks> getTargetFramework() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (targetFrameworks == null) {
+            targetFrameworks = readTargetFrameworks();
+        }
+        return targetFrameworks;
     }
 }
