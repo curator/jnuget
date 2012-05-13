@@ -94,11 +94,10 @@ public class MainUrlResource {
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            //TODO targetFramework='net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40'
             logger.debug("Запрос пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
+            PackageFeed feed = getPackageFeed(filter, searchTerm, targetFramework, orderBy, skip, top);
             XmlStreamingOutput streamingOutput = new XmlStreamingOutput(feed);
             return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
@@ -121,7 +120,7 @@ public class MainUrlResource {
             logger.debug("Запрос количества пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, searchTerm, orderBy, skip, top);
+            PackageFeed feed = getPackageFeed(filter, searchTerm, targetFramework, orderBy, skip, top);
             return Response.ok(Integer.toString(feed.getEntries().size()), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
@@ -190,6 +189,7 @@ public class MainUrlResource {
     @Path("PublishedPackages/Publish")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postPackageMetadata(InputStream inputStream) {
+        //JSONJAXBContext context = JSONJAXBContext.newInstance(classesToBeBound);
         //TODO необходимо обработать запрос
         //{"id":"Neolant.IOT.EventBus","key":"4003d786-cc37-4004-bfdf-c4f3e8ef9b3a","version":"0.0.2.557"}
         ResponseBuilder response = Response.ok();
@@ -239,19 +239,20 @@ public class MainUrlResource {
      *
      * @param filter условие фильтрации
      * @param searchTerm условие поиска
+     * @param targetFramework список фреймворков, для которых предназначен пакет
      * @param orderBy условие упорядочивания
      * @param skip количество пропускаемых записей
      * @param top количество возвращаемых записей
      * @return объектное представление RSS
      */
-    private PackageFeed getPackageFeed(String filter, String searchTerm, String orderBy, int skip, int top) {
+    private PackageFeed getPackageFeed(String filter, String searchTerm, String targetFramework, String orderBy, int skip, int top) {
 
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
         //Получить источник пакетов
         PackageSource<Nupkg> packageSource = getPackageSource();
         //Выбрать пакеты по запросу
         QueryExecutor queryExecutor = new QueryExecutor();
-        Collection<? extends Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm);
+        Collection<? extends Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm, targetFramework);
         logger.debug("Получено {} пакетов", new Object[]{files.size()});
         //Преобразовать пакеты в RSS
         NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
