@@ -2,15 +2,18 @@ package ru.aristar.jnuget;
 
 import java.util.Arrays;
 import java.util.Collection;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import java.util.EnumSet;
+import static org.hamcrest.CoreMatchers.*;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.equal;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.junit.matchers.JUnitMatchers.hasItems;
+import ru.aristar.jnuget.files.Framework;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
@@ -246,6 +249,36 @@ public class QueryExecutorTest {
         assertThat("Количество отфильтрованных пакетов", nupkgs.length, is(equal(1)));
         assertThat("Идентификатор пакета", nupkgs[0].getId(), is(equalTo("id1")));
         assertThat("Версия пакета", nupkgs[0].getVersion(), is(equalTo(Version.parse("1.0.1"))));
+    }
+
+    /**
+     * @throws NugetFormatException версия заглушки пакета не соответствует
+     * формату
+     */
+    @Test
+    @Ignore
+    public void testGetWithFrameworkSpecification() throws NugetFormatException {
+        //GIVEN
+        QueryExecutor executor = new QueryExecutor();
+        Nupkg package1 = createPackageStub("id1", "1.0.1");
+        Nupkg package2 = createPackageStub("id2", "1.2.3");
+
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(source).getPackages();
+        expectations.will(returnValue(Arrays.asList(package1, package2)));
+        expectations.atLeast(0).of(package1).getTargetFramework();
+        expectations.will(returnValue(EnumSet.allOf(Framework.class)));
+        expectations.atLeast(0).of(package2).getTargetFramework();
+        expectations.will(returnValue(EnumSet.of(Framework.net20)));
+        context.checking(expectations);
+        //WHEN
+        @SuppressWarnings("unchecked")
+        Collection<Nupkg> result = (Collection<Nupkg>) executor.execQuery(source, null, null, "NET20");
+        //THEN
+        assertThat(result, is(hasItems(package1)));
+        assertThat(result, is(not(hasItem(package2))));
     }
 
     /**

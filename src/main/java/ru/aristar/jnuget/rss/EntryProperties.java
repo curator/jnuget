@@ -2,6 +2,8 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,6 +12,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -126,9 +131,14 @@ public class EntryProperties {
     private Element createMicrosoftElement(String name, boolean nullable, Date value) throws ParserConfigurationException {
         String stringValue = null;
         if (value != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(value);
-            stringValue = javax.xml.bind.DatatypeConverter.printDateTime(calendar);
+            try {
+                GregorianCalendar calendar = new GregorianCalendar();
+                calendar.setTime(value);
+                XMLGregorianCalendar xmlgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+                stringValue = xmlgc.toXMLFormat();
+            } catch (DatatypeConfigurationException ex) {
+                throw new ParserConfigurationException("Не удалось преобразовать дату в XML");
+            }
         }
         return createMicrosoftElement(name, nullable, MicrosoftTypes.DateTime, stringValue);
     }

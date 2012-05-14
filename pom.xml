@@ -165,7 +165,7 @@
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -203,32 +203,37 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
             <artifactId>oauth-client</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
             <artifactId>oauth-signature</artifactId>
-            <version>1.8</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.EnumSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
@@ -32,6 +33,7 @@ public class FrameworksTest {
     }
 
     @Test
+    @Ignore
     public void testReadFrameworkRemoteNupkg() throws NugetFormatException {
         //GIVEN
         RemoteNupkg remoteNupkg = new RemoteNupkg(null);
