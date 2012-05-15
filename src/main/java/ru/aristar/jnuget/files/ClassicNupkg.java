@@ -291,6 +291,10 @@ public class ClassicNupkg implements Nupkg {
             }
         } catch (IOException e) {
             logger.warn("Ошибка чтения файла пакета", e);
+            result = EnumSet.allOf(Framework.class);
+        }
+        if (result.isEmpty()) {
+            result = EnumSet.allOf(Framework.class);
         }
         return result;
     }

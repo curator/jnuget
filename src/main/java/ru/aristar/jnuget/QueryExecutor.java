@@ -2,6 +2,7 @@ package ru.aristar.jnuget;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,17 @@ public class QueryExecutor {
     }
 
     /**
+     * Проверка - подходят ли требуемые фреймворки к предоставляемым
+     *
+     * @param requiredFrameworks требуемые фреймворки
+     * @param packageFrameworks фреймворки предоставляемые пакетом
+     * @return true, если подходит
+     */
+    private boolean isCorrectFramework(EnumSet<Framework> requiredFrameworks, EnumSet<Framework> packageFrameworks) {
+        return packageFrameworks.isEmpty() || !Collections.disjoint(requiredFrameworks, packageFrameworks);
+    }
+
+    /**
      * Получение списка пакетов из хранилища
      *
      * @param packageSource хранилище пакетов
@@ -47,16 +59,15 @@ public class QueryExecutor {
      */
     public Collection<? extends Nupkg> execQuery(PackageSource<Nupkg> packageSource,
             final String filter, final String searchTerm, final String targetFramework) {
-        //TODO targetFramework='net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40'
         Collection<? extends Nupkg> nupkgs = execQuery(packageSource, filter, searchTerm);
-        EnumSet<Framework> frameworks = Framework.parse(normaliseTerm(targetFramework));
-        if (frameworks.isEmpty()) {
+        EnumSet<Framework> requiredFrameworks = Framework.parse(normaliseTerm(targetFramework));
+        if (requiredFrameworks.containsAll(EnumSet.allOf(Framework.class))) {
             return nupkgs;
         }
         ArrayList<Nupkg> result = new ArrayList<>();
         for (Nupkg nupkg : nupkgs) {
-            EnumSet<Framework> nupkgFrameworks = nupkg.getTargetFramework();
-            if (nupkgFrameworks.isEmpty() || true) {//TODO Доделать проверку фреймворка
+            EnumSet<Framework> packageFrameworks = nupkg.getTargetFramework();
+            if (isCorrectFramework(requiredFrameworks, packageFrameworks)) {
                 result.add(nupkg);
             }
         }

@@ -256,7 +256,6 @@ public class QueryExecutorTest {
      * формату
      */
     @Test
-    @Ignore
     public void testGetWithFrameworkSpecification() throws NugetFormatException {
         //GIVEN
         QueryExecutor executor = new QueryExecutor();
@@ -275,7 +274,7 @@ public class QueryExecutorTest {
         context.checking(expectations);
         //WHEN
         @SuppressWarnings("unchecked")
-        Collection<Nupkg> result = (Collection<Nupkg>) executor.execQuery(source, null, null, "NET20");
+        Collection<Nupkg> result = (Collection<Nupkg>) executor.execQuery(source, null, null, "NET11");
         //THEN
         assertThat(result, is(hasItems(package1)));
         assertThat(result, is(not(hasItem(package2))));
