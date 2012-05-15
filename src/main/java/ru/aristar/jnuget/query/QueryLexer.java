@@ -60,7 +60,7 @@ public class QueryLexer {
         if (stack == null) {
             stack = new Stack<>();
         }
-        switch (token) {
+        switch (token.toLowerCase()) {
             case "(": {
                 Expression expression = parse(tokens, null);
                 stack.push(expression);
@@ -90,7 +90,7 @@ public class QueryLexer {
                 return parse(tokens, stack);
             }
 
-            case "isLatestVersion": {
+            case "islatestversion": {
                 Expression expression = new LatestVersionExpression();
                 checkForAndExpression(stack, expression);
                 return parse(tokens, stack);

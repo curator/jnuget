@@ -138,7 +138,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net40");
+        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net40'");
         //THEN
         assertEquals("В хранилище должно быть определенное количество пакетов", "1", response.getText());
     }

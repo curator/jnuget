@@ -29,7 +29,7 @@ public class QueryExecutor {
      * @param sourceValue условие поиска
      * @return нормализованное условие поиска
      */
-    private String normaliseSearchTerm(String sourceValue) {
+    private String normaliseTerm(String sourceValue) {
         if (sourceValue == null) {
             return null;
         }
@@ -47,9 +47,9 @@ public class QueryExecutor {
      */
     public Collection<? extends Nupkg> execQuery(PackageSource<Nupkg> packageSource,
             final String filter, final String searchTerm, final String targetFramework) {
-        //TODO targetFramework='net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40'        
+        //TODO targetFramework='net40|net40|net35|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40|net40'
         Collection<? extends Nupkg> nupkgs = execQuery(packageSource, filter, searchTerm);
-        EnumSet<Framework> frameworks = Framework.parse(targetFramework);
+        EnumSet<Framework> frameworks = Framework.parse(normaliseTerm(targetFramework));
         if (frameworks.isEmpty()) {
             return nupkgs;
         }
@@ -74,7 +74,7 @@ public class QueryExecutor {
     protected Collection<? extends Nupkg> execQuery(PackageSource<Nupkg> packageSource,
             final String filter, final String searchTerm) {
         Collection<? extends Nupkg> nupkgs = execQuery(packageSource, filter);
-        final String normSearchTerm = normaliseSearchTerm(searchTerm);
+        final String normSearchTerm = normaliseTerm(searchTerm);
         if (normSearchTerm == null || normSearchTerm.matches("\\s*")) {
             return nupkgs;
         }

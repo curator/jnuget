@@ -127,6 +127,9 @@
                             <value>${project.build.directory}/WorkFolder/</value>
                         </systemProperty>
                     </systemProperties>
+                    <webAppConfig>
+                        <extraClasspath>${basedir}/src/test/resources</extraClasspath>
+                    </webAppConfig>
                 </configuration>
                 <executions>
                     <execution>
