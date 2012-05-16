@@ -38,7 +38,6 @@ public abstract class NuPkgToRssTransformer {
      * @return RSS структура
      */
     public PackageFeed transform(Collection<? extends Nupkg> files, String orderBy, int skip, int top) {
-        //TODO filter=IsLatestVersion, orderBy=DownloadCount desc,Id, skip=0, top=30, searchTerm='', targetFramework='net40'
         PackageFeed feed = new PackageFeed();
         feed.setId(getContext().getRootUri().toString());
         feed.setUpdated(new Date());
@@ -182,6 +181,8 @@ public abstract class NuPkgToRssTransformer {
         switch (normalOrderBy) {
             case "updated":
                 return new PackageUpdateDateDescComparator();
+            case "downloadcount":
+                return new PackageDownloadCountComparator();
             default:
                 return new PackageIdAndVersionComparator();
         }

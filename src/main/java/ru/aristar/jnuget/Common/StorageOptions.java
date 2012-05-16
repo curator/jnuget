@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.NONE)
 public class StorageOptions {
 
-    //TODO объеденить StorageOptions с PushStrategyOptions  
     /**
      * Имя класса хранилища
      */
