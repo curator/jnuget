@@ -222,6 +222,7 @@ public class MainUrlResource {
                 if (pushed) {
                     response = Response.status(correctStatus);
                 } else {
+                    logger.debug("Публикация пакета в хранилище не произведена ApiKey={}", new Object[]{apiKey});
                     response = Response.status(Response.Status.FORBIDDEN);
                 }
             }
