@@ -45,7 +45,21 @@ public class QueryExecutor {
      * @return true, если подходит
      */
     private boolean isCorrectFramework(EnumSet<Framework> requiredFrameworks, EnumSet<Framework> packageFrameworks) {
-        return packageFrameworks.isEmpty() || !Collections.disjoint(requiredFrameworks, packageFrameworks);
+        return packageFrameworks.isEmpty() || !Collections.disjoint(packageFrameworks, requiredFrameworks);
+    }
+
+    /**
+     * Расширяет список требуемых фреймворков совместимыми версиями
+     *
+     * @param requiredFrameworks требуемые фреймворки
+     * @return расширенный список фреймворков
+     */
+    private EnumSet<Framework> getAllAcceptedFrameworks(EnumSet<Framework> requiredFrameworks) {
+        EnumSet<Framework> fullRequiredFrameworks = EnumSet.noneOf(Framework.class);
+        for (Framework framework : requiredFrameworks) {
+            fullRequiredFrameworks.addAll(framework.getFullCopabilySet());
+        }
+        return fullRequiredFrameworks;
     }
 
     /**
@@ -64,6 +78,7 @@ public class QueryExecutor {
         if (requiredFrameworks.containsAll(EnumSet.allOf(Framework.class))) {
             return nupkgs;
         }
+        requiredFrameworks = getAllAcceptedFrameworks(requiredFrameworks);
         ArrayList<Nupkg> result = new ArrayList<>();
         for (Nupkg nupkg : nupkgs) {
             EnumSet<Framework> packageFrameworks = nupkg.getTargetFramework();

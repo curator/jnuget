@@ -12,25 +12,25 @@ import org.slf4j.LoggerFactory;
 public enum Framework {
 
     /**
-     * NET 4.0
-     */
-    net40,
-    /**
-     * NET 3.5
-     */
-    net35,
-    /**
-     * NET 2.0
-     */
-    net20,
-    /**
      * NET 1.0
      */
     net10,
     /**
      * NET 1.1
      */
-    net11,
+    net11("net10"),
+    /**
+     * NET 2.0
+     */
+    net20("net10", "net11"),
+    /**
+     * NET 3.5
+     */
+    net35("net10", "net11", "net20"),
+    /**
+     * NET 4.0
+     */
+    net40("net35", "net20", "net11", "net10"),
     /**
      * SilverLight 4
      */
@@ -39,6 +39,38 @@ public enum Framework {
      * SilverLight 5
      */
     sl5;
+
+    /**
+     * @param copabilityFrameworks фреймворки совместимые с данным
+     */
+    private Framework(String... copabilityFrameworks) {
+        fullCopabilyStringSet = copabilityFrameworks;
+    }
+    /**
+     * Набор названий фреймворков совместимых с данным
+     */
+    private final String[] fullCopabilyStringSet;
+    /**
+     * Набор фреймворков совместимых с данным
+     */
+    private volatile EnumSet<Framework> fullCopabilySet;
+
+    /**
+     * @return набор фреймворков совместимых с данным
+     */
+    public EnumSet<Framework> getFullCopabilySet() {
+        if (fullCopabilySet == null) {
+            synchronized (this) {
+                if (fullCopabilySet == null) {
+                    fullCopabilySet = EnumSet.noneOf(Framework.class);
+                    for (String frameworkName : fullCopabilyStringSet) {
+                        fullCopabilySet.add(Framework.valueOf(frameworkName));
+                    }
+                }
+            }
+        }
+        return fullCopabilySet;
+    }
     /**
      * Логгер
      */
