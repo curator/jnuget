@@ -105,9 +105,10 @@ public class NugetClient implements AutoCloseable {
      * @param id идентификатор пакета
      * @param version версия пакета
      * @return пакет
-     * @throws Exception ошибка получения пакета
+     * @throws IOException ошибка чтения потока с телом пакета
+     * @throws NugetFormatException ошибка вычисления HASH пакета
      */
-    public TempNupkgFile getPackage(String id, Version version) throws Exception {
+    public TempNupkgFile getPackage(String id, Version version) throws IOException, NugetFormatException {
         WebResource resource = webResource;
         resource = resource.path(java.text.MessageFormat.format("download/{0}/{1}", new Object[]{id, version.toString()}));
         InputStream inputStream = resource.get(InputStream.class);

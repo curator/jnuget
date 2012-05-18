@@ -22,15 +22,15 @@ public enum Framework {
     /**
      * NET 2.0
      */
-    net20("net10", "net11"),
+    net20(),
     /**
      * NET 3.5
      */
-    net35("net10", "net11", "net20"),
+    net35("net20"),
     /**
      * NET 4.0
      */
-    net40("net35", "net20", "net11", "net10"),
+    net40("net35", "net20"),
     /**
      * SilverLight 4
      */
