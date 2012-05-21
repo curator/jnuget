@@ -12,6 +12,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import ru.aristar.jnuget.Author;
 import ru.aristar.jnuget.files.Hash;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.NuspecFile;
 
@@ -80,8 +81,9 @@ public class PackageEntry {
      * @param nupkgFile файл пакета
      * @throws NoSuchAlgorithmException не установлены библиотеки подсчета Hash
      * @throws IOException ошибка чтения файла пакета
+     * @throws NugetFormatException некорректная спецификация пакета
      */
-    public PackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+    public PackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException, NugetFormatException {
         this(nupkgFile.getNuspecFile(), nupkgFile.getHash(), nupkgFile.getSize(), nupkgFile.getUpdated());
     }
 

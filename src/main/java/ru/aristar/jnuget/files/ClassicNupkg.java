@@ -63,7 +63,7 @@ public class ClassicNupkg implements Nupkg {
     /**
      * Логгер
      */
-    protected transient Logger logger;
+    protected transient Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Конструктор используется в классах потомках для пустой инициализации
@@ -100,13 +100,12 @@ public class ClassicNupkg implements Nupkg {
     }
 
     @Override
-    public NuspecFile getNuspecFile() {
+    public NuspecFile getNuspecFile() throws NugetFormatException {
         if (nuspecFile == null) {
             try {
                 nuspecFile = loadNuspec(getStream());
-            } catch (NugetFormatException | IOException e) {
-                //TODO Добавить выброс exception-а
-                getLogger().warn("Ошибка чтения файла спецификации", e);
+            } catch (IOException e) {
+                throw new NugetFormatException("Ошибка чтения файла спецификации", e);
             }
         }
         return nuspecFile;
@@ -258,16 +257,6 @@ public class ClassicNupkg implements Nupkg {
      */
     private final static Pattern parser =
             Pattern.compile("^(.+?)\\.(" + Version.VERSION_FORMAT + ")" + Nupkg.DEFAULT_EXTENSION + "$");
-
-    /**
-     * @return the logger
-     */
-    protected Logger getLogger() {
-        if (logger == null) {
-            logger = LoggerFactory.getLogger(this.getClass());
-        }
-        return logger;
-    }
 
     /**
      * Читает список фреймворков из архива пакета

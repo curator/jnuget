@@ -72,7 +72,7 @@ public class NugetClientTest {
      */
     @Test
     public void testGetPackageStream() throws Exception {
-        //TODO Разобраться с клиентом. Тест явно битый URL в одном случае содержит nuget, в друном нет
+        //TODO Разобраться с клиентом. Тест явно битый URL в одном случае содержит nuget, в другом нет
         //GIVEN
         NugetClient nugetClient = new NugetClient();
         nugetClient.setUrl("http://localhost:8088/nuget");

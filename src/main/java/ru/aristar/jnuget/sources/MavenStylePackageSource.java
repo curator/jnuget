@@ -191,34 +191,38 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
 
     @Override
     protected void pushPackage(Nupkg nupkg) throws IOException {
-        File packageFolder = verifyPackageDestination(rootFolder, nupkg.getNuspecFile());
-        // Открывает временный файл, копирует его в место постоянного хранения.
-        File tmpDest = new File(packageFolder, nupkg.getFileName() + ".tmp");
-        File finalDest = new File(packageFolder, nupkg.getFileName());
-        try (ReadableByteChannel src = Channels.newChannel(nupkg.getStream());
-                FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
-            TempNupkgFile.fastChannelCopy(src, dest);
-        }
-
-        if (!tmpDest.renameTo(finalDest)) {
-            throw new IOException("Не удалось переименовать файл " + tmpDest
-                    + " в " + finalDest);
-        }
         try {
-            // Сохраняем nuspec
-            File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE_NAME);
-            try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
-                nupkg.getNuspecFile().saveTo(fileOutputStream);
+            File packageFolder = verifyPackageDestination(rootFolder, nupkg.getNuspecFile());
+            // Открывает временный файл, копирует его в место постоянного хранения.
+            File tmpDest = new File(packageFolder, nupkg.getFileName() + ".tmp");
+            File finalDest = new File(packageFolder, nupkg.getFileName());
+            try (ReadableByteChannel src = Channels.newChannel(nupkg.getStream());
+                    FileChannel dest = new FileOutputStream(tmpDest).getChannel()) {
+                TempNupkgFile.fastChannelCopy(src, dest);
             }
 
-            // Сохраняем контрольную сумму
-            File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
-            nupkg.getHash().saveTo(hashFile);
+            if (!tmpDest.renameTo(finalDest)) {
+                throw new IOException("Не удалось переименовать файл " + tmpDest
+                        + " в " + finalDest);
+            }
+            try {
+                // Сохраняем nuspec
+                File nuspecFile = new File(packageFolder, MavenNupkg.NUSPEC_FILE_NAME);
+                try (FileOutputStream fileOutputStream = new FileOutputStream(nuspecFile)) {
+                    nupkg.getNuspecFile().saveTo(fileOutputStream);
+                }
 
-        } catch (JAXBException | NoSuchAlgorithmException ex) {
-            throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
+                // Сохраняем контрольную сумму
+                File hashFile = new File(packageFolder, MavenNupkg.HASH_FILE_NAME);
+                nupkg.getHash().saveTo(hashFile);
+
+            } catch (JAXBException | NoSuchAlgorithmException ex) {
+                throw new IOException("Ошибка сохранения nuspec или хеш значения", ex);
+            }
+            logger.debug("Пакет {}:{} добавлен в хранилище",
+                    new Object[]{nupkg.getNuspecFile().getId(), nupkg.getNuspecFile().getVersion()});
+        } catch (NugetFormatException e) {
+            throw new IOException("Некорректный формат спецификации файла", e);
         }
-        logger.debug("Пакет {}:{} добавлен в хранилище",
-                new Object[]{nupkg.getNuspecFile().getId(), nupkg.getNuspecFile().getVersion()});
     }
 }

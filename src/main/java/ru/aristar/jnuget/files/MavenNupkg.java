@@ -65,7 +65,7 @@ public class MavenNupkg extends ClassicNupkg implements Nupkg {
             try (InputStream inputStream = new FileInputStream(nuspec)) {
                 nuspecFile = NuspecFile.Parse(inputStream);
             } catch (NugetFormatException | IOException e) {
-                getLogger().error("При чтении nuspec-файла произошла ошибка.", e);
+                logger.error("При чтении nuspec-файла произошла ошибка.", e);
             }
         }
         return nuspecFile;

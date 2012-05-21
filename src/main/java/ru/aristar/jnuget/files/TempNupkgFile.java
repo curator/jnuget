@@ -102,7 +102,11 @@ public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable 
     @Override
     public String getId() {
         if (this.id == null) {
-            this.id = getNuspecFile().getId();
+            try {
+                this.id = getNuspecFile().getId();
+            } catch (NugetFormatException e) {
+                logger.error("Ошибка чтения идентификатора пакета", e);
+            }
         }
         return this.id;
     }
@@ -110,7 +114,11 @@ public class TempNupkgFile extends ClassicNupkg implements Nupkg, AutoCloseable 
     @Override
     public Version getVersion() {
         if (this.version == null) {
-            this.version = getNuspecFile().getVersion();
+            try {
+                this.version = getNuspecFile().getVersion();
+            } catch (NugetFormatException e) {
+                logger.error("Ошибка чтения версии пакета", e);
+            }
         }
         return this.version;
     }

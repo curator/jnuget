@@ -5,6 +5,7 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageEntry;
@@ -47,8 +48,9 @@ public class NugetContext {
      * @return RSS вложение
      * @throws NoSuchAlgorithmException ошибка вычисления HASH
      * @throws IOException ошибка чтения пакета
+     * @throws NugetFormatException некорректная спецификация пакета
      */
-    public PackageEntry createPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+    public PackageEntry createPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException, NugetFormatException {
         return new ContextPackageEntry(nupkgFile);
     }
 
@@ -81,8 +83,9 @@ public class NugetContext {
          * @param nupkgFile пакет на основе кторого создается RSS вложение
          * @throws NoSuchAlgorithmException не указан алгоритм вычисления HASH
          * @throws IOException ошибка чтения пакета
+         * @throws NugetFormatException некорректная спецификация пакета
          */
-        public ContextPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException {
+        public ContextPackageEntry(Nupkg nupkgFile) throws NoSuchAlgorithmException, IOException, NugetFormatException {
             super(nupkgFile);
         }
 

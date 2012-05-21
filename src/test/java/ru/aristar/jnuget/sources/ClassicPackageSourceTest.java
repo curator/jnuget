@@ -105,9 +105,11 @@ public class ClassicPackageSourceTest {
 
     /**
      * Проверка чтения пакетов из каталога
+     *
+     * @throws NugetFormatException некорректный формат спецификации файла
      */
     @Test
-    public void testReadFilesFromFolder() {
+    public void testReadFilesFromFolder() throws NugetFormatException {
         //GIVEN
         ClassicPackageSource packageSource = new ClassicPackageSource(testFolder);
         //WHEN

@@ -35,8 +35,9 @@ public interface Nupkg extends Serializable {
 
     /**
      * @return файл спецификации пакета
+     * @throws NugetFormatException ошмбка чтения спецификации пакета
      */
-    NuspecFile getNuspecFile();
+    NuspecFile getNuspecFile() throws NugetFormatException;
 
     /**
      * @return размер пакета
