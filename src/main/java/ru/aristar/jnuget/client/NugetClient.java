@@ -2,7 +2,6 @@ package ru.aristar.jnuget.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -26,7 +25,6 @@ import ru.aristar.jnuget.rss.PackageFeed;
  *
  * @author sviridov
  */
-//TODO реализовать редирект как в RemoteNupkg
 public class NugetClient implements AutoCloseable {
 
     /**
@@ -132,25 +130,6 @@ public class NugetClient implements AutoCloseable {
         return webResource.put(ClientResponse.class, nupkg.getStream());
     }
 
-    public ClientResponse postPackage(String apiKey) throws UniformInterfaceException {
-        return webResource.path(java.text.MessageFormat.format("PackageFiles/{0}/nupkg", new Object[]{apiKey})).post(ClientResponse.class);
-    }
-
-    public <T> T getPackageCount(Class<T> responseType, String packages,
-            Integer count, String orderby, String filter, String searchTerm,
-            Integer top, String targetFramework, Integer skip) throws UniformInterfaceException {
-        WebResource resource = webResource;
-        Map<String, String> params = new HashMap<>();
-        params.put("$orderby", "Id");
-        params.put("$filter", filter);
-        params.put("searchTerm", searchTerm);
-        params.put("$top", top == null ? null : top.toString());
-        params.put("targetFramework", targetFramework);
-        params.put("$skip", skip == null ? null : skip.toString());
-        resource = webResource.path(java.text.MessageFormat.format("nuget/{0}/{1}", new Object[]{packages, count}));
-        return resource.accept(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
-    }
-
     @Override
     public void close() {
         client.destroy();
@@ -186,7 +165,7 @@ public class NugetClient implements AutoCloseable {
                 }
             }
         }
-        ClientResponse response = null;
+        ClientResponse response;
         //Заголовки запроса
         if (accept != null && accept.length != 0) {
             response = webResource.accept(accept).get(ClientResponse.class);
