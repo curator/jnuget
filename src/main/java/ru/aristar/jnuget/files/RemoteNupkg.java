@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.files;
 
-import com.sun.jersey.api.client.*;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
@@ -117,23 +120,7 @@ public class RemoteNupkg implements Nupkg {
             DefaultClientConfig config = new DefaultClientConfig();
             config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
             Client client = Client.create(config);
-            WebResource webResource = client.resource(uri);
-            ClientResponse response = webResource.get(ClientResponse.class);
-            switch (response.getClientResponseStatus()) {
-                case ACCEPTED:
-                case OK: {
-                    return response.getEntity(InputStream.class);
-                }
-                case FOUND:
-                case MOVED_PERMANENTLY: {
-                    getLogger().debug("Получено перенаправление");
-                    String redirectUriString = response.getHeaders().get("Location").get(0);
-                    URI redirectUri = new URI(redirectUriString);
-                    return getStream(redirectUri);
-                }
-                default:
-                    throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
-            }
+            return NugetClient.get(client, uri, InputStream.class);
         } catch (UniformInterfaceException | ClientHandlerException | URISyntaxException e) {
             throw new IOException("Ошибка получения потока пакета из удаленного ресурса", e);
         }

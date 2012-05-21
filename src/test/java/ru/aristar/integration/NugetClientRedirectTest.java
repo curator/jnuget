@@ -8,6 +8,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -139,7 +140,7 @@ public class NugetClientRedirectTest {
      */
     @Test
     public void testGetPackageListWithRedirect()
-            throws IOException, UniformInterfaceException, NugetFormatException {
+            throws IOException, UniformInterfaceException, NugetFormatException, URISyntaxException {
         //GIVEN
         ServerResponse c1 = new ServerResponse(
                 null,
@@ -179,7 +180,7 @@ public class NugetClientRedirectTest {
      * формату NuGet
      */
     @Test
-    public void testGetPackageBodyListWithRedirect() throws IOException, NugetFormatException {
+    public void testGetPackageBodyListWithRedirect() throws IOException, NugetFormatException, URISyntaxException {
         //GIVEN
         ServerResponse c1 = new ServerResponse(
                 null,

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.matchers.JUnitMatchers.hasItems;
@@ -67,5 +67,19 @@ public class FrameworksTest {
         EnumSet<Framework> result = Framework.parse(targetFramework);
         //THEN
         assertThat(result, is(hasItems(Framework.values())));
+    }
+
+    /**
+     * Проверка получения полного набора фреймворков для net20
+     */
+    @Test
+    public void testGetFullSet() {
+        //GIVEN
+        Framework framework = Framework.net20;
+        //WHEN
+        EnumSet<Framework> result = framework.getFullCopabilySet();
+        //THEN
+        Framework[] expected = {Framework.net20};
+        assertArrayEquals(expected, result.toArray(new Framework[1]));
     }
 }

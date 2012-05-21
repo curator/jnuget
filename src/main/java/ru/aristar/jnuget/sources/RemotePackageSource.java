@@ -2,6 +2,7 @@ package ru.aristar.jnuget.sources;
 
 import com.sun.jersey.api.client.UniformInterfaceException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
             logger.debug("Завершено получение пакетов. Статус: skip={}; feed.entries={}",
                     new Object[]{skip, feed == null ? null : feed.getEntries().size()});
             return result;
-        } catch (NugetFormatException | UniformInterfaceException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.warn("Ошибка получения пакета из удаленного хранилища", e);
             return new ArrayList<>();
         }

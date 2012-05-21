@@ -63,6 +63,7 @@ public enum Framework {
             synchronized (this) {
                 if (fullCopabilySet == null) {
                     fullCopabilySet = EnumSet.noneOf(Framework.class);
+                    fullCopabilySet.add(this);
                     for (String frameworkName : fullCopabilyStringSet) {
                         fullCopabilySet.add(Framework.valueOf(frameworkName));
                     }
@@ -104,7 +105,7 @@ public enum Framework {
                     + "' используется фреймворк по умолчанию", e);
             result = EnumSet.allOf(Framework.class);
         }
-
+        
         return result;
     }
 }

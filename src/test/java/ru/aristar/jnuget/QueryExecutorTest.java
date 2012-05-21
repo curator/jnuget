@@ -1,5 +1,6 @@
 package ru.aristar.jnuget;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -16,6 +17,7 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 import ru.aristar.jnuget.files.Framework;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -342,6 +344,30 @@ public class QueryExecutorTest {
     }
 
     /**
+     * Проверка получения списка пакетов на реальном пакете
+     *
+     * @throws IOException ошибка чтения тела пакета
+     * @throws NugetFormatException тестовый пакет не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testGetPackagesWithDirectFrameWork() throws IOException, NugetFormatException {
+        //GIVEN
+        TempNupkgFile nupkg = new TempNupkgFile(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"));
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> source = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(source).getLastVersionPackages();
+        expectations.will(returnValue(Arrays.asList(nupkg)));
+        context.checking(expectations);
+        QueryExecutor executor = new QueryExecutor();
+        //WHEN
+        Collection<? extends Nupkg> nupkgs = executor.execQuery(source, "IsLatestVersion", null, "net20");
+        //THEN
+        assertThat(nupkgs.size(), is(equalTo(1)));
+    }
+
+    /**
      * Создание заглушки пакета
      *
      * @param id идентификатор пакета
@@ -358,6 +384,5 @@ public class QueryExecutorTest {
         expectations.will(returnValue(Version.parse(version)));
         context.checking(expectations);
         return result;
-
     }
 }

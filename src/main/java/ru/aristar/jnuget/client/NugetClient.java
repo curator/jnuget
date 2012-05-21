@@ -2,15 +2,19 @@ package ru.aristar.jnuget.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.ws.rs.core.HttpHeaders;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.ws.rs.core.MediaType;
 import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
@@ -72,30 +76,26 @@ public class NugetClient implements AutoCloseable {
      * @param targetFramework фреймворк, для которого собраны пакеты
      * @param skip пропустить пакетов
      * @return
-     * @throws UniformInterfaceException
-     * @throws NugetFormatException
+     * @throws IOException
+     * @throws URISyntaxException
      */
-    public PackageFeed getPackages(String filter, String searchTerm, Integer top, String targetFramework, Integer skip) throws UniformInterfaceException, NugetFormatException {
-        WebResource resource = webResource;
-        resource = resource.queryParam("$orderby", "Id");
-        if (filter != null) {
-            resource = resource.queryParam("$filter", filter);
-        }
-        if (searchTerm != null) {
-            resource = resource.queryParam("searchTerm", searchTerm);
-        }
-        if (top != null) {
-            resource = resource.queryParam("$top", top.toString());
-        }
-        if (targetFramework != null) {
-            resource = resource.queryParam("targetFramework", targetFramework);
-        }
-        if (skip != null) {
-            resource = resource.queryParam("$skip", skip.toString());
-        }
-        resource = resource.path("Packages");
-        Builder builder = resource.header(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        PackageFeed feed = builder.get(PackageFeed.class);
+    public PackageFeed getPackages(String filter, String searchTerm,
+            Integer top, String targetFramework, Integer skip)
+            throws IOException, URISyntaxException {
+        Map<String, String> params = new HashMap<>(6);
+        params.put("$orderby", "Id");
+        params.put("$filter", filter);
+        params.put("searchTerm", searchTerm);
+        params.put("$top", top == null ? null : top.toString());
+        params.put("targetFramework", targetFramework);
+        params.put("$skip", skip == null ? null : skip.toString());
+
+        MediaType[] accept = {MediaType.TEXT_HTML_TYPE,
+            MediaType.APPLICATION_XHTML_XML_TYPE,
+            MediaType.APPLICATION_XML_TYPE,
+            MediaType.WILDCARD_TYPE};
+
+        PackageFeed feed = get(client, webResource.getURI(), "Packages", params, accept, PackageFeed.class);
         return feed;
     }
 
@@ -106,12 +106,13 @@ public class NugetClient implements AutoCloseable {
      * @param version версия пакета
      * @return пакет
      * @throws IOException ошибка чтения потока с телом пакета
+     * @throws URISyntaxException
      * @throws NugetFormatException ошибка вычисления HASH пакета
      */
-    public TempNupkgFile getPackage(String id, Version version) throws IOException, NugetFormatException {
-        WebResource resource = webResource;
-        resource = resource.path(java.text.MessageFormat.format("download/{0}/{1}", new Object[]{id, version.toString()}));
-        InputStream inputStream = resource.get(InputStream.class);
+    public TempNupkgFile getPackage(String id, Version version) throws IOException, URISyntaxException, NugetFormatException {
+        URI uri = webResource.getURI();
+        final String path = java.text.MessageFormat.format("download/{0}/{1}", new Object[]{id, version.toString()});
+        InputStream inputStream = get(client, uri, path, InputStream.class);
         TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
         return nupkgFile;
     }
@@ -135,32 +136,127 @@ public class NugetClient implements AutoCloseable {
         return webResource.path(java.text.MessageFormat.format("PackageFiles/{0}/nupkg", new Object[]{apiKey})).post(ClientResponse.class);
     }
 
-    public <T> T getPackageCount(Class<T> responseType, String packages, String count, String $orderby, String $filter, String searchTerm, String $top, String targetFramework, String $skip) throws UniformInterfaceException {
+    public <T> T getPackageCount(Class<T> responseType, String packages,
+            Integer count, String orderby, String filter, String searchTerm,
+            Integer top, String targetFramework, Integer skip) throws UniformInterfaceException {
         WebResource resource = webResource;
-        if ($orderby != null) {
-            resource = resource.queryParam("$orderby", $orderby);
-        }
-        if ($filter != null) {
-            resource = resource.queryParam("$filter", $filter);
-        }
-        if (searchTerm != null) {
-            resource = resource.queryParam("searchTerm", searchTerm);
-        }
-        if ($top != null) {
-            resource = resource.queryParam("$top", $top);
-        }
-        if (targetFramework != null) {
-            resource = resource.queryParam("targetFramework", targetFramework);
-        }
-        if ($skip != null) {
-            resource = resource.queryParam("$skip", $skip);
-        }
-        resource = resource.path(java.text.MessageFormat.format("nuget/{0}/{1}", new Object[]{packages, count}));
+        Map<String, String> params = new HashMap<>();
+        params.put("$orderby", "Id");
+        params.put("$filter", filter);
+        params.put("searchTerm", searchTerm);
+        params.put("$top", top == null ? null : top.toString());
+        params.put("targetFramework", targetFramework);
+        params.put("$skip", skip == null ? null : skip.toString());
+        resource = webResource.path(java.text.MessageFormat.format("nuget/{0}/{1}", new Object[]{packages, count}));
         return resource.accept(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(responseType);
     }
 
     @Override
     public void close() {
         client.destroy();
+    }
+
+    /**
+     * Получить класс указанного типа с URI
+     *
+     * @param <T> тип
+     * @param client клиент
+     * @param uri URI ресурса
+     * @param targetClass класс, который необходимо получить
+     * @param querryParams параметры запроса
+     * @param accept поддерживаемые типы
+     * @param path относительный путь к объекту
+     * @return объект из удаленного URI
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException URI имеет некорректный синтаксис
+     */
+    public static <T> T get(Client client, URI uri, String path,
+            Map<String, String> querryParams, MediaType[] accept, Class<T> targetClass)
+            throws IOException, URISyntaxException {
+        WebResource webResource = client.resource(uri);
+        //Относительный путь
+        if (path != null) {
+            webResource = webResource.path(path);
+        }
+        //Параметры запроса
+        if (querryParams != null) {
+            for (Map.Entry<String, String> entry : querryParams.entrySet()) {
+                if (entry.getValue() != null) {
+                    webResource = webResource.queryParam(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        ClientResponse response = null;
+        //Заголовки запроса
+        if (accept != null && accept.length != 0) {
+            response = webResource.accept(accept).get(ClientResponse.class);
+        } else {
+            response = webResource.get(ClientResponse.class);
+        }
+        switch (response.getClientResponseStatus()) {
+            case ACCEPTED:
+            case OK: {
+                return response.getEntity(targetClass);
+            }
+            case FOUND:
+            case MOVED_PERMANENTLY: {
+                String redirectUriString = response.getHeaders().get("Location").get(0);
+                URI redirectUri = new URI(redirectUriString);
+                return get(client, redirectUri, null, querryParams, accept, targetClass);
+            }
+            default:
+                throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
+        }
+    }
+
+    /**
+     * Получить класс указанного типа с URI
+     *
+     * @param <T> тип
+     * @param client клиент
+     * @param uri URI ресурса
+     * @param targetClass класс, который необходимо получить
+     * @param querryParams параметры запроса
+     * @param path относительный путь к объекту
+     * @return объект из удаленного URI
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException URI имеет некорректный синтаксис
+     */
+    public static <T> T get(Client client, URI uri, String path, Map<String, String> querryParams, Class<T> targetClass)
+            throws IOException, URISyntaxException {
+        return get(client, uri, path, querryParams, null, targetClass);
+    }
+
+    /**
+     * Получить класс указанного типа с URI
+     *
+     * @param <T> тип
+     * @param client клиент
+     * @param uri URI ресурса
+     * @param targetClass класс, который необходимо получить
+     * @param path относительный путь к объекту
+     * @return объект из удаленного URI
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException URI имеет некорректный синтаксис
+     */
+    public static <T> T get(Client client, URI uri, String path, Class<T> targetClass)
+            throws IOException, URISyntaxException {
+        return get(client, uri, path, null, null, targetClass);
+    }
+
+    /**
+     * Получить класс указанного типа с URI
+     *
+     * @param <T> тип
+     * @param client клиент
+     * @param uri URI ресурса
+     * @param targetClass класс, который необходимо получить
+     * @return объект из удаленного URI
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException URI имеет некорректный синтаксис
+     */
+    public static <T> T get(Client client, URI uri, Class<T> targetClass)
+            throws IOException, URISyntaxException {
+        return get(client, uri, null, null, null, targetClass);
     }
 }

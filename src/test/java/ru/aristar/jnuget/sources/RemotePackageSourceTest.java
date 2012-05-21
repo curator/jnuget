@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import com.sun.jersey.api.client.UniformInterfaceException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
@@ -40,13 +42,11 @@ public class RemotePackageSourceTest {
      * Проверка получения пакета из удаленного хранилища, если пакетов с таким
      * идентификатором не существует
      *
-     * @throws UniformInterfaceException ошибка при создании тестового метода
-     * (данные некорректного типа)
-     * @throws NugetFormatException версия пакета, использующаяся в тесте имеет
-     * некорректный формат
+     * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
-    public void testGetLastVersionPackageWhenPackageNotExists() throws UniformInterfaceException, NugetFormatException {
+    public void testGetLastVersionPackageWhenPackageNotExists() throws IOException, URISyntaxException {
         //GIVEN
         RemotePackageSource packageSource = new RemotePackageSource();
         final NugetClient nugetClient = context.mock(NugetClient.class);
@@ -71,15 +71,16 @@ public class RemotePackageSourceTest {
      * Проверка получения пакета из удаленного хранилища, cуществует один пакет
      * с указанным идентификатором
      *
+     * @throws IOException
+     * @throws URISyntaxException
      * @throws UniformInterfaceException ошибка при создании тестового метода
      * (данные некорректного типа)
      * @throws NugetFormatException версия пакета, использующаяся в тесте имеет
      * некорректный формат
      */
     @Test
-    public void testGetLastVersionPackageWhenExistOnePackage() throws
-            UniformInterfaceException,
-            NugetFormatException {
+    public void testGetLastVersionPackageWhenExistOnePackage()
+            throws IOException, URISyntaxException, NugetFormatException {
         //GIVEN
         RemotePackageSource packageSource = new RemotePackageSource();
         final NugetClient nugetClient = context.mock(NugetClient.class);
@@ -122,11 +123,14 @@ public class RemotePackageSourceTest {
      * (данные некорректного типа)
      * @throws NugetFormatException версия пакета, использующаяся в тесте имеет
      * некорректный формат
+     * @throws IOException
+     * @throws URISyntaxException
      */
     @Test
     public void testGetLastVersionPackageWhenExistMultiplePackage() throws
-            UniformInterfaceException,
-            NugetFormatException {
+            NugetFormatException,
+            IOException,
+            URISyntaxException {
         //GIVEN
         RemotePackageSource packageSource = new RemotePackageSource();
         final NugetClient nugetClient = context.mock(NugetClient.class);
