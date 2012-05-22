@@ -261,6 +261,12 @@ public class MainUrlResource {
         return feed;
     }
     //TODO nuget delete <package Id> <package version> [API Key] [options]
+    /*
+     * "DELETE /nuget/Neolant.IOT.EventBus/0.1.2.3 HTTP/1.0" 404 979 (Nuget 1.7)
+     * "DELETE /nuget/Packages/QQWERR-WERTYUI-ERTYUIO/Neolant.IOT.EventBus/0.1.2.3 HTTP/1.1" 404 979 (NuGet 1.5)
+     */
+
+
     /**
      * Имя заголовка запроса с ключем доступа
      */
