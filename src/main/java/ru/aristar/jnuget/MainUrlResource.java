@@ -197,6 +197,56 @@ public class MainUrlResource {
     }
 
     /**
+     * Удаление пакета из хранилища для NuGet версии младше 1.6
+     *
+     * @param apiKey ключ доступа
+     * @param packageId идентификатор пакета
+     * @param versionString версия пакета
+     * @return ответ сервера
+     */
+    @DELETE
+    @Path("Packages/{apiKey}/{packageId}/{versionString}")
+    public Response deletePackageOld(
+            @PathParam("apiKey") String apiKey,
+            @PathParam("packageId") String packageId,
+            @PathParam("versionString") String versionString) {
+        deletePackage(apiKey, packageId, versionString);
+        throw new UnsupportedOperationException("Метод не реализован");
+    }
+
+    /**
+     * Удаление пакета из хранилища для NuGet версии 1.6 и старше
+     *
+     * @param apiKey ключ доступа
+     * @param packageId идентификатор пакета
+     * @param versionString версия пакета
+     * @return ответ сервера
+     */
+    @DELETE
+    @Path("{packageId}/{versionString}")
+    public Response deletePackageNew(
+            @HeaderParam(API_KEY_HEADER_NAME) String apiKey,
+            @PathParam("packageId") String packageId,
+            @PathParam("versionString") String versionString) {
+        deletePackage(apiKey, packageId, versionString);
+        throw new UnsupportedOperationException("Метод не реализован");
+    }
+
+    /**
+     * Удаление пакета из хранилища для NuGet версии 1.6 и старше
+     *
+     * @param apiKey ключ доступа
+     * @param packageId идентификатор пакета
+     * @param versionString версия пакета
+     */
+    private void deletePackage(String apiKey,
+            String packageId,
+            String versionString) {
+        //TODO Реализовать метод удаления пакета
+        throw new UnsupportedOperationException("Метод не реализован");
+    }
+
+    /**
      * @return источник пакетов
      */
     private PackageSource<Nupkg> getPackageSource() {
@@ -260,13 +310,6 @@ public class MainUrlResource {
         PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
         return feed;
     }
-    //TODO nuget delete <package Id> <package version> [API Key] [options]
-    /*
-     * "DELETE /nuget/Neolant.IOT.EventBus/0.1.2.3 HTTP/1.0" 404 979 (Nuget 1.7)
-     * "DELETE /nuget/Packages/QQWERR-WERTYUI-ERTYUIO/Neolant.IOT.EventBus/0.1.2.3 HTTP/1.1" 404 979 (NuGet 1.5)
-     */
-
-
     /**
      * Имя заголовка запроса с ключем доступа
      */
