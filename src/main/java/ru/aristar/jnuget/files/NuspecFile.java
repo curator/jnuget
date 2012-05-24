@@ -296,7 +296,6 @@ public class NuspecFile implements Serializable{
         marshaller.marshal(this, outputStream);
     }
 
-    //TODO Добавить проверку схемы
     /**
      * Восстанавливает информацию о пакете из XML
      *

@@ -42,9 +42,15 @@ public class PackageFeed implements XmlWritable {
      */
     @XmlElement(name = "link", namespace = ATOM_XML_NAMESPACE)
     private Link link = new Link("self", "Packages", "Packages");
+    /**
+     * Описания пактетов
+     */
     @XmlElement(name = "entry", namespace = ATOM_XML_NAMESPACE)
     private List<PackageEntry> entries;
 
+    /**
+     * @return описания пактетов
+     */
     public List<PackageEntry> getEntries() {
         if (entries == null) {
             entries = new ArrayList<>();
@@ -52,6 +58,9 @@ public class PackageFeed implements XmlWritable {
         return entries;
     }
 
+    /**
+     * @param entries описания пактетов
+     */
     public void setEntries(List<PackageEntry> entries) {
         this.entries = entries;
     }

@@ -117,6 +117,7 @@ public class MainUrlResource {
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
+            //TODO Доработать получение пакетов
             logger.debug("Запрос количества пакетов: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
@@ -297,7 +298,6 @@ public class MainUrlResource {
      * @return объектное представление RSS
      */
     private PackageFeed getPackageFeed(String filter, String searchTerm, String targetFramework, String orderBy, int skip, int top) {
-
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
         //Получить источник пакетов
         PackageSource<Nupkg> packageSource = getPackageSource();

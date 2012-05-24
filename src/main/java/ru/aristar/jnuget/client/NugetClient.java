@@ -188,6 +188,9 @@ public class NugetClient implements AutoCloseable {
         }
     }
 
+    //TODO https://nuget.org/api/v2/Packages/$count
+    //TODO https://nuget.org/api/v2/Packages/$count?$filter=IsLatestVersion
+
     /**
      * Получить класс указанного типа с URI
      *
