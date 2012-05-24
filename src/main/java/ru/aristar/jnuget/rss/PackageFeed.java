@@ -19,9 +19,7 @@ import ru.aristar.jnuget.XmlWritable;
  */
 @XmlRootElement(name = "feed", namespace = PackageFeed.ATOM_XML_NAMESPACE)
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = {"title", "id", "updated", /*
-     * "link",
-     */ "entries"})
+@XmlType(propOrder = {"title", "id", "updated", "link", "entries"})
 public class PackageFeed implements XmlWritable {
 
     /**
@@ -39,7 +37,11 @@ public class PackageFeed implements XmlWritable {
      */
     @XmlElement(name = "updated", type = Date.class, namespace = ATOM_XML_NAMESPACE)
     private Date updated;
-    //TODO Добавить Link
+    /**
+     * Ссылка на пакеты
+     */
+    @XmlElement(name = "link", namespace = ATOM_XML_NAMESPACE)
+    private Link link = new Link("self", "Packages", "Packages");
     @XmlElement(name = "entry", namespace = ATOM_XML_NAMESPACE)
     private List<PackageEntry> entries;
 
@@ -76,6 +78,20 @@ public class PackageFeed implements XmlWritable {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    /**
+     * @return ссылка на пакеты
+     */
+    public String getLink() {
+        return link.getHref();
+    }
+
+    /**
+     * @param link ссылка на пакеты
+     */
+    public void setLink(String link) {
+        this.link = new Link("self", "Packages", link);
     }
 
     /**
