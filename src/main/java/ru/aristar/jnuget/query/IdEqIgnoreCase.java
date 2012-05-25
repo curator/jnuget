@@ -13,6 +13,19 @@ import ru.aristar.jnuget.sources.PackageSource;
 public class IdEqIgnoreCase implements Expression {
 
     /**
+     * Сравнивает токен с эталоном
+     *
+     * @param actual токен
+     * @param expected эталон
+     * @throws NugetFormatException токен не соответствует эталону
+     */
+    private static void assertToken(String actual, String expected) throws NugetFormatException {
+        if (!actual.equalsIgnoreCase(expected)) {
+            throw new NugetFormatException("Встретился токен '" + actual
+                    + "', когда ожидался '" + expected + "'");
+        }
+    }
+    /**
      * Идентификатор пакета
      */
     private String packageId;
@@ -32,13 +45,13 @@ public class IdEqIgnoreCase implements Expression {
      */
     public static IdEqIgnoreCase parse(java.util.Queue<java.lang.String> tokens) throws NugetFormatException {
         IdEqIgnoreCase expression = new IdEqIgnoreCase();
-        QueryLexer.assertToken(tokens.poll(), "(");
-        QueryLexer.assertToken(tokens.poll(), "Id");
-        QueryLexer.assertToken(tokens.poll(), ")");
-        QueryLexer.assertToken(tokens.poll(), "eq");
-        QueryLexer.assertToken(tokens.poll(), "'");
+        assertToken(tokens.poll(), "(");
+        assertToken(tokens.poll(), "Id");
+        assertToken(tokens.poll(), ")");
+        assertToken(tokens.poll(), "eq");
+        assertToken(tokens.poll(), "'");
         expression.setPackageId(tokens.poll());
-        QueryLexer.assertToken(tokens.poll(), "'");
+        assertToken(tokens.poll(), "'");
         return expression;
     }
 

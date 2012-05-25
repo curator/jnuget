@@ -12,20 +12,6 @@ import ru.aristar.jnuget.files.NugetFormatException;
 public class QueryLexer {
 
     /**
-     * Сравнивает токен с эталоном
-     *
-     * @param actual токен
-     * @param expected эталон
-     * @throws NugetFormatException токен не соответствует эталону
-     */
-    public static void assertToken(String actual, String expected) throws NugetFormatException {
-        if (!actual.equalsIgnoreCase(expected)) {
-            throw new NugetFormatException("Встретился токен '" + actual
-                    + "', когда ожидался '" + expected + "'");
-        }
-    }
-
-    /**
      * Проверяет наличие в стеке предыдущей операции и если это операция AND
      * изменяет ее приоритет
      *

@@ -34,12 +34,13 @@ public class QueryLexerTest {
     public void testSimpleEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
-        final String filterString = "tolower(Id) eq 'projectwise.api'";
+        final String filterString = "tolower(Id) eq 'temp.package.id'";
         //WHEN
         Expression expression = lexer.parse(filterString);
+        //THEN
         assertThat("Операция верхнего уровня", expression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) expression;
-        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("projectwise.api")));
+        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("temp.package.id")));
     }
 
     /**
@@ -53,12 +54,13 @@ public class QueryLexerTest {
     public void testSimpleGroupEqExpression() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
-        final String filterString = "(tolower(Id) eq 'projectwise.api')";
+        final String filterString = "(tolower(Id) eq 'temp.package.id')";
         //WHEN
         Expression expression = lexer.parse(filterString);
+        //THEN
         assertThat("Операция верхнего уровня", expression, is(instanceOf(IdEqIgnoreCase.class)));
         IdEqIgnoreCase eqIgnoreCase = (IdEqIgnoreCase) expression;
-        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("projectwise.api")));
+        assertThat("Значение параметра", eqIgnoreCase.getPackageId(), is(equalTo("temp.package.id")));
     }
 
     /**
