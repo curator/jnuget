@@ -2,8 +2,6 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -235,6 +233,7 @@ public class EntryProperties {
         elements.add(createMicrosoftElement("Price", false, this.price));
         elements.add(createMicrosoftElement("Dependencies", false, this.dependencies));
         elements.add(createMicrosoftElement("PackageHash", false, this.packageHash));
+        //TODO <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
         elements.add(createMicrosoftElement("PackageSize", false, this.packageSize));
         elements.add(createMicrosoftElement("ExternalPackageUri", true, this.externalPackageUri));
         elements.add(createMicrosoftElement("Categories", true, this.categories));

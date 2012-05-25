@@ -80,10 +80,9 @@ public interface PackageSource<T extends Nupkg> {
     /**
      * Удаляет выбранный пакет из хранилища.
      *
-     * @param id Идентификатор пакета.
-     * @param version Версия пакета.
+     * @param nupkg пакет для удаления
      */
-    void removePackage(String id, Version version);
+    void removePackage(Nupkg nupkg);
 
     /**
      * Обновить информацию о пакете

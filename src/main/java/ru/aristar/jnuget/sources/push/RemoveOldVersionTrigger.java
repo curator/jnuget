@@ -74,7 +74,7 @@ public class RemoveOldVersionTrigger implements PushTrigger {
         List<? extends Nupkg> sortedNupkgs = toSortedList(nupkgs);
         while (sortedNupkgs.size() > getMaxPackageCount()) {
             Nupkg pkg = sortedNupkgs.get(sortedNupkgs.size() - 1);
-            packageSource.removePackage(pkg.getId(), pkg.getVersion());
+            packageSource.removePackage(pkg);
             sortedNupkgs = sortedNupkgs.subList(0, sortedNupkgs.size() - 1);
         }
     }

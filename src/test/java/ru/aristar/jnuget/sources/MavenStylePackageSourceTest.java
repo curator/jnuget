@@ -9,6 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import static org.hamcrest.CoreMatchers.equalTo;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -28,6 +30,10 @@ import ru.aristar.jnuget.sources.push.SimplePushStrategy;
  */
 public class MavenStylePackageSourceTest {
 
+    /**
+     * Контекст для создания заглушек
+     */
+    private Mockery context = new Mockery();
     /**
      * Тестовая папка с пакетами
      */
@@ -152,7 +158,7 @@ public class MavenStylePackageSourceTest {
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
         //WHEN
         Collection<MavenNupkg> nupkgs = packageSource.getPackages("NUnit");
-        //THEN    
+        //THEN
         assertThat("Пакет найден", nupkgs.size(), equalTo(1));
         NuspecFile result = nupkgs.iterator().next().getNuspecFile();
         assertNotNull("Спецификация пакета", result);
@@ -168,7 +174,7 @@ public class MavenStylePackageSourceTest {
      */
     @Test
     public void testPushAndGet() throws Exception {
-        //GIVEN        
+        //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
         File packageFolder = new File(testFolder, tempNupkgFile.getId());
@@ -192,7 +198,7 @@ public class MavenStylePackageSourceTest {
      */
     @Test
     public void testPush() throws Exception {
-        //GIVEN        
+        //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg");
         TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
         File packageFolder = new File(testFolder, tempNupkgFile.getId().toLowerCase());
@@ -207,7 +213,7 @@ public class MavenStylePackageSourceTest {
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
         File packageFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");
         File nuspecFile = new File(versionFolder, MavenNupkg.NUSPEC_FILE_NAME);
-        //THEN        
+        //THEN
         assertTrue("Файл пакета создан", packageFile.exists());
         assertTrue("Файл спецификации создан", nuspecFile.exists());
         assertTrue("Файл хеша создан", hashFile.exists());
@@ -227,6 +233,14 @@ public class MavenStylePackageSourceTest {
         final String packageId = "TEST_PACKAGE";
         final String packageVersionString1 = "1.2.3.4";
         final String packageVersionString2 = "1.2.3.5";
+        Nupkg nupkg2 = context.mock(Nupkg.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nupkg2).getId();
+        expectations.will(Expectations.returnValue(packageId));
+        expectations.atLeast(0).of(nupkg2).getVersion();
+        expectations.will(Expectations.returnValue(Version.parse(packageVersionString2)));
+        context.checking(expectations);
+
         //GIVEN
         File idFolder = new File(testFolder, packageId);
 
@@ -247,7 +261,7 @@ public class MavenStylePackageSourceTest {
         }
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
         //WHEN
-        packageSource.removePackage(packageId, Version.parse(packageVersionString2));
+        packageSource.removePackage(nupkg2);
         //THEN
         assertTrue("Файл пакета не удален", packageFile1.exists());
         assertTrue("Каталог с версией не удален", versionFolder1.exists());
@@ -264,9 +278,16 @@ public class MavenStylePackageSourceTest {
      */
     @Test
     public void testRemoveLastPackage() throws Exception {
+        //GIVEN
         final String packageId = "TEST_PACKAGE";
         final String packageVersionString = "1.2.3.4";
-        //GIVEN
+        Nupkg nupkg = context.mock(Nupkg.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nupkg).getId();
+        expectations.will(Expectations.returnValue(packageId));
+        expectations.atLeast(0).of(nupkg).getVersion();
+        expectations.will(Expectations.returnValue(Version.parse(packageVersionString)));
+        context.checking(expectations);
         File idFolder = new File(testFolder, packageId);
 
         File versionFolder = new File(idFolder, packageVersionString);
@@ -278,7 +299,7 @@ public class MavenStylePackageSourceTest {
         }
         MavenStylePackageSource packageSource = new MavenStylePackageSource(testFolder);
         //WHEN
-        packageSource.removePackage(packageId, Version.parse(packageVersionString));
+        packageSource.removePackage(nupkg);
         //THEN
         assertFalse("Файл пакета удален", packageFile.exists());
         assertFalse("Каталог с версией удален", versionFolder.exists());

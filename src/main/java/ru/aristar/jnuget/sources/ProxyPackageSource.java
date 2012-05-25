@@ -169,7 +169,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public void removePackage(String id, Version version) {
+    public void removePackage(Nupkg nupkg) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

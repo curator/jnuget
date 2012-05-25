@@ -184,6 +184,6 @@ public class RemoteNupkg implements Nupkg {
 
     @Override
     public EnumSet<Framework> getTargetFramework() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return EnumSet.allOf(Framework.class);
     }
 }

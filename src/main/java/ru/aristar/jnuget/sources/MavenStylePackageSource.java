@@ -160,12 +160,13 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
     }
 
     @Override
-    public void removePackage(String id, Version version) {
+    public void removePackage(Nupkg nupkg) {
         // Проверка наличия папки с пакетом
-        File idDir = new File(rootFolder, id);
-        File versionDir = new File(idDir, version.toString());
+        File idDir = new File(rootFolder, nupkg.getId());
+        File versionDir = new File(idDir, nupkg.getVersion().toString());
         if (!versionDir.exists()) {
-            logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + id + ", version: " + version + ")");
+            logger.info("Попытка удаления пакета, отсутствующего в хранилище "
+                    + "(id: " + nupkg.getId() + ", version: " + nupkg.getVersion() + ")");
             return;
         }
         // Удаляем содержимое папки с версией

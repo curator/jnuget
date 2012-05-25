@@ -83,9 +83,8 @@ public class RemoveOldVersionTriggerTest {
         @Override
         public Object invoke(Invocation invocation) throws Throwable {
             Object firstArgument = invocation.getParameter(0);
-            Object secondArgument = invocation.getParameter(1);
-            String id = (String) firstArgument;
-            Version version = (Version) secondArgument;
+            String id = ((Nupkg) firstArgument).getId();
+            Version version = ((Nupkg) firstArgument).getVersion();
             versions.add(version);
             packageIds.add(id);
             return null;
@@ -111,7 +110,7 @@ public class RemoveOldVersionTriggerTest {
             {
                 atLeast(0).of(packageSource).getPackages("Nupkg");
                 will(returnValue(new ArrayList<Nupkg>()));
-                atLeast(0).of(packageSource).removePackage(with(any(String.class)), with(any(Version.class)));
+                atLeast(0).of(packageSource).removePackage(with(any(Nupkg.class)));
                 will(addRemovedVersionToList);
             }
         });
@@ -164,7 +163,7 @@ public class RemoveOldVersionTriggerTest {
             {
                 atLeast(0).of(packageSource).getPackages("Nupkg");
                 will(returnValue(nupkgs));
-                atLeast(0).of(packageSource).removePackage(with(any(String.class)), with(any(Version.class)));
+                atLeast(0).of(packageSource).removePackage(with(any(Nupkg.class)));
                 will(addRemovedVersionToList);
             }
         });
@@ -172,7 +171,7 @@ public class RemoveOldVersionTriggerTest {
         trigger.setMaxPackageCount(10);
         //WHEN
         trigger.doAction(nupkg, packageSource);
-        //THEN    
+        //THEN
         assertThat("Удаленные идентификаторы пакета пакета",
                 removedIds.toArray(new String[0]),
                 equalTo(new String[]{"Nupkg"}));

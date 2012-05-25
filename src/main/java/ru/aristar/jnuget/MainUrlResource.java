@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
@@ -216,7 +217,11 @@ public class MainUrlResource {
             @PathParam("apiKey") String apiKey,
             @PathParam("packageId") String packageId,
             @PathParam("versionString") String versionString) {
-        deletePackage(apiKey, packageId, versionString);
+        try {
+            deletePackage(apiKey, packageId, versionString);
+        } catch (NugetFormatException e) {
+            logger.warn("Некорректное значение версии", e);
+        }
         throw new UnsupportedOperationException("Метод не реализован");
     }
 
@@ -234,7 +239,11 @@ public class MainUrlResource {
             @HeaderParam(API_KEY_HEADER_NAME) String apiKey,
             @PathParam("packageId") String packageId,
             @PathParam("versionString") String versionString) {
-        deletePackage(apiKey, packageId, versionString);
+        try {
+            deletePackage(apiKey, packageId, versionString);
+        } catch (NugetFormatException e) {
+            logger.warn("Некорректное значение версии", e);
+        }
         throw new UnsupportedOperationException("Метод не реализован");
     }
 
@@ -244,11 +253,19 @@ public class MainUrlResource {
      * @param apiKey ключ доступа
      * @param packageId идентификатор пакета
      * @param versionString версия пакета
+     * @throws NugetFormatException некорректная версия пакета
      */
     private void deletePackage(String apiKey,
             String packageId,
-            String versionString) {
+            String versionString) throws NugetFormatException {
+        Version version = Version.parse(versionString);
+        PackageSource<Nupkg> packageSource = getPackageSource();
+        Nupkg nupkg = packageSource.getPackage(packageId, version);
+        if (nupkg == null) {
+            return;
+        }
         //TODO Реализовать метод удаления пакета
+        packageSource.removePackage(nupkg);
         throw new UnsupportedOperationException("Метод не реализован");
     }
 

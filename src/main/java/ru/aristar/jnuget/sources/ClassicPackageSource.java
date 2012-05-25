@@ -154,10 +154,10 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
     }
 
     @Override
-    public void removePackage(String id, Version version) {
-        File pack = new File(rootFolder, id + "." + version.toString() + Nupkg.DEFAULT_EXTENSION);
+    public void removePackage(Nupkg nupkg) {
+        File pack = new File(rootFolder, nupkg.getFileName());
         if (!pack.exists()) {
-            logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + id + ", version: " + version + ")");
+            logger.info("Попытка удаления пакета, отсутствующего в хранилище (id: " + nupkg.getId() + ", version: " + nupkg.getVersion() + ")");
             return;
         }
         pack.delete();
