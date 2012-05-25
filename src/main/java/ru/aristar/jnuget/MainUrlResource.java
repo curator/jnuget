@@ -107,22 +107,27 @@ public class MainUrlResource {
         }
     }
 
+    /**
+     * Возвращает количество пакетов
+     *
+     * @param filter условие выборки пакетов
+     * @param searchTerm условие поиска
+     * @param targetFramework фрейморк, для которого предназначен пакет
+     * @return TEXT c числом пакетов
+     */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
     public Response getPackageCount(@QueryParam("$filter") String filter,
-            @QueryParam("$orderby") String orderBy,
-            @QueryParam("$skip") @DefaultValue("0") int skip,
-            @QueryParam("$top") @DefaultValue("-1") int top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            //TODO Доработать получение пакетов
-            logger.debug("Запрос количества пакетов: filter={}, orderBy={}, skip={}, "
-                    + "top={}, searchTerm={}, targetFramework={}",
-                    new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, searchTerm, targetFramework, orderBy, skip, top);
-            return Response.ok(Integer.toString(feed.getEntries().size()), MediaType.TEXT_PLAIN).build();
+            logger.debug("Запрос количества пакетов: filter={}, searchTerm={}, targetFramework={}",
+                    new Object[]{filter, searchTerm, targetFramework});
+            Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
+            logger.debug("Получено {} пакетов", new Object[]{files.size()});
+            int count = files.size();
+            return Response.ok(Integer.toString(count), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
             logger.error(errorMessage, e);
@@ -298,17 +303,31 @@ public class MainUrlResource {
      * @return объектное представление RSS
      */
     private PackageFeed getPackageFeed(String filter, String searchTerm, String targetFramework, String orderBy, int skip, int top) {
+        //Получить пакеты
+        Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
+        logger.debug("Получено {} пакетов", new Object[]{files.size()});
+        //Преобразовать пакеты в RSS
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
+        NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
+        PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
+        return feed;
+    }
+
+    /**
+     * Возвращает коллекцию пакетов, соответствующую условиям поиска
+     *
+     * @param filter условие фильтрации
+     * @param searchTerm условие поиска
+     * @param targetFramework список фреймворков, для которых предназначен пакет
+     * @return коллекция пакетов
+     */
+    private Collection<? extends Nupkg> getPackages(String filter, String searchTerm, String targetFramework) {
         //Получить источник пакетов
         PackageSource<Nupkg> packageSource = getPackageSource();
         //Выбрать пакеты по запросу
         QueryExecutor queryExecutor = new QueryExecutor();
         Collection<? extends Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm, targetFramework);
-        logger.debug("Получено {} пакетов", new Object[]{files.size()});
-        //Преобразовать пакеты в RSS
-        NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
-        PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
-        return feed;
+        return files;
     }
     /**
      * Имя заголовка запроса с ключем доступа
