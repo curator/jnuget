@@ -18,10 +18,6 @@ import ru.aristar.jnuget.sources.push.PushStrategy;
 public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     /**
-     * Монитор, обеспечивающий блокировку вставки пакетов при обновлении индекса
-     */
-    private static final Object monitor = new Object();
-    /**
      * Индекс пакетов
      */
     private volatile Index index = null;
@@ -65,7 +61,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      * Перечитывает индекс хранилища
      */
     private void refreshIndex() {
-        synchronized (monitor) {
+        synchronized (this) {
             logger.info("Инициировано обновление индекса хранилища {}", new Object[]{packageSource});
             Collection<? extends Nupkg> packages = packageSource.getPackages();
             Index newIndex = new Index();
@@ -87,7 +83,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
             }
             logger.info("Обновление индекса хранилища {} завершено. Обнаружено {} пакетов",
                     new Object[]{packageSource, index.size()});
-            monitor.notifyAll();
+            this.notifyAll();
         }
     }
 
@@ -99,10 +95,10 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     public Index getIndex() {
         if (index == null) {
             try {
-                synchronized (monitor) {
+                synchronized (this) {
                     while (index == null) {
                         logger.warn("Индекс не создан, ожидание создания индекса");
-                        monitor.wait();
+                        this.wait();
                     }
                 }
             } catch (InterruptedException e) {
@@ -154,7 +150,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
-        synchronized (monitor) {
+        synchronized (this) {
             boolean result = packageSource.pushPackage(file, apiKey);
             if (result) {
                 Nupkg localFile = packageSource.getPackage(file.getId(), file.getVersion());
