@@ -126,8 +126,8 @@ public class MainUrlResource {
             logger.debug("Запрос количества пакетов: filter={}, searchTerm={}, targetFramework={}",
                     new Object[]{filter, searchTerm, targetFramework});
             Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
-            logger.debug("Получено {} пакетов", new Object[]{files.size()});
-            int count = files.size();
+            final int count = files.size();
+            logger.debug("Получено {} пакетов", new Object[]{count});
             return Response.ok(Integer.toString(count), MediaType.TEXT_PLAIN).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка получения списка пакетов";
@@ -136,6 +136,13 @@ public class MainUrlResource {
         }
     }
 
+    /**
+     * Получения потока с данными пакета
+     *
+     * @param id идентификатор пакета
+     * @param versionString строка версии пакета
+     * @return поток с файлом пакета
+     */
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("download/{id}/{version}")

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.channels.Channels;
 import org.apache.commons.io.FileUtils;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -102,5 +103,40 @@ public class NugetClientTest {
         assertThat("Версия пакета", entry.getProperties().getVersion(), is(equalTo(Version.parse("2.5.9.10348"))));
         assertThat("HASH пакета", entry.getProperties().getPackageHash(), is(equalTo("kDPZtMu1BOZerHZvsbPnj7DfOdEyn/j4fanlv7BWuuVOZ0+VwuuxWzUnpD7jo7pkLjFOqIs41Vkk7abFZjPRJA==")));
         assertThat("Идентификатор пакета", entry.getTitle(), is(equalTo("NUnit")));
+    }
+
+    /**
+     * Проверка получения количества пакетов
+     *
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException некорректный URI ресурса
+     */
+    @Test
+    public void testGetPackageCount() throws IOException, URISyntaxException {
+        //GIVEN
+        NugetClient nugetClient = new NugetClient();
+        nugetClient.setUrl("http://localhost:8088/nuget/nuget");
+        //WHEN
+        int result = nugetClient.getPackageCount(false);
+        //THEN
+        assertThat(result, is(equalTo(1)));
+    }
+
+    /**
+     * Проверка получения количества последних версий пакета (пакетов с
+     * уникальными идентификаторами)
+     *
+     * @throws IOException ошибка чтения из сокета
+     * @throws URISyntaxException некорректный URI ресурса
+     */
+    @Test
+    public void testGetLastVersionPackageCount() throws IOException, URISyntaxException {
+        //GIVEN
+        NugetClient nugetClient = new NugetClient();
+        nugetClient.setUrl("http://localhost:8088/nuget/nuget");
+        //WHEN
+        int result = nugetClient.getPackageCount(true);
+        //THEN
+        assertThat(result, is(equalTo(1)));
     }
 }

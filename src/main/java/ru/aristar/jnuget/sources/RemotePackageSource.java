@@ -52,6 +52,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
             int groupCount = 200;
             int skip = 0;
             do {
+                //TODO Переделать под ForkJoin
                 feed = remoteStorage.getPackages(filter, null, groupCount, null, skip);
                 for (PackageEntry entry : feed.getEntries()) {
                     try {

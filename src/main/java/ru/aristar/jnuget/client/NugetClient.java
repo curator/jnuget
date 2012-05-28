@@ -116,6 +116,28 @@ public class NugetClient implements AutoCloseable {
     }
 
     /**
+     * Возвращает количество пакетов в удаленном хранилище
+     *
+     * @param isLatestVersion только последние версии пакетов
+     * @return количество пакетов
+     * @throws IOException ошибка чтения пакетов из удаленного репозитория
+     * @throws URISyntaxException ошибка URI
+     */
+    public int getPackageCount(final boolean isLatestVersion) throws IOException, URISyntaxException {
+        URI uri = webResource.getURI();
+        final String path = "Packages/$count";
+        final MediaType[] mediaType = new MediaType[]{MediaType.TEXT_PLAIN_TYPE};
+        if (isLatestVersion) {
+            Map<String, String> params = new HashMap<>(1);
+            params.put("$filter", "IsLatestVersion");
+            final String response = get(client, uri, path, params, mediaType, String.class);
+            return Integer.parseInt(response);
+        }
+        final String response = get(client, uri, path, null, mediaType, String.class);
+        return Integer.parseInt(response);
+    }
+
+    /**
      * Отправляет пакет на сервер
      *
      * @param nupkg пакет
@@ -187,9 +209,6 @@ public class NugetClient implements AutoCloseable {
                 throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
         }
     }
-
-    //TODO https://nuget.org/api/v2/Packages/$count
-    //TODO https://nuget.org/api/v2/Packages/$count?$filter=IsLatestVersion
 
     /**
      * Получить класс указанного типа с URI
