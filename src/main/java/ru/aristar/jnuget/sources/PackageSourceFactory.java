@@ -64,7 +64,11 @@ public class PackageSourceFactory {
             File storageFile = new File(Options.getNugetHome(), storageName + ".idx");
             indexedPackageSource.setIndexStoreFile(storageFile);
         }
-        indexedPackageSource.setRefreshInterval(refreshInterval);
+        if (refreshInterval != null) {
+            logger.info("Интервал обновления для хранилища {} установлен в {}",
+                    new Object[]{packageSource, refreshInterval});
+            indexedPackageSource.setRefreshInterval(refreshInterval);
+        }
         return indexedPackageSource;
     }
 

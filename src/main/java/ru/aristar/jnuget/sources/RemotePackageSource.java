@@ -64,8 +64,8 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
                 }
                 skip = skip + groupCount;
             } while (feed != null && !feed.getEntries().isEmpty());
-            logger.debug("Завершено получение пакетов. Статус: skip={}; feed.entries={}",
-                    new Object[]{skip, feed == null ? null : feed.getEntries().size()});
+            logger.debug("Завершено получение пакетов. Статус: skip={}; feed.entries={}; count={}",
+                    new Object[]{skip, feed == null ? null : feed.getEntries().size(), result.size()});
             return result;
         } catch (IOException | URISyntaxException e) {
             logger.warn("Ошибка получения пакета из удаленного хранилища", e);

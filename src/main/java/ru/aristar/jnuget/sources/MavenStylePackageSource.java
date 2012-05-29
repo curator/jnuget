@@ -45,6 +45,7 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
      */
     public void setRootFolderName(String folderName) {
         rootFolder = new File(folderName);
+        rootFolder.mkdirs();
     }
 
     /**

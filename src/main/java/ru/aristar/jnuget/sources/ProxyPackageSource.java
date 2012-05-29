@@ -175,7 +175,9 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public String toString() {
-        return "ProxyPackageSource{" + remoteSource + '}';
+        final String url = remoteSource == null ? null : remoteSource.getUrl();
+        final String folder = hostedSource == null ? null : hostedSource.getRootFolderName();
+        return "ProxyPackageSource{" + url + " --> " + folder + '}';
     }
 
     @Override
