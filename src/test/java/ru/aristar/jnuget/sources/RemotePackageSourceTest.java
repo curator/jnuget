@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import org.jmock.Expectations;
-import static org.jmock.Expectations.*;
+import static org.jmock.Expectations.equal;
+import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.jmock.lib.legacy.ClassImposteriser;
@@ -52,17 +51,9 @@ public class RemotePackageSourceTest {
         //GIVEN
         RemotePackageSource packageSource = new RemotePackageSource();
         final NugetClient nugetClient = context.mock(NugetClient.class);
-        final PackageFeed packageFeed = createPackageFeed("EmptyFeed");
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
         expectations.will(returnValue(0));
-        expectations.atLeast(0).of(nugetClient).getPackages(
-                expectations.with(any(String.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)));
-        expectations.will(returnValue(packageFeed));
         context.checking(expectations);
         packageSource.remoteStorage = nugetClient;
         //WHEN
@@ -145,14 +136,13 @@ public class RemotePackageSourceTest {
                 expectations.with((String) null),
                 expectations.with(0));
         expectations.will(returnValue(packageFeed));
-        /*
-         * expectations.atLeast(0).of(nugetClient).getPackages(
-         * expectations.with(any(String.class)),
-         * expectations.with(any(String.class)),
-         * expectations.with(any(Integer.class)),
-         * expectations.with(any(String.class)), expectations.with(200));
-         * expectations.will(returnValue(emptyFeed));
-         */
+        expectations.atLeast(0).of(nugetClient).getPackages(
+                expectations.with((String) null),
+                expectations.with((String) null),
+                expectations.with(1),
+                expectations.with((String) null),
+                expectations.with(2));
+        expectations.will(returnValue(emptyFeed));
 
         expectations.atLeast(0).of(emptyFeed).getEntries();
         expectations.will(returnValue(new ArrayList<>()));

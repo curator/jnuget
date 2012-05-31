@@ -55,27 +55,26 @@ public class GetRemotePackageFeedActionTest {
         arrayList = Collections.synchronizedList(arrayList);
         NugetClient client = context.mock(NugetClient.class);
         Expectations expectations = new Expectations();
-        addExpectation(expectations, client, 200, 0, createPackageFeed("feed-1", createPackageEntry("package-1", "1.2.3")));
-        addExpectation(expectations, client, 200, 200, createPackageFeed("feed-2", createPackageEntry("package-2", "1.2.3")));
-        addExpectation(expectations, client, 200, 400, createPackageFeed("feed-3", createPackageEntry("package-3", "1.2.3")));
-        addExpectation(expectations, client, 200, 600, createPackageFeed("feed-4", createPackageEntry("package-4", "1.2.3")));
-        addExpectation(expectations, client, 200, 800, createPackageFeed("feed-5", createPackageEntry("package-5", "1.2.3")));
-        addExpectation(expectations, client, 200, 1000, createPackageFeed("feed-6", createPackageEntry("package-6", "1.2.3")));
-        addExpectation(expectations, client, 200, 1200, createPackageFeed("feed-7", createPackageEntry("package-7", "1.2.3")));
-        addExpectation(expectations, client, 200, 1400, createPackageFeed("feed-8", createPackageEntry("package-8", "1.2.3")));
-        addExpectation(expectations, client, 200, 1600, createPackageFeed("feed-9", createPackageEntry("package-9", "1.2.3")));
-        addExpectation(expectations, client, 200, 1800, createPackageFeed("feed-10", createPackageEntry("package-10", "1.2.3")));
-        addExpectation(expectations, client, 200, 2000, createPackageFeed("feed-11", createPackageEntry("package-11", "1.2.3")));
-        addExpectation(expectations, client, 200, 2200, createPackageFeed("feed-12", createPackageEntry("package-12", "1.2.3")));
-        addExpectation(expectations, client, 200, 2400, createPackageFeed("feed-13", createPackageEntry("package-13", "1.2.3")));
-        addExpectation(expectations, client, 200, 2600, createPackageFeed("feed-14", createPackageEntry("package-14", "1.2.3")));
-        addExpectation(expectations, client, 200, 2800, createPackageFeed("feed-15", createPackageEntry("package-15", "1.2.3")));
-        addExpectation(expectations, client, 200, 3000, createPackageFeed("feed-16", createPackageEntry("package-16", "1.2.3")));
-        addExpectation(expectations, client, 200, 3200, createPackageFeed("feed-17", createPackageEntry("package-17", "1.2.3")));
-        addExpectation(expectations, client, 200, 3400, createPackageFeed("feed-18", createPackageEntry("package-18", "1.2.3")));
-        addExpectation(expectations, client, 200, 3600, createPackageFeed("feed-19", createPackageEntry("package-19", "1.2.3")));
-        addExpectation(expectations, client, 200, 3800, createPackageFeed("feed-20", createPackageEntry("package-20", "1.2.3")));
-
+        addExpectation(expectations, client, 200, 0, createPackageFeed("feed-1", 200, 1));
+        addExpectation(expectations, client, 200, 200, createPackageFeed("feed-2", 200, 201));
+        addExpectation(expectations, client, 200, 400, createPackageFeed("feed-3", 200, 401));
+        addExpectation(expectations, client, 200, 600, createPackageFeed("feed-4", 200, 601));
+        addExpectation(expectations, client, 200, 800, createPackageFeed("feed-5", 200, 801));
+        addExpectation(expectations, client, 200, 1000, createPackageFeed("feed-6", 200, 1001));
+        addExpectation(expectations, client, 200, 1200, createPackageFeed("feed-7", 200, 1201));
+        addExpectation(expectations, client, 200, 1400, createPackageFeed("feed-8", 200, 1401));
+        addExpectation(expectations, client, 200, 1600, createPackageFeed("feed-9", 200, 1601));
+        addExpectation(expectations, client, 200, 1800, createPackageFeed("feed-10", 200, 1801));
+        addExpectation(expectations, client, 200, 2000, createPackageFeed("feed-11", 200, 2001));
+        addExpectation(expectations, client, 200, 2200, createPackageFeed("feed-12", 200, 2201));
+        addExpectation(expectations, client, 200, 2400, createPackageFeed("feed-13", 200, 2401));
+        addExpectation(expectations, client, 200, 2600, createPackageFeed("feed-14", 200, 2601));
+        addExpectation(expectations, client, 200, 2800, createPackageFeed("feed-15", 200, 2801));
+        addExpectation(expectations, client, 200, 3000, createPackageFeed("feed-16", 200, 3001));
+        addExpectation(expectations, client, 200, 3200, createPackageFeed("feed-17", 200, 3201));
+        addExpectation(expectations, client, 200, 3400, createPackageFeed("feed-18", 200, 3401));
+        addExpectation(expectations, client, 200, 3600, createPackageFeed("feed-19", 200, 3601));
+        addExpectation(expectations, client, 200, 3800, createPackageFeed("feed-20", 200, 3801));
         context.checking(expectations);
         GetRemotePackageFeedAction instance = new GetRemotePackageFeedAction(200, arrayList, 0, 4000, client);
         //WHEN
@@ -83,7 +82,35 @@ public class GetRemotePackageFeedActionTest {
         pool.invoke(instance);
         //THEN
         context.assertIsSatisfied();
-        assertThat(arrayList.size(), is(equalTo(20)));
+        assertThat(arrayList.size(), is(equalTo(4000)));
+    }
+
+    /**
+     * Проверка загрузки пакетов за один раз
+     *
+     * @throws NugetFormatException некорректный формат версии пакета
+     * @throws IOException ошибка чтения пакета
+     * @throws URISyntaxException некорректный синтаксис URI
+     */
+    @Test
+    public void testLoadPackages() throws NugetFormatException, IOException, URISyntaxException {
+        //GIVEN       
+        List<RemoteNupkg> nupkgs = new ArrayList<>();
+        NugetClient client = context.mock(NugetClient.class);
+        GetRemotePackageFeedAction action = new GetRemotePackageFeedAction(5, nupkgs, 0, 200, client);
+        Expectations expectations = new Expectations();
+        addExpectation(expectations, client, 5, 0, createPackageFeed("feed-1", createPackageEntry("package-1", "1.2.3"), createPackageEntry("package-2", "1.2.3")));
+        addExpectation(expectations, client, 2, 2, createPackageFeed("feed-2", createPackageEntry("package-3", "1.2.3"), createPackageEntry("package-4", "1.2.3")));
+        addExpectation(expectations, client, 2, 4, createPackageFeed("feed-3"));
+        context.checking(expectations);
+        //WHEN
+        action.loadPackages();
+        //THEN
+        assertThat(nupkgs.size(), is(equalTo(4)));
+        assertThat(nupkgs.get(0).getId(), is(equalTo("package-1")));
+        assertThat(nupkgs.get(1).getId(), is(equalTo("package-2")));
+        assertThat(nupkgs.get(2).getId(), is(equalTo("package-3")));
+        assertThat(nupkgs.get(3).getId(), is(equalTo("package-4")));
     }
 
     /**
@@ -118,6 +145,25 @@ public class GetRemotePackageFeedActionTest {
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(packageFeed).getEntries();
         expectations.will(returnValue(new ArrayList<>(Arrays.asList(packageEntrys))));
+        context.checking(expectations);
+        return packageFeed;
+    }
+
+    /**
+     * @param name имя объекта сообщения
+     * @param count количество вложений
+     * @param skip с какого идентификатора начать нумерацию пакетов
+     * @return RSS сообщение
+     */
+    private PackageFeed createPackageFeed(String name, int count, int skip) throws NugetFormatException {
+        final PackageFeed packageFeed = context.mock(PackageFeed.class, name);
+        Expectations expectations = new Expectations();
+        ArrayList<PackageEntry> entrys = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            entrys.add(createPackageEntry("Package-" + (skip + i), "1.2.3"));
+        }
+        expectations.atLeast(0).of(packageFeed).getEntries();
+        expectations.will(returnValue(new ArrayList<>(entrys)));
         context.checking(expectations);
         return packageFeed;
     }

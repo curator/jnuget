@@ -67,6 +67,9 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
 
     @Override
     protected void compute() {
+        if (top == low) {
+            return;
+        }
         logger.debug("Обработка пакетов верхняя граница = {}; Нижняя граница = {}", new Object[]{top, low});
         if (top - low <= PACKAGES_PER_THREAD) {
             loadPackages();
@@ -82,14 +85,16 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
     /**
      * Последовательное получение пакетов из хранилища
      */
-    private void loadPackages() {
+    protected void loadPackages() {
         logger.trace("Получение пакетов для диапазона: {}:{}", new Object[]{low, top});
         ArrayList<RemoteNupkg> result = new ArrayList<>();
         try {
-            for (int skip = low; skip < top; skip = skip + packageFeedSize) {
+            int skip = low;
+            int packageSize = packageFeedSize;
+            do {
                 int cnt = top - skip;
-                if (cnt > packageFeedSize) {
-                    cnt = packageFeedSize;
+                if (cnt > packageSize) {
+                    cnt = packageSize;
                 }
                 logger.trace("Запрос пакетов с {} по {}", new Object[]{skip, skip + cnt});
                 PackageFeed feed = client.getPackages(null, null, cnt, null, skip);
@@ -104,7 +109,9 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
                     }
                 }
                 logger.trace("Обработано {} пакетов", new Object[]{feed.getEntries().size()});
-            }
+                packageSize = feed.getEntries().size();
+                skip = skip + packageSize;
+            } while (skip < top && packageSize > 0);
             logger.trace("Получено {} пакетов для диапазона: {}:{}", new Object[]{result.size(), low, top});
             packages.addAll(result);
         } catch (IOException | URISyntaxException e) {
