@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.lib.concurrent.Synchroniser;
 import org.jmock.lib.legacy.ClassImposteriser;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
@@ -26,17 +30,29 @@ import ru.aristar.jnuget.rss.PackageFeed;
  */
 public class GetRemotePackageFeedActionTest {
 
+    /**
+     * Контекст тестовых заглушек
+     */
     private Mockery context = new JUnit4Mockery() {
 
         {
             setImposteriser(ClassImposteriser.INSTANCE);
+            setThreadingPolicy(new Synchroniser());
         }
     };
 
+    /**
+     * Проверка получения списка пакетов из удаленного хранилища
+     *
+     * @throws IOException ошибка чтения из удаленного хранилища
+     * @throws URISyntaxException ошибка в синтаксисе URI хранилища
+     * @throws NugetFormatException некорректный формат тестовой версии
+     */
     @Test
-    public void testCompute() throws IOException, URISyntaxException, NugetFormatException, InterruptedException {
+    public void testCompute() throws IOException, URISyntaxException, NugetFormatException {
         //GIVEN
-        ArrayList<RemoteNupkg> arrayList = new ArrayList<>();
+        List<RemoteNupkg> arrayList = new ArrayList<>();
+        arrayList = Collections.synchronizedList(arrayList);
         NugetClient client = context.mock(NugetClient.class);
         Expectations expectations = new Expectations();
         addExpectation(expectations, client, 200, 0, createPackageFeed("feed-1", createPackageEntry("package-1", "1.2.3")));
@@ -49,19 +65,38 @@ public class GetRemotePackageFeedActionTest {
         addExpectation(expectations, client, 200, 1400, createPackageFeed("feed-8", createPackageEntry("package-8", "1.2.3")));
         addExpectation(expectations, client, 200, 1600, createPackageFeed("feed-9", createPackageEntry("package-9", "1.2.3")));
         addExpectation(expectations, client, 200, 1800, createPackageFeed("feed-10", createPackageEntry("package-10", "1.2.3")));
+        addExpectation(expectations, client, 200, 2000, createPackageFeed("feed-11", createPackageEntry("package-11", "1.2.3")));
+        addExpectation(expectations, client, 200, 2200, createPackageFeed("feed-12", createPackageEntry("package-12", "1.2.3")));
+        addExpectation(expectations, client, 200, 2400, createPackageFeed("feed-13", createPackageEntry("package-13", "1.2.3")));
+        addExpectation(expectations, client, 200, 2600, createPackageFeed("feed-14", createPackageEntry("package-14", "1.2.3")));
+        addExpectation(expectations, client, 200, 2800, createPackageFeed("feed-15", createPackageEntry("package-15", "1.2.3")));
+        addExpectation(expectations, client, 200, 3000, createPackageFeed("feed-16", createPackageEntry("package-16", "1.2.3")));
+        addExpectation(expectations, client, 200, 3200, createPackageFeed("feed-17", createPackageEntry("package-17", "1.2.3")));
+        addExpectation(expectations, client, 200, 3400, createPackageFeed("feed-18", createPackageEntry("package-18", "1.2.3")));
+        addExpectation(expectations, client, 200, 3600, createPackageFeed("feed-19", createPackageEntry("package-19", "1.2.3")));
+        addExpectation(expectations, client, 200, 3800, createPackageFeed("feed-20", createPackageEntry("package-20", "1.2.3")));
 
         context.checking(expectations);
         GetRemotePackageFeedAction instance = new GetRemotePackageFeedAction(200, arrayList, 0, 4000, client);
         //WHEN
         ForkJoinPool pool = new ForkJoinPool();
-        pool.execute(instance);
-        pool.awaitTermination(20, TimeUnit.DAYS);
+        pool.invoke(instance);
         //THEN
         context.assertIsSatisfied();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertThat(arrayList.size(), is(equalTo(20)));
     }
 
+    /**
+     * Добавление ожидаемого вызова удаленного хранилища
+     *
+     * @param expectations ожидаемые вызовы
+     * @param client заглушка клиента удаленного хранилища
+     * @param top количество пакетов
+     * @param skip пропустить пакетов
+     * @param packageFeed список пакетов, который вернет метод
+     * @throws IOException ошибка чтения из удаленного хранилища
+     * @throws URISyntaxException ошибка в синтаксисе URI хранилища
+     */
     private void addExpectation(Expectations expectations,
             NugetClient client, int top, int skip, PackageFeed packageFeed) throws IOException, URISyntaxException {
         expectations.atLeast(0).of(client).getPackages(

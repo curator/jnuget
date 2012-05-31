@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.*;
 import org.jmock.Mockery;
+import org.jmock.lib.concurrent.Synchroniser;
 import org.jmock.lib.legacy.ClassImposteriser;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class RemotePackageSourceTest {
 
         {
             setImposteriser(ClassImposteriser.INSTANCE);
+            setThreadingPolicy(new Synchroniser());
         }
     };
 
@@ -89,22 +91,15 @@ public class RemotePackageSourceTest {
         final PackageFeed packageFeed = createPackageFeed("FirstFeed", createPackageEntry("id", "1.2.3"));
         final PackageFeed emptyFeed = createPackageFeed("SecondFeed");
         Expectations expectations = new Expectations();
-        expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
+        expectations.oneOf(nugetClient).getPackageCount(expectations.with(false));
         expectations.will(returnValue(1));
-        expectations.atLeast(0).of(nugetClient).getPackages(
-                expectations.with(any(String.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)),
-                expectations.with(any(String.class)),
+        expectations.oneOf(nugetClient).getPackages(
+                expectations.with((String) null),
+                expectations.with((String) null),
+                expectations.with(1),
+                expectations.with((String) null),
                 expectations.with(0));
         expectations.will(returnValue(packageFeed));
-        expectations.atLeast(0).of(nugetClient).getPackages(
-                expectations.with(any(String.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)),
-                expectations.with(any(String.class)),
-                expectations.with(200));
-        expectations.will(returnValue(emptyFeed));
 
         expectations.atLeast(0).of(emptyFeed).getEntries();
         expectations.will(returnValue(new ArrayList<>()));
@@ -144,19 +139,20 @@ public class RemotePackageSourceTest {
         expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
         expectations.will(returnValue(3));
         expectations.atLeast(0).of(nugetClient).getPackages(
-                expectations.with(any(String.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)),
-                expectations.with(any(String.class)),
+                expectations.with((String) null),
+                expectations.with((String) null),
+                expectations.with(3),
+                expectations.with((String) null),
                 expectations.with(0));
         expectations.will(returnValue(packageFeed));
-        expectations.atLeast(0).of(nugetClient).getPackages(
-                expectations.with(any(String.class)),
-                expectations.with(any(String.class)),
-                expectations.with(any(Integer.class)),
-                expectations.with(any(String.class)),
-                expectations.with(200));
-        expectations.will(returnValue(emptyFeed));
+        /*
+         * expectations.atLeast(0).of(nugetClient).getPackages(
+         * expectations.with(any(String.class)),
+         * expectations.with(any(String.class)),
+         * expectations.with(any(Integer.class)),
+         * expectations.with(any(String.class)), expectations.with(200));
+         * expectations.will(returnValue(emptyFeed));
+         */
 
         expectations.atLeast(0).of(emptyFeed).getEntries();
         expectations.will(returnValue(new ArrayList<>()));
