@@ -30,7 +30,10 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
      * Удаленное хранилище пакетов
      */
     protected NugetClient remoteStorage = new NugetClient();
-    private static ForkJoinPool forkJoinPool = new ForkJoinPool();
+    /**
+     * Пул запросов в удаленное хранилище
+     */
+    private static ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors() * 2);
     /**
      * Логгер
      */
