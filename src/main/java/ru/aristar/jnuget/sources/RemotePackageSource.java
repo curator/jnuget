@@ -5,15 +5,15 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.NugetClient;
-import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
-import ru.aristar.jnuget.rss.PackageEntry;
-import ru.aristar.jnuget.rss.PackageFeed;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
@@ -30,6 +30,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
      * Удаленное хранилище пакетов
      */
     protected NugetClient remoteStorage = new NugetClient();
+    private static ForkJoinPool forkJoinPool = new ForkJoinPool();
     /**
      * Логгер
      */
@@ -47,31 +48,18 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
      */
     private Collection<RemoteNupkg> getPackagesFromRemoteStorage(String filter) {
         try {
-            PackageFeed feed;
-            ArrayList<RemoteNupkg> result = new ArrayList<>();
+            List<RemoteNupkg> result = new ArrayList<>();
+            result = Collections.synchronizedList(result);
+            int count = remoteStorage.getPackageCount(false);
             int groupCount = 200;
-            int skip = 0;
-            do {
-                //TODO Переделать под ForkJoin
-                int count = remoteStorage.getPackageCount(false);
-                logger.debug("Получение {} пакетов из удаленного сервера", new Object[]{Integer.valueOf(count)});
-                feed = remoteStorage.getPackages(filter, null, groupCount, null, skip);
-                for (PackageEntry entry : feed.getEntries()) {
-                    try {
-                        RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
-                        result.add(remoteNupkg);
-                    } catch (NugetFormatException e) {
-                        logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
-                    }
-                }
-                skip = skip + groupCount;
-            } while (feed != null && !feed.getEntries().isEmpty());
-            logger.debug("Завершено получение пакетов. Статус: skip={}; feed.entries={}; count={}",
-                    new Object[]{skip, feed == null ? null : feed.getEntries().size(), result.size()});
+            logger.debug("Получение {} пакетов из удаленного сервера группами по {}",
+                    new Object[]{count, groupCount});
+            forkJoinPool.invoke(new GetRemotePackageFeedAction(groupCount, result, 0, count, remoteStorage));
+            logger.debug("Завершено получение пакетов count={}", new Object[]{result.size()});
             return result;
         } catch (IOException | URISyntaxException e) {
             logger.warn("Ошибка получения пакета из удаленного хранилища", e);
-            return new ArrayList<>();
+            return new ArrayList<>(1);
         }
     }
 

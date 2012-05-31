@@ -7,6 +7,7 @@ import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -211,7 +212,6 @@ public class QueryLexerTest {
     public void testFindTwoOrByIdPackage() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
-
         //Пакеты
         Nupkg firstPackage = context.mock(Nupkg.class, "first.package");
         Nupkg secondPackage = context.mock(Nupkg.class, "second.package");
@@ -231,8 +231,7 @@ public class QueryLexerTest {
         Expression expression = lexer.parse(filterString);
         Collection<? extends Nupkg> result = expression.execute(packageSource);
         //THEN
-        Nupkg[] expected = {firstPackage, secondPackage};
-        assertArrayEquals("Список пакетов", expected, result.toArray(new Nupkg[0]));
+        assertArrayEquals("Список пакетов", new Nupkg[]{firstPackage, secondPackage}, result.toArray(new Nupkg[0]));
     }
 
     /**

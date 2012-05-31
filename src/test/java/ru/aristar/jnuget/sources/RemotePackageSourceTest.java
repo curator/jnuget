@@ -52,6 +52,8 @@ public class RemotePackageSourceTest {
         final NugetClient nugetClient = context.mock(NugetClient.class);
         final PackageFeed packageFeed = createPackageFeed("EmptyFeed");
         Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
+        expectations.will(returnValue(0));
         expectations.atLeast(0).of(nugetClient).getPackages(
                 expectations.with(any(String.class)),
                 expectations.with(any(String.class)),
@@ -87,6 +89,8 @@ public class RemotePackageSourceTest {
         final PackageFeed packageFeed = createPackageFeed("FirstFeed", createPackageEntry("id", "1.2.3"));
         final PackageFeed emptyFeed = createPackageFeed("SecondFeed");
         Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
+        expectations.will(returnValue(1));
         expectations.atLeast(0).of(nugetClient).getPackages(
                 expectations.with(any(String.class)),
                 expectations.with(any(String.class)),
@@ -137,6 +141,8 @@ public class RemotePackageSourceTest {
         final PackageFeed packageFeed = createPackageFeed("FirstFeed", createPackageEntry("id", "1.2.3"), createPackageEntry("id", "1.2.0"));
         final PackageFeed emptyFeed = createPackageFeed("SecondFeed");
         Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(nugetClient).getPackageCount(expectations.with(false));
+        expectations.will(returnValue(3));
         expectations.atLeast(0).of(nugetClient).getPackages(
                 expectations.with(any(String.class)),
                 expectations.with(any(String.class)),
