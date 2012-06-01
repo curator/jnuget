@@ -199,4 +199,19 @@ public class NuspecFileTest {
         //WHEN
         NuspecFile.Parse(inputStream);
     }
+
+    /**
+     * Анализ файла, содржащего
+     *
+     * @throws NugetFormatException
+     */
+    @Test
+    public void testParseWithFrameworkAssemblies() throws NugetFormatException {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/Extended.Wpf.Toolkit.nuspec.xml");
+        //WHEN
+        NuspecFile.Parse(inputStream);
+        //THEN
+        fail("Тест не дописан");
+    }
 }
