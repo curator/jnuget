@@ -70,7 +70,7 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
         if (top == low) {
             return;
         }
-        logger.debug("Обработка пакетов верхняя граница = {}; Нижняя граница = {}", new Object[]{top, low});
+        logger.debug("Обработка пакетов {}-{}", new Object[]{low, top});
         if (top - low <= PACKAGES_PER_THREAD) {
             loadPackages();
         } else {
@@ -98,7 +98,7 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
                 }
                 logger.trace("Запрос пакетов с {} по {}", new Object[]{skip, skip + cnt});
                 PackageFeed feed = client.getPackages(null, null, cnt, null, skip);
-                logger.debug("Получено {} пакетов для {}-{}", new Object[]{feed.getEntries().size(), skip, skip + cnt});
+                logger.trace("Получено {} пакетов для {}-{}", new Object[]{feed.getEntries().size(), skip, skip + cnt});
                 for (PackageEntry entry : feed.getEntries()) {
                     try {
                         logger.trace("Добавление пакета {}:{}", new Object[]{entry.getTitle(), entry.getProperties().getVersion()});
