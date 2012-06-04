@@ -1,7 +1,10 @@
 package ru.aristar.jnuget.files;
 
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Reference;
@@ -210,8 +213,22 @@ public class NuspecFileTest {
         //GIVEN
         InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/Extended.Wpf.Toolkit.nuspec.xml");
         //WHEN
-        NuspecFile.Parse(inputStream);
+        NuspecFile result = NuspecFile.Parse(inputStream);
         //THEN
-        fail("Тест не дописан");
+        assertThat(result.getFrameworkAssembly().size(), is(equalTo(5)));
+        assertThat(result.getFrameworkAssembly().get(0).getAssemblyName(), is(equalTo("PresentationCore")));
+        assertThat(result.getFrameworkAssembly().get(0).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
+
+        assertThat(result.getFrameworkAssembly().get(1).getAssemblyName(), is(equalTo("PresentationFramework")));
+        assertThat(result.getFrameworkAssembly().get(1).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
+
+        assertThat(result.getFrameworkAssembly().get(2).getAssemblyName(), is(equalTo("WindowsBase")));
+        assertThat(result.getFrameworkAssembly().get(2).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
+
+        assertThat(result.getFrameworkAssembly().get(3).getAssemblyName(), is(equalTo("System")));
+        assertThat(result.getFrameworkAssembly().get(3).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
+
+        assertThat(result.getFrameworkAssembly().get(4).getAssemblyName(), is(equalTo("System.Xaml")));
+        assertThat(result.getFrameworkAssembly().get(4).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net40))));
     }
 }

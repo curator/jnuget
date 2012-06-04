@@ -28,7 +28,7 @@ import ru.aristar.jnuget.rss.PackageEntry;
  * @author sviridov
  */
 @XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE_2011)
-public class NuspecFile implements Serializable{
+public class NuspecFile implements Serializable {
 
     /**
      * Класс, обеспечивающий валидацию ошибок в XML структуре файла NuSpec
@@ -44,7 +44,7 @@ public class NuspecFile implements Serializable{
     /**
      * Класс содержащий метаанные пакета NuGet
      */
-    public static class Metadata implements Serializable{
+    public static class Metadata implements Serializable {
 
         /**
          * Уникальный идентификатор пакета
@@ -87,6 +87,12 @@ public class NuspecFile implements Serializable{
          */
         @XmlElement(name = "iconUrl", namespace = NUSPEC_XML_NAMESPACE_2011)
         private String iconUrl;
+        /**
+         * Зависимости от сборок, входящих в поставку .NET
+         */
+        @XmlElement(name = "frameworkAssembly", namespace = NUSPEC_XML_NAMESPACE_2011)
+        @XmlElementWrapper(name = "frameworkAssemblies", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private List<FrameworkAssembly> frameworkAssembly;
         /**
          * Требуется ли запрос лицензии
          */
@@ -281,6 +287,23 @@ public class NuspecFile implements Serializable{
             return new ArrayList<>();
         }
         return metadata.dependencies;
+    }
+
+    /**
+     * @return зависимости от сборок, входящих в поставку .NET
+     */
+    public List<FrameworkAssembly> getFrameworkAssembly() {
+        if (metadata.frameworkAssembly == null) {
+            metadata.frameworkAssembly = new ArrayList<>();
+        }
+        return metadata.frameworkAssembly;
+    }
+
+    /**
+     * @param frameworkAssembly зависимости от сборок, входящих в поставку .NET
+     */
+    public void setFrameworkAssembly(List<FrameworkAssembly> frameworkAssembly) {
+        metadata.frameworkAssembly = frameworkAssembly;
     }
 
     /**

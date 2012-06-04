@@ -14,36 +14,38 @@ public enum Framework {
     /**
      * NET 1.0
      */
-    net10,
+    net10(".NETFramework1.0"),
     /**
      * NET 1.1
      */
-    net11("net10"),
+    net11(".NETFramework1.1", "net10"),
     /**
      * NET 2.0
      */
-    net20(),
+    net20(".NETFramework2.0"),
     /**
      * NET 3.5
      */
-    net35("net20"),
+    net35(".NETFramework3.5", "net20"),
     /**
      * NET 4.0
      */
-    net40("net35", "net20"),
+    net40(".NETFramework4.0", "net35", "net20"),
     /**
      * SilverLight 4
      */
-    sl4,
+    sl4(null),
     /**
      * SilverLight 5
      */
-    sl5;
+    sl5(null);
 
     /**
+     * @param fullName полное название фреймворка
      * @param copabilityFrameworks фреймворки совместимые с данным
      */
-    private Framework(String... copabilityFrameworks) {
+    private Framework(String fullName, String... copabilityFrameworks) {
+        this.fullName = fullName;
         fullCopabilyStringSet = copabilityFrameworks;
     }
     /**
@@ -54,6 +56,10 @@ public enum Framework {
      * Набор фреймворков совместимых с данным
      */
     private volatile EnumSet<Framework> fullCopabilySet;
+    /**
+     * Полное название фреймворка
+     */
+    private final String fullName;
 
     /**
      * @return набор фреймворков совместимых с данным
@@ -71,6 +77,13 @@ public enum Framework {
             }
         }
         return fullCopabilySet;
+    }
+
+    /**
+     * @return полное название фреймворка
+     */
+    public String getFullName() {
+        return this.fullName;
     }
     /**
      * Логгер
@@ -105,7 +118,22 @@ public enum Framework {
                     + "' используется фреймворк по умолчанию", e);
             result = EnumSet.allOf(Framework.class);
         }
-        
+
         return result;
+    }
+
+    /**
+     * Поиск фреймворка по полномиу имени
+     *
+     * @param fullName полное имя фреймворка
+     * @return фреймворк или null, если ничего не найдено
+     */
+    public static Framework getByFullName(String fullName) {
+        for (Framework framework : values()) {
+            if (framework.getFullName().equalsIgnoreCase(fullName)) {
+                return framework;
+            }
+        }
+        return null;
     }
 }
