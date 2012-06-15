@@ -1,15 +1,19 @@
 package ru.aristar.jnuget.spec
 
-import spock.lang.*
+import spock.lang.Specification
 import ru.aristar.jnuget.Version;
 
 /**
+ * Спецификация класса верий 
  *
  * @author sviridov
  */
-class VersionSpec extends spock.lang.Specification{
+class VersionSpec extends Specification{
    
     //TODO Ревизия должна быть null, а не пустой строкой
+    /**
+     * Версия должна корректно распознаваться из строки
+     */
     def "Version must correct parse string"(){
         expect:
         Version.parse(strVersion).major == major

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
@@ -109,7 +110,7 @@ public class NugetClient implements AutoCloseable {
      */
     public TempNupkgFile getPackage(String id, Version version) throws IOException, URISyntaxException, NugetFormatException {
         URI uri = webResource.getURI();
-        final String path = java.text.MessageFormat.format("download/{0}/{1}", new Object[]{id, version.toString()});
+        final String path = format("download/{0}/{1}", new Object[]{id, version.toString()});
         InputStream inputStream = get(client, uri, path, InputStream.class);
         TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
         return nupkgFile;

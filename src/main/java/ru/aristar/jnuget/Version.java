@@ -1,6 +1,7 @@
 package ru.aristar.jnuget;
 
 import java.io.Serializable;
+import static java.text.MessageFormat.format;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,12 @@ public class Version implements Comparable<Version>, Serializable {
      */
     private static transient Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
 
+    /**
+     * Безопастно распознает majopr, minor и build
+     *
+     * @param group строковое значение части версии
+     * @return числовое значение части версии или null
+     */
     private static Integer parseInt(String group) {
         if (group == null || group.isEmpty()) {
             return null;
@@ -29,11 +36,29 @@ public class Version implements Comparable<Version>, Serializable {
             return Integer.parseInt(group);
         }
     }
+    /**
+     * Основная версия
+     */
     private final Integer major;
+    /**
+     * Минорная версия
+     */
     private final Integer minor;
+    /**
+     * Номер сборки
+     */
     private final Integer build;
+    /**
+     * Ревизия
+     */
     private final String revision;
 
+    /**
+     * @param major основная версия
+     * @param minor минорная версия
+     * @param build номер сборки
+     * @param revision ревизия
+     */
     public Version(Integer major, Integer minor, Integer build, String revision) {
         this.major = major;
         this.minor = minor;
@@ -41,33 +66,48 @@ public class Version implements Comparable<Version>, Serializable {
         this.revision = revision;
     }
 
-    Version(Object[] object) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
+    /**
+     * @return основная версия
+     */
     public Integer getMajor() {
         return major;
     }
 
+    /**
+     * @return минорная версия
+     */
     public Integer getMinor() {
         return minor;
     }
 
+    /**
+     * @return номер сборки
+     */
     public Integer getBuild() {
         return build;
     }
 
+    /**
+     * @return ревизия
+     */
     public String getRevision() {
         return revision;
     }
 
-    public static Version parse(String input) throws NugetFormatException {
-        if (input == null) {
+    /**
+     * Распознает строку с версией
+     *
+     * @param versionString строковое представление версии
+     * @return версия
+     * @throws NugetFormatException строка не соответствует формату версии
+     */
+    public static Version parse(String versionString) throws NugetFormatException {
+        if (versionString == null) {
             return null;
         }
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = pattern.matcher(versionString);
         if (!matcher.find()) {
-            throw new NugetFormatException("Строка не соответствует формату версии. " + input);
+            throw new NugetFormatException(format("Строка \"{0}\"не соответствует формату версии. ", versionString));
         }
         Integer major = parseInt(matcher.group(1));
         Integer minor = parseInt(matcher.group(2));
@@ -167,42 +207,43 @@ public class Version implements Comparable<Version>, Serializable {
         return compareStringPossibleNull(this.revision, other.revision);
     }
 
+    /**
+     * Сравнение строк, которые могут быть null без учета регистра
+     *
+     * @param str1 первая строка
+     * @param str2 вторая строка
+     * @return [-1,0,1] </br> <ul> <li>-1 первая меньше</li> <li>0 равны </li>
+     * <li>1 вторая меньше </li> <ul>
+     */
     private int compareStringPossibleNull(String str1, String str2) {
-        if (stringsNullOrEqual(str1, str2)) {
+        if (str1 == null && str2 == null) {
             return 0;
+        } else if (str1 == null) {
+            return -1;
+        } else if (str2 == null) {
+            return 1;
         } else {
-            if (str1 == null && str2 != null) {
-                return 1;
-            } else if (str1 != null && str2 == null) {
-                return -1;
-            } else {
-                return str1.compareToIgnoreCase(str2);
-            }
+            return str1.compareToIgnoreCase(str2);
         }
     }
 
+    /**
+     * Сравнение целых чисел, которые могут быть null
+     *
+     * @param int1 первое число
+     * @param int2 второе число
+     * @return [-1,0,1] </br> <ul> <li>-1 первое меньше</li> <li>0 равны </li>
+     * <li>1 второе меньше </li> <ul>
+     */
     private int compareIntegerPossibleNull(Integer int1, Integer int2) {
         if (int1 == null && int2 == null) {
             return 0;
+        } else if (int1 == null) {
+            return -1;
+        } else if (int2 == null) {
+            return 1;
         } else {
-            if (int1 == null && int2 != null) {
-                return -1;
-            } else if (int1 != null && int2 == null) {
-                return 1;
-            } else {
-                return int1.compareTo(int2);
-            }
+            return int1.compareTo(int2);
         }
-    }
-
-    private boolean stringsNullOrEqual(String str1, String str2) {
-        if (str1 == null && str2 == null) {
-            return true;
-        }
-        if (str1 == null || str2 == null) {
-            return false;
-        }
-        // Сравнение без учета регистра.
-        return str1.toLowerCase().equals(str2.toLowerCase());
     }
 }
