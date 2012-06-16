@@ -112,7 +112,10 @@ public class Version implements Comparable<Version>, Serializable {
         Integer major = parseInt(matcher.group(1));
         Integer minor = parseInt(matcher.group(2));
         Integer build = parseInt(matcher.group(3));
-        String revision = matcher.group(4);
+        String revision = null;
+        if(!matcher.group(4).isEmpty()){
+            revision = matcher.group(4);
+        }
         return new Version(major, minor, build, revision);
     }
 
