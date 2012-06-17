@@ -15,6 +15,16 @@
         <servlet-class>ru.aristar.jnuget.Common.LauncherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>ServletAdaptor</servlet-name>
         <url-pattern>/nuget/*</url-pattern>
@@ -28,6 +38,7 @@
             30
         </session-timeout>
     </session-config>
+        
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

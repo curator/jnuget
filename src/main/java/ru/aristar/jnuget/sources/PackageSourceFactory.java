@@ -345,4 +345,8 @@ public class PackageSourceFactory {
                     proxyOptions.getPassword()));
         }
     }
+
+    public Options getOptions() {
+        return options;
+    }
 }
