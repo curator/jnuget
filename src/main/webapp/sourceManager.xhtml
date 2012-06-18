@@ -2,17 +2,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
+        <title>Хранилища пакетов</title>
+        <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>        
         Package source count: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/>
-        <ul>
-            <c:forEach var="repo" items="#{optionsBean.storageOptions}">
-                <li><h:outputText value="#{repo.getClassName()}"/> </li>
-            </c:forEach>
-        </ul>
+        <table class="storage">
+            <thead class="storage">
+                <tr class="storage">
+                    <th class="storage"/>
+                    <th class="storage">Класс хранилища</th>
+                    <th class="storage">Индексируемое (Y/N)</th>
+                    <th class="storage">Имя хранилища</th>
+                    <th class="storage">Интервал обновления индекса</th>
+                </tr>
+            </thead>
+            <tbody>                
+                <c:forEach var="i" begin="0" end="#{optionsBean.storageOptions.size()-1}" step="1">
+                    <c:set var="repo" value="#{optionsBean.storageOptions.get(i)}"/>
+                    <tr class="storage">                        
+                        <td class="storage">
+                            <h:link value="${i+1}" outcome="storageOptions">
+                                <f:param name="storageId" value="${i}"/>
+                            </h:link>
+                        </td>
+                        <td class="storage"><h:outputText value="#{repo.getClassName()}"/></td>
+                        <td class="storage"><h:outputText value="#{repo.isIndexed()}"/></td>
+                        <td class="storage"><h:outputText value="#{repo.getStorageName()}"/></td>
+                        <td class="storage"><h:outputText value="#{repo.getRefreshInterval()}"/></td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
     </h:body>
 </html>
 
