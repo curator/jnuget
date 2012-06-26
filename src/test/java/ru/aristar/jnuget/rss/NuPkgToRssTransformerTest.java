@@ -1,7 +1,9 @@
 package ru.aristar.jnuget.rss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import static org.hamcrest.CoreMatchers.*;
 import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -36,7 +38,7 @@ public class NuPkgToRssTransformerTest {
      */
     @Test
     public void testMarkLastVersion() throws Exception {
-        //GIVEN        
+        //GIVEN
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         ArrayList<PackageEntry> entrys = new ArrayList<>();
         PackageEntry firstA = createPackageEntry("A", "1.2.3");
@@ -72,8 +74,26 @@ public class NuPkgToRssTransformerTest {
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
-        //THEN 
+        //THEN
         assertEquals("Размер обрезанного списка", 10, result.size());
+    }
+
+    /**
+     * Проверка усечения списка пакетов для случая, когда количество
+     * пропускаемых пакетов равно количеству объектов
+     */
+    @Test
+    public void testCutPackageList() {
+        //GIVEN
+        Object[] objects = new Object[30];
+        Arrays.fill(objects, new Object());
+        List<Object> sources = new ArrayList<>();
+        sources.addAll(Arrays.asList(objects));
+        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
+        //WHEN
+        List<Object> result = transformer.cutPackageList(30, 0, sources);
+        //THEN
+        assertThat(result.size(), is(equalTo(0)));
     }
 
     /**
@@ -89,7 +109,7 @@ public class NuPkgToRssTransformerTest {
         NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
         //WHEN
         List<Object> result = transformer.cutPackageList(0, -1, sources);
-        //THEN 
+        //THEN
         assertEquals("Размер обрезанного списка", 1, result.size());
     }
 
