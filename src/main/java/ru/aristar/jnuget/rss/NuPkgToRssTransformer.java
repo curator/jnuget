@@ -80,11 +80,11 @@ public abstract class NuPkgToRssTransformer {
         }
         try {
             int newSkip = normalizeSkip(skip, objects.size());
-            int newTop = normalizeTop(skip, objects.size(), top);
-            return objects.subList(skip, newSkip + newTop);
+            int newTop = normalizeTop(newSkip, objects.size(), top);
+            return objects.subList(newSkip, newSkip + newTop);
         } catch (Exception e) {
             logger.error("Ошибка получения подсписка пакетов: "
-                    + "skip={} top={} size={}", new Object[]{skip, top, objects.size()});
+                    + "skip={} top={} size={}", new Object[]{skip , top, objects.size()});
             throw e;
         }
     }
