@@ -132,7 +132,7 @@ public class NuPkgToRssTransformerTest {
     /**
      * Преобразователь пакетов в RSS, не поддерживающий операции с контекстом
      */
-    public static class NuPkgToRssTransformerNoContext extends NuPkgToRssTransformer {
+    private static class NuPkgToRssTransformerNoContext extends NuPkgToRssTransformer {
 
         @Override
         protected NugetContext getContext() {

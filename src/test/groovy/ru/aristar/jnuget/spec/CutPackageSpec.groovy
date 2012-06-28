@@ -1,12 +1,11 @@
 package ru.aristar.jnuget.spec
 
-
 import spock.lang.Specification
 import ru.aristar.jnuget.rss.NuPkgToRssTransformer
-import ru.aristar.jnuget.rss.NuPkgToRssTransformerTest.NuPkgToRssTransformerNoContext
+import ru.aristar.jnuget.NugetContext
 
 /**
- *
+ * Спецификации обрезки количества пакетов
  * @author sviridov
  */
 class CutPackageSpec extends Specification{
@@ -17,9 +16,7 @@ class CutPackageSpec extends Specification{
     * @return список объектов
     */
     List<Object> testSource(int size){
-        List<Object> sources = new ArrayList<Object>();
-        size.times { sources.add(it + 1) }
-        return sources;
+        size == 0 ? [] : 1..size
     }
 
     /**
@@ -27,7 +24,7 @@ class CutPackageSpec extends Specification{
     */
     def "Object list must correct cutting"(){
         setup:
-        NuPkgToRssTransformer transformer = new NuPkgToRssTransformerNoContext();
+        NuPkgToRssTransformer transformer = new StubNuPkgToRssTransformer();
         expect:
         transformer.cutPackageList(skip, top, testSource(sourceSize)).size() == resultSize
         where:
@@ -36,6 +33,17 @@ class CutPackageSpec extends Specification{
             30      |   30  |   0   |   0
             10      |   0   |   -1  |   10
             60      |   30  |   -1  |   30
+            0       |  100  |  200  |   0
+    }
+}
+
+/**
+* Заглушка для тестирования класса NuPkgToRssTransformer
+*/
+class StubNuPkgToRssTransformer extends NuPkgToRssTransformer{
+
+    protected NugetContext getContext() {
+        throw new UnsupportedOperationException("Тестовый класс не поддерживает этот метод");
     }
 }
 
