@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.rss;
 
+import com.google.common.base.Joiner;
 import java.io.InputStream;
 import java.util.*;
 import javax.xml.XMLConstants;
@@ -693,13 +694,8 @@ public class EntryProperties {
         if (dependencies == null || dependencies.isEmpty()) {
             this.dependencies = "";
         } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(dependencies.get(0).toString());
-            for (int i = 1; i < dependencies.size(); i++) {
-                builder.append(", ");
-                builder.append(dependencies.get(i).toString());
-            }
-            this.dependencies = builder.toString();
+            Joiner joiner = Joiner.on(", ").skipNulls();
+            this.dependencies = joiner.join(dependencies);
         }
     }
 

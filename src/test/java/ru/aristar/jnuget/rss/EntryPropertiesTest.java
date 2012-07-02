@@ -1,9 +1,11 @@
 package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Dependency;
@@ -20,10 +22,11 @@ public class EntryPropertiesTest {
      * Проверка преобразования файла спецификации в свойства вложения в RSS
      * сообщении
      *
-     * @throws NugetFormatException данные в ресурсе не соответствуют формату NuGet
+     * @throws NugetFormatException данные в ресурсе не соответствуют формату
+     * NuGet
      */
     @Test
-    public void testConvertNuspecToEntryProperties() throws NugetFormatException  {
+    public void testConvertNuspecToEntryProperties() throws NugetFormatException {
         //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/nuspec/NUnit.nuspec.xml");
         NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
@@ -189,5 +192,24 @@ public class EntryPropertiesTest {
         properties.setDependencies("eres");
         //WHEN
         properties.getDependenciesList();
+    }
+
+    /**
+     * Проверка построения строки списка зависимостей
+     *
+     * @throws NugetFormatException строка зависимости или версия зависимости
+     * имеют некорректный формат
+     */
+    @Test
+    public void testSetDependenciesList() throws NugetFormatException {
+        //GIVEN
+        ArrayList<Dependency> dependencys = new ArrayList<>();
+        dependencys.add(Dependency.parseString("package1:1.2.3"));
+        dependencys.add(Dependency.parseString("package2:3.2.1"));
+        EntryProperties properties = new EntryProperties();
+        //WHEN
+        properties.setDependenciesList(dependencys);
+        //THEN
+        assertThat(properties.getDependencies(), is(equalTo("package1:1.2.3, package2:3.2.1")));
     }
 }
