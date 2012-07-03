@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.*;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,6 +40,29 @@ public class NuspecFile implements Serializable {
         public boolean handleEvent(ValidationEvent event) {
             return false;
         }
+    }
+
+    public static class Dependencies {
+
+        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private List<Dependency> dependencies;
+        @XmlElement(name = "group", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private List<DependenciesGroup> groups;
+
+        private List<Dependency> getDependencies() {
+            if (dependencies == null) {
+                dependencies = new ArrayList<>();
+            }
+            return dependencies;
+        }
+    }
+
+    public static class DependenciesGroup {
+
+        @XmlAttribute(name = "targetFramework")
+        private String targetFramework;
+        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private List<Dependency> dependencys;
     }
 
     /**
@@ -138,9 +162,8 @@ public class NuspecFile implements Serializable {
         /**
          * Список зависимостей
          */
-        @XmlElementWrapper(name = "dependencies", namespace = NUSPEC_XML_NAMESPACE_2011)
-        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
-        private List<Dependency> dependencies;
+        @XmlElement(name = "dependencies", namespace = NUSPEC_XML_NAMESPACE_2011)
+        private Dependencies dependencies;
     }
     /**
      * Метаданные пакета
@@ -286,7 +309,7 @@ public class NuspecFile implements Serializable {
         if (metadata.dependencies == null) {
             return new ArrayList<>();
         }
-        return metadata.dependencies;
+        return metadata.dependencies.getDependencies();
     }
 
     /**
@@ -363,12 +386,13 @@ public class NuspecFile implements Serializable {
                     + " быть указаны: " + entry.getTitle() + ':' + properties.getVersion());
         }
         metadata = new Metadata();
+        metadata.dependencies = new Dependencies();
         metadata.id = entry.getTitle();
         metadata.version = properties.getVersion();
         metadata.tags = properties.getTags();
         metadata.summary = properties.getSummary();
         metadata.copyright = properties.getCopyright();
-        metadata.dependencies = properties.getDependenciesList();
+        metadata.dependencies.dependencies = properties.getDependenciesList();
         metadata.description = properties.getDescription();
         metadata.requireLicenseAcceptance = properties.getRequireLicenseAcceptance();
     }
