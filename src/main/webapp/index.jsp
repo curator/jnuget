@@ -31,6 +31,9 @@
             <p>
                 Click <a href="nuget/nuget/Packages">here</a> to view your packages.
             </p>
+            <p>
+                Click <a href="sourceManager.xhtml">here</a> to view manager.
+            </p>
             <fieldset style="width:800px">
                 <legend><strong>Repository URL's</strong></legend>
                 In the package manager settings, add the following URL to the list of 

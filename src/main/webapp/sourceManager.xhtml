@@ -8,8 +8,9 @@
         <title>Хранилища пакетов</title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
-    <h:body>        
-        Package source count: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/>
+    <h:body> 
+        <br>Root folder is: <h:outputText id="rootFolder" value="#{optionsBean.nugetHome}"/></br>
+        <br>Package source count: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/></br>
         <table class="storage">
             <thead class="storage">
                 <tr class="storage">
