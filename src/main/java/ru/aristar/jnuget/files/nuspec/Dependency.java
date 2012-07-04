@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.files;
+package ru.aristar.jnuget.files.nuspec;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.VersionRange;
 
 /**
  * Описание зависимости

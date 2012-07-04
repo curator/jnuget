@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.sources;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

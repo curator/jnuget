@@ -14,7 +14,7 @@ import ru.aristar.jnuget.Author;
 import ru.aristar.jnuget.files.Hash;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.NuspecFile;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**
  *

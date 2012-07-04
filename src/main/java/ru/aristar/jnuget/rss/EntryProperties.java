@@ -21,9 +21,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.Dependency;
+import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.NugetFormatException;
-import ru.aristar.jnuget.files.NuspecFile;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**
  * Свойства пакета, в RSS
@@ -691,6 +691,7 @@ public class EntryProperties {
      * @param dependencies список зависимостей
      */
     public void setDependenciesList(List<Dependency> dependencies) {
+        //TODO Разобраться с группами зависимостей
         if (dependencies == null || dependencies.isEmpty()) {
             this.dependencies = "";
         } else {

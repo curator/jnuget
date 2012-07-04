@@ -1,9 +1,11 @@
-package ru.aristar.jnuget.files;
+package ru.aristar.jnuget.files.nuspec;
 
+import ru.aristar.jnuget.files.nuspec.Dependency;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.VersionRange;
 
 /**
  * Тест класса зависимостей

@@ -8,9 +8,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.Dependency;
+import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.NugetFormatException;
-import ru.aristar.jnuget.files.NuspecFile;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**
  *

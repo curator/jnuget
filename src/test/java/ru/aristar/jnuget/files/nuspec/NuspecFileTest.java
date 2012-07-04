@@ -1,5 +1,7 @@
-package ru.aristar.jnuget.files;
+package ru.aristar.jnuget.files.nuspec;
 
+import ru.aristar.jnuget.files.nuspec.Dependency;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
@@ -8,6 +10,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Reference;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.Framework;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.VersionRange;
 import ru.aristar.jnuget.rss.PackageEntry;
 
 /**
@@ -246,6 +251,11 @@ public class NuspecFileTest {
         NuspecFile result = NuspecFile.Parse(inputStream);
         //THEN
         assertThat(result, is(not(nullValue())));
-        fail("Тест не дописан");
+        assertThat(result.getDependencies(), is(not(nullValue())));
+        assertThat(result.getDependencies().size(), is(equalTo(3)));
+        assertThat(result.getDependenciesGroups().size(), is(equalTo(3)));
+        assertThat(result.getDependenciesGroups().get(0).getTargetFramework(), is(nullValue()));
+        assertThat(result.getDependenciesGroups().get(1).getTargetFramework(), is(equalTo(Framework.net40)));
+        assertThat(result.getDependenciesGroups().get(2).getTargetFramework(), is(equalTo(Framework.sl30)));
     }
 }

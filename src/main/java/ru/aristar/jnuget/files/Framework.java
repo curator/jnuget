@@ -32,6 +32,10 @@ public enum Framework {
      */
     net40(".NETFramework4.0", "net35", "net20"),
     /**
+     * SilverLight 30
+     */
+    sl30(null),
+    /**
      * SilverLight 4
      */
     sl4(null),
@@ -123,7 +127,7 @@ public enum Framework {
     }
 
     /**
-     * Поиск фреймворка по полномиу имени
+     * Поиск фреймворка по полному имени
      *
      * @param fullName полное имя фреймворка
      * @return фреймворк или null, если ничего не найдено

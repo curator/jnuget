@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;

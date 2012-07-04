@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.util.EnumSet;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

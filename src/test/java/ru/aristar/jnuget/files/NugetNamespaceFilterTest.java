@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

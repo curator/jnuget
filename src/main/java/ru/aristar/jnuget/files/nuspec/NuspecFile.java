@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.files;
+package ru.aristar.jnuget.files.nuspec;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.*;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,6 +19,9 @@ import ru.aristar.jnuget.Reference;
 import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.VersionTypeAdapter;
+import ru.aristar.jnuget.files.FrameworkAssembly;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.NugetNamespaceFilter;
 import ru.aristar.jnuget.rss.EntryProperties;
 import ru.aristar.jnuget.rss.PackageEntry;
 
@@ -40,29 +42,6 @@ public class NuspecFile implements Serializable {
         public boolean handleEvent(ValidationEvent event) {
             return false;
         }
-    }
-
-    public static class Dependencies {
-
-        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
-        private List<Dependency> dependencies;
-        @XmlElement(name = "group", namespace = NUSPEC_XML_NAMESPACE_2011)
-        private List<DependenciesGroup> groups;
-
-        private List<Dependency> getDependencies() {
-            if (dependencies == null) {
-                dependencies = new ArrayList<>();
-            }
-            return dependencies;
-        }
-    }
-
-    public static class DependenciesGroup {
-
-        @XmlAttribute(name = "targetFramework")
-        private String targetFramework;
-        @XmlElement(name = "dependency", namespace = NUSPEC_XML_NAMESPACE_2011)
-        private List<Dependency> dependencys;
     }
 
     /**
@@ -303,13 +282,21 @@ public class NuspecFile implements Serializable {
     }
 
     /**
-     * @return Список зависимостей
+     * @return зависимости пакетов, включая те, что в группах
      */
     public List<Dependency> getDependencies() {
         if (metadata.dependencies == null) {
             return new ArrayList<>();
         }
         return metadata.dependencies.getDependencies();
+    }
+
+    /**
+     *
+     * @return группы зависимостей, включая корневую
+     */
+    public List<DependenciesGroup> getDependenciesGroups() {
+        return metadata.dependencies.getGroups();
     }
 
     /**

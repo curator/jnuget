@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;

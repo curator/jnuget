@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.util.Arrays;
 import java.util.HashSet;
 import org.xml.sax.Attributes;

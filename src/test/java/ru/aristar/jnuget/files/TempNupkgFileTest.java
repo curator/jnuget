@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.files;
 
+import ru.aristar.jnuget.files.nuspec.NuspecFileTest;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.InputStream;
 import java.util.Date;
 import static org.junit.Assert.assertEquals;
