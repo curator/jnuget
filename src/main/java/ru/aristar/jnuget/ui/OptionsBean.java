@@ -23,8 +23,8 @@ public class OptionsBean implements Serializable {
     public List<StorageOptions> getStorageOptions() {
         return PackageSourceFactory.getInstance().getOptions().getStorageOptionsList();
     }
-    
-    public String getNugetHome(){
+
+    public String getNugetHome() {
         return Options.getNugetHome().getAbsolutePath();
     }
 }

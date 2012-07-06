@@ -41,7 +41,7 @@ public class PackageSourceFactory {
     /**
      * Источник пакетов
      */
-    private volatile PackageSource<Nupkg> packageSource = null;
+    private volatile RootPackageSource packageSource = null;
     /**
      * Логгер
      */
@@ -78,7 +78,7 @@ public class PackageSourceFactory {
      * @param serviceOptions настройки приложения
      * @return хранилище пакетов
      */
-    protected PackageSource<Nupkg> createRootPackageSource(Options serviceOptions) {
+    protected RootPackageSource createRootPackageSource(Options serviceOptions) {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
@@ -301,7 +301,7 @@ public class PackageSourceFactory {
      * @param reinitialize необходима переинициализация
      * @return источник пакетов
      */
-    public PackageSource<Nupkg> getPackageSource(boolean reinitialize) {
+    public RootPackageSource getPackageSource(boolean reinitialize) {
         if (reinitialize || packageSource == null) {
             synchronized (this) {
                 if (packageSource == null) {
@@ -318,7 +318,7 @@ public class PackageSourceFactory {
      *
      * @return источник пакетов
      */
-    public PackageSource<Nupkg> getPackageSource() {
+    public RootPackageSource getPackageSource() {
         return getPackageSource(false);
     }
 

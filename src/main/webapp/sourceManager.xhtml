@@ -34,10 +34,15 @@
                         <td class="storage"><h:outputText value="#{repo.isIndexed()}"/></td>
                         <td class="storage"><h:outputText value="#{repo.getStorageName()}"/></td>
                         <td class="storage"><h:outputText value="#{repo.getRefreshInterval()}"/></td>
+                        <td class="storage">
+                            <h:link value="Содержимое" outcome="storageContents">
+                                <f:param name="storageId" value="${i}"/>
+                            </h:link>
+                        </td>                        
                     </tr>
                 </c:forEach>
             </tbody>
-        </table>
+        </table>       
     </h:body>
 </html>
 
