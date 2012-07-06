@@ -1,7 +1,6 @@
 package ru.aristar.jnuget.ui;
 
 import java.util.ArrayList;
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.model.DataModel;
@@ -34,7 +33,6 @@ public class StorageContentsController {
         return storage.getPackages().size();
     }
 
-    @PostConstruct
     public void init() {
         storage = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
         ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getPackages());

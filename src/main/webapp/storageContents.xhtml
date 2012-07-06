@@ -7,6 +7,7 @@
     <h:head>        
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageContents.storageId}"/>
+            <f:event type="preRenderView" listener="#{storageContents.init()}" />
         </f:metadata>
         <title> <h:outputText value="Содержимое хранилища #{storageContents.storageId}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -20,7 +21,11 @@
                      columnClasses="storage,storage,storage,storage">
             <h:column>
                 <f:facet name="header">№</f:facet>
-                <h:outputText value="#{storageContents.packages.rowIndex+1}"/>
+                <h:link value="#{storageContents.packages.rowIndex+1}" outcome="packageDetails">
+                    <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{nupkg.id}"/>
+                    <f:param name="packageVersion" value="#{nupkg.version}"/>
+                </h:link>
             </h:column> 
             <h:column>
                 <f:facet name="header">Идентификатор пакета</f:facet>

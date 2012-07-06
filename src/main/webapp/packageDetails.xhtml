@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <f:metadata>
+            <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
+            <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
+            <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
+            <f:event type="preRenderView" listener="#{packageDetails.init()}" />
+        </f:metadata>
+        <title> <h:outputText value="Детальная информация о пакете #{packageDetails.packageId} #{packageDetails.packageVersion}"/></title>
+    </h:head>
+    <h:body>
+        <ul>
+            <li><h:outputText value="Идентификатор пакета #{packageDetails.packageId}"/> </li>
+            <li><h:outputText value="Версия пакета #{packageDetails.packageVersion}"/> </li>
+            <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
+        </ul>
+    </h:body>
+</html>
+
