@@ -2,35 +2,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageOptionsBean.storageId}"/>
+            <f:event type="preRenderView" listener="#{storageOptionsBean.init()}" />
         </f:metadata>
         <title> <h:outputText value="Настройки хранилища #{storageOptionsBean.storageId}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
-        <h:outputText value="Настройки хранилища #{storageOptionsBean.storageId+1}"/>
-        <table class="storage">
-            <thead class="storage">
-                <tr class="storage">
-                    <th class="storage">Свойство</th>
-                    <th class="storage">Значение</th>
-                </tr>
-            </thead>
-            <tbody>   
-
-                <c:forEach var="repo" items="#{storageOptionsBean.storageProperties.entrySet()}">
-                    <tr class="storage">
-                        <td class="storage"><h:outputText value="#{repo.key}"/></td>
-                        <td class="storage"><h:outputText value="#{repo.value}"/></td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-
+            <fieldset>
+                <legend><h:outputText value="Настройки хранилища #{storageOptionsBean.storageId+1}"/></legend>
+                <ol>
+                    <li>
+                        <h:inputText id="className" value="#{storageOptionsBean.className}"/>
+                        <label for="className">Имя класса хранилища</label>
+                    </li>
+                    <li>
+                        <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptionsBean.indexed}"/>
+                        <label for="isIndexed">Индексировать</label>
+                    </li>
+                </ol>
+                <h:dataTable value="#{storageOptionsBean.storageProperties}" var="entry" 
+                             class="storage"
+                             rowClasses="storage"
+                             headerClass="storage"
+                             columnClasses="storage,storage">
+                    <h:column>
+                        <f:facet name="header">Свойство</f:facet>
+                        <h:outputText value="#{entry.key}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Значение</f:facet>
+                        <h:outputText value="#{entry.value}"/>
+                    </h:column>
+                </h:dataTable>
+            </fieldset>
     </h:body>
 </html>
 

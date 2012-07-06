@@ -1,13 +1,15 @@
 package ru.aristar.jnuget.ui;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import ru.aristar.jnuget.Common.OptionConverter;
+import javax.faces.bean.RequestScoped;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.Common.StorageOptions;
+import ru.aristar.jnuget.sources.IndexedPackageSource;
+import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
@@ -15,13 +17,36 @@ import ru.aristar.jnuget.sources.PackageSourceFactory;
  * @author sviridov
  */
 @ManagedBean(name = "storageOptionsBean")
-@SessionScoped
+@RequestScoped
 public class StorageOptionsBean implements Serializable {
 
     private Integer storageId;
+    private PackageSource packageSource;
+    private IndexedPackageSource indexDecorator;
+
+    public void init() {
+        packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+        if (packageSource instanceof IndexedPackageSource) {
+            indexDecorator = (IndexedPackageSource) packageSource;
+            packageSource = indexDecorator.getUnderlyingSource();
+        }
+    }
 
     public Integer getStorageId() {
         return storageId;
+    }
+
+    public String getClassName() {
+        return packageSource.getClass().getCanonicalName();
+    }
+
+    public boolean isIndexed() {
+        return indexDecorator != null;
+    }
+    
+    public void setIndexed(boolean value){
+        indexDecorator = new IndexedPackageSource();
+        indexDecorator.setUnderlyingSource(packageSource);
     }
 
     public void setStorageId(Integer storageId) {
@@ -32,11 +57,8 @@ public class StorageOptionsBean implements Serializable {
         return PackageSourceFactory.getInstance().getOptions().getStorageOptionsList().get(storageId);
     }
 
-    public Map<String, String> getStorageProperties() {
-        Map<String, String> result = new HashMap<>();
-        for (Entry<String, String> entry : getStorageOptions().getProperties().entrySet()) {
-            result.put(entry.getKey(), OptionConverter.replaceVariables(entry.getValue()));
-        }
-        return result;
+    public DataModel<Map.Entry<String, String>> getStorageProperties() {
+        ArrayList<Map.Entry<String, String>> data = new ArrayList<>(getStorageOptions().getProperties().entrySet());
+        return new ListDataModel<>(data);
     }
 }
