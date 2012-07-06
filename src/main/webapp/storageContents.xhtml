@@ -9,17 +9,32 @@
             <f:viewParam name="storageId" value="#{storageContents.storageId}"/>
         </f:metadata>
         <title> <h:outputText value="Содержимое хранилища #{storageContents.storageId}"/></title>
+        <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
         <h:outputText value="Всего пакетов в хранилище - #{storageContents.packageCount}"/>
-        <ul>
-            <c:forEach var="nupkg" items="#{storageContents.packages}">
-                <li>
-                  <h:outputText value="#{nupkg.id} - #{nupkg.version}"/>                   
-                  <a href="/nuget/download/#{nupkg.id}/#{nupkg.version}">Закачать</a>
-                </li>
-            </c:forEach>
-        </ul>
+        <h:dataTable value="#{storageContents.packages}" var="nupkg"
+                     styleClass="storage" 
+                     headerClass="storage" 
+                     rowClasses="storage" 
+                     columnClasses="storage,storage,storage,storage">
+            <h:column>
+                <f:facet name="header">№</f:facet>
+                <h:outputText value="#{storageContents.packages.rowIndex+1}"/>
+            </h:column> 
+            <h:column>
+                <f:facet name="header">Идентификатор пакета</f:facet>
+                <h:outputText value="#{nupkg.id}"/>
+            </h:column> 
+            <h:column>
+                <f:facet name="header">Версия пакета</f:facet>
+                <h:outputText value="#{nupkg.version}"/>
+            </h:column> 
+            <h:column>
+                <f:facet name="header">Ссылка на скачивание</f:facet>
+                <a href="/nuget/download/#{nupkg.id}/#{nupkg.version}">Закачать</a>
+            </h:column> 
+        </h:dataTable>          
     </h:body>
 </html>
 

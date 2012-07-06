@@ -9,40 +9,44 @@
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body> 
-        <br>Root folder is: <h:outputText id="rootFolder" value="#{optionsBean.nugetHome}"/></br>
-        <br>Package source count: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/></br>
-        <table class="storage">
-            <thead class="storage">
-                <tr class="storage">
-                    <th class="storage"/>
-                    <th class="storage">Класс хранилища</th>
-                    <th class="storage">Индексируемое (Y/N)</th>
-                    <th class="storage">Имя хранилища</th>
-                    <th class="storage">Интервал обновления индекса</th>
-                </tr>
-            </thead>
-            <tbody>                
-                <c:forEach var="i" begin="0" end="#{optionsBean.storageOptions.size()-1}" step="1">
-                    <c:set var="repo" value="#{optionsBean.storageOptions.get(i)}"/>
-                    <tr class="storage">                        
-                        <td class="storage">
-                            <h:link value="${i+1}" outcome="storageOptions">
-                                <f:param name="storageId" value="${i}"/>
-                            </h:link>
-                        </td>
-                        <td class="storage"><h:outputText value="#{repo.getClassName()}"/></td>
-                        <td class="storage"><h:outputText value="#{repo.isIndexed()}"/></td>
-                        <td class="storage"><h:outputText value="#{repo.getStorageName()}"/></td>
-                        <td class="storage"><h:outputText value="#{repo.getRefreshInterval()}"/></td>
-                        <td class="storage">
-                            <h:link value="Содержимое" outcome="storageContents">
-                                <f:param name="storageId" value="${i}"/>
-                            </h:link>
-                        </td>                        
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>       
+        <br>Домашняя папка NuGet: <h:outputText id="rootFolder" value="#{optionsBean.nugetHome}"/></br>
+        <br>Всего источников пакетов: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/></br>
+        <h:dataTable value="#{optionsBean.storageOptions}" 
+                     var="repo"
+                     styleClass="storage" 
+                     headerClass="storage" 
+                     rowClasses="storage" 
+                     columnClasses="storage,storage,storage,storage,storage,storage">
+            <h:column>
+                <f:facet name="header">№</f:facet> 
+                <h:link value="#{optionsBean.storageOptions.rowIndex+1}" outcome="storageOptions">
+                    <f:param name="storageId" value="#{optionsBean.storageOptions.rowIndex}"/>
+                </h:link>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Класс хранилища</f:facet>                
+                <h:outputText value="#{repo.getClassName()}"/>
+            </h:column>
+            <h:column>                
+                <f:facet name="header">Индексируемое (Y/N)</f:facet>   
+                <h:outputText value="#{repo.isIndexed()}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Имя хранилища</f:facet>
+                <h:outputText value="#{repo.getStorageName()}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Интервал обновления индекса</f:facet> 
+                <h:outputText value="#{repo.getRefreshInterval()}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Содержимое</f:facet> 
+                <h:link value="Содержимое" outcome="storageContents">
+                    <f:param name="storageId" value="#{optionsBean.storageOptions.rowIndex}"/>
+                </h:link>
+            </h:column>
+        </h:dataTable>        
+        <h:link value="Создать..." outcome="createStorage"/>
     </h:body>
 </html>
 

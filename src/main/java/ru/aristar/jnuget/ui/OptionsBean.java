@@ -2,8 +2,11 @@ package ru.aristar.jnuget.ui;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.StorageOptions;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
@@ -13,15 +16,23 @@ import ru.aristar.jnuget.sources.PackageSourceFactory;
  * @author sviridov
  */
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class OptionsBean implements Serializable {
 
+    private DataModel<StorageOptions> dataModel;
+    
+    @PostConstruct
+    public void init(){
+        List<StorageOptions> options = PackageSourceFactory.getInstance().getOptions().getStorageOptionsList();
+        dataModel = new ListDataModel<>(options);
+    }
+    
     public int getRepositoriesCount() {
-        return PackageSourceFactory.getInstance().getOptions().getStorageOptionsList().size();
+        return dataModel.getRowCount();
     }
 
-    public List<StorageOptions> getStorageOptions() {
-        return PackageSourceFactory.getInstance().getOptions().getStorageOptionsList();
+    public DataModel<StorageOptions> getStorageOptions() {
+        return dataModel;
     }
 
     public String getNugetHome() {
