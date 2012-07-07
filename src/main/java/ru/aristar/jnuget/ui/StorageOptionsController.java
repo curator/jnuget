@@ -38,12 +38,20 @@ public class StorageOptionsController implements Serializable {
      * Индексирующий декоратор (или null, если хранилище не индексируется)
      */
     private IndexedPackageSource indexDecorator;
+    /**
+     * Настройки хранилища
+     */
+    private StorageOptions storageOptions;
 
     /**
      * Инициализация хранилища
      */
     public void init() {
+        if (storageId == null) {
+            return;
+        }
         packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+        storageOptions = PackageSourceFactory.getInstance().getOptions().getStorageOptionsList().get(storageId);
         if (packageSource instanceof IndexedPackageSource) {
             indexDecorator = (IndexedPackageSource) packageSource;
             packageSource = indexDecorator.getUnderlyingSource();
@@ -68,7 +76,7 @@ public class StorageOptionsController implements Serializable {
      * @return имя класса хранилища
      */
     public String getClassName() {
-        return packageSource.getClass().getCanonicalName();
+        return packageSource == null ? null : packageSource.getClass().getCanonicalName();
     }
 
     /**
@@ -132,17 +140,15 @@ public class StorageOptionsController implements Serializable {
     }
 
     /**
-     * @return настройки хранилища
-     */
-    private StorageOptions getStorageOptions() {
-        return PackageSourceFactory.getInstance().getOptions().getStorageOptionsList().get(storageId);
-    }
-
-    /**
      * @return параметры настройки хранилища
      */
     public DataModel<Map.Entry<String, String>> getStorageProperties() {
-        ArrayList<Map.Entry<String, String>> data = new ArrayList<>(getStorageOptions().getProperties().entrySet());
+        ArrayList<Map.Entry<String, String>> data;
+        if (storageOptions == null) {
+            data = new ArrayList<>();
+        } else {
+            data = new ArrayList<>(storageOptions.getProperties().entrySet());
+        }
         return new ListDataModel<>(data);
     }
 }
