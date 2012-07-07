@@ -75,16 +75,18 @@ public class StorageOptionsController implements Serializable {
      * @param className имя класса хранилища
      * @throws NugetFormatException ошибка создания хранилища указанного класса
      */
+    @SuppressWarnings("unchecked")
     public void setClassName(String className) throws
             NugetFormatException {
         try {
             Class<?> packageSourceClass = Class.forName(className);
             Constructor<?> constructor = packageSourceClass.getConstructor();
             Object result = constructor.newInstance();
-            if (!(result instanceof PackageSource)) {
+            if (result instanceof PackageSource) {
+                packageSource = (PackageSource<Nupkg>) result;
+            } else {
                 throw new NugetFormatException(format("Класс {0} не является {1}", className, PackageSource.class.getName()));
             }
-            packageSource = (PackageSource) result;
         } catch (NoSuchMethodException | ClassNotFoundException |
                 InstantiationException |
                 IllegalAccessException |
