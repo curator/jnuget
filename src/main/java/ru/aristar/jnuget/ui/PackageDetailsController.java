@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.ui;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import ru.aristar.jnuget.Version;
@@ -98,5 +100,15 @@ public class PackageDetailsController {
      */
     public String getDescription() {
         return nuspec.getDescription();
+    }
+
+    /**
+     * @return размер пакета в мегабайтах
+     */
+    public BigDecimal getSize() {
+        BigDecimal result = new BigDecimal(nupkg.getSize());
+        result = result.divide(BigDecimal.valueOf(1024 * 1024));
+        result = result.setScale(2, RoundingMode.UP);
+        return result;
     }
 }

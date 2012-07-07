@@ -33,12 +33,12 @@
             </h:column> 
             <h:column>
                 <f:facet name="header">Версия пакета</f:facet>
-                <h:outputText value="#{nupkg.version}"/>
-            </h:column> 
-            <h:column>
-                <f:facet name="header">Ссылка на скачивание</f:facet>
-                <a href="/nuget/download/#{nupkg.id}/#{nupkg.version}">Закачать</a>
-            </h:column> 
+                <h:link value="#{nupkg.version}" outcome="packageDetails">
+                    <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{nupkg.id}"/>
+                    <f:param name="packageVersion" value="#{nupkg.version}"/>
+                </h:link>
+            </h:column>            
         </h:dataTable>          
     </h:body>
 </html>

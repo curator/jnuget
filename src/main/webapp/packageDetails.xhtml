@@ -17,7 +17,9 @@
             <li><h:outputText value="Идентификатор пакета #{packageDetails.packageId}"/> </li>
             <li><h:outputText value="Версия пакета #{packageDetails.packageVersion}"/> </li>
             <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
+            <li><h:outputText value="Размер пакета #{packageDetails.size} Мб"/> </li>
         </ul>
+        <a href="/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
     </h:body>
 </html>
 
