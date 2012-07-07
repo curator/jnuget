@@ -5,40 +5,44 @@
       xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <f:metadata>
-            <f:viewParam name="storageId" value="#{storageOptionsBean.storageId}"/>
-            <f:event type="preRenderView" listener="#{storageOptionsBean.init()}" />
+            <f:viewParam name="storageId" value="#{storageOptions.storageId}"/>
+            <f:event type="preRenderView" listener="#{storageOptions.init()}" />
         </f:metadata>
-        <title> <h:outputText value="Настройки хранилища #{storageOptionsBean.storageId}"/></title>
+        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageId}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
-            <fieldset>
-                <legend><h:outputText value="Настройки хранилища #{storageOptionsBean.storageId+1}"/></legend>
-                <ol>
-                    <li>
-                        <h:inputText id="className" value="#{storageOptionsBean.className}"/>
-                        <label for="className">Имя класса хранилища</label>
-                    </li>
-                    <li>
-                        <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptionsBean.indexed}"/>
-                        <label for="isIndexed">Индексировать</label>
-                    </li>
-                </ol>
-                <h:dataTable value="#{storageOptionsBean.storageProperties}" var="entry" 
-                             class="storage"
-                             rowClasses="storage"
-                             headerClass="storage"
-                             columnClasses="storage,storage">
-                    <h:column>
-                        <f:facet name="header">Свойство</f:facet>
-                        <h:outputText value="#{entry.key}"/>
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Значение</f:facet>
-                        <h:outputText value="#{entry.value}"/>
-                    </h:column>
-                </h:dataTable>
-            </fieldset>
+        <fieldset>
+            <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId+1}"/></legend>
+            <ol>
+                <li>
+                    <h:inputText id="className" value="#{storageOptions.className}"/>
+                    <label for="className">Имя класса хранилища</label>
+                </li>
+                <li>
+                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>
+                    <label for="isIndexed">Индексировать</label>
+                </li>
+                <li>
+                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                    <label for="refreshInterval">Период обновления индекса</label>
+                </li>
+            </ol>
+            <h:dataTable value="#{storageOptions.storageProperties}" var="entry" 
+                         class="storage"
+                         rowClasses="storage"
+                         headerClass="storage"
+                         columnClasses="storage,storage">
+                <h:column>
+                    <f:facet name="header">Свойство</f:facet>
+                    <h:outputText value="#{entry.key}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Значение</f:facet>
+                    <h:outputText value="#{entry.value}"/>
+                </h:column>
+            </h:dataTable>
+        </fieldset>
     </h:body>
 </html>
 
