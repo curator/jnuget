@@ -12,29 +12,45 @@ import ru.aristar.jnuget.Common.StorageOptions;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
+ * Контроллер списка хранилищ
  *
  * @author sviridov
  */
-@ManagedBean
+@ManagedBean(name = "storagesList")
 @RequestScoped
-public class OptionsBean implements Serializable {
+public class StoragesListController implements Serializable {
 
+    /**
+     * Список настроек хранилищ
+     */
     private DataModel<StorageOptions> dataModel;
-    
+
+    /**
+     * Инициализация настроек хранилищ
+     */
     @PostConstruct
-    public void init(){
+    public void init() {
         List<StorageOptions> options = PackageSourceFactory.getInstance().getOptions().getStorageOptionsList();
         dataModel = new ListDataModel<>(options);
     }
-    
+
+    /**
+     * @return количество источников пакетов
+     */
     public int getRepositoriesCount() {
         return dataModel.getRowCount();
     }
 
+    /**
+     * @return список настроек хранилищ
+     */
     public DataModel<StorageOptions> getStorageOptions() {
         return dataModel;
     }
 
+    /**
+     * @return корневая папка NuGet (содержит в себе служебные файлы)
+     */
     public String getNugetHome() {
         return Options.getNugetHome().getAbsolutePath();
     }

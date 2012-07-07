@@ -9,9 +9,9 @@
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body> 
-        <br>Домашняя папка NuGet: <h:outputText id="rootFolder" value="#{optionsBean.nugetHome}"/></br>
-        <br>Всего источников пакетов: <h:outputText id="nameText" value="#{optionsBean.repositoriesCount}"/></br>
-        <h:dataTable value="#{optionsBean.storageOptions}" 
+        <br>Домашняя папка NuGet: <h:outputText id="rootFolder" value="#{storagesList.nugetHome}"/></br>
+        <br>Всего источников пакетов: <h:outputText id="nameText" value="#{storagesList.repositoriesCount}"/></br>
+        <h:dataTable value="#{storagesList.storageOptions}" 
                      var="repo"
                      styleClass="storage" 
                      headerClass="storage" 
@@ -19,8 +19,8 @@
                      columnClasses="storage,storage,storage,storage,storage,storage">
             <h:column>
                 <f:facet name="header">№</f:facet> 
-                <h:link value="#{optionsBean.storageOptions.rowIndex+1}" outcome="storageOptions">
-                    <f:param name="storageId" value="#{optionsBean.storageOptions.rowIndex}"/>
+                <h:link value="#{storagesList.storageOptions.rowIndex+1}" outcome="storageOptions">
+                    <f:param name="storageId" value="#{storagesList.storageOptions.rowIndex}"/>
                 </h:link>
             </h:column>
             <h:column>
@@ -42,7 +42,7 @@
             <h:column>
                 <f:facet name="header">Содержимое</f:facet> 
                 <h:link value="Содержимое" outcome="storageContents">
-                    <f:param name="storageId" value="#{optionsBean.storageOptions.rowIndex}"/>
+                    <f:param name="storageId" value="#{storagesList.storageOptions.rowIndex}"/>
                 </h:link>
             </h:column>
         </h:dataTable>        
