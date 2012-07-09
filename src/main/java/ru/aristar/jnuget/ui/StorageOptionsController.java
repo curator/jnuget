@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.ui;
 
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import ru.aristar.jnuget.Common.Options;
 import ru.aristar.jnuget.Common.StorageOptions;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -137,6 +139,60 @@ public class StorageOptionsController implements Serializable {
             return;
         }
         indexDecorator.setRefreshInterval(value);
+    }
+
+    /**
+     * @param storageName имя хранилища (используется для сохранения индекса)
+     */
+    public void setStorageName(String storageName) {
+        if (indexDecorator == null) {
+            return;
+        }
+        File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
+        indexDecorator.setIndexStoreFile(storageFile);
+    }
+
+    /**
+     * @return имя хранилища (используется для сохранения индекса)
+     */
+    public String getStorageName() {
+        if (indexDecorator == null) {
+            return null;
+        }
+        String fileName = indexDecorator.getIndexStoreFile().getName();
+        fileName = fileName.substring(0, fileName.length() - 4);
+        return fileName;
+    }
+
+    /**
+     * @return имя класса стратегии фиксации
+     */
+    public String getPushStrategyClass() {
+        if (packageSource == null || packageSource.getPushStrategy() == null) {
+            return null;
+        }
+        return packageSource.getPushStrategy().getClass().getName();
+    }
+
+    /**
+     * @param pushStrategyClass имя класса стратегии фиксации
+     */
+    public void setPushStrategyClass(String pushStrategyClass) {
+        //TODO Реализовть метод
+    }
+
+    /**
+     * @return параметры настройки стратегии фиксации
+     */
+    public DataModel<Map.Entry<String, String>> getPushStrategyProperties() {
+        //TODO Считывать параметр не из настроек, а из класса, описателя
+        ArrayList<Map.Entry<String, String>> data;
+        if (storageOptions == null || storageOptions.getStrategyOptions() == null) {
+            data = new ArrayList<>();
+        } else {
+            data = new ArrayList<>(storageOptions.getStrategyOptions().getProperties().entrySet());
+        }
+        return new ListDataModel<>(data);
     }
 
     /**

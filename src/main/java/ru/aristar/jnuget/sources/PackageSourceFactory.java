@@ -61,7 +61,7 @@ public class PackageSourceFactory {
         IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
         indexedPackageSource.setUnderlyingSource(packageSource);
         if (storageName != null) {
-            File storageFile = new File(Options.getNugetHome(), storageName + ".idx");
+            File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
             indexedPackageSource.setIndexStoreFile(storageFile);
         }
         if (refreshInterval != null) {

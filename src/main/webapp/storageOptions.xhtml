@@ -16,16 +16,20 @@
             <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId+1}"/></legend>
             <ol>
                 <li>
-                    <h:inputText id="className" value="#{storageOptions.className}"/>
                     <label for="className">Имя класса хранилища</label>
+                    <h:inputText id="className" value="#{storageOptions.className}"/>
                 </li>
                 <li>
-                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>
                     <label for="isIndexed">Индексировать</label>
+                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
                 </li>
                 <li>
-                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
                     <label for="refreshInterval">Период обновления индекса</label>
+                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                </li>
+                <li>
+                    <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
+                    <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
                 </li>
             </ol>
             <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
@@ -38,6 +42,25 @@
                     <h:outputText value="#{entry.value}"/>
                 </h:column>
             </h:dataTable>
+            <fieldset>
+                <legend>Стратегия фиксации</legend>
+                <ol>
+                    <li>
+                        <label for="pushStrategyClass">Класс стратегии фиксации</label>
+                        <h:inputText id="pushStrategyClass" value="#{storageOptions.pushStrategyClass}"/>
+                    </li>
+                </ol>
+                <h:dataTable value="#{storageOptions.pushStrategyProperties}" var="entry">
+                    <h:column>
+                        <f:facet name="header">Свойство</f:facet>
+                        <h:outputText value="#{entry.key}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Значение</f:facet>
+                        <h:outputText value="#{entry.value}"/>
+                    </h:column>
+                </h:dataTable>
+            </fieldset>
         </fieldset>
     </h:body>
 </html>

@@ -257,4 +257,22 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                     + "обнаружен", new Object[]{packageSource});
         }
     }
+
+    /**
+     * @return файл для хранения индекса
+     */
+    public File getIndexStoreFile() {
+        return indexStoreFile;
+    }
+
+    /**
+     * Создает файл для хранения индекса
+     *
+     * @param path путь к каталогу, в котором требуется создать файл
+     * @param storageName имя хранилища
+     * @return файл для хранения индекса
+     */
+    public static File getIndexSaveFile(File path, String storageName) {
+        return new File(path, storageName + ".idx");
+    }
 }
