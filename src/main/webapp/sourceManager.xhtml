@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <title>Хранилища пакетов</title>
@@ -11,12 +10,7 @@
     <h:body> 
         <br>Домашняя папка NuGet: <h:outputText id="rootFolder" value="#{storagesList.nugetHome}"/></br>
         <br>Всего источников пакетов: <h:outputText id="nameText" value="#{storagesList.repositoriesCount}"/></br>
-        <h:dataTable value="#{storagesList.storageOptions}" 
-                     var="repo"
-                     styleClass="storage" 
-                     headerClass="storage" 
-                     rowClasses="storage" 
-                     columnClasses="storage,storage,storage,storage,storage,storage">
+        <h:dataTable value="#{storagesList.storageOptions}" var="repo">
             <h:column>
                 <f:facet name="header">№</f:facet> 
                 <h:link value="#{storagesList.storageOptions.rowIndex+1}" outcome="storageOptions">

@@ -28,11 +28,7 @@
                     <label for="refreshInterval">Период обновления индекса</label>
                 </li>
             </ol>
-            <h:dataTable value="#{storageOptions.storageProperties}" var="entry" 
-                         class="storage"
-                         rowClasses="storage"
-                         headerClass="storage"
-                         columnClasses="storage,storage">
+            <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
                 <h:column>
                     <f:facet name="header">Свойство</f:facet>
                     <h:outputText value="#{entry.key}"/>

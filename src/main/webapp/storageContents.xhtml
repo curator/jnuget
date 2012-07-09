@@ -2,8 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>        
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageContents.storageId}"/>
@@ -14,11 +13,7 @@
     </h:head>
     <h:body>
         <h:outputText value="Всего пакетов в хранилище - #{storageContents.packageCount}"/>
-        <h:dataTable value="#{storageContents.packages}" var="nupkg"
-                     styleClass="storage" 
-                     headerClass="storage" 
-                     rowClasses="storage" 
-                     columnClasses="storage,storage,storage,storage">
+        <h:dataTable value="#{storageContents.packages}" var="nupkg">
             <h:column>
                 <f:facet name="header">№</f:facet>
                 <h:link value="#{storageContents.packages.rowIndex+1}" outcome="packageDetails">
