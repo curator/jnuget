@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import static java.text.MessageFormat.format;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
@@ -18,6 +19,9 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.IndexedPackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
+import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
+import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
+import ru.aristar.jnuget.ui.descriptors.PackageSourceDescriptor;
 
 /**
  * Контроллер настроек хранилища
@@ -199,11 +203,13 @@ public class StorageOptionsController implements Serializable {
      * @return параметры настройки хранилища
      */
     public DataModel<Map.Entry<String, String>> getStorageProperties() {
-        ArrayList<Map.Entry<String, String>> data;
-        if (storageOptions == null) {
-            data = new ArrayList<>();
-        } else {
-            data = new ArrayList<>(storageOptions.getProperties().entrySet());
+        ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
+        PackageSourceDescriptor descriptor = DescriptorsFactory.getInstance().getDescriptor(packageSource.getClass());
+        if (descriptor != null) {
+            for (ObjectProperty property : descriptor.getProperties()) {
+                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(property.description, property.getValue(packageSource));
+                data.add(entry);
+            }
         }
         return new ListDataModel<>(data);
     }

@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.sources;
 
-import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +13,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.xml.bind.JAXBException;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.*;
+import ru.aristar.jnuget.files.MavenNupkg;
+import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**
  * Хранилище пакетов, имитирующее структуру хранилища Maven.
