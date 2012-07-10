@@ -19,9 +19,10 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.IndexedPackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
 import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
-import ru.aristar.jnuget.ui.descriptors.PackageSourceDescriptor;
+import ru.aristar.jnuget.ui.descriptors.ObjectDescriptor;
 
 /**
  * Контроллер настроек хранилища
@@ -189,12 +190,16 @@ public class StorageOptionsController implements Serializable {
      * @return параметры настройки стратегии фиксации
      */
     public DataModel<Map.Entry<String, String>> getPushStrategyProperties() {
-        //TODO Считывать параметр не из настроек, а из класса, описателя
-        ArrayList<Map.Entry<String, String>> data;
-        if (storageOptions == null || storageOptions.getStrategyOptions() == null) {
-            data = new ArrayList<>();
-        } else {
-            data = new ArrayList<>(storageOptions.getStrategyOptions().getProperties().entrySet());
+        PushStrategy pushStrategy = packageSource.getPushStrategy();
+        ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
+        ObjectDescriptor<? extends PushStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
+        if (descriptor != null) {
+            for (ObjectProperty property : descriptor.getProperties()) {
+                final String description = property.getDescription();
+                final String value = property.getValue(pushStrategy);
+                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
+                data.add(entry);
+            }
         }
         return new ListDataModel<>(data);
     }
@@ -204,7 +209,7 @@ public class StorageOptionsController implements Serializable {
      */
     public DataModel<Map.Entry<String, String>> getStorageProperties() {
         ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
-        PackageSourceDescriptor descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
+        ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
         if (descriptor != null) {
             for (ObjectProperty property : descriptor.getProperties()) {
                 final String description = property.getDescription();

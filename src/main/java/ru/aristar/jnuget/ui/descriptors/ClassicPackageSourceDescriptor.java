@@ -11,10 +11,10 @@ import ru.aristar.jnuget.sources.PackageSource;
  * @see ClassicPackageSource
  * @author sviridov
  */
-public class ClassicPackageSourceDescriptor implements PackageSourceDescriptor {
+public class ClassicPackageSourceDescriptor implements ObjectDescriptor {
 
     @Override
-    public Class<? extends PackageSource> getPackageSourceClass() {
+    public Class<? extends PackageSource> getObjectClass() {
         return ClassicPackageSource.class;
     }
 

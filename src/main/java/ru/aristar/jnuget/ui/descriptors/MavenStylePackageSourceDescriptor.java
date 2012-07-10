@@ -8,10 +8,10 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class MavenStylePackageSourceDescriptor implements PackageSourceDescriptor {
+public class MavenStylePackageSourceDescriptor implements ObjectDescriptor {
 
     @Override
-    public Class<? extends PackageSource> getPackageSourceClass() {
+    public Class<? extends PackageSource> getObjectClass() {
         return MavenStylePackageSource.class;
     }
 

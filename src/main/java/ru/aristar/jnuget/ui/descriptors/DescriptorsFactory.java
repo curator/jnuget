@@ -13,6 +13,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 
 /**
  *
@@ -23,7 +24,11 @@ public class DescriptorsFactory {
     /**
      * Описания хранилищ по классам, которые они описывают
      */
-    private volatile Map<Class<? extends PackageSource>, PackageSourceDescriptor> sourceDescriptorsMap;
+    private volatile Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> sourceDescriptorsMap;
+    /**
+     * Oписания стратегий по классам, которые они описывают
+     */
+    private volatile Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> strategyDescriptorsMap;
     /**
      * Логгер
      */
@@ -32,11 +37,11 @@ public class DescriptorsFactory {
     /**
      * @return описания хранилищ по классам, которые они описывают
      */
-    private Map<Class<? extends PackageSource>, PackageSourceDescriptor> getDescriptorMap() {
+    private Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> getSourceDescriptorMap() {
         if (sourceDescriptorsMap == null) {
             synchronized (this) {
                 if (sourceDescriptorsMap == null) {
-                    sourceDescriptorsMap = loadDescriptors();
+                    sourceDescriptorsMap = loadDescriptors(PackageSource.class, "ru/aristar/jnuget/sources/storageDescriptors.list");
                 }
             }
         }
@@ -44,13 +49,29 @@ public class DescriptorsFactory {
     }
 
     /**
+     * @return описания стратегий по классам, которые они описывают
+     */
+    private Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> getStrategyDescriptorMap() {
+        if (strategyDescriptorsMap == null) {
+            synchronized (this) {
+                if (strategyDescriptorsMap == null) {
+                    strategyDescriptorsMap = loadDescriptors(PushStrategy.class, "ru/aristar/jnuget/sources/strategyDescriptors.list");
+                }
+            }
+        }
+        return strategyDescriptorsMap;
+    }
+
+    /**
      * Загружает все дескрипторы, указанные в файле по данному URL
      *
+     * @param <S> класс для которого ищется дескриптор
      * @param url url файла с дескрипторами
+     * @param s класс для которого ищется дескриптор
      * @return коллекция дескрипторов
      */
-    private Collection<PackageSourceDescriptor> loadDescriptors(URL url) {
-        ArrayList<PackageSourceDescriptor> result = new ArrayList<>();
+    private <S> Collection<ObjectDescriptor<S>> loadDescriptors(URL url, Class<S> s) {
+        ArrayList<ObjectDescriptor<S>> result = new ArrayList<>();
         try {
             File file = new File(url.toURI());
             FileReader fileReader = new FileReader(file);
@@ -60,10 +81,12 @@ public class DescriptorsFactory {
                 try {
                     Constructor<?> constructor = Class.forName(className).getConstructor();
                     Object o = constructor.newInstance();
-                    if (o instanceof PackageSourceDescriptor) {
-                        result.add((PackageSourceDescriptor) o);
+                    if (o instanceof ObjectDescriptor) {
+                        @SuppressWarnings("unchecked")
+                        ObjectDescriptor<S> descriptor = (ObjectDescriptor<S>) o;
+                        result.add(descriptor);
                     } else {
-                        logger.error(format("Класс {0} не является PackageSourceDescriptor", className));
+                        logger.error(format("Класс {0} не является ObjectDescriptor", className));
                     }
                 } catch (ClassNotFoundException | NoSuchMethodException |
                         SecurityException | InstantiationException |
@@ -81,17 +104,20 @@ public class DescriptorsFactory {
     /**
      * Загружает все доступные приложению дескрипторы
      *
+     * @param <S> тип, для котторого ищется дескриптор
+     * @param s класс, для которого ищется дескриптор
+     * @param descriptorsUrl url, по которому ищутся классы описаний
      * @return описания хранилищ по классам, которые они описывают
      */
-    private Map<Class<? extends PackageSource>, PackageSourceDescriptor> loadDescriptors() {
-        Map<Class<? extends PackageSource>, PackageSourceDescriptor> result = new HashMap<>();
+    private <S> Map<Class<? extends S>, ObjectDescriptor<S>> loadDescriptors(Class<S> s, String descriptorsUrl) {
+        Map<Class<? extends S>, ObjectDescriptor<S>> result = new HashMap<>();
         try {
-            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("ru/aristar/jnuget/sources/storageDescriptors.list");
+            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(descriptorsUrl);
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                Collection<PackageSourceDescriptor> descriptors = loadDescriptors(url);
-                for (PackageSourceDescriptor descriptor : descriptors) {
-                    result.put(descriptor.getPackageSourceClass(), descriptor);
+                Collection<ObjectDescriptor<S>> descriptors = loadDescriptors(url, s);
+                for (ObjectDescriptor<S> descriptor : descriptors) {
+                    result.put(descriptor.getObjectClass(), descriptor);
                 }
             }
         } catch (IOException e) {
@@ -106,15 +132,23 @@ public class DescriptorsFactory {
      * @param c класс хранилища
      * @return описание хранилища
      */
-    public PackageSourceDescriptor getPackageSourceDescriptor(Class<? extends PackageSource> c) {
-        return getDescriptorMap().get(c);
+    public ObjectDescriptor<? extends PackageSource> getPackageSourceDescriptor(Class<? extends PackageSource> c) {
+        return getSourceDescriptorMap().get(c);
     }
 
     /**
      * @return все доступные приложению дескрипторы хранилищ
      */
-    public Collection<PackageSourceDescriptor> getAllPackageSourceDescriptors() {
-        return getDescriptorMap().values();
+    public Collection<ObjectDescriptor<PackageSource>> getAllPackageSourceDescriptors() {
+        return getSourceDescriptorMap().values();
+    }
+
+    /**
+     * @param c класс стратегии фиксации
+     * @return описание стратегии
+     */
+    public ObjectDescriptor<? extends PushStrategy> getPushStrategyDescriptor(Class<? extends PushStrategy> c) {
+        return getStrategyDescriptorMap().get(c);
     }
 
     /**

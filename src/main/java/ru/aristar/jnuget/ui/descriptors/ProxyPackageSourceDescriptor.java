@@ -8,10 +8,10 @@ import ru.aristar.jnuget.sources.ProxyPackageSource;
  *
  * @author sviridov
  */
-public class ProxyPackageSourceDescriptor implements PackageSourceDescriptor {
+public class ProxyPackageSourceDescriptor implements ObjectDescriptor {
 
     @Override
-    public Class<? extends PackageSource> getPackageSourceClass() {
+    public Class<? extends PackageSource> getObjectClass() {
         return ProxyPackageSource.class;
     }
 

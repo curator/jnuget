@@ -1,12 +1,10 @@
 package ru.aristar.jnuget.ui.descriptors;
 
-import java.io.InputStream;
-import org.junit.AfterClass;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import ru.aristar.jnuget.sources.ClassicPackageSource;
+import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  *
@@ -15,13 +13,24 @@ import ru.aristar.jnuget.sources.ClassicPackageSource;
 public class DescriptorsFactoryTest {
 
     @Test
-    public void testGetDescriptor() throws Exception {
+    public void testGetPackageSourceDescriptor() throws Exception {
         //GIVEN
         DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
         //WHEN
-        PackageSourceDescriptor descriptor = descriptorsFactory.getPackageSourceDescriptor(ClassicPackageSource.class);
+        ObjectDescriptor descriptor = descriptorsFactory.getPackageSourceDescriptor(ClassicPackageSource.class);
         //THEN
         assertThat(descriptor, is(not(nullValue())));
         assertThat(descriptor, is(instanceOf(ClassicPackageSourceDescriptor.class)));
+    }
+
+    @Test
+    public void testGetPushStrategyDescriptor() throws Exception {
+        //GIVEN
+        DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
+        //WHEN
+        ObjectDescriptor descriptor = descriptorsFactory.getPushStrategyDescriptor(SimplePushStrategy.class);
+        //THEN
+        assertThat(descriptor, is(not(nullValue())));
+        assertThat(descriptor, is(instanceOf(SimplePushStrategyDescriptor.class)));
     }
 }
