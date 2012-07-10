@@ -95,8 +95,18 @@ public class DescriptorsFactory {
                 if (property == null) {
                     continue;
                 }
-                final String propertyName = method.getName().substring(3);
-                final String getterName = "get" + propertyName;
+                String propertyName = method.getName();
+                String getterName;
+                if (propertyName.startsWith("get") || propertyName.startsWith("set")) {
+                    propertyName = propertyName.substring(3);
+                    getterName = "get" + propertyName;
+                } else if (propertyName.startsWith("is")) {
+                    getterName = propertyName;
+                    propertyName = propertyName.substring(2);
+                } else {
+                    logger.error(format("Метод {0} в классе {1} не является get, is или set", propertyName, targetClass));
+                    continue;
+                }
                 final String setterName = "set" + propertyName;
                 ObjectProperty objectProperty = new ObjectProperty(targetClass, property.description(), getterName, setterName);
                 result.add(objectProperty);

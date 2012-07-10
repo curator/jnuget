@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.sources.push;
 
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
  * Простая стратегия публикации с флагом разрешить/запретить
@@ -17,6 +18,7 @@ public class SimplePushStrategy extends AbstractPushStrategy implements PushStra
     /**
      * @return разрешена или нет публикация
      */
+    @Property(description = "Разрешена или нет публикация")
     public boolean isAllow() {
         return allow;
     }

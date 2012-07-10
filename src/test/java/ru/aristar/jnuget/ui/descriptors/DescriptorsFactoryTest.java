@@ -3,6 +3,7 @@ package ru.aristar.jnuget.ui.descriptors;
 import java.net.URL;
 import java.util.Collection;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import ru.aristar.jnuget.sources.ClassicPackageSource;
@@ -42,7 +43,8 @@ public class DescriptorsFactoryTest {
         ObjectDescriptor descriptor = descriptorsFactory.getPushStrategyDescriptor(SimplePushStrategy.class);
         //THEN
         assertThat(descriptor, is(not(nullValue())));
-        assertThat(descriptor, is(instanceOf(SimplePushStrategyDescriptor.class)));
+        assertThat(descriptor, is(instanceOf(AbstractObjectDescriptor.class)));
+        assertEquals(SimplePushStrategy.class, descriptor.getObjectClass());
     }
 
     /**
@@ -61,7 +63,7 @@ public class DescriptorsFactoryTest {
         ObjectDescriptor<PackageSource> descriptor = result.iterator().next();
         assertThat(descriptor, is(not(nullValue())));
         assertThat(descriptor, is(instanceOf(AbstractObjectDescriptor.class)));
-        assertThat(descriptor.getObjectClass().getName(), is(equalTo(ClassicPackageSource.class.getName())));
+        assertEquals(ClassicPackageSource.class, descriptor.getObjectClass());
         assertThat(descriptor.getProperties().size(), is(equalTo(1)));
         ObjectProperty property = descriptor.getProperties().toArray(new ObjectProperty[0])[0];
         assertThat(property.getDescription(), is(equalTo("Имя каталога, в котором будут храниться пакеты")));
