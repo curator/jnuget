@@ -15,6 +15,7 @@ import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
  * Хранилище пакетов, использующее стандартную для NuGet конфигурацию
@@ -60,6 +61,7 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
     /**
      * @return полное имя папки с пакетами
      */
+    @Property(description="Имя каталога, в котором будут храниться пакеты")
     public String getFolderName() {
         return rootFolder == null ? null : rootFolder.getAbsolutePath();
     }

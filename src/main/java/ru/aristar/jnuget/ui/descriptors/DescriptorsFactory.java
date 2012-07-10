@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import static java.text.MessageFormat.format;
@@ -42,7 +43,7 @@ public class DescriptorsFactory {
      * @param s класс для которого ищется дескриптор
      * @return коллекция дескрипторов
      */
-    private <S> Collection<ObjectDescriptor<S>> loadDescriptors(URL url, Class<S> s) {
+    protected <S> Collection<ObjectDescriptor<S>> loadDescriptors(URL url, Class<S> s) {
         ArrayList<ObjectDescriptor<S>> result = new ArrayList<>();
         try {
             File file = new File(url.toURI());
@@ -51,14 +52,20 @@ public class DescriptorsFactory {
             while (bufferedReader.ready()) {
                 String className = bufferedReader.readLine();
                 try {
-                    Constructor<?> constructor = Class.forName(className).getConstructor();
-                    Object o = constructor.newInstance();
-                    if (o instanceof ObjectDescriptor) {
+                    Class<?> presentedClass = Class.forName(className);
+                    if (ObjectDescriptor.class.isAssignableFrom(presentedClass)) {
                         @SuppressWarnings("unchecked")
-                        ObjectDescriptor<S> descriptor = (ObjectDescriptor<S>) o;
+                        Class<ObjectDescriptor<S>> descriptorClass = (Class<ObjectDescriptor<S>>) presentedClass;
+                        Constructor<ObjectDescriptor<S>> constructor = descriptorClass.getConstructor();
+                        ObjectDescriptor<S> descriptor = constructor.newInstance();
+                        result.add(descriptor);
+                    } else if (s.isAssignableFrom(presentedClass)) {
+                        @SuppressWarnings("unchecked")
+                        Class<S> targetClass = (Class<S>) presentedClass;
+                        ObjectDescriptor<S> descriptor = createDesriptorForClass(targetClass);
                         result.add(descriptor);
                     } else {
-                        logger.error(format("Класс {0} не является ObjectDescriptor", className));
+                        logger.error(format("Класс {0} не является {1} или {2}", className, ObjectDescriptor.class, s));
                     }
                 } catch (ClassNotFoundException | NoSuchMethodException |
                         SecurityException | InstantiationException |
@@ -71,6 +78,48 @@ public class DescriptorsFactory {
             logger.error(format("Ошибка чтения списка дескрипторов для URL {0}", url), e);
         }
         return result;
+    }
+
+    /**
+     * Производит поиск пар GETTER/SETTER, анотированных как свойства в
+     * указанном классе
+     *
+     * @param targetClass класс, в котором производится поиск свойств
+     * @return коллекция свойств
+     */
+    private Collection<ObjectProperty> findAnnotatedProperties(Class<?> targetClass) {
+        ArrayList<ObjectProperty> result = new ArrayList<>();
+        for (Method method : targetClass.getMethods()) {
+            try {
+                Property property = method.getAnnotation(Property.class);
+                if (property == null) {
+                    continue;
+                }
+                final String propertyName = method.getName().substring(3);
+                final String getterName = "get" + propertyName;
+                final String setterName = "set" + propertyName;
+                ObjectProperty objectProperty = new ObjectProperty(targetClass, property.description(), getterName, setterName);
+                result.add(objectProperty);
+            } catch (NoSuchMethodException e) {
+                logger.error(format("Не удалось найти парный геттер/сеттер для класса {0}", targetClass), e);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Производит попытку создать дескриптор для класса
+     *
+     * @param <S> класс, для которого производится попытка создать дескриптор
+     * @param targetClass класс, для которого производится попытка создать
+     * дескриптор
+     * @return дескриптор класса
+     */
+    protected <S> ObjectDescriptor<S> createDesriptorForClass(Class<? extends S> targetClass) {
+        ArrayList<ObjectProperty> propertys = new ArrayList<>();
+        propertys.addAll(findAnnotatedProperties(targetClass));
+        AbstractObjectDescriptor<S> descriptor = new AbstractObjectDescriptor<>(targetClass, propertys);
+        return descriptor;
     }
 
     /**
