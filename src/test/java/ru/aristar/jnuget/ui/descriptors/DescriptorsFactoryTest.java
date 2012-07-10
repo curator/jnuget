@@ -19,7 +19,7 @@ public class DescriptorsFactoryTest {
         //GIVEN
         DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
         //WHEN
-        PackageSourceDescriptor descriptor = descriptorsFactory.getDescriptor(ClassicPackageSource.class);
+        PackageSourceDescriptor descriptor = descriptorsFactory.getPackageSourceDescriptor(ClassicPackageSource.class);
         //THEN
         assertThat(descriptor, is(not(nullValue())));
         assertThat(descriptor, is(instanceOf(ClassicPackageSourceDescriptor.class)));

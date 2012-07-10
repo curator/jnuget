@@ -10,7 +10,13 @@ import ru.aristar.jnuget.sources.PackageSource;
  */
 public interface PackageSourceDescriptor {
 
+    /**
+     * @return класс хранилища пакетов
+     */
     Class<? extends PackageSource> getPackageSourceClass();
 
+    /**
+     * @return список свойств хранилища
+     */
     public List<ObjectProperty> getProperties();
 }

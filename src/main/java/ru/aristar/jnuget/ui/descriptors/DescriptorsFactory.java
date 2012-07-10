@@ -6,18 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import static java.text.MessageFormat.format;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static java.text.MessageFormat.format;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -26,21 +20,36 @@ import ru.aristar.jnuget.sources.PackageSource;
  */
 public class DescriptorsFactory {
 
-    private volatile Map<Class<? extends PackageSource>, PackageSourceDescriptor> descriptorsMap;
+    /**
+     * Описания хранилищ по классам, которые они описывают
+     */
+    private volatile Map<Class<? extends PackageSource>, PackageSourceDescriptor> sourceDescriptorsMap;
+    /**
+     * Логгер
+     */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /**
+     * @return описания хранилищ по классам, которые они описывают
+     */
     private Map<Class<? extends PackageSource>, PackageSourceDescriptor> getDescriptorMap() {
-        if (descriptorsMap == null) {
+        if (sourceDescriptorsMap == null) {
             synchronized (this) {
-                if (descriptorsMap == null) {
-                    descriptorsMap = loadDescriptors();
+                if (sourceDescriptorsMap == null) {
+                    sourceDescriptorsMap = loadDescriptors();
                 }
             }
         }
-        return descriptorsMap;
+        return sourceDescriptorsMap;
     }
 
-    private List<PackageSourceDescriptor> loadDescriptors(URL url) {
+    /**
+     * Загружает все дескрипторы, указанные в файле по данному URL
+     *
+     * @param url url файла с дескрипторами
+     * @return коллекция дескрипторов
+     */
+    private Collection<PackageSourceDescriptor> loadDescriptors(URL url) {
         ArrayList<PackageSourceDescriptor> result = new ArrayList<>();
         try {
             File file = new File(url.toURI());
@@ -54,9 +63,12 @@ public class DescriptorsFactory {
                     if (o instanceof PackageSourceDescriptor) {
                         result.add((PackageSourceDescriptor) o);
                     } else {
-                        throw new NugetFormatException(format("Класс {0} не является PackageSourceDescriptor", className));
+                        logger.error(format("Класс {0} не является PackageSourceDescriptor", className));
                     }
-                } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NugetFormatException e) {
+                } catch (ClassNotFoundException | NoSuchMethodException |
+                        SecurityException | InstantiationException |
+                        IllegalAccessException | IllegalArgumentException |
+                        InvocationTargetException e) {
                     logger.error(format("Ошибка создания дескриптора типа {0}", className), e);
                 }
             }
@@ -66,13 +78,18 @@ public class DescriptorsFactory {
         return result;
     }
 
+    /**
+     * Загружает все доступные приложению дескрипторы
+     *
+     * @return описания хранилищ по классам, которые они описывают
+     */
     private Map<Class<? extends PackageSource>, PackageSourceDescriptor> loadDescriptors() {
         Map<Class<? extends PackageSource>, PackageSourceDescriptor> result = new HashMap<>();
         try {
             Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("ru/aristar/jnuget/sources/storageDescriptors.list");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                List<PackageSourceDescriptor> descriptors = loadDescriptors(url);
+                Collection<PackageSourceDescriptor> descriptors = loadDescriptors(url);
                 for (PackageSourceDescriptor descriptor : descriptors) {
                     result.put(descriptor.getPackageSourceClass(), descriptor);
                 }
@@ -83,14 +100,32 @@ public class DescriptorsFactory {
         return result;
     }
 
-    public PackageSourceDescriptor getDescriptor(Class<? extends PackageSource> c) {
+    /**
+     * Возвращает описание хранилища
+     *
+     * @param c класс хранилища
+     * @return описание хранилища
+     */
+    public PackageSourceDescriptor getPackageSourceDescriptor(Class<? extends PackageSource> c) {
         return getDescriptorMap().get(c);
     }
 
-    public Collection<PackageSourceDescriptor> getAllDescriptors() {
+    /**
+     * @return все доступные приложению дескрипторы хранилищ
+     */
+    public Collection<PackageSourceDescriptor> getAllPackageSourceDescriptors() {
         return getDescriptorMap().values();
     }
 
+    /**
+     * Закрытый конструктор
+     */
+    private DescriptorsFactory() {
+    }
+
+    /**
+     * @return экземпляр фабрики
+     */
     public static DescriptorsFactory getInstance() {
         if (instance == null) {
             synchronized (monitor) {
@@ -101,6 +136,12 @@ public class DescriptorsFactory {
         }
         return instance;
     }
+    /**
+     * Экземпляр фабрики
+     */
     private static volatile DescriptorsFactory instance;
-    private static Object monitor = new Object();
+    /**
+     * Монитор для безопасного ленивого создания фабрики
+     */
+    private static final Object monitor = new Object();
 }

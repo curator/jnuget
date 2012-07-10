@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.ProxySelector;
@@ -225,36 +227,6 @@ public class PackageSourceFactory {
     }
 
     /**
-     * Возвращает значение для примитивного типа
-     *
-     * @param string строковое значение
-     * @param targetClass тип значения, в которое требуется преобразовать строку
-     * @return преобразованное значение примитивного типа
-     */
-    private Object getPrimitiveValue(String string, Class<?> targetClass) {
-        if (targetClass == java.lang.Boolean.TYPE) {
-            return Boolean.valueOf(string);
-        } else if (targetClass == java.lang.Character.TYPE) {
-            return Character.valueOf(string.charAt(0));
-        } else if (targetClass == java.lang.Byte.TYPE) {
-            return Byte.valueOf(string);
-        } else if (targetClass == java.lang.Short.TYPE) {
-            return Short.valueOf(string);
-        } else if (targetClass == java.lang.Integer.TYPE) {
-            return Integer.valueOf(string);
-        } else if (targetClass == java.lang.Long.TYPE) {
-            return Long.valueOf(string);
-        } else if (targetClass == java.lang.Float.TYPE) {
-            return Float.valueOf(string);
-        } else if (targetClass == java.lang.Double.TYPE) {
-            return Double.valueOf(string);
-        } else {
-            throw new UnsupportedOperationException("Primitive type "
-                    + targetClass + " is unsupported");
-        }
-    }
-
-    /**
      * Устанавливает свойства объекту
      *
      * @param properties карта свойств
@@ -268,12 +240,7 @@ public class PackageSourceFactory {
             Method method = findSetter(sourceClass, entry.getKey());
             Class<?> valueType = method.getParameterTypes()[0];
             String stringValue = OptionConverter.replaceVariables(entry.getValue());
-            Object value;
-            if (valueType.isPrimitive()) {
-                value = getPrimitiveValue(stringValue, valueType);
-            } else {
-                value = valueType.getConstructor(String.class).newInstance(stringValue);
-            }
+            Object value = getValueFromString(valueType, stringValue);
             method.invoke(newObject, value);
         }
     }
@@ -286,8 +253,7 @@ public class PackageSourceFactory {
     public static PackageSourceFactory getInstance() {
         if (instance == null) {
             synchronized (PackageSourceFactory.class) {
-                if (instance
-                        == null) {
+                if (instance == null) {
                     instance = new PackageSourceFactory();
                 }
             }
@@ -346,7 +312,76 @@ public class PackageSourceFactory {
         }
     }
 
+    /**
+     * @return настройки приложения
+     */
     public Options getOptions() {
         return options;
+    }
+
+    /**
+     * Производит попытку создать значение указанного типа из строки
+     *
+     * @param <T> тип значения
+     * @param valueType тип значения
+     * @param stringValue строковое представление типа значения
+     * @return распознанное значение
+     * @throws InstantiationException ошибка вызова конструктора
+     * @throws NoSuchMethodException не найден конструктор, принимающий как
+     * аргумент строку
+     * @throws IllegalArgumentException не найден конструктор, принимающий как
+     * аргумент строку
+     * @throws InvocationTargetException ошибка вызова конструктора
+     * @throws SecurityException конструктор с указанными параметрами не
+     * является публичным
+     * @throws IllegalAccessException ошибка вызова конструктора
+     */
+    public static <T> T getValueFromString(Class<T> valueType, String stringValue) throws
+            InstantiationException,
+            NoSuchMethodException,
+            IllegalArgumentException,
+            InvocationTargetException,
+            SecurityException,
+            IllegalAccessException {
+        T value;
+        if (valueType.isPrimitive()) {
+            value = getPrimitiveValue(stringValue, valueType);
+        } else {
+            final Constructor<T> constructor = valueType.getConstructor(String.class);
+            value = constructor.newInstance(stringValue);
+        }
+        return value;
+    }
+
+    /**
+     * Возвращает значение для примитивного типа
+     *
+     * @param <T> тип значения
+     * @param string строковое значение
+     * @param targetClass тип значения, в которое требуется преобразовать строку
+     * @return преобразованное значение примитивного типа
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> T getPrimitiveValue(String string, Class<T> targetClass) {
+        if (targetClass == java.lang.Boolean.TYPE) {
+            return (T) Boolean.valueOf(string);
+        } else if (targetClass == java.lang.Character.TYPE) {
+            return (T) Character.valueOf(string.charAt(0));
+        } else if (targetClass == java.lang.Byte.TYPE) {
+            return (T) Byte.valueOf(string);
+        } else if (targetClass == java.lang.Short.TYPE) {
+            return (T) Short.valueOf(string);
+        } else if (targetClass == java.lang.Integer.TYPE) {
+            return (T) Integer.valueOf(string);
+        } else if (targetClass == java.lang.Long.TYPE) {
+            return (T) Long.valueOf(string);
+        } else if (targetClass == java.lang.Float.TYPE) {
+            return (T) Float.valueOf(string);
+        } else if (targetClass == java.lang.Double.TYPE) {
+            return (T) Double.valueOf(string);
+        } else {
+            throw new UnsupportedOperationException("Primitive type "
+                    + targetClass + " is unsupported");
+        }
     }
 }

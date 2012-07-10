@@ -204,10 +204,12 @@ public class StorageOptionsController implements Serializable {
      */
     public DataModel<Map.Entry<String, String>> getStorageProperties() {
         ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
-        PackageSourceDescriptor descriptor = DescriptorsFactory.getInstance().getDescriptor(packageSource.getClass());
+        PackageSourceDescriptor descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
         if (descriptor != null) {
             for (ObjectProperty property : descriptor.getProperties()) {
-                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(property.description, property.getValue(packageSource));
+                final String description = property.getDescription();
+                final String value = property.getValue(packageSource);
+                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
                 data.add(entry);
             }
         }
