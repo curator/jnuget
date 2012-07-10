@@ -7,13 +7,17 @@ import ru.aristar.jnuget.sources.ClassicPackageSource;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
+ * Тесты фабрики дескрипторов классов
  *
  * @author sviridov
  */
 public class DescriptorsFactoryTest {
 
+    /**
+     * Проверка получения дескриптора источника пакетов
+     */
     @Test
-    public void testGetPackageSourceDescriptor() throws Exception {
+    public void testGetPackageSourceDescriptor() {
         //GIVEN
         DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
         //WHEN
@@ -23,8 +27,11 @@ public class DescriptorsFactoryTest {
         assertThat(descriptor, is(instanceOf(ClassicPackageSourceDescriptor.class)));
     }
 
+    /**
+     * Проверка получения дескриптора стратегии фиксации
+     */
     @Test
-    public void testGetPushStrategyDescriptor() throws Exception {
+    public void testGetPushStrategyDescriptor() {
         //GIVEN
         DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
         //WHEN

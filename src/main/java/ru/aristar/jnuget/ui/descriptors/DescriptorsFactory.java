@@ -24,43 +24,15 @@ public class DescriptorsFactory {
     /**
      * Описания хранилищ по классам, которые они описывают
      */
-    private volatile Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> sourceDescriptorsMap;
+    private final Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> sourceDescriptorsMap;
     /**
      * Oписания стратегий по классам, которые они описывают
      */
-    private volatile Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> strategyDescriptorsMap;
+    private final Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> strategyDescriptorsMap;
     /**
      * Логгер
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    /**
-     * @return описания хранилищ по классам, которые они описывают
-     */
-    private Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> getSourceDescriptorMap() {
-        if (sourceDescriptorsMap == null) {
-            synchronized (this) {
-                if (sourceDescriptorsMap == null) {
-                    sourceDescriptorsMap = loadDescriptors(PackageSource.class, "ru/aristar/jnuget/sources/storageDescriptors.list");
-                }
-            }
-        }
-        return sourceDescriptorsMap;
-    }
-
-    /**
-     * @return описания стратегий по классам, которые они описывают
-     */
-    private Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> getStrategyDescriptorMap() {
-        if (strategyDescriptorsMap == null) {
-            synchronized (this) {
-                if (strategyDescriptorsMap == null) {
-                    strategyDescriptorsMap = loadDescriptors(PushStrategy.class, "ru/aristar/jnuget/sources/strategyDescriptors.list");
-                }
-            }
-        }
-        return strategyDescriptorsMap;
-    }
 
     /**
      * Загружает все дескрипторы, указанные в файле по данному URL
@@ -133,14 +105,14 @@ public class DescriptorsFactory {
      * @return описание хранилища
      */
     public ObjectDescriptor<? extends PackageSource> getPackageSourceDescriptor(Class<? extends PackageSource> c) {
-        return getSourceDescriptorMap().get(c);
+        return sourceDescriptorsMap.get(c);
     }
 
     /**
      * @return все доступные приложению дескрипторы хранилищ
      */
     public Collection<ObjectDescriptor<PackageSource>> getAllPackageSourceDescriptors() {
-        return getSourceDescriptorMap().values();
+        return sourceDescriptorsMap.values();
     }
 
     /**
@@ -148,13 +120,15 @@ public class DescriptorsFactory {
      * @return описание стратегии
      */
     public ObjectDescriptor<? extends PushStrategy> getPushStrategyDescriptor(Class<? extends PushStrategy> c) {
-        return getStrategyDescriptorMap().get(c);
+        return strategyDescriptorsMap.get(c);
     }
 
     /**
      * Закрытый конструктор
      */
     private DescriptorsFactory() {
+        strategyDescriptorsMap = loadDescriptors(PushStrategy.class, "ru/aristar/jnuget/sources/strategyDescriptors.list");
+        sourceDescriptorsMap = loadDescriptors(PackageSource.class, "ru/aristar/jnuget/sources/storageDescriptors.list");
     }
 
     /**
