@@ -21,8 +21,8 @@ import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
-import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
 import ru.aristar.jnuget.ui.descriptors.ObjectDescriptor;
+import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
 
 /**
  * Контроллер настроек хранилища

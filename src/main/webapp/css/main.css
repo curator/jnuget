@@ -13,4 +13,17 @@ table, tr, td, th {
     border-collapse: collapse;
 }
 
+li {
+    clear: both;
+    padding-bottom: 10px;
+}
 
+input {
+    float: left;
+    width: 40%;
+}
+
+label {
+    width: 60%;
+    float: left;
+}

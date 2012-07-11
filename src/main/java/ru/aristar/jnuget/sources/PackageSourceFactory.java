@@ -25,6 +25,7 @@ import ru.aristar.jnuget.sources.push.SimplePushStrategy;
  */
 public class PackageSourceFactory {
 
+    //TODO Переписать ифабрику под использование ObjectDescriptor
     /**
      * Экземпляр фабрики
      */

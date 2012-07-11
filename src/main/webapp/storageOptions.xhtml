@@ -15,21 +15,21 @@
         <fieldset>
             <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId+1}"/></legend>
             <ol>
-                <li>
-                    <label for="className">Имя класса хранилища</label>
-                    <h:inputText id="className" value="#{storageOptions.className}"/>
+                <li> 
+                        <label for="className">Имя класса хранилища</label>
+                        <h:inputText id="className" value="#{storageOptions.className}"/>
                 </li>
                 <li>
-                    <label for="isIndexed">Индексировать</label>
-                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
+                        <label for="isIndexed">Индексировать</label>
+                        <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
                 </li>
                 <li>
-                    <label for="refreshInterval">Период обновления индекса</label>
-                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                        <label for="refreshInterval">Период обновления индекса</label>
+                        <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
                 </li>
                 <li>
-                    <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
-                    <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
+                        <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
+                        <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
                 </li>
             </ol>
             <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
@@ -60,6 +60,12 @@
                         <h:outputText value="#{entry.value}"/>
                     </h:column>
                 </h:dataTable>
+            </fieldset>
+            <fieldset>
+                <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
+            </fieldset>
+            <fieldset>
+                <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
             </fieldset>
         </fieldset>
     </h:body>
