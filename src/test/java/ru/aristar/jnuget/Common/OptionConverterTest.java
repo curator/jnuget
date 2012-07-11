@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.Common;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
@@ -11,31 +13,38 @@ public class OptionConverterTest {
 
     /**
      * Проверка подстановки значений вместо служебных переменных
-     *
-     * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testReplaceVariables() throws Exception {
+    public void testReplaceVariables() {
         //GIVEN
         OptionConverter.putValue("test-properties", "test-value");
         //WHEN
         String result = OptionConverter.replaceVariables("value = ${test-properties}/.nuget ${test-properties} aefasdf");
         //THEN
-        assertEquals("Строка с замененными свойствами", "value = test-value/.nuget test-value aefasdf", result);
+        assertThat(result, is(equalTo("value = test-value/.nuget test-value aefasdf")));
     }
 
     /**
      * Проверка подстановки значений системных переменных
-     *
-     * @throws Exception ошибка в процессе теста
      */
     @Test
-    public void testReplaceSystemVariables() throws Exception {
+    public void testReplaceSystemVariables() {
         //GIVEN
         String userHome = System.getProperty("user.home");
         //WHEN
         String result = OptionConverter.replaceVariables("${user.home}/.nuget");
         //THEN
-        assertEquals("Строка с замененными свойствами", userHome + "/.nuget", result);
+        assertThat(result, is(equalTo(userHome + "/.nuget")));
+    }
+
+    /**
+     * Проверка замены переменных локализации
+     */
+    @Test
+    public void testReplaceLoclizationVariables() {
+        //WHEN
+        String result = OptionConverter.replaceVariables("${test.value}", "ui.localization.TestBundle");
+        //THEN
+        assertThat(result, is(equalTo("Тестовый текст")));
     }
 }

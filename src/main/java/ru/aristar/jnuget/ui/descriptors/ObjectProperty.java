@@ -3,6 +3,7 @@ package ru.aristar.jnuget.ui.descriptors;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import static java.text.MessageFormat.format;
+import java.util.ResourceBundle;
 import ru.aristar.jnuget.Common.OptionConverter;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -16,15 +17,19 @@ public class ObjectProperty {
     /**
      * Описание свойства
      */
-    private String description;
+    private final String description;
     /**
      * Метод, позволяющий получить значение свойства
      */
-    private Method getter;
+    private final Method getter;
     /**
      * Метод, позволяющий установить значение свойства
      */
-    private Method setter;
+    private final Method setter;
+    /**
+     * Класс, для свойства которого создан дескриптор
+     */
+    private final Class<?> type;
 
     /**
      * @param type тип объекта для которого предназначено свойство
@@ -37,6 +42,7 @@ public class ObjectProperty {
             throws NoSuchMethodException {
         this.description = description;
         this.getter = type.getMethod(getterName);
+        this.type = type;
         this.setter = findSetter(type, setterName);
     }
 
@@ -44,7 +50,7 @@ public class ObjectProperty {
      * @return описание свойства
      */
     public String getDescription() {
-        return description;
+        return OptionConverter.replaceVariables(description, type.getName());
     }
 
     /**

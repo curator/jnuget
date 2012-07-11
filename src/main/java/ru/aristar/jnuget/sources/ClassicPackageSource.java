@@ -61,7 +61,7 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
     /**
      * @return полное имя папки с пакетами
      */
-    @Property(description="Имя каталога, в котором будут храниться пакеты")
+    @Property()
     public String getFolderName() {
         return rootFolder == null ? null : rootFolder.getAbsolutePath();
     }

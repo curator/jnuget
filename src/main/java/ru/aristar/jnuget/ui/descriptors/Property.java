@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Свойство, подлежащее настройке
  *
  * @author sviridov
  */
@@ -13,5 +14,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Property {
 
-    String description();
+    /**
+     * Маркер использовать значение по умолчанию
+     */
+    public static final String DEFAULT_VALUE = "##default";
+
+    /**
+     * @return описание свойства
+     */
+    String description() default DEFAULT_VALUE;
 }

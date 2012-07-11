@@ -13,6 +13,7 @@ import static java.text.MessageFormat.format;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.push.PushStrategy;
 
@@ -34,6 +35,99 @@ public class DescriptorsFactory {
      * Логгер
      */
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * Определяет имя свойства по методу
+     *
+     * @param method метод (get или set)
+     * @return имя свойства
+     * @throws NugetFormatException Метод не является get, is или set
+     */
+    private String getPropertyName(Method method) throws NugetFormatException {
+        String propertyName = method.getName();
+        if (propertyName.startsWith("get") || propertyName.startsWith("set")) {
+            return lowerFirstSymbol(propertyName.substring(3));
+        } else if (propertyName.startsWith("is")) {
+            return lowerFirstSymbol(propertyName.substring(2));
+        } else {
+            throw new NugetFormatException(format("Метод {0} не является get, is или set", method));
+        }
+    }
+
+    /**
+     * Возвращает строку, у которой первый символ переведен в верхний регистр
+     *
+     * @param value исходная строка
+     * @return преобразованная строка
+     */
+    private String upperFirstSymbol(String value) {
+        return Character.toUpperCase(value.charAt(0)) + value.substring(1);
+    }
+
+    /**
+     * Возвращает строку, у которой первый символ переведен в нижний регистр
+     *
+     * @param value исходная строка
+     * @return преобразованная строка
+     */
+    private String lowerFirstSymbol(String value) {
+        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+    }
+
+    /**
+     * Возвращает имя get метода для указанного свойства
+     *
+     * @param propertyName имя свойства
+     * @param propertyType тип свойства
+     * @return имя get метода
+     */
+    private String getGetterName(String propertyName, Class<?> propertyType) {
+        if (propertyType != null && (propertyType.equals(Boolean.class) || propertyType.equals(Boolean.TYPE))) {
+            return "is" + upperFirstSymbol(propertyName);
+        } else {
+            return "get" + upperFirstSymbol(propertyName);
+        }
+    }
+
+    /**
+     * Возвращает имя set метода для указанного свойства
+     *
+     * @param propertyName имя свойства
+     * @return имя set метода
+     */
+    private String getSetterName(String propertyName) {
+        return "set" + upperFirstSymbol(propertyName);
+    }
+
+    /**
+     * Возвращает описание свойства
+     *
+     * @param property анотация, относящаяся к свойству
+     * @param propertyName имя свойства
+     * @return описание свойства
+     */
+    private String getDescription(Property property, String propertyName) {
+        if (property.description() == null || property.description().equals(Property.DEFAULT_VALUE)) {
+            return "${" + propertyName + "}";
+        } else {
+            return property.description();
+        }
+    }
+
+    /**
+     * Возвращает тип свойства для указанного метода
+     *
+     * @param method метод get или set
+     * @return тип свойства
+     */
+    private Class<?> getPropertyType(Method method) {
+        if (method.getReturnType().equals(Void.class)) {
+            return method.getParameterTypes()[0];
+        } else {
+            return method.getReturnType();
+        }
+
+    }
 
     /**
      * Загружает все дескрипторы, указанные в файле по данному URL
@@ -95,23 +189,15 @@ public class DescriptorsFactory {
                 if (property == null) {
                     continue;
                 }
-                String propertyName = method.getName();
-                String getterName;
-                if (propertyName.startsWith("get") || propertyName.startsWith("set")) {
-                    propertyName = propertyName.substring(3);
-                    getterName = "get" + propertyName;
-                } else if (propertyName.startsWith("is")) {
-                    getterName = propertyName;
-                    propertyName = propertyName.substring(2);
-                } else {
-                    logger.error(format("Метод {0} в классе {1} не является get, is или set", propertyName, targetClass));
-                    continue;
-                }
-                final String setterName = "set" + propertyName;
-                ObjectProperty objectProperty = new ObjectProperty(targetClass, property.description(), getterName, setterName);
+                final String propertyName = getPropertyName(method);
+                final Class<?> propertyType = getPropertyType(method);
+                final String getterName = getGetterName(propertyName, propertyType);
+                final String setterName = getSetterName(propertyName);
+                final String description = getDescription(property, propertyName);
+                ObjectProperty objectProperty = new ObjectProperty(targetClass, description, getterName, setterName);
                 result.add(objectProperty);
-            } catch (NoSuchMethodException e) {
-                logger.error(format("Не удалось найти парный геттер/сеттер для класса {0}", targetClass), e);
+            } catch (NoSuchMethodException | NugetFormatException e) {
+                logger.error(format("Не удалось лпределить свойство для класса {0}", targetClass), e);
             }
         }
         return result;

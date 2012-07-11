@@ -18,7 +18,7 @@ public class SimplePushStrategy extends AbstractPushStrategy implements PushStra
     /**
      * @return разрешена или нет публикация
      */
-    @Property(description = "Разрешена или нет публикация")
+    @Property()
     public boolean isAllow() {
         return allow;
     }
