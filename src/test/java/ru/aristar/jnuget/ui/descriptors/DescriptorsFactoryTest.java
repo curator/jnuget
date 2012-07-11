@@ -30,7 +30,7 @@ public class DescriptorsFactoryTest {
         ObjectDescriptor descriptor = descriptorsFactory.getPackageSourceDescriptor(MavenStylePackageSource.class);
         //THEN
         assertThat(descriptor, is(not(nullValue())));
-        assertThat(descriptor, is(instanceOf(MavenStylePackageSourceDescriptor.class)));
+        assertThat(descriptor, is(instanceOf(AbstractObjectDescriptor.class)));
     }
 
     /**

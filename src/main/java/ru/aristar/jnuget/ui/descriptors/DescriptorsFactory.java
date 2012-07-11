@@ -24,6 +24,14 @@ import ru.aristar.jnuget.sources.push.PushStrategy;
 public class DescriptorsFactory {
 
     /**
+     * URI файлов со списком дескрипторов хранилищ
+     */
+    private static final String STORAGE_DESCRIPTORS_URI = "ru/aristar/jnuget/ui/descriptors/storageDescriptors.list";
+    /**
+     * URI файлов со списком дескрипторов стратегий
+     */
+    private static final String STRATEGY_DESCRIPTORS_URI = "ru/aristar/jnuget/ui/descriptors/strategyDescriptors.list";
+    /**
      * Описания хранилищ по классам, которые они описывают
      */
     private final Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> sourceDescriptorsMap;
@@ -272,8 +280,8 @@ public class DescriptorsFactory {
      * Закрытый конструктор
      */
     private DescriptorsFactory() {
-        strategyDescriptorsMap = loadDescriptors(PushStrategy.class, "ru/aristar/jnuget/sources/strategyDescriptors.list");
-        sourceDescriptorsMap = loadDescriptors(PackageSource.class, "ru/aristar/jnuget/sources/storageDescriptors.list");
+        strategyDescriptorsMap = loadDescriptors(PushStrategy.class, STRATEGY_DESCRIPTORS_URI);
+        sourceDescriptorsMap = loadDescriptors(PackageSource.class, STORAGE_DESCRIPTORS_URI);
     }
 
     /**

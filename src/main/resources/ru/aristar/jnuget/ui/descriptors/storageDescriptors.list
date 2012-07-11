@@ -1,0 +1,3 @@
+ru.aristar.jnuget.sources.ClassicPackageSource
+ru.aristar.jnuget.sources.MavenStylePackageSource
+ru.aristar.jnuget.sources.ProxyPackageSource
