@@ -2,34 +2,35 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageOptions.storageId}"/>
             <f:event type="preRenderView" listener="#{storageOptions.init()}" />
         </f:metadata>
-        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageId}"/></title>
+        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
         <fieldset>
-            <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId+1}"/></legend>
+            <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></legend>
             <ol>
                 <li> 
-                        <label for="className">Имя класса хранилища</label>
-                        <h:inputText id="className" value="#{storageOptions.className}"/>
+                    <label for="className">Имя класса хранилища</label>
+                    <h:inputText id="className" value="#{storageOptions.className}"/>
                 </li>
                 <li>
-                        <label for="isIndexed">Индексировать</label>
-                        <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
+                    <label for="isIndexed">Индексировать</label>
+                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
                 </li>
                 <li>
-                        <label for="refreshInterval">Период обновления индекса</label>
-                        <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                    <label for="refreshInterval">Период обновления индекса</label>
+                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
                 </li>
                 <li>
-                        <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
-                        <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
+                    <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
+                    <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
                 </li>
             </ol>
             <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
@@ -63,9 +64,15 @@
             </fieldset>
             <fieldset>
                 <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
+                <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
+                    <h:outputText value="#{trigger.getClass().getName()}"/>
+                </c:forEach>
             </fieldset>
             <fieldset>
                 <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
+                <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                    <h:outputText value="#{trigger.getClass().getName()}"/>
+                </c:forEach>
             </fieldset>
         </fieldset>
     </h:body>

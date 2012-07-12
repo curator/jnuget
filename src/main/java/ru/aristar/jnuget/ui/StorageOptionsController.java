@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import static java.text.MessageFormat.format;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -20,6 +21,7 @@ import ru.aristar.jnuget.sources.IndexedPackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
 import ru.aristar.jnuget.ui.descriptors.ObjectDescriptor;
 import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
@@ -202,6 +204,30 @@ public class StorageOptionsController implements Serializable {
             }
         }
         return new ListDataModel<>(data);
+    }
+
+    /**
+     * @return триггеры, выполняющиеся после вставки пакета
+     */
+    public List<PushTrigger> getAftherTriggers() {
+        ArrayList<PushTrigger> triggers = new ArrayList<>();
+        if (packageSource != null && packageSource.getPushStrategy() != null) {
+            PushStrategy pushStrategy = packageSource.getPushStrategy();
+            triggers.addAll(pushStrategy.getAftherTriggers());
+        }
+        return triggers;
+    }
+
+    /**
+     * @return триггеры, выполняющиеся перед вставкой пакета
+     */
+    public List<PushTrigger> getBeforeTriggers() {
+        ArrayList<PushTrigger> triggers = new ArrayList<>();
+        if (packageSource != null && packageSource.getPushStrategy() != null) {
+            PushStrategy pushStrategy = packageSource.getPushStrategy();
+            triggers.addAll(pushStrategy.getBeforeTriggers());
+        }
+        return triggers;
     }
 
     /**
