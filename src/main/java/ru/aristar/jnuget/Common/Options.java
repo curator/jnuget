@@ -10,6 +10,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.security.UsersOptions;
 
 /**
  * Настройки сервера
@@ -25,13 +26,25 @@ public class Options {
      */
     public static final String DEFAULT_OPTIONS_FILE_NAME = "jnuget.config.xml";
     /**
+     * Имя файла с настройками прав доступа
+     */
+    public static final String DEFAULT_USERS_OPTIONS_FILE_NAME = "jnuget.users.xml";
+    /**
      * Имя ресурса с настройками по умолчанию
      */
     public static final String DEFAULT_OPTIONS_RESOURCE_NAME = "/jnuget.default.config.xml";
     /**
+     * Имя ресурса с настройками прав доступа по умолчанию
+     */
+    public static final String DEFAULT_USERS_OPTIONS_RESOURCE_NAME = "/jnuget.default.users.xml";
+    /**
      * Логгер
      */
     private static Logger logger = LoggerFactory.getLogger(Options.class);
+    /**
+     * Настройки прав доступа
+     */
+    private UsersOptions usersOptions;
     /**
      * Настройки прокси сервера
      */
@@ -215,5 +228,36 @@ public class Options {
      */
     public static File getNugetHome() {
         return nugetHome;
+    }
+
+    /**
+     * @return настройки прав доступа
+     */
+    public UsersOptions getUserOptions() {
+        if (usersOptions == null) {
+            getNugetHome().mkdirs();
+            File optionsFile = new File(nugetHome, DEFAULT_USERS_OPTIONS_FILE_NAME);
+            if (optionsFile.exists()) {
+                try {
+                    logger.info("Загрузка настроек прав доступа из файла {}", new Object[]{optionsFile.getAbsolutePath()});
+                    usersOptions = UsersOptions.parse(optionsFile);
+                } catch (JAXBException | FileNotFoundException e) {
+                    logger.warn("Ошибка загрузки настроек прав доступа из файла " + optionsFile, e);
+                }
+            } else {
+                logger.warn("Файл настроек прав доступа не найден");
+                InputStream inputStream = Options.class.getResourceAsStream(DEFAULT_USERS_OPTIONS_RESOURCE_NAME);
+                try {
+                    usersOptions = UsersOptions.parse(inputStream);
+                    logger.info("Загружены настройки прав доступа по умолчанию");
+                    usersOptions.saveOptions(optionsFile);
+                    logger.info("Настройки прав доступа сохранены в " + optionsFile);
+                } catch (JAXBException | FileNotFoundException e) {
+                    logger.warn("Ошибка загрузки настроек прав доступа по умолчанию", e);
+                }
+            }
+        }
+        return usersOptions;
+        //TODO  Вынести настройки в самостоятельный класс
     }
 }

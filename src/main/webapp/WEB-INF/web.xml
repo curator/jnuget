@@ -49,24 +49,24 @@
         </form-login-config>
     </login-config>
     <security-role>
-        <description/>
-        <role-name>Administrator</role-name>
+        <description>Администраторы сервера</description>
+        <role-name>jnuget-admin</role-name>
+    </security-role>
+    <security-role>
+        <description>Пользователи, имеющие доступ к GUI</description>
+        <role-name>jnuget-gui</role-name>
     </security-role>
     <security-role>
         <description/>
-        <role-name>GuiUser</role-name>
+        <role-name>jnuget-read</role-name>
     </security-role>
     <security-role>
         <description/>
-        <role-name>Reader</role-name>
+        <role-name>jnuget-push</role-name>
     </security-role>
     <security-role>
         <description/>
-        <role-name>Puller</role-name>
-    </security-role>
-    <security-role>
-        <description/>
-        <role-name>Remover</role-name>
+        <role-name>jnuget-delete</role-name>
     </security-role>
     <error-page>
         <error-code>403</error-code>
@@ -81,8 +81,8 @@
             <url-pattern>/storageContents.xhtml</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>GuiUser</role-name>
-            <role-name>Administrator</role-name>
+            <role-name>jnuget-gui</role-name>
+            <role-name>jnuget-admin</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
@@ -92,7 +92,7 @@
             <url-pattern>/storageOptions.xhtml</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>Administrator</role-name>
+            <role-name>jnuget-admin</role-name>
         </auth-constraint>
     </security-constraint>
 </web-app>

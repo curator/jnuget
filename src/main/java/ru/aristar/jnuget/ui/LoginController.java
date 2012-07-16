@@ -7,6 +7,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+import ru.aristar.jnuget.security.Roles;
 
 /**
  *
@@ -43,7 +44,7 @@ public class LoginController {
         try {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             request.login(userName, password);
-            if (request.isUserInRole("Administrator") || request.isUserInRole("GuiUser")) {
+            if (request.isUserInRole(Roles.Administrator.getName()) || request.isUserInRole(Roles.GuiUser.getName())) {
                 return "sourceManager";
             }
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Недостаточно прав", null));

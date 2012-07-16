@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user name="admin" password="adminadmin">
+        <role>jnuget-admin</role>
+    </user>   
+</users>
+

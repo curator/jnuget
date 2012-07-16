@@ -15,7 +15,7 @@
             <h:column>
                 <f:facet name="header">№</f:facet> 
                 <c:choose>
-                    <c:when test="#{facesContext.externalContext.isUserInRole('Administrator')}">
+                    <c:when test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
                         <h:link value="#{storagesList.storageOptions.rowIndex+1}" outcome="storageOptions">
                             <f:param name="storageId" value="#{storagesList.storageOptions.rowIndex}"/>
                         </h:link>

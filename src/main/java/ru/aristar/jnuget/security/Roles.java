@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.security;
 
 /**
  *
@@ -13,4 +13,10 @@ public enum Roles {
     private Roles(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+    
+    
 }

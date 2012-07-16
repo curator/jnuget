@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user name="testUser1" password="testPassword1" apiKey="testApiKey">
+        <role>testrole1</role>
+        <role>testrole2</role>
+    </user>
+    <user name="testUser2" password="testPassword2">
+        <role>testrole2</role>
+        <role>testrole3</role>
+    </user>    
+</users>
