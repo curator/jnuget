@@ -40,4 +40,59 @@
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
+    <!-- Права доступа -->
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/login.xhtml</form-login-page>
+            <form-error-page>/login.xhtml</form-error-page>
+        </form-login-config>
+    </login-config>
+    <security-role>
+        <description/>
+        <role-name>Administrator</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>GuiUser</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Reader</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Puller</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>Remover</role-name>
+    </security-role>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/login.xhtml</location>
+    </error-page>
+    <security-constraint>
+        <display-name>GUI view</display-name>
+        <web-resource-collection>
+            <web-resource-name>GUI Area</web-resource-name>
+            <url-pattern>/sourceManager.xhtml</url-pattern>
+            <url-pattern>/packageDetails.xhtml</url-pattern>
+            <url-pattern>/storageContents.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>GuiUser</role-name>
+            <role-name>Administrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Administrator</display-name>
+        <web-resource-collection>
+            <web-resource-name>Administrator Area</web-resource-name>
+            <url-pattern>/storageOptions.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Administrator</role-name>
+        </auth-constraint>
+    </security-constraint>
 </web-app>

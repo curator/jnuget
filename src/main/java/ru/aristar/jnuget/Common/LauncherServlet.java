@@ -17,6 +17,7 @@ public class LauncherServlet extends HttpServlet {
      * Конструктор, используюущийся при инициализации хранилища
      */
     public LauncherServlet() {
+        System.setProperty("java.security.auth.login.config", "/home/sviridov/jaas.config");
         PackageSourceFactory.getInstance().getPackageSource();
     }
 
