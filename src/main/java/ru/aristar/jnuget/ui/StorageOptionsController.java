@@ -164,6 +164,10 @@ public class StorageOptionsController implements Serializable {
         if (indexDecorator == null) {
             return null;
         }
+        File indexFile = indexDecorator.getIndexStoreFile();
+        if (indexFile == null) {
+            return null;
+        }
         String fileName = indexDecorator.getIndexStoreFile().getName();
         fileName = fileName.substring(0, fileName.length() - 4);
         return fileName;
