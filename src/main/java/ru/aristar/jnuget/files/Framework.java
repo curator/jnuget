@@ -38,7 +38,11 @@ public enum Framework {
     /**
      * SilverLight 5
      */
-    sl5(null);
+    sl5(null),
+    /**
+     * SilverLight 4
+     */
+    sl40(null);
 
     /**
      * @param fullName полное название фреймворка

@@ -273,8 +273,12 @@ public class ClassicNupkg implements Nupkg {
                 Matcher matcher = fameworkFolderPattern.matcher(name);
                 if (matcher.matches()) {
                     String frameworkName = matcher.group(1);
-                    Framework framework = Framework.valueOf(frameworkName.toLowerCase());
-                    result.add(framework);
+                    try {
+                        Framework framework = Framework.valueOf(frameworkName.toLowerCase());
+                        result.add(framework);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Не найдено значение фреймворка для {}", new Object[]{frameworkName});
+                    }
                 }
                 entry.isDirectory();
             }
