@@ -265,6 +265,7 @@ public class ClassicNupkg implements Nupkg {
      * @return список фреймворков
      */
     private EnumSet<Framework> readTargetFrameworks() {
+        //TODO SMD_Data, Mono,2.0, SL30, Managed, mono, Wix, sl3, sl3-wp, net35-Client, net35-Full, net40-Client, net40-Full, sl2, sl4-windowsphone71
         EnumSet<Framework> result = EnumSet.noneOf(Framework.class);
         try (InputStream inputStream = getStream()) {
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);
@@ -274,8 +275,12 @@ public class ClassicNupkg implements Nupkg {
                 Matcher matcher = fameworkFolderPattern.matcher(name);
                 if (matcher.matches()) {
                     String frameworkName = matcher.group(1);
-                    Framework framework = Framework.valueOf(frameworkName.toLowerCase());
-                    result.add(framework);
+                    try {
+                        Framework framework = Framework.valueOf(frameworkName.toLowerCase());
+                        result.add(framework);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Не найдено значение фреймворка для {}", new Object[]{frameworkName});
+                    }
                 }
                 entry.isDirectory();
             }
