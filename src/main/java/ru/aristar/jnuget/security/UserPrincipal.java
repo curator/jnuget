@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.security;
 
 import java.security.Principal;
 import java.util.Objects;

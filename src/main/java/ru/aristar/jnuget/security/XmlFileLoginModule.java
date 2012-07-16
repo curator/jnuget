@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.security;
 
 import java.io.IOException;
 import java.util.Map;
@@ -8,8 +8,6 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.security.User;
-import ru.aristar.jnuget.security.UsersOptions;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**

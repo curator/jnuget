@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="">
     <Realm className="org.apache.catalina.realm.JAASRealm"
-       appName="JNugetXmlAuth"
-       userClassNames="ru.aristar.jnuget.Common.UserPrincipal"
-       roleClassNames="ru.aristar.jnuget.Common.RolePrincipal"/>
+           appName="JNugetXmlAuth"
+           userClassNames="ru.aristar.jnuget.security.UserPrincipal"
+           roleClassNames="ru.aristar.jnuget.security.RolePrincipal"/>
 </Context>

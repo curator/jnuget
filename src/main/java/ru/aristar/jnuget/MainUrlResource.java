@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.Common.RolePrincipal;
+import ru.aristar.jnuget.security.RolePrincipal;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;

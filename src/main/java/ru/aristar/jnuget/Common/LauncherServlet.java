@@ -1,6 +1,9 @@
 package ru.aristar.jnuget.Common;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,9 +18,13 @@ public class LauncherServlet extends HttpServlet {
 
     /**
      * Конструктор, используюущийся при инициализации хранилища
+     *
+     * @throws URISyntaxException ошибка доступа к файлу
      */
-    public LauncherServlet() {
-        System.setProperty("java.security.auth.login.config", "/home/sviridov/jaas.config");
+    public LauncherServlet() throws URISyntaxException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("ru/aristar/jnuget/security/jaas.config");
+        File file = new File(url.toURI());
+        System.setProperty("java.security.auth.login.config", file.getAbsolutePath());
         PackageSourceFactory.getInstance().getPackageSource();
     }
 
