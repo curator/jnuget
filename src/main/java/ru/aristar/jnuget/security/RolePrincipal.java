@@ -1,16 +1,23 @@
-
 package ru.aristar.jnuget.security;
 
 import java.security.Principal;
 import java.util.Objects;
 
 /**
+ * Параметры роли
  *
  * @author sviridov
  */
 public class RolePrincipal implements Principal {
+
+    /**
+     * Имя роли
+     */
     private final String name;
 
+    /**
+     * @param name имя роли
+     */
     public RolePrincipal(String name) {
         this.name = name;
     }
@@ -41,5 +48,4 @@ public class RolePrincipal implements Principal {
         hash = 17 * hash + Objects.hashCode(this.name);
         return hash;
     }
-    
 }

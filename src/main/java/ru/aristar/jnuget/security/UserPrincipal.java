@@ -4,13 +4,20 @@ import java.security.Principal;
 import java.util.Objects;
 
 /**
+ * Параметры пользователя
  *
  * @author sviridov
  */
 public class UserPrincipal implements Principal {
 
+    /**
+     * Имя пользователя
+     */
     private final String name;
 
+    /**
+     * @param name имя пользователя
+     */
     public UserPrincipal(String name) {
         this.name = name;
     }
