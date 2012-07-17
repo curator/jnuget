@@ -60,12 +60,14 @@ public class NuGetCallbackHandler implements CallbackHandler {
     private <T extends Callback> T findCallback(Callback[] callbacks, Class<T> c) throws NugetPushException {
         for (Callback callback : callbacks) {
             if (callback.getClass() == c) {
-                return (T) callback;
+                @SuppressWarnings("unchecked")
+                T result = (T) callback;
+                return result;
             }
         }
         throw new NugetPushException("Объект обратного вызова " + c + " не найден");
     }
-    
+
     @Override
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         try {

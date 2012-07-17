@@ -3,7 +3,6 @@ package ru.aristar.jnuget.ui;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -22,23 +21,23 @@ public class LoginController {
     private Logger logger = Logger.getLogger(this.getClass());
     private String userName;
     private String password;
-    
+
     public String getUserName() {
         return userName;
     }
-    
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    
+
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String login() {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
@@ -55,7 +54,7 @@ public class LoginController {
             return "failure";
         }
     }
-    
+
     public void logout() {
         final FacesContext context = FacesContext.getCurrentInstance();
         final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
