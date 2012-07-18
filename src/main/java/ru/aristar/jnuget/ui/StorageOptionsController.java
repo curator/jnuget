@@ -196,15 +196,18 @@ public class StorageOptionsController implements Serializable {
      * @return параметры настройки стратегии фиксации
      */
     public DataModel<Map.Entry<String, String>> getPushStrategyProperties() {
-        PushStrategy pushStrategy = packageSource.getPushStrategy();
+
         ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
-        ObjectDescriptor<? extends PushStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
-        if (descriptor != null) {
-            for (ObjectProperty property : descriptor.getProperties()) {
-                final String description = property.getDescription();
-                final String value = property.getValue(pushStrategy);
-                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
-                data.add(entry);
+        if (packageSource != null) {
+            PushStrategy pushStrategy = packageSource.getPushStrategy();
+            ObjectDescriptor<? extends PushStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
+            if (descriptor != null) {
+                for (ObjectProperty property : descriptor.getProperties()) {
+                    final String description = property.getDescription();
+                    final String value = property.getValue(pushStrategy);
+                    AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
+                    data.add(entry);
+                }
             }
         }
         return new ListDataModel<>(data);
@@ -239,13 +242,15 @@ public class StorageOptionsController implements Serializable {
      */
     public DataModel<Map.Entry<String, String>> getStorageProperties() {
         ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
-        ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
-        if (descriptor != null) {
-            for (ObjectProperty property : descriptor.getProperties()) {
-                final String description = property.getDescription();
-                final String value = property.getValue(packageSource);
-                AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
-                data.add(entry);
+        if (packageSource != null) {
+            ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
+            if (descriptor != null) {
+                for (ObjectProperty property : descriptor.getProperties()) {
+                    final String description = property.getDescription();
+                    final String value = property.getValue(packageSource);
+                    AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
+                    data.add(entry);
+                }
             }
         }
         return new ListDataModel<>(data);
