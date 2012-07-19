@@ -35,13 +35,13 @@ public class PackageIdAndVersionComparatorTest {
     public void testOrderPackages() throws Exception {
         //GIVEN
         PackageEntry[] orderedEntrys = new PackageEntry[7];
-        orderedEntrys[0] = createPackageEntry("A", "1.2.3");
-        orderedEntrys[1] = createPackageEntry("A", "1.2.4");
-        orderedEntrys[2] = createPackageEntry("A", "1.2.5");
-        orderedEntrys[3] = createPackageEntry("A", "1.2.6");
-        orderedEntrys[4] = createPackageEntry("B", "0.2.6");
+        orderedEntrys[0] = createPackageEntry("A", "1.2.6");
+        orderedEntrys[1] = createPackageEntry("A", "1.2.5");
+        orderedEntrys[2] = createPackageEntry("A", "1.2.4");
+        orderedEntrys[3] = createPackageEntry("A", "1.2.3");
+        orderedEntrys[4] = createPackageEntry("B", "0.2.8");
         orderedEntrys[5] = createPackageEntry("B", "0.2.7");
-        orderedEntrys[6] = createPackageEntry("B", "0.2.8");
+        orderedEntrys[6] = createPackageEntry("B", "0.2.6");
         PackageEntry[] unOrderedEntrys = new PackageEntry[7];
         unOrderedEntrys[0] = orderedEntrys[1];
         unOrderedEntrys[1] = orderedEntrys[6];

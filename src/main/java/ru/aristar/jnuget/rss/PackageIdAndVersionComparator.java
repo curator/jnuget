@@ -5,7 +5,7 @@ import ru.aristar.jnuget.Version;
 
 /**
  * Компаратор, производящий сравнение сначало по идентификатору пакета, а потом
- * по его версии
+ * по его версии в обратном порядке
  *
  * @author sviridov
  */
@@ -31,6 +31,6 @@ public class PackageIdAndVersionComparator extends PackageIdComparator implement
             return 1;
         }
 
-        return v1.compareTo(v2);
+        return (-1) * v1.compareTo(v2);
     }
 }
