@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.files;
 
-import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -8,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.EnumSet;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**
  * Интерфейс пакета NuGet
