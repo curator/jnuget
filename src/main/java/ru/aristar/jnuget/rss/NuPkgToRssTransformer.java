@@ -1,9 +1,14 @@
 package ru.aristar.jnuget.rss;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.NugetContext;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
@@ -43,14 +48,13 @@ public abstract class NuPkgToRssTransformer {
         feed.setUpdated(new Date());
         feed.setTitle("Packages");
         List<PackageEntry> packageEntrys = new ArrayList<>();
-
         for (Nupkg nupkg : files) {
             try {
                 PackageEntry entry = getContext().createPackageEntry(nupkg);
                 entry.getProperties().setIsLatestVersion(Boolean.FALSE);
                 addServerInformationInToEntry(entry);
                 packageEntrys.add(entry);
-            } catch (Exception e) {
+            } catch (NoSuchAlgorithmException | IOException | NugetFormatException e) {
                 logger.warn("Ошибка сбора информации о пакете " + nupkg, e);
             }
         }
@@ -84,7 +88,7 @@ public abstract class NuPkgToRssTransformer {
             return objects.subList(newSkip, newSkip + newTop);
         } catch (Exception e) {
             logger.error("Ошибка получения подсписка пакетов: "
-                    + "skip={} top={} size={}", new Object[]{skip , top, objects.size()});
+                    + "skip={} top={} size={}", new Object[]{skip, top, objects.size()});
             throw e;
         }
     }
