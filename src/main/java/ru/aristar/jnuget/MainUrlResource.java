@@ -1,8 +1,12 @@
 package ru.aristar.jnuget;
 
+import ru.aristar.jnuget.security.ApiKeyCallbackHandler;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Set;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.*;
@@ -14,6 +18,7 @@ import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageFeed;
+import ru.aristar.jnuget.security.RolePrincipal;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -178,7 +183,7 @@ public class MainUrlResource {
      * @return ответ сервера (CREATED или FORBIDDEN)
      */
     @PUT
-    @Path("")
+    @Path("nuget")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response putPackage(@HeaderParam(API_KEY_HEADER_NAME) String apiKey,
             @FormDataParam("package") InputStream inputStream) {
@@ -294,19 +299,26 @@ public class MainUrlResource {
     private Response pushPackage(String apiKey, InputStream inputStream, Response.Status correctStatus) {
         try {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
-            ResponseBuilder response;
+            LoginContext loginContext = new LoginContext("ApikeyXmlAuth", new ApiKeyCallbackHandler(apiKey));
+            loginContext.login();
             try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                 logger.debug("Помещение пакета {} версии {} в хранилище",
                         new Object[]{nupkgFile.getId(), nupkgFile.getVersion()});
                 boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
+                ResponseBuilder response;
                 if (pushed) {
                     response = Response.status(correctStatus);
                 } else {
                     logger.debug("Публикация пакета в хранилище не произведена ApiKey={}", new Object[]{apiKey});
                     response = Response.status(Response.Status.FORBIDDEN);
                 }
+                loginContext.logout();
+                return response.build();
             }
-            return response.build();
+        } catch (LoginException e) {
+            final String errorMessage = "Недостаточно прав для помещения пакета в хранилище";
+            logger.warn(errorMessage);
+            return Response.status(Response.Status.UNAUTHORIZED).entity(errorMessage).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка помещения пакета в хранилище";
             logger.error(errorMessage, e);
