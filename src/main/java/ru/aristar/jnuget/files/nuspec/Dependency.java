@@ -2,10 +2,15 @@ package ru.aristar.jnuget.files.nuspec;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.Framework;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.VersionRange;
 
@@ -18,6 +23,10 @@ import ru.aristar.jnuget.files.VersionRange;
 public class Dependency implements Serializable {
 
     /**
+     * Логгер
+     */
+    private static Logger logger = LoggerFactory.getLogger(Dependency.class);
+    /**
      * Идентификатор пакета
      */
     @XmlAttribute(name = "id")
@@ -26,6 +35,10 @@ public class Dependency implements Serializable {
      * Версия пакета
      */
     public VersionRange versionRange;
+    /**
+     * Версия фреймворка, для которой устанавливается зависимость
+     */
+    public Framework framework;
 
     /**
      * @return строковое представление диапазона версий
@@ -85,7 +98,15 @@ public class Dependency implements Serializable {
      */
     @Override
     public String toString() {
-        return id + ":" + versionRange;
+        StringBuilder builder = new StringBuilder(128);
+        builder.append(id);
+        builder.append(":");
+        builder.append(versionRange);
+        if (framework != null) {
+            builder.append(":");
+            builder.append(framework.name());
+        }
+        return builder.toString();
     }
 
     /**
@@ -96,14 +117,23 @@ public class Dependency implements Serializable {
      * @throws NugetFormatException ошибка формата версии
      */
     public static Dependency parseString(String dependencyString) throws NugetFormatException {
-        if (!dependencyString.matches(DEPENDENCY_FORMAT)) {
+        Pattern pattern = Pattern.compile(DEPENDENCY_FORMAT);
+        Matcher matcher = pattern.matcher(dependencyString);
+        if (!matcher.matches()) {
             throw new NugetFormatException("Строка зависимостей не соответствует формату RSS NuGet: " + dependencyString);
         }
         Dependency dependency = new Dependency();
-        String id = dependencyString.substring(0, dependencyString.indexOf(':'));
-        String versionRangeString = dependencyString.substring(dependencyString.indexOf(':') + 1);
+        String id = matcher.group("pkgId");
+        String versionRangeString = matcher.group("version");
+        String frameWorkString = matcher.group("frameWork");
         dependency.id = id;
         dependency.versionRange = VersionRange.parse(versionRangeString);
+        if (frameWorkString != null && !frameWorkString.equals("")) {
+            dependency.framework = Framework.getByShortName(frameWorkString);
+            if (dependency.framework == null) {
+                logger.warn("Пакет: " + id + " Не найден фреймворк " + frameWorkString);
+            }
+        }
         return dependency;
     }
     /**
@@ -113,8 +143,8 @@ public class Dependency implements Serializable {
     /**
      * Формат строки зависимости
      */
-    private static final String DEPENDENCY_FORMAT = "^" + PACKAGE_ID_FORMAT
-            + ":(?:" + Version.VERSION_FORMAT + "|"
+    private static final String DEPENDENCY_FORMAT = "^(?<pkgId>" + PACKAGE_ID_FORMAT
+            + "):(?<version>" + Version.VERSION_FORMAT + "|"
             + VersionRange.FIXED_VERSION_RANGE_PATTERN
-            + "|" + VersionRange.FULL_VERSION_RANGE_PATTERN + ")?$";
+            + "|" + VersionRange.FULL_VERSION_RANGE_PATTERN + ")?:?(?<frameWork>[^:]+)?$";
 }

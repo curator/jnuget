@@ -124,10 +124,16 @@ public class PackageEntry {
         return null;
     }
 
+    /**
+     * @return заголовок вложения (идентификатор пакета)
+     */
     public String getTitle() {
         return title.value;
     }
 
+    /**
+     * @param title заголовок вложения (идентификатор пакета)
+     */
     public void setTitle(String title) {
         this.title = new Title(title);
     }

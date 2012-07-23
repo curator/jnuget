@@ -14,45 +14,55 @@ public enum Framework {
     /**
      * NET 1.0
      */
-    net10(".NETFramework1.0"),
+    net10(".NETFramework1.0", "net10"),
     /**
      * NET 1.1
      */
-    net11(".NETFramework1.1", "net10"),
+    net11(".NETFramework1.1", "net11", "net10"),
     /**
      * NET 2.0
      */
-    net20(".NETFramework2.0"),
+    net20(".NETFramework2.0", "net20"),
     /**
      * NET 3.5
      */
-    net35(".NETFramework3.5", "net20"),
+    net35(".NETFramework3.5", "net35", "net20"),
     /**
      * NET 4.0
      */
-    net40(".NETFramework4.0", "net35", "net20"),
+    net40(".NETFramework4.0", "net40", "net35", "net20"),
+    /**
+     * NET 4.0
+     */
+    net45(".NETFramework4.5", "net45", "net40", "net35", "net20"),
     /**
      * SilverLight 30
      */
-    sl30(null),
+    sl30(null, "sl30"),
     /**
      * SilverLight 4
      */
-    sl4(null),
+    sl4(null, "sl4"),
     /**
      * SilverLight 5
      */
-    sl5(null),
+    sl5(null, "sl5"),
     /**
      * SilverLight 4
      */
-    sl40(null);
+    sl40(null, "sl40"),
+    /**
+     * SilverLight 4 для WP71
+     */
+    sl40wp71(null, "sl40-wp71");
 
     /**
      * @param fullName полное название фреймворка
+     * @param shortName краткое имя фреймворка
      * @param copabilityFrameworks фреймворки совместимые с данным
      */
-    private Framework(String fullName, String... copabilityFrameworks) {
+    private Framework(String fullName, String shortName, String... copabilityFrameworks) {
+        this.shortName = shortName;
         this.fullName = fullName;
         fullCopabilyStringSet = copabilityFrameworks;
     }
@@ -68,6 +78,10 @@ public enum Framework {
      * Полное название фреймворка
      */
     private final String fullName;
+    /**
+     * Краткое название фреймворка
+     */
+    private final String shortName;
 
     /**
      * @return набор фреймворков совместимых с данным
@@ -92,6 +106,13 @@ public enum Framework {
      */
     public String getFullName() {
         return this.fullName;
+    }
+
+    /**
+     * @return краткое имя фреймворка
+     */
+    public String getShortName() {
+        return shortName;
     }
     /**
      * Логгер
@@ -139,6 +160,21 @@ public enum Framework {
     public static Framework getByFullName(String fullName) {
         for (Framework framework : values()) {
             if (framework.getFullName().equalsIgnoreCase(fullName)) {
+                return framework;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Поиск фреймворка по краткому имени
+     *
+     * @param shortName короткое имя фреймворка
+     * @return фреймворк
+     */
+    public static Framework getByShortName(String shortName) {
+        for (Framework framework : values()) {
+            if (framework.getShortName().equalsIgnoreCase(shortName)) {
                 return framework;
             }
         }

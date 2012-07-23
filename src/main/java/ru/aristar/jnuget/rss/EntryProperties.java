@@ -21,8 +21,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import ru.aristar.jnuget.StringListTypeAdapter;
 import ru.aristar.jnuget.Version;
-import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.NugetFormatException;
+import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 
 /**

@@ -105,7 +105,7 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
                         RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
                         result.add(remoteNupkg);
                     } catch (NugetFormatException e) {
-                        logger.warn("Ошибка обработки пакета из удаленного хранилища", e);
+                        logger.warn("Ошибка обработки пакета " + entry.getTitle() + ":" + entry.getProperties().getVersion() + " из удаленного хранилища", e);
                     }
                 }
                 logger.trace("Обработано {} пакетов", new Object[]{feed.getEntries().size()});

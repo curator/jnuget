@@ -1,10 +1,11 @@
 package ru.aristar.jnuget.files.nuspec;
 
-import ru.aristar.jnuget.files.nuspec.Dependency;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.Framework;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.VersionRange;
 
 /**
@@ -28,6 +29,42 @@ public class DependencyTest {
         dependency.versionRange = VersionRange.parse("1.2.3");
         //THEN
         assertEquals("toString - конкатенация идентификатора и версии", "PACKAGE_ID:1.2.3", dependency.toString());
+    }
+
+    /**
+     * Проверка разбора строки зависимости для всех фреймворков
+     *
+     * @throws NugetFormatException строка зависимости не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testParceDependencyAllFrameworks() throws NugetFormatException {
+        //GIVEN
+        final String dependencyString = "PACKAGE_ID:1.2.3:";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
+        assertEquals("Диапазон версий пакета", VersionRange.parse("1.2.3"), result.versionRange);
+        assertThat(result.framework, is(nullValue()));
+    }
+
+    /**
+     * Проверка разбора строки зависимости для конкретного фреймворка
+     *
+     * @throws NugetFormatException строка зависимости не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testParceDependencyFixedFramework() throws NugetFormatException {
+        //GIVEN
+        final String dependencyString = "PACKAGE_ID:1.2.3:net20";
+        //WHEN
+        Dependency result = Dependency.parseString(dependencyString);
+        //THEN
+        assertEquals("Идентификатор пакета", "PACKAGE_ID", result.id);
+        assertEquals("Диапазон версий пакета", VersionRange.parse("1.2.3"), result.versionRange);
+        assertThat(result.framework, is(equalTo(Framework.net20)));
     }
 
     /**
