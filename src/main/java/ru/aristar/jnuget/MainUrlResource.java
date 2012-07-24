@@ -3,7 +3,6 @@ package ru.aristar.jnuget;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.InputStream;
 import java.util.Collection;
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -16,8 +15,7 @@ import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.MainUrl;
 import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageFeed;
-import ru.aristar.jnuget.security.ApiKeyCallbackHandler;
-import ru.aristar.jnuget.security.Roles;
+import ru.aristar.jnuget.security.Role;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -300,21 +298,23 @@ public class MainUrlResource {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             nugetContext.login(apiKey);
-            if (nugetContext.isUserInRole(Roles.Administrator)) {
+            if (nugetContext.isUserInRole(Role.Administrator)) {
+                ResponseBuilder response;
                 try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                     logger.debug("Помещение пакета {} версии {} в хранилище",
                             new Object[]{nupkgFile.getId(), nupkgFile.getVersion()});
                     boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
-                    ResponseBuilder response;
+
                     if (pushed) {
                         response = Response.status(correctStatus);
                     } else {
                         logger.debug("Публикация пакета в хранилище не произведена ApiKey={}", new Object[]{apiKey});
                         response = Response.status(Response.Status.FORBIDDEN);
                     }
+                } finally {
                     nugetContext.logout();
-                    return response.build();
                 }
+                return response.build();
             } else {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }

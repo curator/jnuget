@@ -3,6 +3,7 @@ package ru.aristar.jnuget;
 import java.io.IOException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -14,7 +15,7 @@ import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.security.ApiKeyCallbackHandler;
 import ru.aristar.jnuget.security.RolePrincipal;
-import ru.aristar.jnuget.security.Roles;
+import ru.aristar.jnuget.security.Role;
 
 /**
  *
@@ -77,17 +78,36 @@ public class NugetContext {
         return new ContextNuPkgToRssTransformer();
     }
 
+    /**
+     * Авторизоваться в системе
+     *
+     * @param apiKey ключ авторизации
+     * @throws LoginException ошибка авторизации
+     */
     public void login(String apiKey) throws LoginException {
         this.loginContext = new LoginContext("ApikeyXmlAuth", new ApiKeyCallbackHandler(apiKey));
         loginContext.login();
         this.subject = loginContext.getSubject();
     }
 
-    public void logout() throws LoginException {
-        loginContext.logout();
+    /**
+     * Выйти из системы
+     */
+    public void logout() {
+        try {
+            loginContext.logout();
+        } catch (LoginException ex) {
+            logger.warn("Ошибка при выходе пользователя из системы", ex);
+        }
     }
 
-    public boolean isUserInRole(Roles role) {
+    /**
+     * Обладает ли пользователь указанной ролью
+     *
+     * @param role роль
+     * @return true, если у пользователя есть указанная роль
+     */
+    public boolean isUserInRole(Role role) {
         for (RolePrincipal rolePrincipal : subject.getPrincipals(RolePrincipal.class)) {
             if (role.getName().equals(rolePrincipal.getName())) {
                 return true;

@@ -5,7 +5,7 @@ package ru.aristar.jnuget.security;
  *
  * @author sviridov
  */
-public enum Roles {
+public enum Role {
 
     /**
      * Роль администратора сервера
@@ -20,7 +20,7 @@ public enum Roles {
     /**
      * @param name имя роли
      */
-    private Roles(String name) {
+    private Role(String name) {
         this.name = name;
     }
 

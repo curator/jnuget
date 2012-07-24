@@ -7,7 +7,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
-import ru.aristar.jnuget.security.Roles;
+import ru.aristar.jnuget.security.Role;
 
 /**
  * Контроллер формы авторизации
@@ -82,7 +82,7 @@ public class LoginController {
         try {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             request.login(userName, password);
-            if (request.isUserInRole(Roles.Administrator.getName()) || request.isUserInRole(Roles.GuiUser.getName())) {
+            if (request.isUserInRole(Role.Administrator.getName()) || request.isUserInRole(Role.GuiUser.getName())) {
                 loggedIn = true;
                 return "sourceManager";
             }
