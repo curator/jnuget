@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageOptions.storageId}"/>
@@ -13,68 +14,72 @@
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
-        <fieldset>
-            <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></legend>
-            <ol>
-                <li> 
-                    <label for="className">Имя класса хранилища</label>
-                    <h:inputText id="className" value="#{storageOptions.className}"/>
-                </li>
-                <li>
-                    <label for="isIndexed">Индексировать</label>
-                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
-                </li>
-                <li>
-                    <label for="refreshInterval">Период обновления индекса</label>
-                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
-                </li>
-                <li>
-                    <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
-                    <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
-                </li>
-            </ol>
-            <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
-                <h:column>
-                    <f:facet name="header">Свойство</f:facet>
-                    <h:outputText value="#{entry.key}"/>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">Значение</f:facet>
-                    <h:outputText value="#{entry.value}"/>
-                </h:column>
-            </h:dataTable>
-            <fieldset>
-                <legend>Стратегия фиксации</legend>
-                <ol>
-                    <li>
-                        <label for="pushStrategyClass">Класс стратегии фиксации</label>
-                        <h:inputText id="pushStrategyClass" value="#{storageOptions.pushStrategyClass}"/>
-                    </li>
-                </ol>
-                <h:dataTable value="#{storageOptions.pushStrategyProperties}" var="entry">
-                    <h:column>
-                        <f:facet name="header">Свойство</f:facet>
-                        <h:outputText value="#{entry.key}"/>
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Значение</f:facet>
-                        <h:outputText value="#{entry.value}"/>
-                    </h:column>
-                </h:dataTable>
-            </fieldset>
-            <fieldset>
-                <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
-                <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
-                    <h:outputText value="#{trigger.getClass().getName()}"/>
-                </c:forEach>
-            </fieldset>
-            <fieldset>
-                <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
-                <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
-                    <h:outputText value="#{trigger.getClass().getName()}"/>
-                </c:forEach>
-            </fieldset>
-        </fieldset>
+        <ui:composition template="common/commonLayout.xhtml">
+            <ui:define name="content">
+                <fieldset>
+                    <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></legend>
+                    <ol>
+                        <li> 
+                            <label for="className">Имя класса хранилища</label>
+                            <h:inputText id="className" value="#{storageOptions.className}"/>
+                        </li>
+                        <li>
+                            <label for="isIndexed">Индексировать</label>
+                            <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
+                        </li>
+                        <li>
+                            <label for="refreshInterval">Период обновления индекса</label>
+                            <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                        </li>
+                        <li>
+                            <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
+                            <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
+                        </li>
+                    </ol>
+                    <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
+                        <h:column>
+                            <f:facet name="header">Свойство</f:facet>
+                            <h:outputText value="#{entry.key}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Значение</f:facet>
+                            <h:outputText value="#{entry.value}"/>
+                        </h:column>
+                    </h:dataTable>
+                    <fieldset>
+                        <legend>Стратегия фиксации</legend>
+                        <ol>
+                            <li>
+                                <label for="pushStrategyClass">Класс стратегии фиксации</label>
+                                <h:inputText id="pushStrategyClass" value="#{storageOptions.pushStrategyClass}"/>
+                            </li>
+                        </ol>
+                        <h:dataTable value="#{storageOptions.pushStrategyProperties}" var="entry">
+                            <h:column>
+                                <f:facet name="header">Свойство</f:facet>
+                                <h:outputText value="#{entry.key}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Значение</f:facet>
+                                <h:outputText value="#{entry.value}"/>
+                            </h:column>
+                        </h:dataTable>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
+                        <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
+                            <h:outputText value="#{trigger.getClass().getName()}"/>
+                        </c:forEach>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
+                        <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                            <h:outputText value="#{trigger.getClass().getName()}"/>
+                        </c:forEach>
+                    </fieldset>
+                </fieldset>
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 

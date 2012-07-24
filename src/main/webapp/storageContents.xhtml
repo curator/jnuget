@@ -2,39 +2,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>        
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageContents.storageId}"/>
             <f:event type="preRenderView" listener="#{storageContents.init()}" />
         </f:metadata>
         <title> <h:outputText value="Содержимое хранилища #{storageContents.storageId}"/></title>
-        <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
-        <h:outputText value="Всего пакетов в хранилище - #{storageContents.packageCount}"/>
-        <h:dataTable value="#{storageContents.packages}" var="nupkg">
-            <h:column>
-                <f:facet name="header">№</f:facet>
-                <h:link value="#{storageContents.packages.rowIndex+1}" outcome="packageDetails">
-                    <f:param name="storageId" value="#{storageContents.storageId}"/>
-                    <f:param name="packageId" value="#{nupkg.id}"/>
-                    <f:param name="packageVersion" value="#{nupkg.version}"/>
-                </h:link>
-            </h:column> 
-            <h:column>
-                <f:facet name="header">Идентификатор пакета</f:facet>
-                <h:outputText value="#{nupkg.id}"/>
-            </h:column> 
-            <h:column>
-                <f:facet name="header">Версия пакета</f:facet>
-                <h:link value="#{nupkg.version}" outcome="packageDetails">
-                    <f:param name="storageId" value="#{storageContents.storageId}"/>
-                    <f:param name="packageId" value="#{nupkg.id}"/>
-                    <f:param name="packageVersion" value="#{nupkg.version}"/>
-                </h:link>
-            </h:column>            
-        </h:dataTable>          
+        <ui:composition template="common/commonLayout.xhtml">
+            <ui:define name="content">
+                <h:outputText value="Всего пакетов в хранилище - #{storageContents.packageCount}"/>
+                <h:dataTable value="#{storageContents.packages}" var="nupkg">
+                    <h:column>
+                        <f:facet name="header">№</f:facet>
+                        <h:link value="#{storageContents.packages.rowIndex+1}" outcome="packageDetails">
+                            <f:param name="storageId" value="#{storageContents.storageId}"/>
+                            <f:param name="packageId" value="#{nupkg.id}"/>
+                            <f:param name="packageVersion" value="#{nupkg.version}"/>
+                        </h:link>
+                    </h:column> 
+                    <h:column>
+                        <f:facet name="header">Идентификатор пакета</f:facet>
+                        <h:outputText value="#{nupkg.id}"/>
+                    </h:column> 
+                    <h:column>
+                        <f:facet name="header">Версия пакета</f:facet>
+                        <h:link value="#{nupkg.version}" outcome="packageDetails">
+                            <f:param name="storageId" value="#{storageContents.storageId}"/>
+                            <f:param name="packageId" value="#{nupkg.id}"/>
+                            <f:param name="packageVersion" value="#{nupkg.version}"/>
+                        </h:link>
+                    </h:column>            
+                </h:dataTable> 
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 

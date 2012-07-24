@@ -13,19 +13,27 @@
                 <h:form>
                     <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage"
                                 warnClass="warnMessage"></h:messages>
-                    <h:outputText value="Имя пользователя : "/>
-                    <h:inputText id="username" value="#{login.userName}" disabled="#{login.loggedIn}"/>
-                    <h:outputText value="Пароль : "/>
-                    <h:inputSecret id="password" value="#{login.password}" disabled="#{login.loggedIn}"/>
-                    <c:choose>
-                        <c:when test="#{!login.loggedIn}">
-                            <h:commandButton value="Войти" action="#{login.login}" type="submit"/>
-                            <h:commandButton value="Очистить" type="reset"></h:commandButton>
-                        </c:when>
-                        <c:otherwise>
-                            <h:commandButton value="Выйти" action="#{login.logout}" type="submit"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <ol>
+                        <li>
+                            <label for="username">Имя пользователя : </label>
+                            <h:inputText id="username" value="#{login.userName}" disabled="#{login.loggedIn}"/>
+                        </li>
+                        <li>
+                            <label for="password">Пароль : </label>
+                            <h:inputSecret id="password" value="#{login.password}" disabled="#{login.loggedIn}"/>
+                        </li>
+                        <li>
+                            <c:choose>
+                                <c:when test="#{!login.loggedIn}">
+                                    <h:commandButton value="Войти" action="#{login.login}" type="submit"/>
+                                    <h:commandButton value="Очистить" type="reset"></h:commandButton>
+                                </c:when>
+                                <c:otherwise>
+                                    <h:commandButton value="Выйти" action="#{login.logout}" type="submit"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </li>
+                    </ol>
                 </h:form>
             </ui:define>
         </ui:composition>

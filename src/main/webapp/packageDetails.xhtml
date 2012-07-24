@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
@@ -13,13 +14,17 @@
         <title> <h:outputText value="Детальная информация о пакете #{packageDetails.packageId} #{packageDetails.packageVersion}"/></title>
     </h:head>
     <h:body>
-        <ul>
-            <li><h:outputText value="Идентификатор пакета #{packageDetails.packageId}"/> </li>
-            <li><h:outputText value="Версия пакета #{packageDetails.packageVersion}"/> </li>
-            <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
-            <li><h:outputText value="Размер пакета #{packageDetails.size} Мб"/> </li>
-        </ul>
-        <a href="/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
+        <ui:composition template="common/commonLayout.xhtml">
+            <ui:define name="content">
+                <ul>
+                    <li><h:outputText value="Идентификатор пакета #{packageDetails.packageId}"/> </li>
+                    <li><h:outputText value="Версия пакета #{packageDetails.packageVersion}"/> </li>
+                    <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
+                    <li><h:outputText value="Размер пакета #{packageDetails.size} Мб"/> </li>
+                </ul>
+                <a href="/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 
