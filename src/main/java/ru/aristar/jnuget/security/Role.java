@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.security;
 
+import java.util.EnumSet;
+
 /**
  * Роли
  *
@@ -10,7 +12,7 @@ public enum Role {
     /**
      * Роль администратора сервера
      */
-    Administrator("jnuget-admin"),
+    Administrator("jnuget-admin", "GuiUser", "Push", "Read", "Delete"),
     /**
      * Роль, для которой доступен просмотр GUI
      */
@@ -50,12 +52,39 @@ public enum Role {
      * Имя роли
      */
     private final String name;
+    /**
+     * Роли, которые включает текущая роль
+     */
+    private volatile EnumSet<Role> includedRoles;
+    /**
+     * Имена ролей, которые включает текущая роль
+     */
+    private final String[] includedRolesNames;
 
     /**
      * @param name имя роли
+     * @param includedRolesNames роли, которые включает текущая роль
      */
-    private Role(String name) {
+    private Role(String name, String... includedRolesNames) {
         this.name = name;
+        this.includedRolesNames = includedRolesNames;
+    }
+
+    /**
+     * @return роли, которые включает текущая роль
+     */
+    public EnumSet<Role> getIncludedRoles() {
+        if (includedRoles == null) {
+            synchronized (includedRolesNames) {
+                if (includedRoles == null) {
+                    this.includedRoles = EnumSet.noneOf(Role.class);
+                    for (String roleName : includedRolesNames) {
+                        this.includedRoles.add(Role.valueOf(roleName));
+                    }
+                }
+            }
+        }
+        return includedRoles;
     }
 
     /**
@@ -63,5 +92,23 @@ public enum Role {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Включает ли в себя роль
+     *
+     * @param role роль, которая может быть включена в текущую
+     * @return true, если текущая роль включает указанную
+     */
+    public boolean contains(Role role) {
+        if (this == role) {
+            return true;
+        }
+        for (Role includedRole : getIncludedRoles()) {
+            if (includedRole == role) {
+                return true;
+            }
+        }
+        return false;
     }
 }
