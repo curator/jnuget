@@ -1,7 +1,6 @@
 package ru.aristar.jnuget.security;
 
 import java.security.Principal;
-import java.util.Objects;
 
 /**
  * Параметры роли
@@ -11,20 +10,34 @@ import java.util.Objects;
 public class RolePrincipal implements Principal {
 
     /**
-     * Имя роли
+     * Роль
      */
-    private final String name;
+    private final Role role;
+
+    /**
+     * @param role роль
+     */
+    public RolePrincipal(Role role) {
+        this.role = role;
+    }
 
     /**
      * @param name имя роли
      */
     public RolePrincipal(String name) {
-        this.name = name;
+        this.role = Role.findRole(name);
     }
 
     @Override
     public String getName() {
-        return name;
+        return role.getName();
+    }
+
+    /**
+     * @return роль
+     */
+    public Role getRole() {
+        return role;
     }
 
     @Override
@@ -36,7 +49,7 @@ public class RolePrincipal implements Principal {
             return false;
         }
         final RolePrincipal other = (RolePrincipal) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (this.role != other.role) {
             return false;
         }
         return true;
@@ -45,7 +58,7 @@ public class RolePrincipal implements Principal {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 17 * hash + Objects.hashCode(this.name);
+        hash = 89 * hash + (this.role != null ? this.role.hashCode() : 0);
         return hash;
     }
 }

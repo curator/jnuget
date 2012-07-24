@@ -34,7 +34,7 @@ public class NugetContext {
     /**
      * Праметры авторизации пользователя
      */
-    private Subject subject;
+    protected Subject subject;
     /**
      * Контекст авторизации пользователя
      */
@@ -109,7 +109,7 @@ public class NugetContext {
      */
     public boolean isUserInRole(Role role) {
         for (RolePrincipal rolePrincipal : subject.getPrincipals(RolePrincipal.class)) {
-            if (role.getName().equals(rolePrincipal.getName())) {
+            if (rolePrincipal.getRole() == role) {
                 return true;
             }
         }
