@@ -20,7 +20,7 @@
 
 #content{
     position: fixed;
-    left: 0px;
+    left: 17em;
     top: 7em;
     right: 0px;
     bottom: 2em;
@@ -34,6 +34,14 @@
     bottom: 0px;
     right: 0px;
     height: 2em;
+    border: 1px solid black;
+}
+
+#sidebar{
+    margin-top: 7em; 
+    width: 17em; 
+    padding: 0 10px;
+    float: left; 
 }
 
 root {

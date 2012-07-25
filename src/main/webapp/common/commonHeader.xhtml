@@ -7,9 +7,7 @@
     <h:body>
         <ui:composition>
             <h1>JNuGet</h1>
-            <a href="index.xhtml">Корень</a>
             <c:if test="#{login.loggedIn}">
-                <a href="sourceManager.xhtml">Список хранилищ</a>
                 <h:form id="logoutForm">
                     <h:commandButton id="exitButton" value="Выйти" type="submit" action="#{login.logout()}"/>
                 </h:form>
