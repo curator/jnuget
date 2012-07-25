@@ -3,7 +3,6 @@ package ru.aristar.jnuget;
 import java.io.IOException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -14,8 +13,8 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.rss.NuPkgToRssTransformer;
 import ru.aristar.jnuget.rss.PackageEntry;
 import ru.aristar.jnuget.security.ApiKeyCallbackHandler;
-import ru.aristar.jnuget.security.RolePrincipal;
 import ru.aristar.jnuget.security.Role;
+import ru.aristar.jnuget.security.RolePrincipal;
 
 /**
  *
@@ -109,7 +108,7 @@ public class NugetContext {
      */
     public boolean isUserInRole(Role role) {
         for (RolePrincipal rolePrincipal : subject.getPrincipals(RolePrincipal.class)) {
-            if (rolePrincipal.getRole() == role) {
+            if (rolePrincipal.getRole().contains(role)) {
                 return true;
             }
         }

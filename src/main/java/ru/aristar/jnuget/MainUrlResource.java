@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.NugetFormatException;
@@ -226,12 +226,7 @@ public class MainUrlResource {
             @PathParam("apiKey") String apiKey,
             @PathParam("packageId") String packageId,
             @PathParam("versionString") String versionString) {
-        try {
-            deletePackage(apiKey, packageId, versionString);
-        } catch (NugetFormatException e) {
-            logger.warn("Некорректное значение версии", e);
-        }
-        throw new UnsupportedOperationException("Метод не реализован");
+        return deletePackage(apiKey, packageId, versionString);
     }
 
     /**
@@ -248,34 +243,48 @@ public class MainUrlResource {
             @HeaderParam(API_KEY_HEADER_NAME) String apiKey,
             @PathParam("packageId") String packageId,
             @PathParam("versionString") String versionString) {
-        try {
-            deletePackage(apiKey, packageId, versionString);
-        } catch (NugetFormatException e) {
-            logger.warn("Некорректное значение версии", e);
-        }
-        throw new UnsupportedOperationException("Метод не реализован");
+
+        return deletePackage(apiKey, packageId, versionString);
+
     }
 
     /**
-     * Удаление пакета из хранилища для NuGet версии 1.6 и старше
+     * Удаление пакета из хранилища
      *
      * @param apiKey ключ доступа
      * @param packageId идентификатор пакета
      * @param versionString версия пакета
-     * @throws NugetFormatException некорректная версия пакета
+     * @return результат удаления
      */
-    private void deletePackage(String apiKey,
+    private Response deletePackage(String apiKey,
             String packageId,
-            String versionString) throws NugetFormatException {
-        Version version = Version.parse(versionString);
-        PackageSource<Nupkg> packageSource = getPackageSource();
-        Nupkg nupkg = packageSource.getPackage(packageId, version);
-        if (nupkg == null) {
-            return;
+            String versionString) {
+        NugetContext nugetContext = new NugetContext(context.getBaseUri());
+        try {
+            nugetContext.login(apiKey);
+            try {
+                if (nugetContext.isUserInRole(Role.Delete)) {
+                    Version version = Version.parse(versionString);
+                    PackageSource<Nupkg> packageSource = getPackageSource();
+                    Nupkg nupkg = packageSource.getPackage(packageId, version);
+                    if (nupkg == null) {
+                        return Response.status(Response.Status.NOT_FOUND).build();
+                    }
+                    packageSource.removePackage(nupkg);
+                    return Response.status(Response.Status.OK).build();
+                } else {
+                    return Response.status(Response.Status.FORBIDDEN).build();
+                }
+            } finally {
+                nugetContext.logout();
+            }
+        } catch (LoginException e) {
+            logger.warn("Не достаточно прав на удаление пакета " + e.getLocalizedMessage());
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (NugetFormatException e) {
+            logger.warn("Не корректная версия пакета " + e.getLocalizedMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        //TODO Реализовать метод удаления пакета
-        packageSource.removePackage(nupkg);
-        throw new UnsupportedOperationException("Метод не реализован");
     }
 
     /**
@@ -298,7 +307,7 @@ public class MainUrlResource {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
             NugetContext nugetContext = new NugetContext(context.getBaseUri());
             nugetContext.login(apiKey);
-            if (nugetContext.isUserInRole(Role.Administrator)) {
+            if (nugetContext.isUserInRole(Role.Push)) {
                 ResponseBuilder response;
                 try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                     logger.debug("Помещение пакета {} версии {} в хранилище",

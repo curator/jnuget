@@ -28,10 +28,10 @@ public class NugetContextTest {
         Subject subject = new Subject();
         subject.getPrincipals().add(new RolePrincipal(Role.Administrator));
         nugetContext.setSubject(subject);
-        //WHEN
-        boolean result = nugetContext.isUserInRole(Role.Administrator);
         //THEN
-        assertThat(result, is(equalTo(true)));
+        assertThat(nugetContext.isUserInRole(Role.Administrator), is(equalTo(true)));
+        assertThat(nugetContext.isUserInRole(Role.Push), is(equalTo(true)));
+        assertThat(nugetContext.isUserInRole(Role.GuiUser), is(equalTo(true)));
     }
 
     /**
