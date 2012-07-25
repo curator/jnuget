@@ -7,21 +7,21 @@
     left: 0px;
     top: 0px;
     right: 0px;
-    height: 8em;
+    height: 7em;
     border: 1px solid black;
 }
 
 #header input {
     position: fixed;
     right: 1em;
-    top: 4em;
+    top: 3.5em;
     width: 5em;
 }
 
 #content{
     position: fixed;
     left: 0px;
-    top: 8em;
+    top: 7em;
     right: 0px;
     bottom: 2em;
     overflow: auto;
