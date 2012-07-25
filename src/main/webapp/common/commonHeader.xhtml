@@ -10,8 +10,8 @@
             <a href="index.xhtml">Корень</a>
             <c:if test="#{login.loggedIn}">
                 <a href="sourceManager.xhtml">Список хранилищ</a>
-                <h:form>
-                    <h:commandButton value="Выйти" type="submit" action="#{login.logout()}"/>
+                <h:form id="logoutForm">
+                    <h:commandButton id="exitButton" value="Выйти" type="submit" action="#{login.logout()}"/>
                 </h:form>
             </c:if>
         </ui:composition>
