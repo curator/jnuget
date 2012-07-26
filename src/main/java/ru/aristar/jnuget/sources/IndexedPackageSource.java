@@ -157,9 +157,9 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg file) throws IOException {
         synchronized (this) {
-            boolean result = packageSource.pushPackage(file, apiKey);
+            boolean result = packageSource.pushPackage(file);
             if (result) {
                 Nupkg localFile = packageSource.getPackage(file.getId(), file.getVersion());
                 getIndex().put(localFile);

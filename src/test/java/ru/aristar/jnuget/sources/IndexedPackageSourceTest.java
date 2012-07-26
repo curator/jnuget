@@ -100,7 +100,7 @@ public class IndexedPackageSourceTest {
             packageSource.setUnderlyingSource(filePackageSource).join();
             packageSource.setPushStrategy(new SimplePushStrategy(true));
             //WHEN
-            packageSource.pushPackage(nupkgFile, null);
+            packageSource.pushPackage(nupkgFile);
             //THEN
             Nupkg nupkg = packageSource.getPackage("NUnit", Version.parse("2.5.9.10348"));
             assertNotNull(nupkg);

@@ -33,7 +33,7 @@ public class VersionPatternPushStrategy extends AbstractPushStrategy implements 
     }
 
     @Override
-    public boolean canPush(Nupkg nupkgFile, String apiKey) {
+    public boolean canPush(Nupkg nupkgFile) {
         Version version = nupkgFile.getVersion();
         if (version == null) {
             return false;

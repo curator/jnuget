@@ -175,7 +175,7 @@ public class ClassicPackageSource extends AbstractPackageSource<ClassicNupkg> im
     }
 
     @Override
-    protected void pushPackage(Nupkg nupkg) throws IOException {
+    protected void processPushPackage(Nupkg nupkg) throws IOException {
         // Открывает временный файл, копирует его в место постоянного хранения.
         File tmpDest = new File(rootFolder, nupkg.getFileName() + ".tmp");
         File finalDest = new File(rootFolder, nupkg.getFileName());

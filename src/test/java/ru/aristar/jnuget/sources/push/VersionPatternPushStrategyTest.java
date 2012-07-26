@@ -34,7 +34,6 @@ public class VersionPatternPushStrategyTest {
     private Nupkg createNupkg(final String id, final String version) throws Exception {
         final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(pack).getId();
                 will(returnValue(id));
@@ -58,10 +57,10 @@ public class VersionPatternPushStrategyTest {
         //WHEN
         strategy.setPattern("^\\d+\\.\\d+\\.\\d*[02468].*$");
         //THEN
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.4.7"), null));
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.6.71"), null));
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.0.7654"), null));
-        assertTrue(strategy.canPush(createNupkg("V", "1.7.0.AAAAA"), null));
+        assertTrue(strategy.canPush(createNupkg("A", "1.2.4.7")));
+        assertTrue(strategy.canPush(createNupkg("A", "1.2.6.71")));
+        assertTrue(strategy.canPush(createNupkg("A", "1.2.0.7654")));
+        assertTrue(strategy.canPush(createNupkg("V", "1.7.0.AAAAA")));
     }
 
     /**
@@ -76,9 +75,9 @@ public class VersionPatternPushStrategyTest {
         //WHEN
         strategy.setPattern("^\\d+\\.\\d+\\.\\d*[13579].*$");
         //THEN
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.4.7"), null));
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.6.71"), null));
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.0.7654"), null));
-        assertFalse(strategy.canPush(createNupkg("V", "1.7.0.AAAAA"), null));
+        assertFalse(strategy.canPush(createNupkg("A", "1.2.4.7")));
+        assertFalse(strategy.canPush(createNupkg("A", "1.2.6.71")));
+        assertFalse(strategy.canPush(createNupkg("A", "1.2.0.7654")));
+        assertFalse(strategy.canPush(createNupkg("V", "1.7.0.AAAAA")));
     }
 }

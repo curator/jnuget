@@ -119,7 +119,7 @@ public class ProxyPackageSourceTest {
         //GIVEN
         ProxyPackageSource packageSource = new ProxyPackageSource();
         //WHEN
-        boolean result = packageSource.pushPackage(null, null);
+        boolean result = packageSource.pushPackage(null);
         //THEN
         assertFalse("Запрещена публикация пакетов", result);
     }

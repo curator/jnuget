@@ -198,7 +198,7 @@ public class MavenStylePackageSource extends AbstractPackageSource<MavenNupkg> i
     }
 
     @Override
-    protected void pushPackage(Nupkg nupkg) throws IOException {
+    protected void processPushPackage(Nupkg nupkg) throws IOException {
         try {
             File packageFolder = verifyPackageDestination(rootFolder, nupkg.getNuspecFile());
             // Открывает временный файл, копирует его в место постоянного хранения.

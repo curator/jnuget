@@ -57,11 +57,10 @@ public interface PackageSource<T extends Nupkg> {
      * Загружает пакет в хранилище
      *
      * @param file Файл для загрузки
-     * @param apiKey ключ (пароль для репозитория)
      * @return true в случае, если пакет помещен в хранилище
      * @throws IOException ошибка чтения/записи
      */
-    boolean pushPackage(Nupkg file, String apiKey) throws IOException;
+    boolean pushPackage(Nupkg file) throws IOException;
 
     /**
      * Возвращает стратегию помещения пакетов в базу данных

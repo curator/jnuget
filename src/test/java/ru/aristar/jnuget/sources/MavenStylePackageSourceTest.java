@@ -183,7 +183,7 @@ public class MavenStylePackageSourceTest {
         }
         MavenStylePackageSource mavenStylePackageSource = new MavenStylePackageSource(testFolder);
         mavenStylePackageSource.setPushStrategy(new SimplePushStrategy(true));
-        mavenStylePackageSource.pushPackage(tempNupkgFile, null);
+        mavenStylePackageSource.pushPackage(tempNupkgFile);
         //WHEN
         MavenNupkg result = mavenStylePackageSource.getPackage(tempNupkgFile.getId(), tempNupkgFile.getVersion());
         //THEN
@@ -208,7 +208,7 @@ public class MavenStylePackageSourceTest {
         MavenStylePackageSource mavenStylePackageSource = new MavenStylePackageSource(testFolder);
         mavenStylePackageSource.setPushStrategy(new SimplePushStrategy(true));
         //WHEN
-        mavenStylePackageSource.pushPackage(tempNupkgFile, null);
+        mavenStylePackageSource.pushPackage(tempNupkgFile);
         File versionFolder = new File(packageFolder, "2.5.9.10348");
         File hashFile = new File(versionFolder, MavenNupkg.HASH_FILE_NAME);
         File packageFile = new File(versionFolder, "NUnit.2.5.9.10348.nupkg");

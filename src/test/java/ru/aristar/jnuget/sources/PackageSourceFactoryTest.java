@@ -1,9 +1,9 @@
 package ru.aristar.jnuget.sources;
 
 import java.io.File;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
 import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.PushStrategyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
@@ -48,13 +48,13 @@ public class PackageSourceFactoryTest {
         //GIVEN
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
         final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(ApiKeyPushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getProperties().put("apiKey", "TEST_API_KEY");
+        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
+        pushStrategyOptions.getProperties().put("allow", "true");
         //WHEN
         PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
         //THEN
-        assertEquals("Класс стратегии", ApiKeyPushStrategy.class, result.getClass());
-        assertEquals("Ключ фиксации", "TEST_API_KEY", ((ApiKeyPushStrategy) result).getApiKey());
+        assertThat(result, is(instanceOf(SimplePushStrategy.class)));
+        assertThat(((SimplePushStrategy) result).isAllow(), is(equalTo(true)));
     }
 
     /**
@@ -148,13 +148,13 @@ public class PackageSourceFactoryTest {
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
         Options options = new Options();
         final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(ApiKeyPushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getProperties().put("apiKey", "TEST_API_KEY");
+        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
+        pushStrategyOptions.getProperties().put("allow", "true");
         options.setStrategyOptions(pushStrategyOptions);
         //WHEN
         PackageSource result = sourceFactory.createRootPackageSource(options);
         //THEN
-        assertEquals("Класс стратегии", ApiKeyPushStrategy.class, result.getPushStrategy().getClass());
-        assertEquals("Ключ фиксации", "TEST_API_KEY", ((ApiKeyPushStrategy) result.getPushStrategy()).getApiKey());
+        assertThat(result.getPushStrategy(), is(instanceOf(SimplePushStrategy.class)));
+        assertThat(((SimplePushStrategy) result.getPushStrategy()).isAllow(), is(equalTo(true)));
     }
 }

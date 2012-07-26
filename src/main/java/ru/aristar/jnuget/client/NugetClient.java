@@ -40,6 +40,10 @@ public class NugetClient implements AutoCloseable {
      * URL хранилища по умолчанию
      */
     private static final String DEFAULT_REMOTE_STORAGE_URL = "http://localhost:8080/resources";
+    /**
+     * Ключ доступа к удаленному хранилищу
+     */
+    private String apiKey;
 
     /**
      * Конструктор по умолчанию
@@ -64,6 +68,20 @@ public class NugetClient implements AutoCloseable {
      */
     public String getUrl() {
         return webResource == null ? null : webResource.getURI().toString();
+    }
+
+    /**
+     * @return ключ доступа к удаленному хранилищу
+     */
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    /**
+     * @param apiKey ключ доступа к удаленному хранилищу
+     */
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     /**
@@ -142,12 +160,11 @@ public class NugetClient implements AutoCloseable {
      * Отправляет пакет на сервер
      *
      * @param nupkg пакет
-     * @param apiKey ключ доступа (пароль)
      * @return ответ сервера
      * @throws UniformInterfaceException
      * @throws IOException ошибка чтения локального пакета
      */
-    public ClientResponse putPackage(Nupkg nupkg, String apiKey)
+    public ClientResponse putPackage(Nupkg nupkg)
             throws UniformInterfaceException, IOException {
         webResource.header(MainUrlResource.API_KEY_HEADER_NAME, apiKey);
         return webResource.put(ClientResponse.class, nupkg.getStream());

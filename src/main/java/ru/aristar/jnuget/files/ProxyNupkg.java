@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.files;
 
-import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +9,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -74,7 +74,7 @@ public class ProxyNupkg implements Nupkg {
         }
         getLogger().debug("Получение данных для пакета {}:{} в удаленном репозитории",
                 new Object[]{getId(), getVersion()});
-        localPackageSource.pushPackage(remoteNupkg, null);
+        localPackageSource.pushPackage(remoteNupkg);
         localNupkg = localPackageSource.getPackage(remoteNupkg.getId(), remoteNupkg.getVersion());
         return localNupkg.getStream();
     }

@@ -44,7 +44,7 @@ public class SimplePushStrategy extends AbstractPushStrategy implements PushStra
     }
 
     @Override
-    public boolean canPush(Nupkg nupkgFile, String apiKey) {
+    public boolean canPush(Nupkg nupkgFile) {
         return isAllow();
     }
 }

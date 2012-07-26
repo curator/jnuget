@@ -80,6 +80,20 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
         return remoteStorage.getUrl();
     }
 
+    /**
+     * @param apiKey ключ доступа к удаленному хранилищу
+     */
+    public void setApiKey(String apiKey) {
+        remoteStorage.setApiKey(apiKey);
+    }
+    
+    /**
+     * @return ключ доступа к удаленному хранилищу
+     */
+    public String getApiKey(){
+        return remoteStorage.getApiKey();
+    }
+
     @Override
     public RemoteNupkg getLastVersionPackage(String id) {
         String filter = "tolower(Id) eq '" + id + "'";
@@ -125,7 +139,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     }
 
     @Override
-    public boolean pushPackage(Nupkg nupkg, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg nupkg) throws IOException {
         try {
             try {
                 for (PushTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
@@ -135,7 +149,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
                 logger.error("Ошибка при обработке afther триггеров", e);
                 return false;
             }
-            remoteStorage.putPackage(nupkg, apiKey);
+            remoteStorage.putPackage(nupkg);
             try {
                 for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
                     pushTrigger.doAction(nupkg, this);

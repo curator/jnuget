@@ -142,7 +142,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
                 if (remoteNupkg == null) {
                     return null;
                 }
-                boolean result = hostedSource.pushPackage(remoteNupkg, null);
+                boolean result = hostedSource.pushPackage(remoteNupkg);
                 if (result) {
                     nupkg = hostedSource.getPackage(id, version);
                 } else {
@@ -157,7 +157,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg file) throws IOException {
         return false;
     }
 

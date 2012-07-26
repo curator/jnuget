@@ -13,10 +13,9 @@ public interface PushStrategy {
      * Проверяет - разрешено ли помещать пакет в хранилище
      *
      * @param nupkgFile пакет NuGet
-     * @param apiKey ключ (пароль)
      * @return true, если разрешено поместить пакет в хранилище
      */
-    boolean canPush(Nupkg nupkgFile, String apiKey);
+    boolean canPush(Nupkg nupkgFile);
 
     /**
      * @return триггеры, выполняющиеся до помещения пакета в хранилище

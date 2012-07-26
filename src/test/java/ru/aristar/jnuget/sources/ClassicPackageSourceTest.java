@@ -137,7 +137,7 @@ public class ClassicPackageSourceTest {
             classicPackageSource.setPushStrategy(simplePushStrategy);
             TempNupkgFile nupkgFile = new TempNupkgFile(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"));
             //WHEN
-            boolean success = classicPackageSource.pushPackage(nupkgFile, null);
+            boolean success = classicPackageSource.pushPackage(nupkgFile);
             //THEN
             assertThat("Пакет опубликован", success, is(equalTo(false)));
             assertThat("В тестовом каталоге не создано пакетов", tmpTestFolder.list(), is(nullValue()));
@@ -207,7 +207,7 @@ public class ClassicPackageSourceTest {
         simplePushStrategy.getBeforeTriggers().add(trigger);
 
         //WHEN
-        classicPackageSource.pushPackage(nupkg, null);
+        classicPackageSource.pushPackage(nupkg);
         assertArrayEquals("Пакеты для которых вызывался триггер", new Nupkg[]{nupkg}, pushedPackages.toArray(new Nupkg[0]));
 
     }

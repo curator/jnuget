@@ -102,9 +102,9 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public boolean pushPackage(Nupkg file, String apiKey) throws IOException {
+    public boolean pushPackage(Nupkg nupkg) throws IOException {
         for (PackageSource source : getSources()) {
-            if (source.pushPackage(file, apiKey)) {
+            if (source.pushPackage(nupkg)) {
                 return true;
             }
         }

@@ -312,7 +312,7 @@ public class MainUrlResource {
                 try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                     logger.debug("Помещение пакета {} версии {} в хранилище",
                             new Object[]{nupkgFile.getId(), nupkgFile.getVersion()});
-                    boolean pushed = getPackageSource().pushPackage(nupkgFile, apiKey);
+                    boolean pushed = getPackageSource().pushPackage(nupkgFile);
 
                     if (pushed) {
                         response = Response.status(correctStatus);

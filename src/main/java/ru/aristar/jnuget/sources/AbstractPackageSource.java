@@ -31,8 +31,8 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
     protected PushStrategy strategy;
 
     @Override
-    public boolean pushPackage(Nupkg nupkgFile, String apiKey) throws IOException {
-        if (!getPushStrategy().canPush(nupkgFile, apiKey)) {
+    public boolean pushPackage(Nupkg nupkgFile) throws IOException {
+        if (!getPushStrategy().canPush(nupkgFile)) {
             return false;
         }
         try {
@@ -43,7 +43,7 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
             logger.error("Ошибка при обработке afther триггеров", e);
             return false;
         }
-        pushPackage(nupkgFile);
+        processPushPackage(nupkgFile);
         try {
             for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
                 pushTrigger.doAction(nupkgFile, this);
@@ -61,7 +61,7 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
      * @param nupkg пакет
      * @throws IOException ошибка записи
      */
-    protected abstract void pushPackage(Nupkg nupkg) throws IOException;
+    protected abstract void processPushPackage(Nupkg nupkg) throws IOException;
 
     @Override
     public PushStrategy getPushStrategy() {
