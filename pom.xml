@@ -17,7 +17,7 @@
     <developers>
         <developer>
             <name>Dmitry Sviridov</name>
-            <timezone>GMT +4</timezone>
+            <timezone>+4</timezone>
         </developer>
     </developers>
     <build>
@@ -116,7 +116,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-           <!-- <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.12</version>
@@ -198,7 +198,7 @@
                 </executions>
                 <dependencies>
                 </dependencies>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
     <repositories>

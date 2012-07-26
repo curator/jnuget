@@ -57,6 +57,9 @@ public class StorageOptionsController implements Serializable {
      */
     public void init() {
         if (storageId == null) {
+            packageSource = null;
+            storageOptions = null;
+            indexDecorator = null;
             return;
         }
         packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
@@ -79,6 +82,7 @@ public class StorageOptionsController implements Serializable {
      */
     public void setStorageId(Integer storageId) {
         this.storageId = storageId;
+        init();
     }
 
     /**

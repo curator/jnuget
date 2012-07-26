@@ -8,7 +8,6 @@
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageOptions.storageId}"/>
-            <f:event type="preRenderView" listener="#{storageOptions.init()}" />
         </f:metadata>
         <title> <h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -19,13 +18,13 @@
                 <fieldset>
                     <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></legend>
                     <ol>
-                        <li> 
+                        <li>
                             <label for="className">Имя класса хранилища</label>
                             <h:inputText id="className" value="#{storageOptions.className}"/>
                         </li>
                         <li>
                             <label for="isIndexed">Индексировать</label>
-                            <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>                   
+                            <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>
                         </li>
                         <li>
                             <label for="refreshInterval">Период обновления индекса</label>
