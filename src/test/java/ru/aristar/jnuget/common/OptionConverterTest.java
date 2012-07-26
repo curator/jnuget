@@ -1,5 +1,6 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.common;
 
+import ru.aristar.jnuget.common.OptionConverter;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

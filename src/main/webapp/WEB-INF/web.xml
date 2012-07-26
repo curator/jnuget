@@ -12,7 +12,7 @@
     </servlet>
     <servlet>
         <servlet-name>LauncherServlet</servlet-name>
-        <servlet-class>ru.aristar.jnuget.Common.LauncherServlet</servlet-class>
+        <servlet-class>ru.aristar.jnuget.common.LauncherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>

@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import static java.text.MessageFormat.format;
 import java.util.ResourceBundle;
-import ru.aristar.jnuget.Common.OptionConverter;
+import ru.aristar.jnuget.common.OptionConverter;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**

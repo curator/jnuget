@@ -329,7 +329,7 @@ public class MainUrlResource {
             }
         } catch (LoginException e) {
             final String errorMessage = "Недостаточно прав для помещения пакета в хранилище";
-            logger.warn(errorMessage);
+            logger.warn(errorMessage + " " + e.getLocalizedMessage());
             return Response.status(Response.Status.UNAUTHORIZED).entity(errorMessage).build();
         } catch (Exception e) {
             final String errorMessage = "Ошибка помещения пакета в хранилище";

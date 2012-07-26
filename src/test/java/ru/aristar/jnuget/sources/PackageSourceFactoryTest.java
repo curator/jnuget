@@ -4,10 +4,10 @@ import java.io.File;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
-import ru.aristar.jnuget.Common.Options;
-import ru.aristar.jnuget.Common.PushStrategyOptions;
-import ru.aristar.jnuget.Common.StorageOptions;
-import ru.aristar.jnuget.Common.TriggerOptions;
+import ru.aristar.jnuget.common.Options;
+import ru.aristar.jnuget.common.PushStrategyOptions;
+import ru.aristar.jnuget.common.StorageOptions;
+import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.sources.push.*;
 
 /**

@@ -1,4 +1,4 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.common;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;

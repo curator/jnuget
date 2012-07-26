@@ -33,7 +33,7 @@ public class NugetPrefixFilterTest {
     @Test
     public void testFilterClass() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/CustomXml/test.prefix.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/customxml/test.prefix.xml");
         InputSource inputSource = new InputSource(inputStream);
         XMLReader reader = XMLReaderFactory.createXMLReader();
         Map<String, String> uriToPrefix = new HashMap<>();
@@ -64,7 +64,7 @@ public class NugetPrefixFilterTest {
     @Test
     public void testClearRealRss() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/CustomXml/real.data.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/customxml/real.data.xml");
         InputSource inputSource = new InputSource(inputStream);
         XMLReader reader = XMLReaderFactory.createXMLReader();
         Map<String, String> uriToPrefix = new HashMap<>();

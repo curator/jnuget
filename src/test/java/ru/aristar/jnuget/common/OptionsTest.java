@@ -1,5 +1,9 @@
-package ru.aristar.jnuget.Common;
+package ru.aristar.jnuget.common;
 
+import ru.aristar.jnuget.common.Options;
+import ru.aristar.jnuget.common.StorageOptions;
+import ru.aristar.jnuget.common.TriggerOptions;
+import ru.aristar.jnuget.common.PushStrategyOptions;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
@@ -51,7 +55,7 @@ public class OptionsTest {
     @Test
     public void testParseOptions() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.test.config.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/options/jnuget.test.config.xml");
         //WHEN
         Options options = Options.parse(inputStream);
         //THEN
@@ -77,7 +81,7 @@ public class OptionsTest {
     @Test
     public void testParseTriggerOptions() throws Exception {
         //GIVEN
-        InputStream inputStream = this.getClass().getResourceAsStream("/Options/jnuget.push.trigger.config.xml");
+        InputStream inputStream = this.getClass().getResourceAsStream("/options/jnuget.push.trigger.config.xml");
         //WHEN
         Options options = Options.parse(inputStream);
         //THEN
