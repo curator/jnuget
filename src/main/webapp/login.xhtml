@@ -10,7 +10,7 @@
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
-                <h:form>
+                <h:form id="login">
                     <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage"
                                 warnClass="warnMessage"></h:messages>
                     <ol>
@@ -25,11 +25,11 @@
                         <li>
                             <c:choose>
                                 <c:when test="#{!login.loggedIn}">
-                                    <h:commandButton value="Войти" action="#{login.login}" type="submit"/>
-                                    <h:commandButton value="Очистить" type="reset"></h:commandButton>
+                                    <h:commandButton id="login_button" value="Войти" action="#{login.login}" type="submit"/>
+                                    <h:commandButton id="clear_button" value="Очистить" type="reset"></h:commandButton>
                                 </c:when>
                                 <c:otherwise>
-                                    <h:commandButton value="Выйти" action="#{login.logout}" type="submit"/>
+                                    <h:commandButton id="clear_button" value="Выйти" action="#{login.logout}" type="submit"/>
                                 </c:otherwise>
                             </c:choose>
                         </li>
