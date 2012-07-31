@@ -8,7 +8,6 @@ import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.PushStrategyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
-import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.*;
 
 /**
@@ -71,7 +70,7 @@ public class PackageSourceFactoryTest {
         triggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
         triggerOptions.getProperties().put("maxPackageCount", "5");
         //WHEN
-        AfterTrigger pushTrigger = sourceFactory.createAftherTrigger(triggerOptions);
+        AfterTrigger pushTrigger = sourceFactory.createTrigger(triggerOptions, AfterTrigger.class);
         //THEN
         assertThat("Триггер создан", pushTrigger, is(notNullValue()));
         assertThat("Созданый триггер", pushTrigger, instanceOf(RemoveOldVersionTrigger.class));

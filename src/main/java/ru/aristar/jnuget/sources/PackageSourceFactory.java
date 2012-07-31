@@ -191,9 +191,9 @@ public class PackageSourceFactory {
         PushStrategy pushStrategy = (PushStrategy) object;
         setObjectProperties(strategyOptions.getProperties(), pushStrategy);
         //Триггеры BEFORE
-        pushStrategy.getBeforeTriggers().addAll(createBeforeTriggers(strategyOptions.getBeforeTriggersOptions()));
+        pushStrategy.getBeforeTriggers().addAll(createTriggers(strategyOptions.getBeforeTriggersOptions(), BeforeTrigger.class));
         //Триггеры Afther
-        pushStrategy.getAftherTriggers().addAll(createAftherTriggers(strategyOptions.getAftherTriggersOptions()));
+        pushStrategy.getAftherTriggers().addAll(createTriggers(strategyOptions.getAftherTriggersOptions(), AfterTrigger.class));
         logger.info("Стратегия создана");
         return pushStrategy;
     }
@@ -201,30 +201,16 @@ public class PackageSourceFactory {
     /**
      * Создает коллекцию триггеров из коллекции настроек
      *
+     * @param <T> класс требуемого объекта
      * @param options коллекция настроек
+     * @param triggerClass класс требуемого объекта
      * @return коллекция настроек
      * @throws Exception ошибка создания триггера
      */
-    protected Collection<AfterTrigger> createAftherTriggers(Collection<TriggerOptions> options) throws Exception {
-        ArrayList<AfterTrigger> pushTriggers = new ArrayList<>();
+    protected <T> Collection<T> createTriggers(Collection<TriggerOptions> options, Class<T> triggerClass) throws Exception {
+        ArrayList<T> pushTriggers = new ArrayList<>();
         for (TriggerOptions triggerOptions : options) {
-            AfterTrigger pushTrigger = createAftherTrigger(triggerOptions);
-            pushTriggers.add(pushTrigger);
-        }
-        return pushTriggers;
-    }
-
-    /**
-     * Создает коллекцию триггеров из коллекции настроек
-     *
-     * @param options коллекция настроек
-     * @return коллекция настроек
-     * @throws Exception ошибка создания триггера
-     */
-    protected Collection<BeforeTrigger> createBeforeTriggers(Collection<TriggerOptions> options) throws Exception {
-        ArrayList<BeforeTrigger> pushTriggers = new ArrayList<>();
-        for (TriggerOptions triggerOptions : options) {
-            BeforeTrigger pushTrigger = createBeforeTrigger(triggerOptions);
+            T pushTrigger = createTrigger(triggerOptions, triggerClass);
             pushTriggers.add(pushTrigger);
         }
         return pushTriggers;
@@ -233,43 +219,25 @@ public class PackageSourceFactory {
     /**
      * Создает триггер фиксации пакета
      *
+     * @param <T> класс требуемого объекта
      * @param triggerOptions настройки триггера
+     * @param triggerClass класс требуемого объекта
      * @return триггер
      * @throws Exception ошибка создания триггера
      */
-    protected AfterTrigger createAftherTrigger(TriggerOptions triggerOptions) throws Exception {
+    protected <T> T createTrigger(TriggerOptions triggerOptions, Class<T> triggerClass) throws Exception {
         logger.info("Создание триггера типа {}", new Object[]{triggerOptions.getClassName()});
         Class<?> sourceClass = Class.forName(triggerOptions.getClassName());
-        Object object = sourceClass.newInstance();
-        if (!(object instanceof AfterTrigger)) {
-            throw new UnsupportedDataTypeException("Класс " + sourceClass
-                    + " не является " + AfterTrigger.class.getCanonicalName());
-        }
-        AfterTrigger pushTrigger = (AfterTrigger) object;
-        setObjectProperties(triggerOptions.getProperties(), pushTrigger);
-        logger.info("Триггер создан");
-        return pushTrigger;
-    }
-
-    /**
-     * Создает триггер фиксации пакета
-     *
-     * @param triggerOptions настройки триггера
-     * @return триггер
-     * @throws Exception ошибка создания триггера
-     */
-    protected BeforeTrigger createBeforeTrigger(TriggerOptions triggerOptions) throws Exception {
-        logger.info("Создание триггера типа {}", new Object[]{triggerOptions.getClassName()});
-        Class<?> sourceClass = Class.forName(triggerOptions.getClassName());
-        Object object = sourceClass.newInstance();
-        if (!(object instanceof BeforeTrigger)) {
+        if (!triggerClass.isAssignableFrom(sourceClass)) {
             throw new UnsupportedDataTypeException("Класс " + sourceClass
                     + " не является " + BeforeTrigger.class.getCanonicalName());
         }
-        BeforeTrigger pushTrigger = (BeforeTrigger) object;
-        setObjectProperties(triggerOptions.getProperties(), pushTrigger);
+        Object object = sourceClass.newInstance();
+        @SuppressWarnings("unchecked")
+        T trigger = (T) object;
+        setObjectProperties(triggerOptions.getProperties(), trigger);
         logger.info("Триггер создан");
-        return pushTrigger;
+        return trigger;
     }
 
     /**
