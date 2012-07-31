@@ -20,10 +20,10 @@ public interface PushStrategy {
     /**
      * @return триггеры, выполняющиеся до помещения пакета в хранилище
      */
-    List<PushTrigger> getBeforeTriggers();
+    List<BeforeTrigger> getBeforeTriggers();
 
     /**
      * @return триггеры, выполняющиеся после помещения пакета в хранилище
      */
-    List<PushTrigger> getAftherTriggers();
+    List<AfterTrigger> getAftherTriggers();
 }

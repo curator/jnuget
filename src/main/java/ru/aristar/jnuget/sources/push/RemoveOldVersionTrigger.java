@@ -8,7 +8,7 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class RemoveOldVersionTrigger implements PushTrigger {
+public class RemoveOldVersionTrigger implements AfterTrigger {
 
     /**
      * Максимально допустимое число пакетов с одинаковым идентификатором в

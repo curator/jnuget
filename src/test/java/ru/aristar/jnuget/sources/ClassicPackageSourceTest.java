@@ -24,8 +24,8 @@ import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
-import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -59,7 +59,6 @@ public class ClassicPackageSourceTest {
     private Nupkg createNupkg(final String id, final String version) throws NugetFormatException {
         final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(pack).getId();
                 will(returnValue(id));
@@ -168,7 +167,6 @@ public class ClassicPackageSourceTest {
         Collection<Nupkg> result = ClassicPackageSource.extractLastVersion(idList);
         Nupkg[] resArr = result.toArray(new Nupkg[0]);
         Arrays.sort(resArr, new Comparator<Nupkg>() {
-
             @Override
             public int compare(Nupkg o1, Nupkg o2) {
                 return o1.toString().compareToIgnoreCase(o2.toString());
@@ -199,8 +197,8 @@ public class ClassicPackageSourceTest {
         expectations.atLeast(0).of(nupkg).getStream();
         expectations.will(returnValue(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg")));
         //Триггер
-        final PushTrigger trigger = context.mock(PushTrigger.class);
-        expectations.one(trigger).doAction(nupkg, classicPackageSource);
+        final BeforeTrigger trigger = context.mock(BeforeTrigger.class);
+        expectations.oneOf(trigger).doAction(nupkg, classicPackageSource);
         expectations.will(new CallBackAction(pushedPackages));
 
         context.checking(expectations);
@@ -240,7 +238,7 @@ public class ClassicPackageSourceTest {
             Object firstArgument = invocation.getParameter(0);
             Nupkg nupkg = (Nupkg) firstArgument;
             packages.add(nupkg);
-            return null;
+            return true;
         }
     }
 }

@@ -13,14 +13,14 @@ abstract public class AbstractPushStrategy implements PushStrategy {
     /**
      * Триггеры, выполняющиеся до помещения пакета в хранилище
      */
-    private List<PushTrigger> beforeTriggers;
+    private List<BeforeTrigger> beforeTriggers;
     /**
      * Триггеры, выполняющиеся после помещения пакета в хранилище
      */
-    private List<PushTrigger> aftherTriggers;
+    private List<AfterTrigger> aftherTriggers;
 
     @Override
-    public List<PushTrigger> getAftherTriggers() {
+    public List<AfterTrigger> getAftherTriggers() {
         if (aftherTriggers == null) {
             aftherTriggers = new ArrayList<>();
         }
@@ -28,7 +28,7 @@ abstract public class AbstractPushStrategy implements PushStrategy {
     }
 
     @Override
-    public List<PushTrigger> getBeforeTriggers() {
+    public List<BeforeTrigger> getBeforeTriggers() {
         if (beforeTriggers == null) {
             beforeTriggers = new ArrayList<>();
         }

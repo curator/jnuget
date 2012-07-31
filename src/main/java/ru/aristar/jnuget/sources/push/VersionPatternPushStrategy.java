@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.sources.push;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;

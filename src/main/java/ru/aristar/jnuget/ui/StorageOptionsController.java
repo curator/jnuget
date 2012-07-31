@@ -20,8 +20,9 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.IndexedPackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
+import ru.aristar.jnuget.sources.push.AfterTrigger;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
 import ru.aristar.jnuget.ui.descriptors.ObjectDescriptor;
 import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
@@ -220,8 +221,8 @@ public class StorageOptionsController implements Serializable {
     /**
      * @return триггеры, выполняющиеся после вставки пакета
      */
-    public List<PushTrigger> getAftherTriggers() {
-        ArrayList<PushTrigger> triggers = new ArrayList<>();
+    public List<AfterTrigger> getAftherTriggers() {
+        ArrayList<AfterTrigger> triggers = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
             PushStrategy pushStrategy = packageSource.getPushStrategy();
             triggers.addAll(pushStrategy.getAftherTriggers());
@@ -232,8 +233,8 @@ public class StorageOptionsController implements Serializable {
     /**
      * @return триггеры, выполняющиеся перед вставкой пакета
      */
-    public List<PushTrigger> getBeforeTriggers() {
-        ArrayList<PushTrigger> triggers = new ArrayList<>();
+    public List<BeforeTrigger> getBeforeTriggers() {
+        ArrayList<BeforeTrigger> triggers = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
             PushStrategy pushStrategy = packageSource.getPushStrategy();
             triggers.addAll(pushStrategy.getBeforeTriggers());

@@ -8,9 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.push.AfterTrigger;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -36,20 +37,18 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
             return false;
         }
         try {
-            for (PushTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
-                pushTrigger.doAction(nupkgFile, this);
+            //TODO перенести метод в стратегию
+            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
+                if (!pushTrigger.doAction(nupkgFile, this)) {
+                    return false;
+                }
+            }
+            processPushPackage(nupkgFile);
+            for (AfterTrigger trigger : getPushStrategy().getAftherTriggers()) {
+                trigger.doAction(nupkgFile, this);
             }
         } catch (NugetPushException e) {
-            logger.error("Ошибка при обработке afther триггеров", e);
-            return false;
-        }
-        processPushPackage(nupkgFile);
-        try {
-            for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
-                pushTrigger.doAction(nupkgFile, this);
-            }
-        } catch (NugetPushException e) {
-            logger.error("Ошибка при обработке before триггеров", e);
+            logger.error("Ошибка помещения пакета в хранилище", e);
             return false;
         }
         return true;

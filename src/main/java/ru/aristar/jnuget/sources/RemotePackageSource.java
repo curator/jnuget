@@ -15,9 +15,10 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
+import ru.aristar.jnuget.sources.push.AfterTrigger;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -86,11 +87,11 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     public void setApiKey(String apiKey) {
         remoteStorage.setApiKey(apiKey);
     }
-    
+
     /**
      * @return ключ доступа к удаленному хранилищу
      */
-    public String getApiKey(){
+    public String getApiKey() {
         return remoteStorage.getApiKey();
     }
 
@@ -141,25 +142,16 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     @Override
     public boolean pushPackage(Nupkg nupkg) throws IOException {
         try {
-            try {
-                for (PushTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
-                    pushTrigger.doAction(nupkg, this);
-                }
-            } catch (NugetPushException e) {
-                logger.error("Ошибка при обработке afther триггеров", e);
-                return false;
+            //TODO перенести метод в стратегию
+            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
+                pushTrigger.doAction(nupkg, this);
             }
             remoteStorage.putPackage(nupkg);
-            try {
-                for (PushTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
-                    pushTrigger.doAction(nupkg, this);
-                }
-            } catch (NugetPushException e) {
-                logger.error("Ошибка при обработке before триггеров", e);
-                return false;
+            for (AfterTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
+                pushTrigger.doAction(nupkg, this);
             }
             return true;
-        } catch (UniformInterfaceException e) {
+        } catch (UniformInterfaceException | NugetPushException e) {
             logger.warn("Ошибка помещения пакета в удаленное хранилище", e);
             return false;
         }

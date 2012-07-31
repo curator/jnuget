@@ -1,13 +1,5 @@
 package ru.aristar.jnuget.sources;
 
-import ru.aristar.jnuget.common.StorageOptions;
-import ru.aristar.jnuget.common.OptionConverter;
-import ru.aristar.jnuget.common.CustomProxySelector;
-import ru.aristar.jnuget.common.TriggerOptions;
-import ru.aristar.jnuget.common.CustomProxyAuthenticator;
-import ru.aristar.jnuget.common.Options;
-import ru.aristar.jnuget.common.ProxyOptions;
-import ru.aristar.jnuget.common.PushStrategyOptions;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,9 +12,18 @@ import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.common.CustomProxyAuthenticator;
+import ru.aristar.jnuget.common.CustomProxySelector;
+import ru.aristar.jnuget.common.OptionConverter;
+import ru.aristar.jnuget.common.Options;
+import ru.aristar.jnuget.common.ProxyOptions;
+import ru.aristar.jnuget.common.PushStrategyOptions;
+import ru.aristar.jnuget.common.StorageOptions;
+import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.push.AfterTrigger;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushTrigger;
 import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
@@ -190,9 +191,9 @@ public class PackageSourceFactory {
         PushStrategy pushStrategy = (PushStrategy) object;
         setObjectProperties(strategyOptions.getProperties(), pushStrategy);
         //Триггеры BEFORE
-        pushStrategy.getBeforeTriggers().addAll(createTriggers(strategyOptions.getBeforeTriggersOptions()));
+        pushStrategy.getBeforeTriggers().addAll(createBeforeTriggers(strategyOptions.getBeforeTriggersOptions()));
         //Триггеры Afther
-        pushStrategy.getAftherTriggers().addAll(createTriggers(strategyOptions.getAftherTriggersOptions()));
+        pushStrategy.getAftherTriggers().addAll(createAftherTriggers(strategyOptions.getAftherTriggersOptions()));
         logger.info("Стратегия создана");
         return pushStrategy;
     }
@@ -204,10 +205,26 @@ public class PackageSourceFactory {
      * @return коллекция настроек
      * @throws Exception ошибка создания триггера
      */
-    protected Collection<PushTrigger> createTriggers(Collection<TriggerOptions> options) throws Exception {
-        ArrayList<PushTrigger> pushTriggers = new ArrayList<>();
+    protected Collection<AfterTrigger> createAftherTriggers(Collection<TriggerOptions> options) throws Exception {
+        ArrayList<AfterTrigger> pushTriggers = new ArrayList<>();
         for (TriggerOptions triggerOptions : options) {
-            PushTrigger pushTrigger = createPushTrigger(triggerOptions);
+            AfterTrigger pushTrigger = createAftherTrigger(triggerOptions);
+            pushTriggers.add(pushTrigger);
+        }
+        return pushTriggers;
+    }
+
+    /**
+     * Создает коллекцию триггеров из коллекции настроек
+     *
+     * @param options коллекция настроек
+     * @return коллекция настроек
+     * @throws Exception ошибка создания триггера
+     */
+    protected Collection<BeforeTrigger> createBeforeTriggers(Collection<TriggerOptions> options) throws Exception {
+        ArrayList<BeforeTrigger> pushTriggers = new ArrayList<>();
+        for (TriggerOptions triggerOptions : options) {
+            BeforeTrigger pushTrigger = createBeforeTrigger(triggerOptions);
             pushTriggers.add(pushTrigger);
         }
         return pushTriggers;
@@ -220,15 +237,36 @@ public class PackageSourceFactory {
      * @return триггер
      * @throws Exception ошибка создания триггера
      */
-    protected PushTrigger createPushTrigger(TriggerOptions triggerOptions) throws Exception {
+    protected AfterTrigger createAftherTrigger(TriggerOptions triggerOptions) throws Exception {
         logger.info("Создание триггера типа {}", new Object[]{triggerOptions.getClassName()});
         Class<?> sourceClass = Class.forName(triggerOptions.getClassName());
         Object object = sourceClass.newInstance();
-        if (!(object instanceof PushTrigger)) {
+        if (!(object instanceof AfterTrigger)) {
             throw new UnsupportedDataTypeException("Класс " + sourceClass
-                    + " не является " + PushTrigger.class.getCanonicalName());
+                    + " не является " + AfterTrigger.class.getCanonicalName());
         }
-        PushTrigger pushTrigger = (PushTrigger) object;
+        AfterTrigger pushTrigger = (AfterTrigger) object;
+        setObjectProperties(triggerOptions.getProperties(), pushTrigger);
+        logger.info("Триггер создан");
+        return pushTrigger;
+    }
+
+    /**
+     * Создает триггер фиксации пакета
+     *
+     * @param triggerOptions настройки триггера
+     * @return триггер
+     * @throws Exception ошибка создания триггера
+     */
+    protected BeforeTrigger createBeforeTrigger(TriggerOptions triggerOptions) throws Exception {
+        logger.info("Создание триггера типа {}", new Object[]{triggerOptions.getClassName()});
+        Class<?> sourceClass = Class.forName(triggerOptions.getClassName());
+        Object object = sourceClass.newInstance();
+        if (!(object instanceof BeforeTrigger)) {
+            throw new UnsupportedDataTypeException("Класс " + sourceClass
+                    + " не является " + BeforeTrigger.class.getCanonicalName());
+        }
+        BeforeTrigger pushTrigger = (BeforeTrigger) object;
         setObjectProperties(triggerOptions.getProperties(), pushTrigger);
         logger.info("Триггер создан");
         return pushTrigger;

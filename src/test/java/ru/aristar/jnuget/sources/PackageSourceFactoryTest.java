@@ -8,6 +8,7 @@ import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.PushStrategyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
+import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.*;
 
 /**
@@ -70,7 +71,7 @@ public class PackageSourceFactoryTest {
         triggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
         triggerOptions.getProperties().put("maxPackageCount", "5");
         //WHEN
-        PushTrigger pushTrigger = sourceFactory.createPushTrigger(triggerOptions);
+        AfterTrigger pushTrigger = sourceFactory.createAftherTrigger(triggerOptions);
         //THEN
         assertThat("Триггер создан", pushTrigger, is(notNullValue()));
         assertThat("Созданый триггер", pushTrigger, instanceOf(RemoveOldVersionTrigger.class));
@@ -116,8 +117,8 @@ public class PackageSourceFactoryTest {
         aftherTriggerOptions.getProperties().put("maxPackageCount", "5");
         //Триггер до помещения пакета
         final TriggerOptions beforeTriggerOptions = new TriggerOptions();
-        beforeTriggerOptions.setClassName(RemoveOldVersionTrigger.class.getCanonicalName());
-        beforeTriggerOptions.getProperties().put("maxPackageCount", "15");
+        beforeTriggerOptions.setClassName(TestBeforeTrigger.class.getCanonicalName());
+        beforeTriggerOptions.getProperties().put("testProperty", "15");
         //Стратегия фиксации
         final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
         pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
@@ -129,9 +130,9 @@ public class PackageSourceFactoryTest {
         assertThat("Стратегия фиксации", result, instanceOf(PushStrategy.class));
         assertThat("Количество созданых before тригеров", result.getBeforeTriggers().size(), equalTo(1));
         assertThat("Количество созданых afther тригеров", result.getAftherTriggers().size(), equalTo(1));
-        assertThat("Триггер before", result.getBeforeTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
-        RemoveOldVersionTrigger beforeTrigger = (RemoveOldVersionTrigger) result.getBeforeTriggers().get(0);
-        assertThat("Количество пакетов триггера before ", beforeTrigger.getMaxPackageCount(), equalTo(15));
+        assertThat("Триггер before", result.getBeforeTriggers().get(0), instanceOf(TestBeforeTrigger.class));
+        TestBeforeTrigger beforeTrigger = (TestBeforeTrigger) result.getBeforeTriggers().get(0);
+        assertThat("Тестовое свойство триггера before ", beforeTrigger.getTestProperty(), equalTo(15));
         assertThat("Триггер afther", result.getAftherTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
         RemoveOldVersionTrigger aftherTrigger = (RemoveOldVersionTrigger) result.getAftherTriggers().get(0);
         assertThat("Количество пакетов триггера afther ", aftherTrigger.getMaxPackageCount(), equalTo(5));

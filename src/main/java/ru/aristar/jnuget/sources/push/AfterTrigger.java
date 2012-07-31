@@ -4,11 +4,11 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
- * Триггер, запускающийся до или после добавления пакета в хранилище
+ * Триггер, запускающийся после добавления пакета в хранилище
  *
  * @author sviridov
  */
-public interface PushTrigger {
+public interface AfterTrigger {
 
     /**
      * Действие, которое должно быть выполнено при срабатывании триггера
