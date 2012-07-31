@@ -14,7 +14,6 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.common.Options;
-import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.IndexedPackageSource;
@@ -48,23 +47,17 @@ public class StorageOptionsController implements Serializable {
      * Индексирующий декоратор (или null, если хранилище не индексируется)
      */
     private IndexedPackageSource indexDecorator;
-    /**
-     * Настройки хранилища
-     */
-    private StorageOptions storageOptions;
 
     /**
      * Инициализация хранилища
      */
-    public void init() {
+    private void init() {
         if (storageId == null) {
             packageSource = null;
-            storageOptions = null;
             indexDecorator = null;
             return;
         }
         packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
-        storageOptions = PackageSourceFactory.getInstance().getOptions().getStorageOptionsList().get(storageId);
         if (packageSource instanceof IndexedPackageSource) {
             indexDecorator = (IndexedPackageSource) packageSource;
             packageSource = indexDecorator.getUnderlyingSource();
