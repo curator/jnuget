@@ -181,6 +181,7 @@ public class PackageSourceFactory {
      */
     protected PushStrategy createPushStrategy(PushStrategyOptions strategyOptions) throws Exception {
         //Создание стратегии фиксации
+        //TODO убрать настройки стратегии, оставить только разрешение/запрещение публикации
         logger.info("Инициализация стратегии типа {}", new Object[]{strategyOptions.getClassName()});
         Class<?> sourceClass = Class.forName(strategyOptions.getClassName());
         Object object = sourceClass.newInstance();
