@@ -9,8 +9,6 @@ import org.junit.Test;
 import ru.aristar.jnuget.sources.ClassicPackageSource;
 import ru.aristar.jnuget.sources.MavenStylePackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
-import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Тесты фабрики дескрипторов классов
@@ -31,22 +29,6 @@ public class DescriptorsFactoryTest {
         //THEN
         assertThat(descriptor, is(not(nullValue())));
         assertThat(descriptor, is(instanceOf(AbstractObjectDescriptor.class)));
-    }
-
-    /**
-     * Проверка получения дескриптора стратегии фиксации
-     */
-    @Test
-    public void testGetPushStrategyDescriptor() {
-        //GIVEN
-        DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
-        //WHEN
-        ObjectDescriptor<? extends PushStrategy> descriptor = descriptorsFactory.getPushStrategyDescriptor(SimplePushStrategy.class);
-        //THEN
-        assertThat(descriptor, is(not(nullValue())));
-        assertThat(descriptor, is(instanceOf(AbstractObjectDescriptor.class)));
-        assertEquals(SimplePushStrategy.class, descriptor.getObjectClass());
-        assertThat(descriptor.getProperties().get(0).getDescription(), is(equalTo("Разрешена или нет публикация")));
     }
 
     /**

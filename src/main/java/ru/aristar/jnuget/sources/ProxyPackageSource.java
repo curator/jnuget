@@ -13,7 +13,7 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.ProxyNupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
@@ -39,7 +39,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
      * Конструктор по умолчанию
      */
     public ProxyPackageSource() {
-        hostedSource.setPushStrategy(new SimplePushStrategy(true));
+        hostedSource.setPushStrategy(new PushStrategy(true));
     }
 
     /**

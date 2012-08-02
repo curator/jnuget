@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <options>  
-    <pushStrategy class="PUSH_CLASS_GLOBAL">
-        <properties>
-            <property name="property_g" value="value_g"/>
-        </properties>                
-    </pushStrategy>
     <storages>
-        <storage class="TEST_CLASS_1" indexed="false">
+        <storage class="TEST_CLASS_1" indexed="false" canPush="true">
             <properties>
                 <property name="folderName" value="TEST_FOLDER_1"/>
-            </properties>
-            <pushStrategy class="PUSH_CLASS_1">
-                <properties>
-                    <property name="property_1" value="value_1"/>
-                </properties>                
-            </pushStrategy>
+            </properties>           
         </storage>
-        <storage class="TEST_CLASS_2" indexed="true">
+        <storage class="TEST_CLASS_2" indexed="true" canDelete="true">
             <properties>
                 <property name="folderName" value="TEST_FOLDER_2"/>
             </properties>

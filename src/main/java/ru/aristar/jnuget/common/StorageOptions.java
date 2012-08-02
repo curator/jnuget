@@ -1,6 +1,8 @@
 package ru.aristar.jnuget.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -25,6 +27,16 @@ public class StorageOptions {
     @XmlAttribute(name = "indexed")
     private Boolean indexed;
     /**
+     * Разрешена ли публикация пакетов в хранилище
+     */
+    @XmlAttribute(name = "canPush")
+    private Boolean canPush;
+    /**
+     * Разрешено ли удаление пакетов из хранилища
+     */
+    @XmlAttribute(name = "canDelete")
+    private Boolean canDelete;
+    /**
      * Имя хранилища. Если задано - то индекс будет сохраняться
      */
     @XmlAttribute(name = "storageName")
@@ -43,10 +55,17 @@ public class StorageOptions {
     @XmlElement(name = "properties")
     private Map<String, String> properties;
     /**
-     * Стратегия публикации пакетов
+     * Настройки триггеров, выполняющихся после вставки пакета
      */
-    @XmlElement(name = "pushStrategy")
-    private PushStrategyOptions strategyOptions;
+    @XmlElementWrapper(name = "afterTriggers")
+    @XmlElement(name = "trigger")
+    private List<TriggerOptions> aftherTriggersOptions;
+    /**
+     * Настройки триггеров, выполняющихся до вставки пакета
+     */
+    @XmlElementWrapper(name = "beforeTriggers")
+    @XmlElement(name = "trigger")
+    private List<TriggerOptions> beforeTriggersOptions;
 
     /**
      * @return Имя класса хранилища
@@ -73,20 +92,6 @@ public class StorageOptions {
     }
 
     /**
-     * @return Стратегия публикации пакетов
-     */
-    public PushStrategyOptions getStrategyOptions() {
-        return strategyOptions;
-    }
-
-    /**
-     * @param strategyOptions Стратегия публикации пакетов
-     */
-    public void setStrategyOptions(PushStrategyOptions strategyOptions) {
-        this.strategyOptions = strategyOptions;
-    }
-
-    /**
      * @return будет ли индексироваться хранилище
      */
     public boolean isIndexed() {
@@ -94,6 +99,26 @@ public class StorageOptions {
             indexed = true;
         }
         return indexed;
+    }
+
+    /**
+     * @return Разрешена ли публикация пакетов в хранилище
+     */
+    public boolean isCanPush() {
+        if (canPush == null) {
+            canPush = false;
+        }
+        return canPush;
+    }
+
+    /**
+     * @return разрешено ли удаление пакетов из хранилища
+     */
+    public Boolean isCanDelete() {
+        if (canDelete == null) {
+            canDelete = false;
+        }
+        return canDelete;
     }
 
     /**
@@ -130,5 +155,25 @@ public class StorageOptions {
      */
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    /**
+     * @return настройки триггеров, выполняющихся после вставки пакета
+     */
+    public List<TriggerOptions> getAftherTriggersOptions() {
+        if (aftherTriggersOptions == null) {
+            aftherTriggersOptions = new ArrayList<>();
+        }
+        return aftherTriggersOptions;
+    }
+
+    /**
+     * @return настройки триггеров, выполняющихся до вставки пакета
+     */
+    public List<TriggerOptions> getBeforeTriggersOptions() {
+        if (beforeTriggersOptions == null) {
+            beforeTriggersOptions = new ArrayList<>();
+        }
+        return beforeTriggersOptions;
     }
 }

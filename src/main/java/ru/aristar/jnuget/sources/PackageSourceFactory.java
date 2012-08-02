@@ -17,14 +17,13 @@ import ru.aristar.jnuget.common.CustomProxySelector;
 import ru.aristar.jnuget.common.OptionConverter;
 import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.ProxyOptions;
-import ru.aristar.jnuget.common.PushStrategyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Фабрика источников данных
@@ -94,20 +93,10 @@ public class PackageSourceFactory {
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
         PushStrategy pushStrategy = null;
-        try {
-            if (serviceOptions.getStrategyOptions() != null) {
-                pushStrategy = createPushStrategy(serviceOptions.getStrategyOptions());
-            }
-        } catch (Exception e) {
-            logger.error("Ошибка создания стратегии фиксации", e);
-        }
-        if (pushStrategy == null) {
-            pushStrategy = new SimplePushStrategy(true);
-            logger.warn("Для корневого репозитория разрешается публикация "
-                    + "пакетов. (поведение по умолчанию)");
-        }
+        pushStrategy = new PushStrategy(true);
+        logger.warn("Для корневого репозитория разрешается публикация "
+                + "пакетов. (поведение по умолчанию)");
         rootPackageSource.setPushStrategy(pushStrategy);
-
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
@@ -157,14 +146,9 @@ public class PackageSourceFactory {
         @SuppressWarnings("unchecked")
         PackageSource<Nupkg> newSource = (PackageSource) object;
         setObjectProperties(storageOptions.getProperties(), object);
-        if (storageOptions.getStrategyOptions() != null) {
-            PushStrategy pushStrategy = createPushStrategy(storageOptions.getStrategyOptions());
-            newSource.setPushStrategy(pushStrategy);
-            logger.info("Установлена стратегия фиксации");
-        } else {
-            newSource.setPushStrategy(new SimplePushStrategy(false));
-            logger.warn("Используется стратегия фиксации по умолчанию");
-        }
+        PushStrategy pushStrategy = createPushStrategy(storageOptions);
+        newSource.setPushStrategy(pushStrategy);
+        logger.info("Установлена стратегия фиксации");
         if (storageOptions.isIndexed()) {
             newSource = createIndexForStorage(newSource, storageOptions.getStorageName(), storageOptions.getRefreshInterval());
         }
@@ -175,26 +159,22 @@ public class PackageSourceFactory {
     /**
      * Создает стратегию фиксации пакетов
      *
-     * @param strategyOptions настройки стратегии
+     * @param storegeOptions настройки стратегии
      * @return стратегия фиксации
      * @throws Exception ошибка создания стратегии
      */
-    protected PushStrategy createPushStrategy(PushStrategyOptions strategyOptions) throws Exception {
+    protected PushStrategy createPushStrategy(StorageOptions storegeOptions) throws Exception {
         //Создание стратегии фиксации
         //TODO убрать настройки стратегии, оставить только разрешение/запрещение публикации
-        logger.info("Инициализация стратегии типа {}", new Object[]{strategyOptions.getClassName()});
-        Class<?> sourceClass = Class.forName(strategyOptions.getClassName());
-        Object object = sourceClass.newInstance();
-        if (!(object instanceof PushStrategy)) {
-            throw new UnsupportedDataTypeException("Класс " + sourceClass
-                    + " не является " + PushStrategy.class.getCanonicalName());
-        }
-        PushStrategy pushStrategy = (PushStrategy) object;
-        setObjectProperties(strategyOptions.getProperties(), pushStrategy);
+        logger.info("Инициализация стратегии фиксации и удаления");
+
+        PushStrategy pushStrategy = new PushStrategy();
+        pushStrategy.setAllowPush(storegeOptions.isCanPush());
+        pushStrategy.setAllowDelete(storegeOptions.isCanDelete());
         //Триггеры BEFORE
-        pushStrategy.getBeforeTriggers().addAll(createTriggers(strategyOptions.getBeforeTriggersOptions(), BeforeTrigger.class));
+        pushStrategy.getBeforeTriggers().addAll(createTriggers(storegeOptions.getBeforeTriggersOptions(), BeforeTrigger.class));
         //Триггеры Afther
-        pushStrategy.getAftherTriggers().addAll(createTriggers(strategyOptions.getAftherTriggersOptions(), AfterTrigger.class));
+        pushStrategy.getAftherTriggers().addAll(createTriggers(storegeOptions.getAftherTriggersOptions(), AfterTrigger.class));
         logger.info("Стратегия создана");
         return pushStrategy;
     }

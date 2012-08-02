@@ -1,9 +1,5 @@
 package ru.aristar.jnuget.common;
 
-import ru.aristar.jnuget.common.Options;
-import ru.aristar.jnuget.common.StorageOptions;
-import ru.aristar.jnuget.common.TriggerOptions;
-import ru.aristar.jnuget.common.PushStrategyOptions;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
@@ -37,10 +33,10 @@ public class OptionsTest {
         Options options = Options.loadOptions();
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
-        assertNull("Стратегия корневого хранилища не устанавливается", options.getStrategyOptions());
         assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
         assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
-        assertNull("По умолчанию стратегия пула не задается", options.getStorageOptionsList().get(0).getStrategyOptions());
+        assertFalse("По умолчанию удаление пакетов запрещено", options.getStorageOptionsList().get(0).isCanDelete());
+        assertFalse("По умолчанию публикация пакетов запрещена", options.getStorageOptionsList().get(0).isCanPush());
         //TEARDOWN
         file.delete();
         nugetHome.delete();
@@ -59,18 +55,17 @@ public class OptionsTest {
         //WHEN
         Options options = Options.parse(inputStream);
         //THEN
-        assertEquals("Класс корневой стратегии фиксации", "PUSH_CLASS_GLOBAL", options.getStrategyOptions().getClassName());
-        assertEquals("Свойство стратегии фиксации", "value_g", options.getStrategyOptions().getProperties().get("property_g"));
         assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
         assertEquals("Класс хранилища 1", "TEST_CLASS_1", options.getStorageOptionsList().get(0).getClassName());
         assertFalse("Xранилище 1 индексируется", options.getStorageOptionsList().get(0).isIndexed());
         assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
-        assertEquals("Ключ доступа хранилища 1", "value_1", options.getStorageOptionsList().get(0).getStrategyOptions().getProperties().get("property_1"));
-        assertEquals("Класс стратегии хранилища 1", "PUSH_CLASS_1", options.getStorageOptionsList().get(0).getStrategyOptions().getClassName());
+        assertThat(options.getStorageOptionsList().get(0).isCanPush(), is(equalTo(true)));
+        assertThat(options.getStorageOptionsList().get(0).isCanDelete(), is(equalTo(false)));
         assertEquals("Класс хранилища 2", "TEST_CLASS_2", options.getStorageOptionsList().get(1).getClassName());
         assertTrue("Xранилище 2 индексируется", options.getStorageOptionsList().get(1).isIndexed());
         assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName"));
-        assertNull("Стратегия хранилища 2", options.getStorageOptionsList().get(1).getStrategyOptions());
+        assertThat(options.getStorageOptionsList().get(1).isCanPush(), is(equalTo(false)));
+        assertThat(options.getStorageOptionsList().get(1).isCanDelete(), is(equalTo(true)));
     }
 
     /**
@@ -87,11 +82,11 @@ public class OptionsTest {
         //THEN
         List<StorageOptions> storageOptions = options.getStorageOptionsList();
         assertThat("Создан набор настроек для хранилища", storageOptions.size(), equalTo(1));
-        PushStrategyOptions pushStrategyOptions = storageOptions.get(0).getStrategyOptions();
-        assertThat("Создана стратегия фиксации пакета", pushStrategyOptions, is(notNullValue()));
+        assertThat(storageOptions.get(0).isCanPush(), is(equalTo(true)));
+        assertThat(storageOptions.get(0).isCanDelete(), is(equalTo(true)));
         assertThat("Количество настроек триггеров, выполняющихся до вставки",
-                pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
-        TriggerOptions beforeTriggerOptions = pushStrategyOptions.getBeforeTriggersOptions().get(0);
+                storageOptions.get(0).getAftherTriggersOptions().size(), equalTo(1));
+        TriggerOptions beforeTriggerOptions = storageOptions.get(0).getBeforeTriggersOptions().get(0);
         assertThat("Имя класса триггера", beforeTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_1"));
         assertThat("Названия свойств триггера",
                 beforeTriggerOptions.getProperties().keySet().toArray(new String[]{}),
@@ -100,8 +95,8 @@ public class OptionsTest {
                 beforeTriggerOptions.getProperties().values().toArray(new String[]{}),
                 equalTo(new String[]{"value_2"}));
         assertThat("Количество настроек триггеров, выполняющихся после вставки",
-                pushStrategyOptions.getAftherTriggersOptions().size(), equalTo(1));
-        TriggerOptions aftherTriggerOptions = pushStrategyOptions.getAftherTriggersOptions().get(0);
+                storageOptions.get(0).getAftherTriggersOptions().size(), equalTo(1));
+        TriggerOptions aftherTriggerOptions = storageOptions.get(0).getAftherTriggersOptions().get(0);
         assertThat("Имя класса триггера", aftherTriggerOptions.getClassName(), equalTo("TRIGGER_CLASS_2"));
         assertThat("Названия свойств триггера",
                 aftherTriggerOptions.getProperties().keySet().toArray(new String[]{}),

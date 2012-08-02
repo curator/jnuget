@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.common.Options;
-import ru.aristar.jnuget.common.PushStrategyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.sources.push.*;
@@ -39,25 +38,6 @@ public class PackageSourceFactoryTest {
     }
 
     /**
-     * Проверка создания стратегии публикации на основе настроек
-     *
-     * @throws Exception ошибка в процессе теста
-     */
-    @Test
-    public void testCreateApiKeyPushStrategy() throws Exception {
-        //GIVEN
-        PackageSourceFactory sourceFactory = new PackageSourceFactory();
-        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getProperties().put("allow", "true");
-        //WHEN
-        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
-        //THEN
-        assertThat(result, is(instanceOf(SimplePushStrategy.class)));
-        assertThat(((SimplePushStrategy) result).isAllow(), is(equalTo(true)));
-    }
-
-    /**
      * Проверка создания триггеров стратегии фиксации
      *
      * @throws Exception ошибка в процессе теста
@@ -82,26 +62,6 @@ public class PackageSourceFactoryTest {
 
     /**
      * Проверка создания стратегии публикации на основе настроек, содержащих
-     * поле типа boolean
-     *
-     * @throws Exception ошибка в процессе теста
-     */
-    @Test
-    public void testCreateSimplePushStrategy() throws Exception {
-        //GIVEN
-        PackageSourceFactory sourceFactory = new PackageSourceFactory();
-        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getProperties().put("allow", "true");
-        //WHEN
-        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
-        //THEN
-        assertEquals("Класс стратегии", SimplePushStrategy.class, result.getClass());
-        assertTrue("Фиксация разрешена", ((SimplePushStrategy) result).isAllow());
-    }
-
-    /**
-     * Проверка создания стратегии публикации на основе настроек, содержащих
      * триггеры
      *
      * @throws Exception ошибка в процессе теста
@@ -119,12 +79,11 @@ public class PackageSourceFactoryTest {
         beforeTriggerOptions.setClassName(TestBeforeTrigger.class.getCanonicalName());
         beforeTriggerOptions.getProperties().put("testProperty", "15");
         //Стратегия фиксации
-        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getAftherTriggersOptions().add(aftherTriggerOptions);
-        pushStrategyOptions.getBeforeTriggersOptions().add(beforeTriggerOptions);
+        StorageOptions storageOptions = new StorageOptions();
+        storageOptions.getAftherTriggersOptions().add(aftherTriggerOptions);
+        storageOptions.getBeforeTriggersOptions().add(beforeTriggerOptions);
         //WHEN
-        PushStrategy result = sourceFactory.createPushStrategy(pushStrategyOptions);
+        PushStrategy result = sourceFactory.createPushStrategy(storageOptions);
         //THEN
         assertThat("Стратегия фиксации", result, instanceOf(PushStrategy.class));
         assertThat("Количество созданых before тригеров", result.getBeforeTriggers().size(), equalTo(1));
@@ -147,14 +106,10 @@ public class PackageSourceFactoryTest {
         //GIVEN
         PackageSourceFactory sourceFactory = new PackageSourceFactory();
         Options options = new Options();
-        final PushStrategyOptions pushStrategyOptions = new PushStrategyOptions();
-        pushStrategyOptions.setClassName(SimplePushStrategy.class.getCanonicalName());
-        pushStrategyOptions.getProperties().put("allow", "true");
-        options.setStrategyOptions(pushStrategyOptions);
         //WHEN
         PackageSource result = sourceFactory.createRootPackageSource(options);
         //THEN
-        assertThat(result.getPushStrategy(), is(instanceOf(SimplePushStrategy.class)));
-        assertThat(((SimplePushStrategy) result.getPushStrategy()).isAllow(), is(equalTo(true)));
+        assertThat(result.getPushStrategy(), is(instanceOf(PushStrategy.class)));
+        assertThat(((PushStrategy) result.getPushStrategy()).canPush(null), is(equalTo(true)));
     }
 }

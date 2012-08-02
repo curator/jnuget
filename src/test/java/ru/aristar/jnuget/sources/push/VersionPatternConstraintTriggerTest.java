@@ -12,7 +12,7 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class VersionPatternPushStrategyTest {
+public class VersionPatternConstraintTriggerTest {
 
     /**
      * Контекст создания заглушек
@@ -53,14 +53,14 @@ public class VersionPatternPushStrategyTest {
     @Test
     public void testAcceptVersion() throws Exception {
         //GIVEN
-        VersionPatternPushStrategy strategy = new VersionPatternPushStrategy();
+        VersionPatternConstraintTrigger strategy = new VersionPatternConstraintTrigger();
         //WHEN
         strategy.setPattern("^\\d+\\.\\d+\\.\\d*[02468].*$");
         //THEN
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.4.7")));
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.6.71")));
-        assertTrue(strategy.canPush(createNupkg("A", "1.2.0.7654")));
-        assertTrue(strategy.canPush(createNupkg("V", "1.7.0.AAAAA")));
+        assertTrue(strategy.doAction(createNupkg("A", "1.2.4.7"), null));
+        assertTrue(strategy.doAction(createNupkg("A", "1.2.6.71"), null));
+        assertTrue(strategy.doAction(createNupkg("A", "1.2.0.7654"), null));
+        assertTrue(strategy.doAction(createNupkg("V", "1.7.0.AAAAA"), null));
     }
 
     /**
@@ -71,13 +71,13 @@ public class VersionPatternPushStrategyTest {
     @Test
     public void testRejectedVersion() throws Exception {
         //GIVEN
-        VersionPatternPushStrategy strategy = new VersionPatternPushStrategy();
+        VersionPatternConstraintTrigger strategy = new VersionPatternConstraintTrigger();
         //WHEN
         strategy.setPattern("^\\d+\\.\\d+\\.\\d*[13579].*$");
         //THEN
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.4.7")));
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.6.71")));
-        assertFalse(strategy.canPush(createNupkg("A", "1.2.0.7654")));
-        assertFalse(strategy.canPush(createNupkg("V", "1.7.0.AAAAA")));
+        assertFalse(strategy.doAction(createNupkg("A", "1.2.4.7"), null));
+        assertFalse(strategy.doAction(createNupkg("A", "1.2.6.71"), null));
+        assertFalse(strategy.doAction(createNupkg("A", "1.2.0.7654"), null));
+        assertFalse(strategy.doAction(createNupkg("V", "1.7.0.AAAAA"), null));
     }
 }

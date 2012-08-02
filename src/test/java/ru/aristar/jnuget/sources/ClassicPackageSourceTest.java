@@ -24,9 +24,9 @@ import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Тесты классического (все пакеты в одной папке) хранилища NuGet
@@ -132,7 +132,7 @@ public class ClassicPackageSourceTest {
         tmpTestFolder.mkdirs();
         try {
             ClassicPackageSource classicPackageSource = new ClassicPackageSource(tmpTestFolder);
-            SimplePushStrategy simplePushStrategy = new SimplePushStrategy(false);
+            PushStrategy simplePushStrategy = new PushStrategy(false);
             classicPackageSource.setPushStrategy(simplePushStrategy);
             TempNupkgFile nupkgFile = new TempNupkgFile(this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"));
             //WHEN
@@ -186,7 +186,7 @@ public class ClassicPackageSourceTest {
     public void testProcessTrigger() throws IOException, NugetPushException {
         //GIVEN
         final ClassicPackageSource classicPackageSource = new ClassicPackageSource(testFolder);
-        SimplePushStrategy simplePushStrategy = new SimplePushStrategy(true);
+        PushStrategy simplePushStrategy = new PushStrategy(true);
         classicPackageSource.setPushStrategy(simplePushStrategy);
         List<Nupkg> pushedPackages = new ArrayList<>();
         //Пакет

@@ -18,9 +18,9 @@ import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.files.TempNupkgFile;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 
 /**
  * Тест источника данных, хранящего пакеты в структуре каталогов схожей со
@@ -182,7 +182,7 @@ public class MavenStylePackageSourceTest {
             FileUtils.deleteDirectory(packageFolder);
         }
         MavenStylePackageSource mavenStylePackageSource = new MavenStylePackageSource(testFolder);
-        mavenStylePackageSource.setPushStrategy(new SimplePushStrategy(true));
+        mavenStylePackageSource.setPushStrategy(new PushStrategy(true));
         mavenStylePackageSource.pushPackage(tempNupkgFile);
         //WHEN
         MavenNupkg result = mavenStylePackageSource.getPackage(tempNupkgFile.getId(), tempNupkgFile.getVersion());
@@ -206,7 +206,7 @@ public class MavenStylePackageSourceTest {
             FileUtils.deleteDirectory(packageFolder);
         }
         MavenStylePackageSource mavenStylePackageSource = new MavenStylePackageSource(testFolder);
-        mavenStylePackageSource.setPushStrategy(new SimplePushStrategy(true));
+        mavenStylePackageSource.setPushStrategy(new PushStrategy(true));
         //WHEN
         mavenStylePackageSource.pushPackage(tempNupkgFile);
         File versionFolder = new File(packageFolder, "2.5.9.10348");

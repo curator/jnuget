@@ -4,13 +4,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  * Стратегия, разрешающая публикацию пакета с версией, соответстыующей шаблону
  *
  * @author sviridov
  */
-public class VersionPatternPushStrategy extends AbstractPushStrategy implements PushStrategy {
+public class VersionPatternConstraintTrigger implements BeforeTrigger {
 
     /**
      * Шаблон версии
@@ -32,8 +33,8 @@ public class VersionPatternPushStrategy extends AbstractPushStrategy implements 
     }
 
     @Override
-    public boolean canPush(Nupkg nupkgFile) {
-        Version version = nupkgFile.getVersion();
+    public boolean doAction(Nupkg nupkg, PackageSource<? extends Nupkg> packageSource) throws NugetPushException {
+        Version version = nupkg.getVersion();
         if (version == null) {
             return false;
         }

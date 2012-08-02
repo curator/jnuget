@@ -12,7 +12,6 @@ import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  * Абстрактное хранилище пакетов
@@ -65,7 +64,7 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
     @Override
     public PushStrategy getPushStrategy() {
         if (strategy == null) {
-            strategy = new SimplePushStrategy(false);
+            strategy = new PushStrategy(false);
         }
         return strategy;
     }

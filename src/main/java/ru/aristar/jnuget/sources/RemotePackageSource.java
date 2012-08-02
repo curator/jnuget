@@ -15,11 +15,11 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
 
 /**
  *
@@ -42,7 +42,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     /**
      * Стратегия публикации пакетов
      */
-    protected PushStrategy pushStrategy = new SimplePushStrategy(false);
+    protected PushStrategy pushStrategy = new PushStrategy(false);
 
     /**
      * Получает список пакетов из удаленного хранилища

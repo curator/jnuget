@@ -17,7 +17,7 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.ClassicNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
-import ru.aristar.jnuget.sources.push.SimplePushStrategy;
+import ru.aristar.jnuget.sources.push.PushStrategy;
 
 /**
  *
@@ -98,7 +98,7 @@ public class IndexedPackageSourceTest {
             IndexedPackageSource packageSource = new IndexedPackageSource();
             ClassicPackageSource filePackageSource = new ClassicPackageSource(localTestFolder);
             packageSource.setUnderlyingSource(filePackageSource).join();
-            packageSource.setPushStrategy(new SimplePushStrategy(true));
+            packageSource.setPushStrategy(new PushStrategy(true));
             //WHEN
             packageSource.pushPackage(nupkgFile);
             //THEN

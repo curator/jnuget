@@ -1,29 +1,84 @@
 package ru.aristar.jnuget.sources.push;
 
+import java.util.ArrayList;
 import java.util.List;
 import ru.aristar.jnuget.files.Nupkg;
 
 /**
+ * Абстрактный класс стратегии фиксации
  *
  * @author sviridov
  */
-public interface PushStrategy {
+public class PushStrategy {
 
     /**
-     * Проверяет - разрешено ли помещать пакет в хранилище
-     *
-     * @param nupkgFile пакет NuGet
-     * @return true, если разрешено поместить пакет в хранилище
+     * Триггеры, выполняющиеся до помещения пакета в хранилище
      */
-    boolean canPush(Nupkg nupkgFile);
+    private List<BeforeTrigger> beforeTriggers;
+    /**
+     * Триггеры, выполняющиеся после помещения пакета в хранилище
+     */
+    private List<AfterTrigger> aftherTriggers;
+    /**
+     * Флаг: разрешена или нет публикация
+     */
+    protected boolean canPush;
+    /**
+     * Разрешено или нет удаление
+     */
+    protected boolean canDelete;
 
     /**
-     * @return триггеры, выполняющиеся до помещения пакета в хранилище
+     * Конструктор по умолчанию
      */
-    List<BeforeTrigger> getBeforeTriggers();
+    public PushStrategy() {
+    }
 
     /**
-     * @return триггеры, выполняющиеся после помещения пакета в хранилище
+     * @param canPush разрешена или нет публикация
      */
-    List<AfterTrigger> getAftherTriggers();
+    public PushStrategy(boolean allow) {
+        this.canPush = allow;
+    }
+
+    public List<AfterTrigger> getAftherTriggers() {
+        if (aftherTriggers == null) {
+            aftherTriggers = new ArrayList<>();
+        }
+        return aftherTriggers;
+    }
+
+    public List<BeforeTrigger> getBeforeTriggers() {
+        if (beforeTriggers == null) {
+            beforeTriggers = new ArrayList<>();
+        }
+        return beforeTriggers;
+    }
+
+    public boolean canDelete(Nupkg nupkg) {
+        return canDelete;
+    }
+
+    public boolean canDelete() {
+        return canDelete;
+    }
+
+    public boolean canPush(Nupkg nupkgFile) {
+        return canPush;
+    }
+
+    public boolean canPush() {
+        return canPush;
+    }
+
+    public void setAllowDelete(Boolean canDelete) {
+        this.canDelete = canDelete;
+    }
+
+    /**
+     * @param canPush разрешена или нет публикация
+     */
+    public void setAllowPush(boolean allow) {
+        this.canPush = allow;
+    }
 }
