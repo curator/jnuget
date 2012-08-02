@@ -15,11 +15,11 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.NugetPushException;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
  *
@@ -42,7 +42,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     /**
      * Стратегия публикации пакетов
      */
-    protected PushStrategy pushStrategy = new PushStrategy(false);
+    protected ModifyStrategy pushStrategy = new ModifyStrategy(false);
 
     /**
      * Получает список пакетов из удаленного хранилища
@@ -135,7 +135,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     }
 
     @Override
-    public PushStrategy getPushStrategy() {
+    public ModifyStrategy getPushStrategy() {
         return pushStrategy;
     }
 
@@ -143,11 +143,11 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     public boolean pushPackage(Nupkg nupkg) throws IOException {
         try {
             //TODO перенести метод в стратегию
-            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
+            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforePushTriggers()) {
                 pushTrigger.doAction(nupkg, this);
             }
             remoteStorage.putPackage(nupkg);
-            for (AfterTrigger pushTrigger : getPushStrategy().getAftherTriggers()) {
+            for (AfterTrigger pushTrigger : getPushStrategy().getAftherPushTriggers()) {
                 pushTrigger.doAction(nupkg, this);
             }
             return true;
@@ -158,7 +158,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     }
 
     @Override
-    public void setPushStrategy(PushStrategy strategy) {
+    public void setPushStrategy(ModifyStrategy strategy) {
         this.pushStrategy = strategy;
     }
 

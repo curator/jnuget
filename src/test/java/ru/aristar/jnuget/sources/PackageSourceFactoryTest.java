@@ -83,16 +83,16 @@ public class PackageSourceFactoryTest {
         storageOptions.getAftherTriggersOptions().add(aftherTriggerOptions);
         storageOptions.getBeforeTriggersOptions().add(beforeTriggerOptions);
         //WHEN
-        PushStrategy result = sourceFactory.createPushStrategy(storageOptions);
+        ModifyStrategy result = sourceFactory.createPushStrategy(storageOptions);
         //THEN
-        assertThat("Стратегия фиксации", result, instanceOf(PushStrategy.class));
-        assertThat("Количество созданых before тригеров", result.getBeforeTriggers().size(), equalTo(1));
-        assertThat("Количество созданых afther тригеров", result.getAftherTriggers().size(), equalTo(1));
-        assertThat("Триггер before", result.getBeforeTriggers().get(0), instanceOf(TestBeforeTrigger.class));
-        TestBeforeTrigger beforeTrigger = (TestBeforeTrigger) result.getBeforeTriggers().get(0);
+        assertThat("Стратегия фиксации", result, instanceOf(ModifyStrategy.class));
+        assertThat("Количество созданых before тригеров", result.getBeforePushTriggers().size(), equalTo(1));
+        assertThat("Количество созданых afther тригеров", result.getAftherPushTriggers().size(), equalTo(1));
+        assertThat("Триггер before", result.getBeforePushTriggers().get(0), instanceOf(TestBeforeTrigger.class));
+        TestBeforeTrigger beforeTrigger = (TestBeforeTrigger) result.getBeforePushTriggers().get(0);
         assertThat("Тестовое свойство триггера before ", beforeTrigger.getTestProperty(), equalTo(15));
-        assertThat("Триггер afther", result.getAftherTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
-        RemoveOldVersionTrigger aftherTrigger = (RemoveOldVersionTrigger) result.getAftherTriggers().get(0);
+        assertThat("Триггер afther", result.getAftherPushTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
+        RemoveOldVersionTrigger aftherTrigger = (RemoveOldVersionTrigger) result.getAftherPushTriggers().get(0);
         assertThat("Количество пакетов триггера afther ", aftherTrigger.getMaxPackageCount(), equalTo(5));
     }
 
@@ -109,7 +109,7 @@ public class PackageSourceFactoryTest {
         //WHEN
         PackageSource result = sourceFactory.createRootPackageSource(options);
         //THEN
-        assertThat(result.getPushStrategy(), is(instanceOf(PushStrategy.class)));
-        assertThat(((PushStrategy) result.getPushStrategy()).canPush(null), is(equalTo(true)));
+        assertThat(result.getPushStrategy(), is(instanceOf(ModifyStrategy.class)));
+        assertThat(((ModifyStrategy) result.getPushStrategy()).canPush(), is(equalTo(true)));
     }
 }

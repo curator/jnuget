@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.sources.PackageSource;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
  *
@@ -38,7 +38,7 @@ public class DescriptorsFactory {
     /**
      * Oписания стратегий по классам, которые они описывают
      */
-    private final Map<Class<? extends PushStrategy>, ObjectDescriptor<PushStrategy>> strategyDescriptorsMap;
+    private final Map<Class<? extends ModifyStrategy>, ObjectDescriptor<ModifyStrategy>> strategyDescriptorsMap;
     /**
      * Логгер
      */
@@ -272,7 +272,7 @@ public class DescriptorsFactory {
      * @param c класс стратегии фиксации
      * @return описание стратегии
      */
-    public ObjectDescriptor<? extends PushStrategy> getPushStrategyDescriptor(Class<? extends PushStrategy> c) {
+    public ObjectDescriptor<? extends ModifyStrategy> getPushStrategyDescriptor(Class<? extends ModifyStrategy> c) {
         return strategyDescriptorsMap.get(c);
     }
 
@@ -280,7 +280,7 @@ public class DescriptorsFactory {
      * Закрытый конструктор
      */
     private DescriptorsFactory() {
-        strategyDescriptorsMap = loadDescriptors(PushStrategy.class, STRATEGY_DESCRIPTORS_URI);
+        strategyDescriptorsMap = loadDescriptors(ModifyStrategy.class, STRATEGY_DESCRIPTORS_URI);
         sourceDescriptorsMap = loadDescriptors(PackageSource.class, STORAGE_DESCRIPTORS_URI);
     }
 

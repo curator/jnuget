@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
  *
@@ -169,12 +169,12 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public PushStrategy getPushStrategy() {
+    public ModifyStrategy getPushStrategy() {
         return packageSource.getPushStrategy();
     }
 
     @Override
-    public void setPushStrategy(PushStrategy strategy) {
+    public void setPushStrategy(ModifyStrategy strategy) {
         packageSource.setPushStrategy(strategy);
     }
 

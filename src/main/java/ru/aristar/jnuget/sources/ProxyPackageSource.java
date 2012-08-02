@@ -12,8 +12,8 @@ import ru.aristar.jnuget.files.MavenNupkg;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.ProxyNupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
-import ru.aristar.jnuget.sources.push.PushStrategy;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
@@ -39,7 +39,7 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
      * Конструктор по умолчанию
      */
     public ProxyPackageSource() {
-        hostedSource.setPushStrategy(new PushStrategy(true));
+        hostedSource.setPushStrategy(new ModifyStrategy(true));
     }
 
     /**
@@ -162,12 +162,12 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public PushStrategy getPushStrategy() {
+    public ModifyStrategy getPushStrategy() {
         return hostedSource.getPushStrategy();
     }
 
     @Override
-    public void setPushStrategy(PushStrategy strategy) {
+    public void setPushStrategy(ModifyStrategy strategy) {
         remoteSource.setPushStrategy(strategy);
     }
 

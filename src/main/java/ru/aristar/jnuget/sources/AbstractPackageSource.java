@@ -10,8 +10,8 @@ import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.NugetPushException;
-import ru.aristar.jnuget.sources.push.PushStrategy;
 
 /**
  * Абстрактное хранилище пакетов
@@ -28,22 +28,22 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
     /**
      * Стратегия помещения пакета в хранилище
      */
-    protected PushStrategy strategy;
+    protected ModifyStrategy strategy;
 
     @Override
     public boolean pushPackage(Nupkg nupkgFile) throws IOException {
-        if (!getPushStrategy().canPush(nupkgFile)) {
+        if (!getPushStrategy().canPush()) {
             return false;
         }
         try {
             //TODO перенести метод в стратегию
-            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforeTriggers()) {
+            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforePushTriggers()) {
                 if (!pushTrigger.doAction(nupkgFile, this)) {
                     return false;
                 }
             }
             processPushPackage(nupkgFile);
-            for (AfterTrigger trigger : getPushStrategy().getAftherTriggers()) {
+            for (AfterTrigger trigger : getPushStrategy().getAftherPushTriggers()) {
                 trigger.doAction(nupkgFile, this);
             }
         } catch (NugetPushException e) {
@@ -62,15 +62,15 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
     protected abstract void processPushPackage(Nupkg nupkg) throws IOException;
 
     @Override
-    public PushStrategy getPushStrategy() {
+    public ModifyStrategy getPushStrategy() {
         if (strategy == null) {
-            strategy = new PushStrategy(false);
+            strategy = new ModifyStrategy(false);
         }
         return strategy;
     }
 
     @Override
-    public void setPushStrategy(PushStrategy strategy) {
+    public void setPushStrategy(ModifyStrategy strategy) {
         this.strategy = strategy;
     }
 

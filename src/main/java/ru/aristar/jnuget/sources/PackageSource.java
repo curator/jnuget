@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
  * Контракт источника пакетов
@@ -67,14 +67,14 @@ public interface PackageSource<T extends Nupkg> {
      *
      * @return стратегия помещения пакетов
      */
-    PushStrategy getPushStrategy();
+    ModifyStrategy getPushStrategy();
 
     /**
      * Устанавливает стратегию помещения пакетов в базу данных
      *
      * @param strategy стратегия помещения пакетов
      */
-    void setPushStrategy(PushStrategy strategy);
+    void setPushStrategy(ModifyStrategy strategy);
 
     /**
      * Удаляет выбранный пакет из хранилища.

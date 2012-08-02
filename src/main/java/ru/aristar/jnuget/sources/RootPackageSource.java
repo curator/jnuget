@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
  *
@@ -22,7 +22,7 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     /**
      * Стратегия публикации пакетов
      */
-    private PushStrategy pushStrategy;
+    private ModifyStrategy pushStrategy;
 
     /**
      * @return Источники пакетов
@@ -112,12 +112,12 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     }
 
     @Override
-    public PushStrategy getPushStrategy() {
+    public ModifyStrategy getPushStrategy() {
         return pushStrategy;
     }
 
     @Override
-    public void setPushStrategy(PushStrategy strategy) {
+    public void setPushStrategy(ModifyStrategy strategy) {
         this.pushStrategy = strategy;
     }
 

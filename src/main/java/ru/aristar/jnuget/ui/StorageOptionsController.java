@@ -22,7 +22,7 @@ import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
-import ru.aristar.jnuget.sources.push.PushStrategy;
+import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.ui.descriptors.DescriptorsFactory;
 import ru.aristar.jnuget.ui.descriptors.ObjectDescriptor;
 import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
@@ -204,8 +204,8 @@ public class StorageOptionsController implements Serializable {
 
         ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
         if (packageSource != null) {
-            PushStrategy pushStrategy = packageSource.getPushStrategy();
-            ObjectDescriptor<? extends PushStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
+            ModifyStrategy pushStrategy = packageSource.getPushStrategy();
+            ObjectDescriptor<? extends ModifyStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
             if (descriptor != null) {
                 for (ObjectProperty property : descriptor.getProperties()) {
                     final String description = property.getDescription();
@@ -224,8 +224,8 @@ public class StorageOptionsController implements Serializable {
     public List<AfterTrigger> getAftherTriggers() {
         ArrayList<AfterTrigger> triggers = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
-            PushStrategy pushStrategy = packageSource.getPushStrategy();
-            triggers.addAll(pushStrategy.getAftherTriggers());
+            ModifyStrategy pushStrategy = packageSource.getPushStrategy();
+            triggers.addAll(pushStrategy.getAftherPushTriggers());
         }
         return triggers;
     }
@@ -236,8 +236,8 @@ public class StorageOptionsController implements Serializable {
     public List<BeforeTrigger> getBeforeTriggers() {
         ArrayList<BeforeTrigger> triggers = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
-            PushStrategy pushStrategy = packageSource.getPushStrategy();
-            triggers.addAll(pushStrategy.getBeforeTriggers());
+            ModifyStrategy pushStrategy = packageSource.getPushStrategy();
+            triggers.addAll(pushStrategy.getBeforePushTriggers());
         }
         return triggers;
     }
