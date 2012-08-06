@@ -20,7 +20,7 @@
 
 #content{
     position: fixed;
-    left: 17em;
+    left: 10em;
     top: 7em;
     right: 0px;
     bottom: 2em;
@@ -38,10 +38,22 @@
 }
 
 #sidebar{
-    margin-top: 7em; 
-    width: 17em; 
-    padding: 0 10px;
-    float: left; 
+    left: 0px;
+    margin-top: 7em;
+    width: 8em;
+    padding-left : 0px;
+    margin-left : 0px;
+    float: left;
+}
+
+#sidebar ol{
+    margin-left : 0px;
+    padding-left : 0px;
+}
+
+#sidebar ol ul{
+    margin-left : 0px;
+    padding-left : 0px;
 }
 
 root {
