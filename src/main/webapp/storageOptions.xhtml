@@ -56,13 +56,23 @@
                     <fieldset>
                         <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
                         <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
-                            <h:outputText value="#{trigger.getClass().getName()}"/>
+                            <ol>
+                                <li>
+                                    <label for="beforeTriggerClassName">Имя класса триггера</label>
+                                    <h:inputText id="beforeTriggerClassName" value="#{trigger.getClass().getName()}"/>
+                                </li>
+                            </ol>
                         </c:forEach>
                     </fieldset>
                     <fieldset>
                         <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
                         <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
-                            <h:outputText value="#{trigger.getClass().getName()}"/>
+                            <ol>
+                                <li>
+                                    <label for="afterTriggerClassName">Имя класса триггера</label>
+                                    <h:inputText id="afterTriggerClassName" value="#{trigger.getClass().getName()}"/>
+                                </li>
+                            </ol>
                         </c:forEach>
                     </fieldset>
                 </fieldset>

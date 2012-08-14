@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.sources.push.AfterTrigger;
+import ru.aristar.jnuget.sources.push.BeforeTrigger;
 
 /**
  *
@@ -27,9 +29,29 @@ public class DescriptorsFactory {
      */
     private static final String STORAGE_DESCRIPTORS_URI = "ru/aristar/jnuget/ui/descriptors/storageDescriptors.list";
     /**
+     * URI файлов со списком дескрипторов триггеров BEFORE
+     */
+    private static final String BEFORE_TRIGGER_DESCRIPTORS_URI = "ru/aristar/jnuget/ui/descriptors/beforeTriggerDescriptors.list";
+    /**
+     * URI файлов со списком дескрипторов триггеров AFTER
+     */
+    private static final String AFTER_TRIGGER_DESCRIPTORS_URI = "ru/aristar/jnuget/ui/descriptors/afterTriggerDescriptors.list";
+    /**
      * Описания хранилищ по классам, которые они описывают
      */
     private final Map<Class<? extends PackageSource>, ObjectDescriptor<PackageSource>> sourceDescriptorsMap;
+    /**
+     * Описания триггеров before по классам, которые они описывают
+     */
+    private final Map<Class<? extends BeforeTrigger>, ObjectDescriptor<BeforeTrigger>> beforeTriggerDescriptorsMap;
+    /**
+     * Описания триггеров after по классам, которые они описывают
+     */
+    private final Map<Class<? extends AfterTrigger>, ObjectDescriptor<AfterTrigger>> afterTriggerDescriptorsMap;
+    /**
+     * Все описания
+     */
+    private final Map<Class<?>, ObjectDescriptor<?>> allDescriptors;
     /**
      * Логгер
      */
@@ -227,6 +249,22 @@ public class DescriptorsFactory {
      */
     private DescriptorsFactory() {
         sourceDescriptorsMap = loadDescriptors(PackageSource.class, STORAGE_DESCRIPTORS_URI);
+        beforeTriggerDescriptorsMap = loadDescriptors(BeforeTrigger.class, BEFORE_TRIGGER_DESCRIPTORS_URI);
+        afterTriggerDescriptorsMap = loadDescriptors(AfterTrigger.class, AFTER_TRIGGER_DESCRIPTORS_URI);
+        allDescriptors = new HashMap<>(sourceDescriptorsMap.size() + beforeTriggerDescriptorsMap.size() + afterTriggerDescriptorsMap.size());
+        allDescriptors.putAll(sourceDescriptorsMap);
+        allDescriptors.putAll(afterTriggerDescriptorsMap);
+        allDescriptors.putAll(beforeTriggerDescriptorsMap);
+    }
+
+    /**
+     * Получить дескриптор для произвольного класса
+     *
+     * @param c класс, для которого требуется найти дескриптор
+     * @return дескриптор класса, или NULL
+     */
+    public ObjectDescriptor<?> getObjectDescriptor(Class<?> c) {
+        return allDescriptors.get(c);
     }
 
     /**

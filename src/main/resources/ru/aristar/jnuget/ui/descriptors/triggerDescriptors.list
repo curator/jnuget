@@ -1,0 +1,2 @@
+ru.aristar.jnuget.sources.push.RemoveOldVersionTrigger
+ru.aristar.jnuget.sources.push.VersionPatternConstraintTrigger
