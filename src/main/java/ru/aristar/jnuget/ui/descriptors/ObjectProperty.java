@@ -3,7 +3,6 @@ package ru.aristar.jnuget.ui.descriptors;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import static java.text.MessageFormat.format;
-import java.util.ResourceBundle;
 import ru.aristar.jnuget.common.OptionConverter;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -27,23 +26,63 @@ public class ObjectProperty {
      */
     private final Method setter;
     /**
+     * Уникальное имя свойства
+     */
+    private final String name;
+    /**
      * Класс, для свойства которого создан дескриптор
      */
     private final Class<?> type;
 
     /**
-     * @param type тип объекта для которого предназначено свойство
-     * @param description описание свойство
-     * @param getterName имя метода геттера
-     * @param setterName имя метода сеттера
+     * Возвращает строку, у которой первый символ переведен в верхний регистр
+     *
+     * @param value исходная строка
+     * @return преобразованная строка
+     */
+    private String upperFirstSymbol(String value) {
+        return Character.toUpperCase(value.charAt(0)) + value.substring(1);
+    }
+
+    /**
+     * Возвращает имя get метода для указанного свойства
+     *
+     * @param propertyName имя свойства
+     * @param propertyType тип свойства
+     * @return имя get метода
+     */
+    private String getGetterName(String propertyName, Class<?> propertyType) {
+        if (propertyType != null && (propertyType.equals(Boolean.class) || propertyType.equals(Boolean.TYPE))) {
+            return "is" + upperFirstSymbol(propertyName);
+        } else {
+            return "get" + upperFirstSymbol(propertyName);
+        }
+    }
+
+    /**
+     * Возвращает имя set метода для указанного свойства
+     *
+     * @param propertyName имя свойства
+     * @return имя set метода
+     */
+    private String getSetterName(String propertyName) {
+        return "set" + upperFirstSymbol(propertyName);
+    }
+
+    /**
+     * @param ownerType тип объекта для которого предназначено свойство
+     * @param propertyType тип свойства
+     * @param description описание свойства
+     * @param name уникальное имя свойства
      * @throws NoSuchMethodException не найден сеттер
      */
-    public ObjectProperty(Class<?> type, String description, String getterName, String setterName)
+    public ObjectProperty(Class<?> ownerType, Class<?> propertyType, String description, String name)
             throws NoSuchMethodException {
         this.description = description;
-        this.getter = type.getMethod(getterName);
-        this.type = type;
-        this.setter = findSetter(type, setterName);
+        this.name = name;
+        this.getter = ownerType.getMethod(getGetterName(name, propertyType));
+        this.type = ownerType;
+        this.setter = findSetter(ownerType, getSetterName(name));
     }
 
     /**
@@ -92,5 +131,12 @@ public class ObjectProperty {
         stringValue = OptionConverter.replaceVariables(stringValue);
         Object value = PackageSourceFactory.getValueFromString(valueType, stringValue);
         setter.invoke(object, value);
+    }
+
+    /**
+     * @return уникальное имя свойства
+     */
+    public String getName() {
+        return name;
     }
 }

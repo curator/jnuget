@@ -34,36 +34,25 @@
                             <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
                             <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
                         </li>
+                        <li>
+                            <label for="canPush">Разрешена публикация пакетов</label>
+                            <h:selectBooleanCheckbox id="canPush" value="#{storageOptions.canPush}"/>
+                        </li>
+                        <li>
+                            <label for="canDelete">Разрешено удаление пакетов</label>
+                            <h:selectBooleanCheckbox id="canDelete" value="#{storageOptions.canDelete}"/>
+                        </li>
                     </ol>
                     <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
                         <h:column>
                             <f:facet name="header">Свойство</f:facet>
-                            <h:outputText value="#{entry.key}"/>
+                            <h:outputText value="#{entry.description}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Значение</f:facet>
-                            <h:outputText value="#{entry.value}"/>
+                            <h:inputText id="storage-#{entry.name}" value="#{entry.value}"/>
                         </h:column>
                     </h:dataTable>
-                    <fieldset>
-                        <legend>Стратегия фиксации</legend>
-                        <ol>
-                            <li>
-                                <label for="pushStrategyClass">Класс стратегии фиксации</label>
-                                <h:inputText id="pushStrategyClass" value="#{storageOptions.pushStrategyClass}"/>
-                            </li>
-                        </ol>
-                        <h:dataTable value="#{storageOptions.pushStrategyProperties}" var="entry">
-                            <h:column>
-                                <f:facet name="header">Свойство</f:facet>
-                                <h:outputText value="#{entry.key}"/>
-                            </h:column>
-                            <h:column>
-                                <f:facet name="header">Значение</f:facet>
-                                <h:outputText value="#{entry.value}"/>
-                            </h:column>
-                        </h:dataTable>
-                    </fieldset>
                     <fieldset>
                         <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
                         <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">

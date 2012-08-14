@@ -5,10 +5,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import static java.text.MessageFormat.format;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.model.DataModel;
@@ -35,6 +33,77 @@ import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
 @RequestScoped
 public class StorageOptionsController implements Serializable {
 
+    /**
+     * Свойсво объекта
+     */
+    public class Property {
+
+        /**
+         * Уникальное имя свойства
+         */
+        private String name;
+        /**
+         * Описание свойства
+         */
+        private String description;
+        /**
+         * Строковое представление значения
+         */
+        private String value;
+
+        /**
+         * @return уникальное имя свойства
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * @param name уникальное имя свойства
+         */
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        /**
+         * @return описание свойства
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * @param description описание свойства
+         */
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        /**
+         * @return строковое представление значения
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
+         * @param value строковое представление значения
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        /**
+         * @param name уникальное имя свойства
+         * @param description описание свойства
+         * @param value строковое представление значения
+         */
+        public Property(String name, String description, String value) {
+            this.name = name;
+            this.description = description;
+            this.value = value;
+        }
+    }
     /**
      * Идентификатор хранилища
      */
@@ -174,44 +243,6 @@ public class StorageOptionsController implements Serializable {
     }
 
     /**
-     * @return имя класса стратегии фиксации
-     */
-    public String getPushStrategyClass() {
-        if (packageSource == null || packageSource.getPushStrategy() == null) {
-            return null;
-        }
-        return packageSource.getPushStrategy().getClass().getName();
-    }
-
-    /**
-     * @param pushStrategyClass имя класса стратегии фиксации
-     */
-    public void setPushStrategyClass(String pushStrategyClass) {
-        //TODO Реализовть метод
-    }
-
-    /**
-     * @return параметры настройки стратегии фиксации
-     */
-    public DataModel<Map.Entry<String, String>> getPushStrategyProperties() {
-
-        ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
-        if (packageSource != null) {
-            ModifyStrategy pushStrategy = packageSource.getPushStrategy();
-            ObjectDescriptor<? extends ModifyStrategy> descriptor = DescriptorsFactory.getInstance().getPushStrategyDescriptor(pushStrategy.getClass());
-            if (descriptor != null) {
-                for (ObjectProperty property : descriptor.getProperties()) {
-                    final String description = property.getDescription();
-                    final String value = property.getValue(pushStrategy);
-                    AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
-                    data.add(entry);
-                }
-            }
-        }
-        return new ListDataModel<>(data);
-    }
-
-    /**
      * @return триггеры, выполняющиеся после вставки пакета
      */
     public List<AfterTrigger> getAftherTriggers() {
@@ -238,19 +269,41 @@ public class StorageOptionsController implements Serializable {
     /**
      * @return параметры настройки хранилища
      */
-    public DataModel<Map.Entry<String, String>> getStorageProperties() {
-        ArrayList<Map.Entry<String, String>> data = new ArrayList<>();
+    public DataModel<Property> getStorageProperties() {
+        ArrayList<Property> data = new ArrayList<>();
         if (packageSource != null) {
             ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
             if (descriptor != null) {
                 for (ObjectProperty property : descriptor.getProperties()) {
                     final String description = property.getDescription();
                     final String value = property.getValue(packageSource);
-                    AbstractMap.SimpleEntry<String, String> entry = new AbstractMap.SimpleEntry<>(description, value);
-                    data.add(entry);
+                    final String name = property.getName();
+                    Property result = new Property(name, description, value);
+                    data.add(result);
                 }
             }
         }
         return new ListDataModel<>(data);
+    }
+
+    /**
+     * @return разрешена или нет публикация
+     */
+    public boolean getCanPush() {
+        if (packageSource == null || packageSource.getPushStrategy() == null) {
+            return false;
+        }
+        return packageSource.getPushStrategy().canPush();
+    }
+
+    /**
+     * @return разрешено или нет удаление
+     */
+    public boolean getCanDelete() {
+        if (packageSource == null || packageSource.getPushStrategy() == null) {
+            return false;
+        }
+        return packageSource.getPushStrategy().canDelete();
+
     }
 }

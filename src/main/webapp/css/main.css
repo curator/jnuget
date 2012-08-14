@@ -81,6 +81,12 @@ input {
     width: 30%;
 }
 
+td input {
+    margin-left:4%;
+    margin-right:6%;
+    width : 90%;
+}
+
 label {
     width: 60%;
     float: left;

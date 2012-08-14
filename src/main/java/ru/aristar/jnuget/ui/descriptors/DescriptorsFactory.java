@@ -63,16 +63,6 @@ public class DescriptorsFactory {
     }
 
     /**
-     * Возвращает строку, у которой первый символ переведен в верхний регистр
-     *
-     * @param value исходная строка
-     * @return преобразованная строка
-     */
-    private String upperFirstSymbol(String value) {
-        return Character.toUpperCase(value.charAt(0)) + value.substring(1);
-    }
-
-    /**
      * Возвращает строку, у которой первый символ переведен в нижний регистр
      *
      * @param value исходная строка
@@ -80,31 +70,6 @@ public class DescriptorsFactory {
      */
     private String lowerFirstSymbol(String value) {
         return Character.toLowerCase(value.charAt(0)) + value.substring(1);
-    }
-
-    /**
-     * Возвращает имя get метода для указанного свойства
-     *
-     * @param propertyName имя свойства
-     * @param propertyType тип свойства
-     * @return имя get метода
-     */
-    private String getGetterName(String propertyName, Class<?> propertyType) {
-        if (propertyType != null && (propertyType.equals(Boolean.class) || propertyType.equals(Boolean.TYPE))) {
-            return "is" + upperFirstSymbol(propertyName);
-        } else {
-            return "get" + upperFirstSymbol(propertyName);
-        }
-    }
-
-    /**
-     * Возвращает имя set метода для указанного свойства
-     *
-     * @param propertyName имя свойства
-     * @return имя set метода
-     */
-    private String getSetterName(String propertyName) {
-        return "set" + upperFirstSymbol(propertyName);
     }
 
     /**
@@ -199,10 +164,8 @@ public class DescriptorsFactory {
                 }
                 final String propertyName = getPropertyName(method);
                 final Class<?> propertyType = getPropertyType(method);
-                final String getterName = getGetterName(propertyName, propertyType);
-                final String setterName = getSetterName(propertyName);
                 final String description = getDescription(property, propertyName);
-                ObjectProperty objectProperty = new ObjectProperty(targetClass, description, getterName, setterName);
+                ObjectProperty objectProperty = new ObjectProperty(targetClass, propertyType, description, propertyName);
                 result.add(objectProperty);
             } catch (NoSuchMethodException | NugetFormatException e) {
                 logger.error(format("Не удалось лпределить свойство для класса {0}", targetClass), e);
