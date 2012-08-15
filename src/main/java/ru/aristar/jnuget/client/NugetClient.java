@@ -15,6 +15,8 @@ import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
@@ -44,6 +46,10 @@ public class NugetClient implements AutoCloseable {
      * Ключ доступа к удаленному хранилищу
      */
     private String apiKey;
+    /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Конструктор по умолчанию
@@ -112,7 +118,21 @@ public class NugetClient implements AutoCloseable {
             MediaType.APPLICATION_XML_TYPE,
             MediaType.WILDCARD_TYPE};
 
-        PackageFeed feed = get(client, webResource.getURI(), "Packages", params, accept, PackageFeed.class);
+        PackageFeed feed = null;
+        int tryCount = 0;
+        final URI storageURI = webResource.getURI();
+        do {
+            try {
+                logger.debug("Получение пакетов из {} Top: {}, Skip: {}, попытка {}",
+                        new Object[]{storageURI, top, skip, tryCount + 1});
+                feed = get(client, storageURI, "Packages", params, accept, PackageFeed.class);
+                tryCount++;
+            } catch (IOException e) {
+                logger.warn("Не удалось получить пакеты для хранилища {} "
+                        + "Top: {} Skip: {} причина: {} попытка {}",
+                        new Object[]{storageURI, top, skip, e.getMessage(), tryCount});
+            }
+        } while (feed == null && tryCount < MAX_TRY_COUNT);
         return feed;
     }
 
@@ -224,7 +244,9 @@ public class NugetClient implements AutoCloseable {
                 return get(client, redirectUri, null, querryParams, accept, targetClass);
             }
             case INTERNAL_SERVER_ERROR: {
-                throw new IOException("Ошибка на удаленном сервере");
+                throw new IOException("Ошибка на удаленном сервере код: "
+                        + response.getClientResponseStatus().getStatusCode() + " "
+                        + response.getClientResponseStatus().getReasonPhrase());
             }
             default:
                 throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
@@ -281,4 +303,8 @@ public class NugetClient implements AutoCloseable {
             throws IOException, URISyntaxException {
         return get(client, uri, null, null, null, targetClass);
     }
+    /**
+     * Максимально допустимое число попыток получения информации из хранилища
+     */
+    public static final int MAX_TRY_COUNT = 3;
 }

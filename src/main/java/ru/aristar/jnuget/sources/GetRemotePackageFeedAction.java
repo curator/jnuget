@@ -98,18 +98,23 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
                 }
                 logger.trace("Запрос пакетов с {} по {}", new Object[]{skip, skip + cnt});
                 PackageFeed feed = client.getPackages(null, null, cnt, null, skip);
-                logger.trace("Получено {} пакетов для {}-{}", new Object[]{feed.getEntries().size(), skip, skip + cnt});
-                for (PackageEntry entry : feed.getEntries()) {
-                    try {
-                        logger.trace("Добавление пакета {}:{}", new Object[]{entry.getTitle(), entry.getProperties().getVersion()});
-                        RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
-                        result.add(remoteNupkg);
-                    } catch (NugetFormatException e) {
-                        logger.warn("Ошибка обработки пакета " + entry.getTitle() + ":" + entry.getProperties().getVersion() + " из удаленного хранилища", e);
+                if (feed != null) {
+                    logger.trace("Получено {} пакетов для {}-{}", new Object[]{feed.getEntries().size(), skip, skip + cnt});
+                    for (PackageEntry entry : feed.getEntries()) {
+                        try {
+                            logger.trace("Добавление пакета {}:{}", new Object[]{entry.getTitle(), entry.getProperties().getVersion()});
+                            RemoteNupkg remoteNupkg = new RemoteNupkg(entry);
+                            result.add(remoteNupkg);
+                        } catch (NugetFormatException e) {
+                            logger.warn("Ошибка обработки пакета {} : {}  из удаленного хранилища. Причина: {}",
+                                    new Object[]{entry.getTitle(), entry.getProperties().getVersion(), e.getMessage()});
+                        }
                     }
+                    logger.trace("Обработано {} пакетов", new Object[]{feed.getEntries().size()});
+                    packageSize = feed.getEntries().size();
+                } else {
+                    logger.warn("Не удалось получить пакеты для {}-{} c {} попыток", new Object[]{skip, skip + cnt, client.MAX_TRY_COUNT});
                 }
-                logger.trace("Обработано {} пакетов", new Object[]{feed.getEntries().size()});
-                packageSize = feed.getEntries().size();
                 skip = skip + packageSize;
             } while (skip < top && packageSize > 0);
             logger.trace("Получено {} пакетов для диапазона: {}:{}", new Object[]{result.size(), low, top});
