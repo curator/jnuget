@@ -42,17 +42,13 @@
                             <label for="canDelete">Разрешено удаление пакетов</label>
                             <h:selectBooleanCheckbox id="canDelete" value="#{storageOptions.canDelete}"/>
                         </li>
+                        <c:forEach items="#{storageOptions.storageProperties}" var="entry">
+                            <li>
+                                <label for="storage-#{entry.name}"><h:outputText value="#{entry.description}"/></label>
+                                <h:inputText id="storage-#{entry.name}" value="#{entry.value}"/>
+                            </li>
+                        </c:forEach>
                     </ol>
-                    <h:dataTable value="#{storageOptions.storageProperties}" var="entry">
-                        <h:column>
-                            <f:facet name="header">Свойство</f:facet>
-                            <h:outputText value="#{entry.description}"/>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">Значение</f:facet>
-                            <h:inputText id="storage-#{entry.name}" value="#{entry.value}"/>
-                        </h:column>
-                    </h:dataTable>
                     <fieldset>
                         <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
                         <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">

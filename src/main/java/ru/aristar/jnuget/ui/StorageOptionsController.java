@@ -6,10 +6,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.files.NugetFormatException;
@@ -269,7 +269,7 @@ public class StorageOptionsController implements Serializable {
     /**
      * @return параметры настройки хранилища
      */
-    public DataModel<Property> getStorageProperties() {
+    public Collection<Property> getStorageProperties() {
         ArrayList<Property> data = new ArrayList<>();
         if (packageSource != null) {
             ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
@@ -283,7 +283,7 @@ public class StorageOptionsController implements Serializable {
                 }
             }
         }
-        return new ListDataModel<>(data);
+        return data;
     }
 
     /**
