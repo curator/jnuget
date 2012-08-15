@@ -126,11 +126,11 @@ public class NugetClient implements AutoCloseable {
                 logger.debug("Получение пакетов из {} Top: {}, Skip: {}, попытка {}",
                         new Object[]{storageURI, top, skip, tryCount + 1});
                 feed = get(client, storageURI, "Packages", params, accept, PackageFeed.class);
-                tryCount++;
             } catch (IOException e) {
                 logger.warn("Не удалось получить пакеты для хранилища {} "
                         + "Top: {} Skip: {} причина: {} попытка {}",
-                        new Object[]{storageURI, top, skip, e.getMessage(), tryCount});
+                        new Object[]{storageURI, top, skip, e.getMessage(), tryCount + 1});
+                tryCount = tryCount + 1;
             }
         } while (feed == null && tryCount < MAX_TRY_COUNT);
         return feed;

@@ -167,10 +167,7 @@ public class PackageSourceFactory {
         //Создание стратегии фиксации
         //TODO убрать настройки стратегии, оставить только разрешение/запрещение публикации
         logger.info("Инициализация стратегии фиксации и удаления");
-
-        ModifyStrategy pushStrategy = new ModifyStrategy();
-        pushStrategy.setCanPush(storegeOptions.isCanPush());
-        pushStrategy.setСanDelete(storegeOptions.isCanDelete());
+        ModifyStrategy pushStrategy = new ModifyStrategy(storegeOptions.isCanPush(), storegeOptions.isCanDelete());
         //Триггеры BEFORE
         pushStrategy.getBeforePushTriggers().addAll(createTriggers(storegeOptions.getBeforeTriggersOptions(), BeforeTrigger.class));
         //Триггеры Afther

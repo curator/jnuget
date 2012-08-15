@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files.nuspec;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -9,7 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author sviridov
  */
-public class Dependencies {
+public class Dependencies implements Serializable {
 
     /**
      * Прямые зависимости

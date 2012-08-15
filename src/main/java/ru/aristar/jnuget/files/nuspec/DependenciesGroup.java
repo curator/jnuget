@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files.nuspec;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,7 +17,7 @@ import ru.aristar.jnuget.files.Framework;
  * @author sviridov
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class DependenciesGroup {
+public class DependenciesGroup implements Serializable{
 
     /**
      * Преобразователь списка сборок к строке с разделителями
