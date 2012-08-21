@@ -3,6 +3,7 @@ package ru.aristar.jnuget.sources.push;
 import java.util.*;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
  *
@@ -26,6 +27,7 @@ public class RemoveOldVersionTrigger implements AfterTrigger {
      * @return Максимально допустимое число пакетов с одинаковым идентификатором
      * в хранилище.
      */
+    @Property
     public int getMaxPackageCount() {
         return maxPackageCount;
     }

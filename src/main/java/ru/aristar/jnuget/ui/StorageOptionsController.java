@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -32,6 +31,45 @@ import ru.aristar.jnuget.ui.descriptors.ObjectProperty;
 @ManagedBean(name = "storageOptions")
 @RequestScoped
 public class StorageOptionsController implements Serializable {
+
+    /**
+     * Свойства объекта
+     */
+    public class Properties {
+
+        /**
+         * Имя объекта
+         */
+        private String objectName;
+        /**
+         * Свойства объекта
+         */
+        private List<Property> properties;
+
+        /**
+         * @param objectName имя объекта
+         */
+        public Properties(String objectName) {
+            this.objectName = objectName;
+        }
+
+        /**
+         * @return имя объекта
+         */
+        public String getObjectName() {
+            return objectName;
+        }
+
+        /**
+         * @return свойства объекта
+         */
+        public List<Property> getProperties() {
+            if (properties == null) {
+                properties = new ArrayList<>();
+            }
+            return properties;
+        }
+    }
 
     /**
      * Свойсво объекта
@@ -245,25 +283,41 @@ public class StorageOptionsController implements Serializable {
     /**
      * @return триггеры, выполняющиеся после вставки пакета
      */
-    public List<AfterTrigger> getAftherTriggers() {
-        ArrayList<AfterTrigger> triggers = new ArrayList<>();
+    public List<Properties> getAftherTriggers() {
+        List<Properties> triggerOtions = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
             ModifyStrategy pushStrategy = packageSource.getPushStrategy();
-            triggers.addAll(pushStrategy.getAftherPushTriggers());
+            final List<AfterTrigger> afterTriggers = pushStrategy.getAftherPushTriggers();
+            for (int i = 0; i < afterTriggers.size(); i++) {
+                AfterTrigger afterTrigger = afterTriggers.get(i);
+                Properties properties = new Properties(format("Триггер {0}", i + 1));
+                triggerOtions.add(properties);
+                Property classProperty = new Property("triggerClass", "Имя класса триггера", afterTrigger.getClass().getName());
+                properties.getProperties().add(classProperty);
+                properties.getProperties().addAll(getObjectProperties(afterTrigger));
+            }
         }
-        return triggers;
+        return triggerOtions;
     }
 
     /**
      * @return триггеры, выполняющиеся перед вставкой пакета
      */
-    public List<BeforeTrigger> getBeforeTriggers() {
-        ArrayList<BeforeTrigger> triggers = new ArrayList<>();
+    public List<Properties> getBeforeTriggers() {
+        List<Properties> triggerOtions = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
             ModifyStrategy pushStrategy = packageSource.getPushStrategy();
-            triggers.addAll(pushStrategy.getBeforePushTriggers());
+            final List<BeforeTrigger> beforeTriggers = pushStrategy.getBeforePushTriggers();
+            for (int i = 0; i < beforeTriggers.size(); i++) {
+                BeforeTrigger beforeTrigger = beforeTriggers.get(i);
+                Properties properties = new Properties(format("Триггер {}", i + 1));
+                triggerOtions.add(properties);
+                Property classProperty = new Property("triggerClass", "Имя класса триггера", beforeTrigger.getClass().getName());
+                properties.getProperties().add(classProperty);
+                properties.getProperties().addAll(getObjectProperties(beforeTrigger));
+            }
         }
-        return triggers;
+        return triggerOtions;
     }
 
     /**
@@ -272,16 +326,7 @@ public class StorageOptionsController implements Serializable {
     public Collection<Property> getStorageProperties() {
         ArrayList<Property> data = new ArrayList<>();
         if (packageSource != null) {
-            ObjectDescriptor<? extends PackageSource> descriptor = DescriptorsFactory.getInstance().getPackageSourceDescriptor(packageSource.getClass());
-            if (descriptor != null) {
-                for (ObjectProperty property : descriptor.getProperties()) {
-                    final String description = property.getDescription();
-                    final String value = property.getValue(packageSource);
-                    final String name = property.getName();
-                    Property result = new Property(name, description, value);
-                    data.add(result);
-                }
-            }
+            data.addAll(getObjectProperties(packageSource));
         }
         return data;
     }
@@ -305,5 +350,27 @@ public class StorageOptionsController implements Serializable {
         }
         return packageSource.getPushStrategy().canDelete();
 
+    }
+
+    /**
+     * Получение свойств объекта
+     *
+     * @param object объект, для которого необходимо получить список свойств
+     * @return список свойств
+     */
+    private ArrayList<Property> getObjectProperties(Object object) {
+        ArrayList<Property> propertys = new ArrayList<>();
+        ObjectDescriptor<?> descriptor = DescriptorsFactory.getInstance().getObjectDescriptor(object.getClass());
+        if (descriptor == null) {
+            return propertys;
+        }
+        for (ObjectProperty property : descriptor.getProperties()) {
+            final String description = property.getDescription();
+            final String value = property.getValue(object);
+            final String name = property.getName();
+            Property result = new Property(name, description, value);
+            propertys.add(result);
+        }
+        return propertys;
     }
 }

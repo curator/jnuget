@@ -49,28 +49,40 @@
                             </li>
                         </c:forEach>
                     </ol>
-                    <fieldset>
-                        <legend>Триггеры выполняемые перед помещением пакета в хранилище</legend>
+                    <div>
+                        <h2>Триггеры выполняемые перед помещением пакета в хранилище</h2>
                         <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
-                            <ol>
-                                <li>
-                                    <label for="beforeTriggerClassName">Имя класса триггера</label>
-                                    <h:inputText id="beforeTriggerClassName" value="#{trigger.getClass().getName()}"/>
-                                </li>
-                            </ol>
+                            <fieldset>
+                                <legend><h:outputText value="#{trigger.objectName}"/></legend>
+                                <ol>
+                                    <c:forEach items="#{trigger.properties}" var="property">
+                                        <li>
+                                            <label for="beforeTrigger-#{property.name}">
+                                                <h:outputText value="#{property.description}"/>
+                                            </label>
+                                            <h:inputText id="beforeTrigger-#{property.name}" value="#{property.value}"/>
+                                        </li>
+                                    </c:forEach>
+                                </ol>
+                            </fieldset>
                         </c:forEach>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Триггеры выполняемые после помещения пакета в хранилище</legend>
-                        <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                    </div>
+                    <h2>Триггеры выполняемые после помещения пакета в хранилище</h2>
+                    <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                        <fieldset>
+                            <legend><h:outputText value="#{trigger.objectName}"/></legend>
                             <ol>
-                                <li>
-                                    <label for="afterTriggerClassName">Имя класса триггера</label>
-                                    <h:inputText id="afterTriggerClassName" value="#{trigger.getClass().getName()}"/>
-                                </li>
+                                <c:forEach items="#{trigger.properties}" var="property">
+                                    <li>
+                                        <label for="afterTrigger-#{property.name}">
+                                            <h:outputText value="#{property.description}"/>
+                                        </label>
+                                        <h:inputText id="afterTrigger-#{property.name}" value="#{property.value}"/>
+                                    </li>
+                                </c:forEach>
                             </ol>
-                        </c:forEach>
-                    </fieldset>
+                        </fieldset>
+                    </c:forEach>
                 </fieldset>
             </ui:define>
         </ui:composition>

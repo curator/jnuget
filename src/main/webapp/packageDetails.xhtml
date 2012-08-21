@@ -22,7 +22,7 @@
                     <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
                     <li><h:outputText value="Размер пакета #{packageDetails.size} Мб"/> </li>
                 </ul>
-                <a href="/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
+                <a href="#{packageDetails.rootUrl}/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
             </ui:define>
         </ui:composition>
     </h:body>

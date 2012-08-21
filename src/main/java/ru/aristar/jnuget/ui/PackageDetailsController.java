@@ -2,8 +2,12 @@ package ru.aristar.jnuget.ui;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
@@ -110,5 +114,36 @@ public class PackageDetailsController {
         result = result.divide(BigDecimal.valueOf(1024 * 1024));
         result = result.setScale(2, RoundingMode.UP);
         return result;
+    }
+
+    /**
+     * @return контекст приложения в сервере
+     */
+    private ExternalContext getContext() {
+        return FacesContext.getCurrentInstance().getExternalContext();
+    }
+
+    /**
+     * @return URI приложения на сервере
+     * @throws URISyntaxException ошибка получения URI прилодения
+     */
+    private URI getApplicationUri() throws URISyntaxException {
+        ExternalContext context = getContext();
+        URI uri = new URI(context.getRequestScheme(),
+                null,
+                context.getRequestServerName(),
+                context.getRequestServerPort(),
+                context.getRequestContextPath(),
+                null,
+                null);
+        return uri;
+    }
+
+    /**
+     * @return корневой URL хранилища
+     * @throws URISyntaxException ошибка получения URI прилодения
+     */
+    public String getRootUrl() throws URISyntaxException {
+        return getApplicationUri().getPath();
     }
 }
