@@ -9,6 +9,7 @@ import org.junit.Test;
 import ru.aristar.jnuget.sources.ClassicPackageSource;
 import ru.aristar.jnuget.sources.MavenStylePackageSource;
 import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.sources.push.RemoveOldVersionTrigger;
 
 /**
  * Тесты фабрики дескрипторов классов
@@ -51,5 +52,15 @@ public class DescriptorsFactoryTest {
         assertThat(descriptor.getProperties().size(), is(equalTo(1)));
         ObjectProperty property = descriptor.getProperties().toArray(new ObjectProperty[0])[0];
         assertThat(property.getDescription(), is(equalTo("Имя каталога, в котором будут храниться пакеты")));
+    }
+
+    /**
+     * 
+     */
+    @Test
+    public void testLoadDescriptorsForTrigger() {
+        DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
+        ObjectDescriptor<RemoveOldVersionTrigger> descriptor = descriptorsFactory.createDesriptorForClass(RemoveOldVersionTrigger.class);
+        assertThat(descriptor.getProperties().size(), is(equalTo(1)));
     }
 }
