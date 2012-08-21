@@ -55,12 +55,16 @@ public class DescriptorsFactoryTest {
     }
 
     /**
-     * 
+     * Проверка получения описания для триггера RemoveOldVersionTrigger
      */
     @Test
     public void testLoadDescriptorsForTrigger() {
+        //GIVEN
         DescriptorsFactory descriptorsFactory = DescriptorsFactory.getInstance();
+        //WHEN
         ObjectDescriptor<RemoveOldVersionTrigger> descriptor = descriptorsFactory.createDesriptorForClass(RemoveOldVersionTrigger.class);
+        //THEN
         assertThat(descriptor.getProperties().size(), is(equalTo(1)));
+        assertThat(descriptor.getProperties().get(0).getDescription(), is(equalTo("Максимально допустимое число версий пакета")));
     }
 }

@@ -284,20 +284,20 @@ public class StorageOptionsController implements Serializable {
      * @return триггеры, выполняющиеся после вставки пакета
      */
     public List<Properties> getAftherTriggers() {
-        List<Properties> triggerOtions = new ArrayList<>();
+        List<Properties> triggerOptions = new ArrayList<>();
         if (packageSource != null && packageSource.getPushStrategy() != null) {
             ModifyStrategy pushStrategy = packageSource.getPushStrategy();
             final List<AfterTrigger> afterTriggers = pushStrategy.getAftherPushTriggers();
             for (int i = 0; i < afterTriggers.size(); i++) {
                 AfterTrigger afterTrigger = afterTriggers.get(i);
                 Properties properties = new Properties(format("Триггер {0}", i + 1));
-                triggerOtions.add(properties);
+                triggerOptions.add(properties);
                 Property classProperty = new Property("triggerClass", "Имя класса триггера", afterTrigger.getClass().getName());
                 properties.getProperties().add(classProperty);
                 properties.getProperties().addAll(getObjectProperties(afterTrigger));
             }
         }
-        return triggerOtions;
+        return triggerOptions;
     }
 
     /**
@@ -358,7 +358,7 @@ public class StorageOptionsController implements Serializable {
      * @param object объект, для которого необходимо получить список свойств
      * @return список свойств
      */
-    private ArrayList<Property> getObjectProperties(Object object) {
+    protected ArrayList<Property> getObjectProperties(Object object) {
         ArrayList<Property> propertys = new ArrayList<>();
         ObjectDescriptor<?> descriptor = DescriptorsFactory.getInstance().getObjectDescriptor(object.getClass());
         if (descriptor == null) {
