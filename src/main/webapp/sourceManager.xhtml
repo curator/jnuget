@@ -34,7 +34,7 @@
                     </h:column>
                     <h:column>
                         <f:facet name="header">Индексируемое (Y/N)</f:facet>
-                        <h:outputText value="#{repo.isIndexed()}"/>
+                        <h:outputText value='#{repo.isIndexed()?"Y":"N"}'/>
                     </h:column>
                     <h:column>
                         <f:facet name="header">Имя хранилища</f:facet>

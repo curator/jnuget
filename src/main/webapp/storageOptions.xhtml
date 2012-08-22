@@ -49,40 +49,46 @@
                             </li>
                         </c:forEach>
                     </ol>
-                    <div>
-                        <h2>Триггеры выполняемые перед помещением пакета в хранилище</h2>
-                        <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
-                            <fieldset>
-                                <legend><h:outputText value="#{trigger.objectName}"/></legend>
-                                <ol>
-                                    <c:forEach items="#{trigger.properties}" var="property">
-                                        <li>
-                                            <label for="beforeTrigger-#{property.name}">
-                                                <h:outputText value="#{property.description}"/>
-                                            </label>
-                                            <h:inputText id="beforeTrigger-#{property.name}" value="#{property.value}"/>
-                                        </li>
-                                    </c:forEach>
-                                </ol>
-                            </fieldset>
-                        </c:forEach>
-                    </div>
-                    <h2>Триггеры выполняемые после помещения пакета в хранилище</h2>
-                    <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
-                        <fieldset>
-                            <legend><h:outputText value="#{trigger.objectName}"/></legend>
-                            <ol>
-                                <c:forEach items="#{trigger.properties}" var="property">
-                                    <li>
-                                        <label for="afterTrigger-#{property.name}">
-                                            <h:outputText value="#{property.description}"/>
-                                        </label>
-                                        <h:inputText id="afterTrigger-#{property.name}" value="#{property.value}"/>
-                                    </li>
-                                </c:forEach>
-                            </ol>
-                        </fieldset>
-                    </c:forEach>
+                    <c:if test="#{storageOptions.beforeTriggers.size() != 0}">
+                        <div>
+                            <h2>Триггеры выполняемые перед помещением пакета в хранилище</h2>
+                            <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
+                                <fieldset>
+                                    <legend><h:outputText value="#{trigger.objectName}"/></legend>
+                                    <ol>
+                                        <c:forEach items="#{trigger.properties}" var="property">
+                                            <li>
+                                                <label for="beforeTrigger-#{property.name}">
+                                                    <h:outputText value="#{property.description}"/>
+                                                </label>
+                                                <h:inputText id="beforeTrigger-#{property.name}" value="#{property.value}"/>
+                                            </li>
+                                        </c:forEach>
+                                    </ol>
+                                </fieldset>
+                            </c:forEach>
+                        </div>
+                    </c:if>
+                    <c:if test="#{storageOptions.aftherTriggers.size() != 0}">
+                        <div>
+                            <h2>Триггеры выполняемые после помещения пакета в хранилище</h2>
+                            <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                                <fieldset>
+                                    <legend><h:outputText value="#{trigger.objectName}"/></legend>
+                                    <ol>
+                                        <c:forEach items="#{trigger.properties}" var="property">
+                                            <li>
+                                                <label for="afterTrigger-#{property.name}">
+                                                    <h:outputText value="#{property.description}"/>
+                                                </label>
+                                                <h:inputText id="afterTrigger-#{property.name}" value="#{property.value}"/>
+                                            </li>
+                                        </c:forEach>
+                                    </ol>
+                                </fieldset>
+                            </c:forEach>
+                        </div>
+                    </c:if>
                 </fieldset>
             </ui:define>
         </ui:composition>

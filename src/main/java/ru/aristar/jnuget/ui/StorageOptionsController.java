@@ -310,7 +310,7 @@ public class StorageOptionsController implements Serializable {
             final List<BeforeTrigger> beforeTriggers = pushStrategy.getBeforePushTriggers();
             for (int i = 0; i < beforeTriggers.size(); i++) {
                 BeforeTrigger beforeTrigger = beforeTriggers.get(i);
-                Properties properties = new Properties(format("Триггер {}", i + 1));
+                Properties properties = new Properties(format("Триггер {0}", i + 1));
                 triggerOtions.add(properties);
                 Property classProperty = new Property("triggerClass", "Имя класса триггера", beforeTrigger.getClass().getName());
                 properties.getProperties().add(classProperty);

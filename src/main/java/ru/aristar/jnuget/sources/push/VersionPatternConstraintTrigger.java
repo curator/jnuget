@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.ui.descriptors.Property;
 
 /**
  * Стратегия, разрешающая публикацию пакета с версией, соответстыующей шаблону
@@ -28,6 +29,7 @@ public class VersionPatternConstraintTrigger implements BeforeTrigger {
     /**
      * @param pattern Шаблон версии
      */
+    @Property
     public void setPattern(String pattern) {
         this.pattern = Pattern.compile(pattern);
     }
