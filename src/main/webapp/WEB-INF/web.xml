@@ -90,6 +90,8 @@
         <web-resource-collection>
             <web-resource-name>Administrator Area</web-resource-name>
             <url-pattern>/storageOptions.xhtml</url-pattern>
+            <url-pattern>/usersOptions.xhtml</url-pattern>
+            <url-pattern>/commonOptions.xhtml</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>jnuget-admin</role-name>

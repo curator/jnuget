@@ -12,9 +12,11 @@
                 </ul>
                 <ul>
                     <c:if test="#{login.loggedIn}">
-                        <a href="sourceManager.xhtml">Список хранилищ</a>    
-                        <a href="usersOptions.xhtml">Пользователи</a>
-                        <a href="commonOptions.xhtml">Настройки</a>
+                        <a href="sourceManager.xhtml">Список хранилищ</a>
+                        <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
+                            <a href="usersOptions.xhtml">Пользователи</a>
+                            <a href="commonOptions.xhtml">Настройки</a>
+                        </c:if>
                     </c:if>
                 </ul>
             </ol>
