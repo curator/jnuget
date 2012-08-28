@@ -24,9 +24,14 @@ public enum Framework {
      */
     net20(".NETFramework2.0", "net20"),
     /**
+     * NET 3.0
+     */
+    net30(".NETFramework3.0", "net30", "net20"),
+    /**
      * NET 3.5
      */
-    net35(".NETFramework3.5", "net35", "net20"),
+    net35(
+    ".NETFramework3.5", "net35", "net30", "net20"),
     /**
      * NET 4.0
      */

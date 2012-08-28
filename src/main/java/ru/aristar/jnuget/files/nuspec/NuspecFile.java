@@ -382,6 +382,9 @@ public class NuspecFile implements Serializable {
         metadata.dependencies.dependencies = properties.getDependenciesList();
         metadata.description = properties.getDescription();
         metadata.requireLicenseAcceptance = properties.getRequireLicenseAcceptance();
+        metadata.projectUrl = properties.getProjectUrl();
+        metadata.iconUrl = properties.getIconUrl();
+        //TODO Дописать свойства
     }
     /**
      * Пространство имен для спецификации пакета NuGet 2011
