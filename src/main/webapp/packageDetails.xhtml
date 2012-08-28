@@ -16,11 +16,28 @@
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
+                <h:graphicImage value="#{packageDetails.iconUrl}"/>
                 <ul>
                     <li><h:outputText value="Идентификатор пакета #{packageDetails.packageId}"/> </li>
                     <li><h:outputText value="Версия пакета #{packageDetails.packageVersion}"/> </li>
                     <li><h:outputText value="Описание пакета #{packageDetails.description}"/> </li>
                     <li><h:outputText value="Размер пакета #{packageDetails.size} Мб"/> </li>
+                    <li><h:outputText value="Заголовок пакета #{packageDetails.title}"/></li>
+                    <li><h:outputText value="Авторы пакета #{packageDetails.authors}"/></li>
+                    <li><h:outputText value="Владельцы пакета #{packageDetails.owners}"/></li>
+                    <li><h:outputLink  value="#{packageDetails.projectUrl}">URL проекта</h:outputLink></li>
+                    <li><h:outputText value="Примечания к релизу #{packageDetails.releaseNotes}"/></li>
+
+                    <!--
+                    requireLicenseAcceptance
+                    licenseUrl
+                    summary
+                    copyright
+                    language
+                    tags
+                    dependencies
+                    -->
+
                 </ul>
                 <a href="#{packageDetails.rootUrl}/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
             </ui:define>

@@ -1,16 +1,21 @@
 package ru.aristar.jnuget.ui;
 
+import com.google.common.base.Joiner;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
@@ -114,6 +119,63 @@ public class PackageDetailsController {
         result = result.divide(BigDecimal.valueOf(1024 * 1024));
         result = result.setScale(2, RoundingMode.UP);
         return result;
+    }
+
+    public String getTitle() {
+        return nuspec.getTitle();
+    }
+
+    public String getAuthors() {
+        return nuspec.getAuthors();
+    }
+
+    public String getOwners() {
+        return nuspec.getOwners();
+    }
+
+    public String getIconUrl() {
+        if (nuspec.getIconUrl() == null) {
+            return "Images/packageDefaultIcon.png";
+        } else {
+            return nuspec.getIconUrl();
+        }
+    }
+
+    public String getProjectUrl() {
+        return nuspec.getProjectUrl();
+    }
+
+    public boolean isRequireLicenseAcceptance() {
+        return nuspec.isRequireLicenseAcceptance();
+    }
+
+    public String getLicenseUrl() {
+        return nuspec.getLicenseUrl();
+    }
+
+    public String getSummary() {
+        return nuspec.getSummary();
+    }
+
+    public String getReleaseNotes() {
+        return nuspec.getReleaseNotes();
+    }
+
+    public String getCopyright() {
+        return nuspec.getCopyright();
+    }
+
+    public String getLanguage() {
+        return nuspec.getLanguage();
+    }
+
+    public String getTags() {
+        return Joiner.on(", ").join(nuspec.getTags());
+    }
+
+    public DataModel<Dependency> getDependencies() {
+        DataModel<Dependency> dependencys = new ListDataModel<>(nuspec.getDependencies());
+        return dependencys;
     }
 
     /**
