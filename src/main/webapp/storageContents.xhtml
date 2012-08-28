@@ -8,6 +8,7 @@
         <f:metadata>
             <f:viewParam name="storageId" value="#{storageContents.storageId}"/>
             <f:viewParam name="firstRow" value="#{storageContents.low}"/>
+            <f:viewParam name="packageId" value="#{storageContents.packageId}"/>
             <f:event type="preRenderView" listener="#{storageContents.init()}" />
         </f:metadata>
         <title> <h:outputText value="Содержимое хранилища #{storageContents.storageId}"/></title>
@@ -21,6 +22,7 @@
                     <h:link value="#{letterRef.getKey()}" outcome="storageContents">
                         <f:param name="firstRow" value="#{letterRef.getValue()}"/>
                         <f:param name="storageId" value="#{storageContents.storageId}"/>
+                        <f:param name="packageId" value="#{storageContents.packageId}"/>
                     </h:link>
                 </ui:repeat>
                 <h:dataTable value="#{storageContents.packages}" var="nupkg"
@@ -28,15 +30,17 @@
                              rows="#{storageContents.displayCount}">
                     <h:column>
                         <f:facet name="header">№</f:facet>
-                        <h:link value="#{storageContents.packages.rowIndex+1}" outcome="packageDetails">
+                        <h:link value="#{storageContents.packages.rowIndex+1}" outcome="storageContents">
                             <f:param name="storageId" value="#{storageContents.storageId}"/>
                             <f:param name="packageId" value="#{nupkg.id}"/>
-                            <f:param name="packageVersion" value="#{nupkg.version}"/>
                         </h:link>
                     </h:column>
                     <h:column>
                         <f:facet name="header">Идентификатор пакета</f:facet>
-                        <h:outputText value="#{nupkg.id}"/>
+                        <h:link value="#{nupkg.id}" outcome="storageContents">
+                            <f:param name="storageId" value="#{storageContents.storageId}"/>
+                            <f:param name="packageId" value="#{nupkg.id}"/>
+                        </h:link>
                     </h:column>
                     <h:column>
                         <f:facet name="header">Версия пакета</f:facet>
@@ -50,19 +54,33 @@
                 <h:link value="&lt;&lt;" outcome="storageContents">
                     <f:param name="firstRow" value="#{storageContents.skipList.get(0)}"/>
                     <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
                 </h:link>
+                <h:outputText value="&nbsp;"/>
                 <h:link value="&lt;" outcome="storageContents">
                     <f:param name="firstRow" value="#{storageContents.skipList.get(1)}"/>
                     <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
                 </h:link>
-                <h:outputText value="#{storageContents.low}-#{storageContents.top}"/>
+                <h:outputText value="&nbsp;"/>
+                <ui:repeat offset="2" value="#{storageContents.skipList}" var="skip" size="#{storageContents.skipList.size()-4}">
+                    <h:link value="#{skip+1}-#{storageContents.normalizeTop(skip+storageContents.displayCount)}">
+                        <f:param name="firstRow" value="#{skip}"/>
+                        <f:param name="storageId" value="#{storageContents.storageId}"/>
+                        <f:param name="packageId" value="#{storageContents.packageId}"/>
+                    </h:link>
+                    <h:outputText value="&nbsp;"/>
+                </ui:repeat>
                 <h:link value="&gt;" outcome="storageContents">
                     <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 2)}"/>
                     <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
                 </h:link>
+                <h:outputText value="&nbsp;"/>
                 <h:link value="&gt;&gt;" outcome="storageContents">
                     <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 1)}"/>
                     <f:param name="storageId" value="#{storageContents.storageId}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
                 </h:link>
             </ui:define>
         </ui:composition>
