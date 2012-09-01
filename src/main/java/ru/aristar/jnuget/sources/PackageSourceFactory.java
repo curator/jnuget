@@ -20,7 +20,6 @@ import ru.aristar.jnuget.common.ProxyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
@@ -92,8 +91,7 @@ public class PackageSourceFactory {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
         RootPackageSource rootPackageSource = new RootPackageSource();
-        ModifyStrategy pushStrategy = null;
-        pushStrategy = new ModifyStrategy(true);
+        ModifyStrategy pushStrategy = new ModifyStrategy(true);
         logger.warn("Для корневого репозитория разрешается публикация "
                 + "пакетов. (поведение по умолчанию)");
         rootPackageSource.setPushStrategy(pushStrategy);
