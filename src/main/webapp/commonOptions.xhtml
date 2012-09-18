@@ -9,6 +9,24 @@
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
+                <ol>
+                    <li>
+                        <label for="dontUseProxy">Не использовать прокси</label>
+                        <h:selectBooleanCheckbox id="dontUseProxy" value="#{commonOptions.noUseProxy}"/>                      
+                    </li>
+                    <li>
+                        <label for="useSystemProxy">Использовать системный прокси</label>
+                        <h:selectBooleanCheckbox id="useSystemProxy" value="#{commonOptions.useSystemProxy}"/>                      
+                    </li>
+                    <li>
+                        <label for="proxyHost">HOST</label>
+                        <h:inputText id="proxyHost" value="#{commonOptions.proxyHost}"/>                      
+                    </li>
+                    <li>
+                        <label for="proxyPort">Port</label>
+                        <h:inputText id="proxyPort" value="#{commonOptions.proxyPort}"/>   
+                    </li>
+                </ol>
             </ui:define>
         </ui:composition>
     </h:body>

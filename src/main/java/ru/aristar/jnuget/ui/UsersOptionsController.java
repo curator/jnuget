@@ -38,6 +38,9 @@ public class UsersOptionsController {
         return roleNames;
     }
 
+    /**
+     * @return список пользователей в системе
+     */
     public DataModel<User> getUsers() {
         List<User> users = getUsersOptions().getUsers();
         return new ListDataModel<>(users);
