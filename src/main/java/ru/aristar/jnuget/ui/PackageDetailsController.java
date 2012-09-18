@@ -19,6 +19,7 @@ import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
+import ru.aristar.jnuget.sources.RootPackageSource;
 
 /**
  * Контроллер подробной информации о пакете
@@ -56,9 +57,14 @@ public class PackageDetailsController {
      * @throws NugetFormatException ошибка чтения спецификации пакета
      */
     public void init() throws NugetFormatException {
-        PackageSource packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+        PackageSource packageSource;
+        if (storageId == -1) {
+            packageSource = PackageSourceFactory.getInstance().getPackageSource();
+        } else {
+            packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+        }
         nupkg = packageSource.getPackage(packageId, packageVersion);
-        nuspec = nupkg.getNuspecFile();
+        nuspec = nupkg == null ? null : nupkg.getNuspecFile();
     }
 
     /**
@@ -153,10 +159,16 @@ public class PackageDetailsController {
         return nuspec.getLicenseUrl();
     }
 
+    /**
+     * @return аннотация пакета
+     */
     public String getSummary() {
         return nuspec.getSummary();
     }
 
+    /**
+     * @return примечания к релизу
+     */
     public String getReleaseNotes() {
         return nuspec.getReleaseNotes();
     }
@@ -173,6 +185,9 @@ public class PackageDetailsController {
         return Joiner.on(", ").join(nuspec.getTags());
     }
 
+    /**
+     * @return список зависимостей пакета
+     */
     public DataModel<Dependency> getDependencies() {
         DataModel<Dependency> dependencys = new ListDataModel<>(nuspec.getDependencies());
         return dependencys;

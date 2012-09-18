@@ -1,7 +1,5 @@
 package ru.aristar.jnuget.files.nuspec;
 
-import ru.aristar.jnuget.files.nuspec.Dependency;
-import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
@@ -81,7 +79,7 @@ public class NuspecFileTest {
         // GIVEN
         final String fileName = "/nuspec/NHibernate.nuspec.xml";
         Dependency dep = new Dependency();
-        dep.id = "Iesi.Collections";
+        dep.setId("Iesi.Collections");
         dep.versionRange = VersionRange.parse("3.2.0.4000");
         Dependency[] dependencies = new Dependency[]{dep};
         String[] tags = new String[]{"ORM", "DataBase", "DAL", "ObjectRelationalMapping"};

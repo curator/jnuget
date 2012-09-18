@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
@@ -27,17 +28,35 @@
                     <li><h:outputText value="Владельцы пакета #{packageDetails.owners}"/></li>
                     <li><h:outputLink  value="#{packageDetails.projectUrl}">URL проекта</h:outputLink></li>
                     <li><h:outputText value="Примечания к релизу #{packageDetails.releaseNotes}"/></li>
-
-                    <!--
-                    requireLicenseAcceptance
-                    licenseUrl
-                    summary
-                    copyright
-                    language
-                    tags
-                    dependencies
-                    -->
-
+                    <li>
+                        <label for="requireLicenseAcceptance">Требуется подтверждение лицензии</label>
+                        <h:selectBooleanCheckbox id="requireLicenseAcceptance" value="#{packageDetails.requireLicenseAcceptance}"/>
+                    </li>
+                    <li><h:outputLink  value="#{packageDetails.licenseUrl}">URL лицензии</h:outputLink></li>
+                    <li><h:outputText value="Аннотация #{packageDetails.summary}"/></li>
+                    <li><h:outputText value="Права #{packageDetails.copyright}"/></li>
+                    <li><h:outputText value="Локализация #{packageDetails.language}"/></li>
+                    <li><h:outputText value="Теги #{packageDetails.tags}"/></li>
+                    <li>
+                        <h:outputText value="Зависимости"/>
+                        <h:dataTable value="#{packageDetails.dependencies}" var="dependency">
+                            <h:column>
+                                <f:facet name="header">№</f:facet>
+                                <h:outputText value="#{packageDetails.dependencies.rowIndex+1}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Id</f:facet>
+                                <h:link value="#{dependency.id}" outcome="storageContents">
+                                    <f:param name="storageId" value="-1"/>
+                                    <f:param name="packageId" value="#{dependency.id}"/>
+                                </h:link>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Versions</f:facet>
+                                <h:outputText value="#{dependency.versionRangeString}"/>
+                            </h:column>
+                        </h:dataTable>
+                    </li>
                 </ul>
                 <a href="#{packageDetails.rootUrl}/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
             </ui:define>

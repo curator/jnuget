@@ -30,7 +30,7 @@ public class Dependency implements Serializable {
      * Идентификатор пакета
      */
     @XmlAttribute(name = "id")
-    public String id;
+    private String id;
     /**
      * Версия пакета
      */
@@ -39,6 +39,20 @@ public class Dependency implements Serializable {
      * Версия фреймворка, для которой устанавливается зависимость
      */
     public Framework framework;
+
+    /**
+     * @return Идентификатор пакета
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id Идентификатор пакета
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
 
     /**
      * @return строковое представление диапазона версий
