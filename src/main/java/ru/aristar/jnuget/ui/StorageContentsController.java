@@ -2,6 +2,8 @@ package ru.aristar.jnuget.ui;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import java.io.IOException;
+import java.io.InputStream;
 import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,9 +15,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -115,6 +123,23 @@ public class StorageContentsController {
         } else {
             ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getPackages(packageId));
             packages = new ListDataModel<>(nupkgs);
+        }
+    }
+
+    /**
+     * ЗАгрузка готового пакета на сервер
+     *
+     * @throws IOException ошибка чтения данных от клиента
+     * @throws NugetFormatException некорректный формат пакета
+     * @throws ServletException не удалось прочитать multipart сообщение
+     */
+    public void UploadPackage() throws IOException, NugetFormatException, ServletException {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        for (Part part : request.getParts()) {
+            InputStream inputStream = part.getInputStream();
+            TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
+            storage.pushPackage(nupkgFile);
         }
     }
 
