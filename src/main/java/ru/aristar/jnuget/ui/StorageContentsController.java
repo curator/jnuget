@@ -133,7 +133,7 @@ public class StorageContentsController {
      * @throws NugetFormatException некорректный формат пакета
      * @throws ServletException не удалось прочитать multipart сообщение
      */
-    public void UploadPackage() throws IOException, NugetFormatException, ServletException {
+    public void uploadPackage() throws IOException, NugetFormatException, ServletException {
         final FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         for (Part part : request.getParts()) {

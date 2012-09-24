@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public enum Framework {
 
+    //TODO: Создать поле - допустимые варианты названия (например sl5 sl50)
     /**
      * NET 1.0
      */
@@ -37,9 +38,13 @@ public enum Framework {
      */
     net40(".NETFramework4.0", "net40", "net35", "net20"),
     /**
-     * NET 4.0
+     * NET 4.5
      */
     net45(".NETFramework4.5", "net45", "net40", "net35", "net20"),
+    /**
+     * NET 4.5
+     */
+    winrt45(".NETFramework4.5", "winrt45", "net40", "net35", "net20"),
     /**
      * SilverLight 30
      */
@@ -52,6 +57,10 @@ public enum Framework {
      * SilverLight 5
      */
     sl5(null, "sl5"),
+    /**
+     * SilverLight 5.0
+     */
+    sl50(null, "sl50"),
     /**
      * SilverLight 4
      */

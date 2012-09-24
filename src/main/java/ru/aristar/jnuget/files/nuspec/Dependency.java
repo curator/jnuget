@@ -133,6 +133,7 @@ public class Dependency implements Serializable {
     public static Dependency parseString(String dependencyString) throws NugetFormatException {
         Pattern pattern = Pattern.compile(DEPENDENCY_FORMAT);
         Matcher matcher = pattern.matcher(dependencyString);
+        //TODO Добавить как исключение пустую зависимость. вида ::net40
         if (!matcher.matches()) {
             throw new NugetFormatException("Строка зависимостей не соответствует формату RSS NuGet: " + dependencyString);
         }
