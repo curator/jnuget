@@ -148,6 +148,9 @@ public class StorageContentsController {
      * первого подходящегопакета в списке пакетов
      */
     public List<Map.Entry<Character, Integer>> getLettersRefs() {
+        if (storage == null) {
+            return new ArrayList<>(0);
+        }
         Map<Character, Integer> result = new HashMap<>(PACKAGE_ID_START_LETTERS.length);
         for (int i = 0; i < PACKAGE_ID_START_LETTERS.length; i++) {
             final int firstId = getFirstId(PACKAGE_ID_START_LETTERS[i]);
@@ -214,6 +217,9 @@ public class StorageContentsController {
      * @return список идентификаторов переходов
      */
     public List<Integer> getSkipList() {
+        if (storage == null) {
+            return new ArrayList<>(0);
+        }
         //Расчет числа отображаемых слева и справа от текущего диапазонов
         int topPageCount = (int) ceil(((float) getPackageCount() - (float) getTop()) / (float) getDisplayCount());
         int lowPageCount = (int) ceil(((float) getLow()) / (float) getDisplayCount());
@@ -257,10 +263,6 @@ public class StorageContentsController {
     private int getFirstId(final char symbol) {
         Predicate<Nupkg> predicate = new FirstIdPredicate(symbol);
         return Iterables.indexOf(packages, predicate);
-
-
-
-
     }
 
     /**

@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.files.nuspec;
 
 import java.io.Serializable;
+import static java.text.MessageFormat.format;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,9 +134,14 @@ public class Dependency implements Serializable {
     public static Dependency parseString(String dependencyString) throws NugetFormatException {
         Pattern pattern = Pattern.compile(DEPENDENCY_FORMAT);
         Matcher matcher = pattern.matcher(dependencyString);
-        //TODO Добавить как исключение пустую зависимость. вида ::net40
         if (!matcher.matches()) {
-            throw new NugetFormatException("Строка зависимостей не соответствует формату RSS NuGet: " + dependencyString);
+            Pattern emptyDependencyPattern = Pattern.compile("^::[^:]+");
+            final String errorMessage = format("Строка зависимостей не соответствует формату RSS NuGet: {0}", dependencyString);
+            if (!emptyDependencyPattern.matcher(dependencyString).matches()) {
+                throw new NugetFormatException(errorMessage);
+            }
+            logger.warn(errorMessage);
+            return null;
         }
         Dependency dependency = new Dependency();
         String id = matcher.group("pkgId");

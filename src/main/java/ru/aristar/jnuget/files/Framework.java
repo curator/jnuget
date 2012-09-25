@@ -11,72 +11,58 @@ import org.slf4j.LoggerFactory;
  */
 public enum Framework {
 
-    //TODO: Создать поле - допустимые варианты названия (например sl5 sl50)
     /**
      * NET 1.0
      */
-    net10(".NETFramework1.0", "net10"),
+    net10(".NETFramework1.0", new String[]{"net10"}, new String[]{}),
     /**
      * NET 1.1
      */
-    net11(".NETFramework1.1", "net11", "net10"),
+    net11(".NETFramework1.1", new String[]{"net11"}, new String[]{"net10"}),
     /**
      * NET 2.0
      */
-    net20(".NETFramework2.0", "net20"),
+    net20(".NETFramework2.0", new String[]{"net20"}, new String[]{}),
     /**
      * NET 3.0
      */
-    net30(".NETFramework3.0", "net30", "net20"),
+    net30(".NETFramework3.0", new String[]{"net30"}, new String[]{"net20"}),
     /**
      * NET 3.5
      */
-    net35(
-    ".NETFramework3.5", "net35", "net30", "net20"),
+    net35(".NETFramework3.5", new String[]{"net35"}, new String[]{"net30", "net20"}),
     /**
      * NET 4.0
      */
-    net40(".NETFramework4.0", "net40", "net35", "net20"),
+    net40(".NETFramework4.0", new String[]{"net40"}, new String[]{"net35", "net30", "net20"}),
     /**
      * NET 4.5
      */
-    net45(".NETFramework4.5", "net45", "net40", "net35", "net20"),
+    net45(".NETFramework4.5", new String[]{"net45"}, new String[]{"net40", "net35", "net30", "net20"}),
     /**
-     * NET 4.5
+     * WinRT 4.5
      */
-    winrt45(".NETFramework4.5", "winrt45", "net40", "net35", "net20"),
+    winrt45("WinRT 4.5", new String[]{"winrt45"}, new String[]{}),
     /**
      * SilverLight 30
      */
-    sl30(null, "sl30"),
+    sl30("SilverLight 30", new String[]{"sl30"}, new String[]{}),
     /**
      * SilverLight 4
      */
-    sl4(null, "sl4"),
+    sl4("SilverLight 4", new String[]{"sl4", "sl40", "sl40-wp71"}, new String[]{}),
     /**
      * SilverLight 5
      */
-    sl5(null, "sl5"),
-    /**
-     * SilverLight 5.0
-     */
-    sl50(null, "sl50"),
-    /**
-     * SilverLight 4
-     */
-    sl40(null, "sl40"),
-    /**
-     * SilverLight 4 для WP71
-     */
-    sl40wp71(null, "sl40-wp71");
+    sl5("SilverLight 5", new String[]{"sl5", "sl50"}, new String[]{});
 
     /**
      * @param fullName полное название фреймворка
-     * @param shortName краткое имя фреймворка
+     * @param shortNames допустимые краткие имена фреймворка
      * @param copabilityFrameworks фреймворки совместимые с данным
      */
-    private Framework(String fullName, String shortName, String... copabilityFrameworks) {
-        this.shortName = shortName;
+    private Framework(String fullName, String[] shortNames, String[] copabilityFrameworks) {
+        this.shortNames = shortNames;
         this.fullName = fullName;
         fullCopabilyStringSet = copabilityFrameworks;
     }
@@ -95,7 +81,7 @@ public enum Framework {
     /**
      * Краткое название фреймворка
      */
-    private final String shortName;
+    private final String[] shortNames;
 
     /**
      * @return набор фреймворков совместимых с данным
@@ -126,7 +112,7 @@ public enum Framework {
      * @return краткое имя фреймворка
      */
     public String getShortName() {
-        return shortName;
+        return shortNames[0];
     }
     /**
      * Логгер
@@ -188,8 +174,10 @@ public enum Framework {
      */
     public static Framework getByShortName(String shortName) {
         for (Framework framework : values()) {
-            if (framework.getShortName().equalsIgnoreCase(shortName)) {
-                return framework;
+            for (String name : framework.shortNames) {
+                if (name.equalsIgnoreCase(shortName)) {
+                    return framework;
+                }
             }
         }
         return null;

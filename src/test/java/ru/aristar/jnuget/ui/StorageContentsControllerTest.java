@@ -10,6 +10,7 @@ import org.jmock.lib.legacy.ClassImposteriser;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  *
@@ -33,6 +34,9 @@ public class StorageContentsControllerTest {
     public void testGetSkipListAllPackagesOnOnePage() {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
         @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();
@@ -58,6 +62,9 @@ public class StorageContentsControllerTest {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
         @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
+        @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(dataModel).getRowCount();
@@ -81,6 +88,9 @@ public class StorageContentsControllerTest {
     public void testGetSkipListAllPackagesOnTwoPageLastPage() {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
         @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();
@@ -106,6 +116,9 @@ public class StorageContentsControllerTest {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
         @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
+        @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(dataModel).getRowCount();
@@ -130,6 +143,9 @@ public class StorageContentsControllerTest {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
         @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
+        @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();
         expectations.atLeast(0).of(dataModel).getRowCount();
@@ -152,6 +168,9 @@ public class StorageContentsControllerTest {
     public void testGetSkipListRealPackages() {
         //GIVEN
         StorageContentsController controller = new StorageContentsController();
+        @SuppressWarnings("unchecked")
+        final PackageSource<Nupkg> packageSource = context.mock(PackageSource.class);
+        controller.setStorage(packageSource);
         @SuppressWarnings("unchecked")
         DataModel<Nupkg> dataModel = (DataModel<Nupkg>) context.mock(DataModel.class);
         Expectations expectations = new Expectations();

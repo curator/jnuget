@@ -712,7 +712,9 @@ public class EntryProperties {
         String cleanDependencies = dependencies.replaceAll(" ", "");
         for (String dependencyString : cleanDependencies.split("[\\|]")) {
             Dependency dependency = Dependency.parseString(dependencyString);
-            list.add(dependency);
+            if (dependency != null) {
+                list.add(dependency);
+            }
         }
         return list;
     }

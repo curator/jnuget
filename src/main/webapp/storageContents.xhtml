@@ -17,13 +17,17 @@
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
-                <h:form id="form" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file"/>
-                    <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage()}" type="submit"/>
-                </h:form>
+
                 <c:choose>
                     <c:when test="#{storageContents.packageId==null}">
                         <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
+                        <br/>
+                        <h:form id="upload_form" enctype="multipart/form-data">
+                            <input type="file" name="file"/>
+                            <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
+                            <h:messages/>
+                        </h:form>
+                        <br/>
                         <br/>
                         <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
                             <h:link value="#{letterRef.getKey()}" outcome="storageContents">

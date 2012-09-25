@@ -70,10 +70,22 @@ public class CommonOptionsController {
     }
 
     /**
+     * @param value true, если используется системный прокси
+     */
+    public void setUseSystemProxy(boolean value) {
+    }
+
+    /**
      * @return true, если прокси не используется
      */
     public boolean isNoUseProxy() {
         return getProxy() == Proxy.NO_PROXY;
+    }
+
+    /**
+     * @param value true, если прокси не используется
+     */
+    public void setNoUseProxy(boolean value) {
     }
 
     /**
