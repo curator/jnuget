@@ -82,7 +82,7 @@ public class LoginController {
         try {
             HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             request.login(userName, password);
-            if (request.isUserInRole(Role.Administrator.getName()) || request.isUserInRole(Role.GuiUser.getName())) {
+            if (request.isUserInRole(Role.GuiUser.getName())) {
                 loggedIn = true;
                 return "sourceManager";
             }

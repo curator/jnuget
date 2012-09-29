@@ -19,7 +19,7 @@ public class UsersOptionsTest {
      * @throws JAXBException ошибка преобразования XML
      */
     @Test
-    public void testParseUSerOptions() throws JAXBException {
+    public void testParseUserOptions() throws JAXBException {
         //GIVEN
         InputStream inputStream = this.getClass().getResourceAsStream("/security/nuget-users.xml");
         //WHEN
@@ -33,7 +33,7 @@ public class UsersOptionsTest {
         assertThat(result.getUsers().get(1).getName(), is(equalTo("testUser2")));
         assertThat(result.getUsers().get(0).getApiKey(), is(equalTo("testApiKey")));
         assertThat(result.getUsers().get(1).getApiKey(), is(nullValue()));
-        assertThat(result.getUsers().get(0).getRoles().size(), is(equalTo(2)));
-        assertThat(result.getUsers().get(0).getRoles(), hasItems("testrole1", "testrole2"));
+        assertThat(result.getUsers().get(0).getRoles().size(), is(equalTo(1)));        
+        assertThat(result.getUsers().get(0).getRoles(), is(everyItem(equalTo(Role.Uncnown))));        
     }
 }

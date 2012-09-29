@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.security;
 
+import java.util.EnumSet;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -53,7 +54,12 @@ public abstract class XmlFileAbstractLoginModule implements LoginModule {
             return false;
         }
         subject.getPrincipals().add(new UserPrincipal(user.getName()));
-        for (String role : user.getRoles()) {
+        EnumSet<Role> allRoles = EnumSet.noneOf(Role.class);
+        for (Role role : user.getRoles()) {
+            allRoles.add(role);
+            allRoles.addAll(role.getIncludedRoles());
+        }
+        for (Role role : allRoles) {
             subject.getPrincipals().add(new RolePrincipal(role));
         }
         return true;

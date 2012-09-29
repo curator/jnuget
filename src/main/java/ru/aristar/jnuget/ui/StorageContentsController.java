@@ -3,7 +3,6 @@ package ru.aristar.jnuget.ui;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.IOException;
-import java.io.InputStream;
 import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +14,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import org.apache.myfaces.custom.fileupload.UploadedFile;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
@@ -61,9 +58,27 @@ public class StorageContentsController {
      */
     protected DataModel<Nupkg> packages;
     /**
-     * Хранилище
+     * Хранилище пакетов
      */
     private PackageSource<Nupkg> storage;
+    /**
+     * Загруженый файл
+     */
+    private UploadedFile uploadedFile;
+
+    /**
+     * @return загруженый файл
+     */
+    public UploadedFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    /**
+     * @param uploadedFile загруженый файл
+     */
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+    }
 
     /**
      * @return идентификатор хранилища
@@ -100,10 +115,16 @@ public class StorageContentsController {
         this.packageId = packageId;
     }
 
+    /**
+     * @return хранилище пакетов
+     */
     public PackageSource<Nupkg> getStorage() {
         return storage;
     }
 
+    /**
+     * @param storage хранилище пакетов
+     */
     public void setStorage(PackageSource<Nupkg> storage) {
         this.storage = storage;
     }
@@ -134,13 +155,9 @@ public class StorageContentsController {
      * @throws ServletException не удалось прочитать multipart сообщение
      */
     public void uploadPackage() throws IOException, NugetFormatException, ServletException {
-        final FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        for (Part part : request.getParts()) {
-            InputStream inputStream = part.getInputStream();
-            TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
-            storage.pushPackage(nupkgFile);
-        }
+        init();
+        TempNupkgFile nupkgFile = new TempNupkgFile(uploadedFile.getInputStream());
+        storage.pushPackage(nupkgFile);
     }
 
     /**
@@ -209,6 +226,12 @@ public class StorageContentsController {
         this.displayCount = count;
     }
 
+    /**
+     * Ограничивает верхнюю границу максимальным числом пакетов
+     *
+     * @param top желаемая верхняя граница
+     * @return нормализованная верхняя граница
+     */
     public int normalizeTop(int top) {
         return top > getPackageCount() ? getPackageCount() : top;
     }
@@ -263,6 +286,8 @@ public class StorageContentsController {
     private int getFirstId(final char symbol) {
         Predicate<Nupkg> predicate = new FirstIdPredicate(symbol);
         return Iterables.indexOf(packages, predicate);
+
+
     }
 
     /**

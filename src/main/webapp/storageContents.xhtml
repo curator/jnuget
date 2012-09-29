@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:t="http://myfaces.apache.org/tomahawk"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
@@ -22,13 +23,16 @@
                     <c:when test="#{storageContents.packageId==null}">
                         <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
                         <br/>
-                        <h:form id="upload_form" enctype="multipart/form-data">
-                            <input type="file" name="file"/>
-                            <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
-                            <h:messages/>
-                        </h:form>
-                        <br/>
-                        <br/>
+                        <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">                               
+                            <h:form id="upload_form" enctype="multipart/form-data">                                
+                                <h:inputHidden id="firstRow" value="#{storageContents.low}"/>
+                                <h:inputHidden id="storageId" value="#{storageContents.storageId}"/>                                
+                                <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
+                                <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
+                            </h:form>
+                            <br/>                            
+                            <br/>
+                        </c:if>
                         <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
                             <h:link value="#{letterRef.getKey()}" outcome="storageContents">
                                 <f:param name="firstRow" value="#{letterRef.getValue()}"/>

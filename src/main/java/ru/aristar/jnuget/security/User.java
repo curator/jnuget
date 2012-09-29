@@ -1,8 +1,10 @@
 package ru.aristar.jnuget.security;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -28,10 +30,14 @@ public class User {
     @XmlAttribute(name = "apiKey")
     private String apiKey;
     /**
-     * Роли пользователя
+     * Строки с ролями пользователя
      */
     @XmlElement(name = "role")
-    private Set<String> roles;
+    private Set<String> roleStrings;
+    /**
+     * Роли пользователя
+     */
+    private EnumSet<Role> roles;
 
     /**
      * @return ключ доступа
@@ -50,9 +56,18 @@ public class User {
     /**
      * @return роли пользователя
      */
-    public Set<String> getRoles() {
+    public EnumSet<Role> getRoles() {
         if (roles == null) {
-            roles = new HashSet<>();
+            roles = EnumSet.noneOf(Role.class);
+            if (roleStrings != null && !roleStrings.isEmpty()) {
+                roles = EnumSet.noneOf(Role.class);
+                for (String roleName : roleStrings) {
+                    Role role = Role.findRole(roleName);
+                    if (role != null) {
+                        roles.add(role);
+                    }
+                }
+            }
         }
         return roles;
     }
@@ -60,9 +75,15 @@ public class User {
     /**
      * @param roles роли пользователя
      */
-    public void setRoles(Set<String> roles) {
-
+    public void setRoles(EnumSet<Role> roles) {
         this.roles = roles;
+        if (roles == null || roles.isEmpty()) {
+            return;
+        }
+        roleStrings = new HashSet<>(roles.size());
+        for (Role role : roles) {
+            roleStrings.add(role.getName());
+        }
     }
 
     /**
