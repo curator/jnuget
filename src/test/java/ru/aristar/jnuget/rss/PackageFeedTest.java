@@ -2,6 +2,7 @@ package ru.aristar.jnuget.rss;
 
 import java.io.InputStream;
 import java.util.Date;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.files.TempNupkgFile;
@@ -57,6 +58,7 @@ public class PackageFeedTest {
         //WHEN
         String resultXml = feed.getXml();
         //THEN
-        assertTrue("Xml содержит пакет", resultXml.contains("Packages(Id='NUnit',Version='2.5.9.10348')"));
+        assertThat(resultXml.contains("Packages(Id='NUnit',Version='2.5.9.10348')"), is(equalTo(true)));
+        assertThat(resultXml.contains("name>NUnit<"), is(equalTo(true)));
     }
 }

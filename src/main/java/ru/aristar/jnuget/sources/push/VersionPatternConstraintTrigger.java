@@ -1,7 +1,10 @@
 package ru.aristar.jnuget.sources.push;
 
+import static java.text.MessageFormat.format;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
@@ -25,6 +28,10 @@ public class VersionPatternConstraintTrigger implements BeforeTrigger {
     public String getPattern() {
         return pattern.toString();
     }
+    /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @param pattern Шаблон версии
@@ -38,10 +45,16 @@ public class VersionPatternConstraintTrigger implements BeforeTrigger {
     public boolean doAction(Nupkg nupkg, PackageSource<? extends Nupkg> packageSource) throws NugetPushException {
         Version version = nupkg.getVersion();
         if (version == null) {
+            logger.info("Публикация пакета запрещена. Версия не указана");
             return false;
         }
         String strVersion = version.toString();
         Matcher matcher = pattern.matcher(strVersion);
-        return matcher.matches();
+        final boolean result = matcher.matches();
+        if (!result) {
+            logger.info(format("Публикация пакета запрещена. Версия {0} не "
+                    + "соответствует формату", strVersion));
+        }
+        return result;
     }
 }

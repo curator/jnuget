@@ -373,6 +373,7 @@ public class NuspecFile implements Serializable {
                     + " быть указаны: " + entry.getTitle() + ':' + properties.getVersion());
         }
         metadata = new Metadata();
+        metadata.authors = entry.getAuthor() == null ? null : entry.getAuthor().getName();
         metadata.dependencies = new Dependencies();
         metadata.id = entry.getTitle();
         metadata.version = properties.getVersion();

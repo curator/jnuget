@@ -14,7 +14,7 @@ import ru.aristar.jnuget.rss.PackageFeed;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Author {
 
-    @XmlElement(name = "name")
+    @XmlElement(name = "name", namespace = PackageFeed.ATOM_XML_NAMESPACE)
     private String name;
 
     public String getName() {
