@@ -243,6 +243,9 @@ public class NugetClient implements AutoCloseable {
                 URI redirectUri = new URI(redirectUriString);
                 return get(client, redirectUri, null, querryParams, accept, targetClass);
             }
+            case BAD_REQUEST:{
+                return get(client, uri, null, querryParams, accept, targetClass);
+            }
             case INTERNAL_SERVER_ERROR: {
                 throw new IOException("Ошибка на удаленном сервере код: "
                         + response.getClientResponseStatus().getStatusCode() + " "
