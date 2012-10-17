@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
@@ -17,11 +19,17 @@ import ru.aristar.jnuget.sources.PackageSourceFactory;
 public class LauncherServlet extends HttpServlet {
 
     /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
      * Конструктор, используюущийся при инициализации хранилища
      *
      * @throws URISyntaxException ошибка доступа к файлу
      */
     public LauncherServlet() throws URISyntaxException {
+        logger.info("Инициализация сервера JNuGet");
         URL url = Thread.currentThread().getContextClassLoader().getResource("ru/aristar/jnuget/security/jaas.config");
         File file = new File(url.toURI());
         System.setProperty("java.security.auth.login.config", file.getAbsolutePath());
