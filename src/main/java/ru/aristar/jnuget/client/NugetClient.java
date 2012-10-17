@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.client;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
@@ -209,69 +210,56 @@ public class NugetClient implements AutoCloseable {
      * @throws IOException ошибка чтения из сокета
      * @throws URISyntaxException URI имеет некорректный синтаксис
      */
-    public static <T> T get(Client client, URI uri, String path,
+    private <T> T get(Client client, URI uri, String path,
             Map<String, String> querryParams, MediaType[] accept, Class<T> targetClass)
             throws IOException, URISyntaxException {
-        WebResource webResource = client.resource(uri);
+        WebResource currentResource = client.resource(uri);
         //Относительный путь
         if (path != null) {
-            webResource = webResource.path(path);
+            currentResource = currentResource.path(path);
         }
         //Параметры запроса
         if (querryParams != null) {
             for (Map.Entry<String, String> entry : querryParams.entrySet()) {
                 if (entry.getValue() != null) {
-                    webResource = webResource.queryParam(entry.getKey(), entry.getValue());
+                    currentResource = currentResource.queryParam(entry.getKey(), entry.getValue());
                 }
             }
         }
-        ClientResponse response;
-        //Заголовки запроса
-        if (accept != null && accept.length != 0) {
-            response = webResource.accept(accept).get(ClientResponse.class);
-        } else {
-            response = webResource.get(ClientResponse.class);
+        try {
+            ClientResponse response;
+            //Заголовки запроса
+            if (accept != null && accept.length != 0) {
+                response = currentResource.accept(accept).get(ClientResponse.class);
+            } else {
+                response = currentResource.get(ClientResponse.class);
+            }
+            switch (response.getClientResponseStatus()) {
+                case ACCEPTED:
+                case OK: {
+                    return response.getEntity(targetClass);
+                }
+                case FOUND:
+                case MOVED_PERMANENTLY: {
+                    String redirectUriString = response.getHeaders().get("Location").get(0);
+                    URI redirectUri = new URI(redirectUriString);
+                    return get(client, redirectUri, null, querryParams, accept, targetClass);
+                }
+                case BAD_REQUEST: {
+                    return get(client, uri, null, querryParams, accept, targetClass);
+                }
+                case INTERNAL_SERVER_ERROR: {
+                    throw new IOException("Ошибка на удаленном сервере код: "
+                            + response.getClientResponseStatus().getStatusCode() + " "
+                            + response.getClientResponseStatus().getReasonPhrase());
+                }
+                default:
+                    throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
+            }
+        } catch (ClientHandlerException e) {
+            logger.warn(format("Ошибка получения данных с удаленного сервера по адресу {}", currentResource.getURI()), e);
+            throw e;
         }
-        switch (response.getClientResponseStatus()) {
-            case ACCEPTED:
-            case OK: {
-                return response.getEntity(targetClass);
-            }
-            case FOUND:
-            case MOVED_PERMANENTLY: {
-                String redirectUriString = response.getHeaders().get("Location").get(0);
-                URI redirectUri = new URI(redirectUriString);
-                return get(client, redirectUri, null, querryParams, accept, targetClass);
-            }
-            case BAD_REQUEST:{
-                return get(client, uri, null, querryParams, accept, targetClass);
-            }
-            case INTERNAL_SERVER_ERROR: {
-                throw new IOException("Ошибка на удаленном сервере код: "
-                        + response.getClientResponseStatus().getStatusCode() + " "
-                        + response.getClientResponseStatus().getReasonPhrase());
-            }
-            default:
-                throw new IOException("Статус сообщения " + response.getClientResponseStatus() + " не поддерживается");
-        }
-    }
-
-    /**
-     * Получить класс указанного типа с URI
-     *
-     * @param <T> тип
-     * @param client клиент
-     * @param uri URI ресурса
-     * @param targetClass класс, который необходимо получить
-     * @param querryParams параметры запроса
-     * @param path относительный путь к объекту
-     * @return объект из удаленного URI
-     * @throws IOException ошибка чтения из сокета
-     * @throws URISyntaxException URI имеет некорректный синтаксис
-     */
-    public static <T> T get(Client client, URI uri, String path, Map<String, String> querryParams, Class<T> targetClass)
-            throws IOException, URISyntaxException {
-        return get(client, uri, path, querryParams, null, targetClass);
     }
 
     /**
@@ -286,7 +274,7 @@ public class NugetClient implements AutoCloseable {
      * @throws IOException ошибка чтения из сокета
      * @throws URISyntaxException URI имеет некорректный синтаксис
      */
-    public static <T> T get(Client client, URI uri, String path, Class<T> targetClass)
+    private <T> T get(Client client, URI uri, String path, Class<T> targetClass)
             throws IOException, URISyntaxException {
         return get(client, uri, path, null, null, targetClass);
     }
@@ -302,7 +290,7 @@ public class NugetClient implements AutoCloseable {
      * @throws IOException ошибка чтения из сокета
      * @throws URISyntaxException URI имеет некорректный синтаксис
      */
-    public static <T> T get(Client client, URI uri, Class<T> targetClass)
+    public <T> T get(Client client, URI uri, Class<T> targetClass)
             throws IOException, URISyntaxException {
         return get(client, uri, null, null, null, targetClass);
     }

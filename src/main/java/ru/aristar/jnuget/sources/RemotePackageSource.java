@@ -15,11 +15,10 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
-import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.AfterTrigger;
 import ru.aristar.jnuget.sources.push.BeforeTrigger;
-import ru.aristar.jnuget.sources.push.NugetPushException;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
+import ru.aristar.jnuget.sources.push.NugetPushException;
 
 /**
  *
