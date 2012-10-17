@@ -8,6 +8,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -20,10 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.common.ProxyOptions;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
 import ru.aristar.jnuget.rss.PackageFeed;
+import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
  *
@@ -56,8 +60,9 @@ public class NugetClient implements AutoCloseable {
      * Конструктор по умолчанию
      */
     public NugetClient() {
-        ClientConfig config = new DefaultClientConfig();
-        client = Client.create(config);
+        final ProxyOptions proxyOptions = PackageSourceFactory.getInstance().getOptions().getProxyOptions();
+        ClientConfig config = createClientConfig(proxyOptions);
+        client = ApacheHttpClient4.create(config);
         client.setFollowRedirects(Boolean.TRUE);
         client.addFilter(new GZIPContentEncodingFilter());
         webResource = client.resource(DEFAULT_REMOTE_STORAGE_URL);
@@ -280,17 +285,41 @@ public class NugetClient implements AutoCloseable {
     }
 
     /**
+     * Создает настройки подключения к серверу NuGet
+     *
+     * @param proxyOptions настройки прокси
+     * @return
+     */
+    private ClientConfig createClientConfig(ProxyOptions proxyOptions) {
+        ClientConfig config = new DefaultClientConfig();
+        if (proxyOptions.getUseSystemProxy() != null && proxyOptions.getUseSystemProxy()) {
+            logger.info("Используется системный прокси");
+            System.setProperty("java.net.useSystemProxies", "true");
+        } else if (proxyOptions.getNoProxy() != null && proxyOptions.getNoProxy()) {
+            logger.info("Прокси отключен");
+            throw new UnsupportedOperationException("Отключение прокси не реализовано");
+        } else {
+            logger.info("Используется прокси {}:{}",
+                    new Object[]{proxyOptions.getHost(), proxyOptions.getPort()});
+            URI proxyUri = URI.create(proxyOptions.getHost() + ":" + proxyOptions.getPort());
+            config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_URI, proxyUri);
+            config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_USERNAME, proxyOptions.getLogin());
+            config.getProperties().put(ApacheHttpClient4Config.PROPERTY_PROXY_PASSWORD, proxyOptions.getPassword());
+        }
+        return config;
+    }
+
+    /**
      * Получить класс указанного типа с URI
      *
      * @param <T> тип
-     * @param client клиент
      * @param uri URI ресурса
      * @param targetClass класс, который необходимо получить
      * @return объект из удаленного URI
      * @throws IOException ошибка чтения из сокета
      * @throws URISyntaxException URI имеет некорректный синтаксис
      */
-    public <T> T get(Client client, URI uri, Class<T> targetClass)
+    public <T> T get(URI uri, Class<T> targetClass)
             throws IOException, URISyntaxException {
         return get(client, uri, null, null, null, targetClass);
     }

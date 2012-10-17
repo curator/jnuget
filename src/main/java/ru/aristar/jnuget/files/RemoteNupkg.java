@@ -1,10 +1,7 @@
 package ru.aristar.jnuget.files;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -117,12 +114,9 @@ public class RemoteNupkg implements Nupkg {
      */
     private InputStream getStream(URI uri) throws IOException {
         getLogger().debug("Загрузка пакета из {}", new Object[]{uri});
-        try {
-            DefaultClientConfig config = new DefaultClientConfig();
-            config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-            Client client = Client.create(config);
+        try {          
             NugetClient nugetClient = new NugetClient();
-            return nugetClient.get(client, uri, InputStream.class);
+            return nugetClient.get(uri, InputStream.class);
         } catch (UniformInterfaceException | ClientHandlerException | URISyntaxException e) {
             throw new IOException("Ошибка получения потока пакета из удаленного ресурса", e);
         }
