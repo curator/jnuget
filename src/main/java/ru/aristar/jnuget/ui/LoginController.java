@@ -6,7 +6,8 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.security.Role;
 
 /**
@@ -21,7 +22,7 @@ public class LoginController {
     /**
      * Логгер
      */
-    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * Имя пользователя
      */
@@ -89,7 +90,7 @@ public class LoginController {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Недостаточно прав", null));
             return "failure";
         } catch (ServletException e) {
-            logger.error("Ошибка в процессе авторизации", e);
+            logger.warn("Ошибка в процессе авторизации {}:{} {} ", new Object[]{userName, password, e});
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Ошибка в процессе авторизации", null));
             return "failure";
         }
