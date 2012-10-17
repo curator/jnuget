@@ -62,10 +62,11 @@ public class PackageSourceFactory {
      * @param packageSource хранилище, которое необходимо индексировать
      * @param storageName имя, используемое для сохранения индекса
      * @param refreshInterval интервал обновления информации в индекск
+     * @param cronString строка cron (планирование обновления индекса)
      * @return индексируемое хранилище
      */
     protected PackageSource<Nupkg> createIndexForStorage(PackageSource<Nupkg> packageSource,
-            String storageName, Integer refreshInterval) {
+            String storageName, Integer refreshInterval, String cronString) {
         logger.debug("Создание индекса для хранилища {}", new Object[]{packageSource});
         IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
         indexedPackageSource.setUnderlyingSource(packageSource);
@@ -73,7 +74,11 @@ public class PackageSourceFactory {
             File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
             indexedPackageSource.setIndexStoreFile(storageFile);
         }
-        if (refreshInterval != null) {
+        if (cronString != null) {
+            logger.info("Расписание обновления индекса для хранилища {} установлено в \"{}\"",
+                    new Object[]{packageSource, cronString});
+            indexedPackageSource.setCronSheduller(cronString);
+        } else if (refreshInterval != null) {
             logger.info("Интервал обновления для хранилища {} установлен в {}",
                     new Object[]{packageSource, refreshInterval});
             indexedPackageSource.setRefreshInterval(refreshInterval);
@@ -148,7 +153,11 @@ public class PackageSourceFactory {
         newSource.setPushStrategy(pushStrategy);
         logger.info("Установлена стратегия фиксации");
         if (storageOptions.isIndexed()) {
-            newSource = createIndexForStorage(newSource, storageOptions.getStorageName(), storageOptions.getRefreshInterval());
+            newSource = createIndexForStorage(
+                    newSource,
+                    storageOptions.getStorageName(),
+                    storageOptions.getRefreshInterval(),
+                    storageOptions.getCronString());
         }
         logger.info("Хранилище создано");
         return newSource;

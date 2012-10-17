@@ -4,7 +4,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import static java.text.MessageFormat.format;
 import java.util.*;
+import static org.quartz.CronScheduleBuilder.*;
+import org.quartz.CronTrigger;
+import org.quartz.Job;
+import static org.quartz.JobBuilder.*;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerFactory;
+import static org.quartz.TriggerBuilder.*;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
@@ -41,6 +53,10 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      * Интервал обновления индекса храниилща
      */
     private Integer refreshInterval;
+    /**
+     * Ключ триггера обновления хранилища
+     */
+    private TriggerKey triggerKey;
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
@@ -50,7 +66,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     /**
      * Поток, обновляющий индекс
      */
-    private class RefreshIndexThread extends TimerTask {
+    private class RefreshIndexThread extends TimerTask implements Job {
 
         /**
          * Основной метод потока, обновляющий индекс
@@ -62,6 +78,11 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
             } catch (Exception e) {
                 logger.error("Ошибка оновления индекса для хранилища " + packageSource, e);
             }
+        }
+
+        @Override
+        public void execute(JobExecutionContext context) throws JobExecutionException {
+            run();
         }
     }
 
@@ -221,6 +242,35 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
             timer = new Timer();
         }
         timer.schedule(indexThread, intervalMs, intervalMs);
+    }
+
+    /**
+     * Запланировать обновление информации о хранилище
+     *
+     * @param cronString строка cron
+     */
+    public void setCronSheduller(String cronString) {
+        try {
+            SchedulerFactory factory = new org.quartz.impl.StdSchedulerFactory();
+            Scheduler scheduler = factory.getScheduler();
+            if (!scheduler.isStarted()) {
+                scheduler.start();
+            }
+            if (triggerKey != null) {
+                scheduler.unscheduleJob(triggerKey);
+            }
+
+            JobDetail refreshIndexJob = newJob(RefreshIndexThread.class).build();
+
+            triggerKey = TriggerKey.triggerKey(packageSource.toString(), PackageSource.class.getName());
+            CronTrigger trigger = newTrigger().withIdentity(triggerKey).withSchedule(cronSchedule(cronString)).forJob(refreshIndexJob).build();
+            scheduler.scheduleJob(trigger);
+        } catch (Exception e) {
+            logger.error(format("Не удалось запланировать обновление индекса с параметрами {0}", cronString), e);
+            triggerKey = null;
+        }
+
+
     }
 
     /**

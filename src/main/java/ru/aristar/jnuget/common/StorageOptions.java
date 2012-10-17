@@ -49,6 +49,11 @@ public class StorageOptions {
     @XmlAttribute(name = "refreshInterval")
     private Integer refreshInterval;
     /**
+     * Строка настройки планировщика cron
+     */
+    @XmlAttribute(name = "schedule")
+    private String cronString;
+    /**
      * Список настроек вида ключ/значение
      */
     @XmlJavaTypeAdapter(PropertiesTypeAdapter.class)
@@ -175,5 +180,19 @@ public class StorageOptions {
             beforeTriggersOptions = new ArrayList<>();
         }
         return beforeTriggersOptions;
+    }
+
+    /**
+     * @return строка настройки планировщика cron
+     */
+    public String getCronString() {
+        return cronString;
+    }
+
+    /**
+     * @param cronString строка настройки планировщика cron
+     */
+    public void setCronString(String cronString) {
+        this.cronString = cronString;
     }
 }
