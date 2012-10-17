@@ -265,7 +265,7 @@ public class ClassicNupkg implements Nupkg {
      * @return список фреймворков
      */
     private EnumSet<Framework> readTargetFrameworks() {
-        //TODO SMD_Data, Mono,2.0, SL30, Managed, mono, Wix, sl3, sl3-wp, net35-Client, net35-Full, net40-Client, net40-Full, sl2, sl4-windowsphone71
+        //TODO SMD_Data, Mono,2.0, Managed, mono, Wix, sl3-wp, net35-Client, net35-Full, net40-Client, net40-Full, sl4-windowsphone71
         EnumSet<Framework> result = EnumSet.noneOf(Framework.class);
         try (InputStream inputStream = getStream()) {
             ZipInputStream zipInputStream = new ZipInputStream(inputStream);

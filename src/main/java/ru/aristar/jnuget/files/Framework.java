@@ -44,9 +44,13 @@ public enum Framework {
      */
     winrt45("WinRT 4.5", new String[]{"winrt45"}, new String[]{}),
     /**
+     * SilverLight 2.0
+     */
+    sl20("SilverLight 2", new String[]{"sl2"}, new String[]{}),
+    /**
      * SilverLight 30
      */
-    sl30("SilverLight 30", new String[]{"sl30"}, new String[]{}),
+    sl30("SilverLight 30", new String[]{"sl30", "sl3"}, new String[]{}),
     /**
      * SilverLight 4
      */
