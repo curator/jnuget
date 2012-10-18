@@ -4,19 +4,14 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.Authenticator;
-import java.net.ProxySelector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.aristar.jnuget.common.CustomProxyAuthenticator;
-import ru.aristar.jnuget.common.CustomProxySelector;
 import ru.aristar.jnuget.common.OptionConverter;
 import ru.aristar.jnuget.common.Options;
-import ru.aristar.jnuget.common.ProxyOptions;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.files.Nupkg;
@@ -270,7 +265,6 @@ public class PackageSourceFactory {
         if (reinitialize || packageSource == null) {
             synchronized (this) {
                 if (packageSource == null) {
-                    initializeProxyOptions(options.getProxyOptions());
                     packageSource = createRootPackageSource(options);
                 }
             }
@@ -285,30 +279,6 @@ public class PackageSourceFactory {
      */
     public RootPackageSource getPackageSource() {
         return getPackageSource(false);
-    }
-
-    /**
-     * Инициализация настроек прокси
-     *
-     * @param proxyOptions настройки прокси сервера
-     */
-    private void initializeProxyOptions(ProxyOptions proxyOptions) {
-        if (proxyOptions.getUseSystemProxy() != null && proxyOptions.getUseSystemProxy()) {
-            logger.info("Используется системный прокси");
-            System.setProperty("java.net.useSystemProxies", "true");
-        } else if (proxyOptions.getNoProxy() != null && proxyOptions.getNoProxy()) {
-            logger.info("Прокси отключен");
-            ProxySelector.setDefault(new CustomProxySelector());
-        } else {
-            logger.info("Используется прокси {}:{}",
-                    new Object[]{proxyOptions.getHost(), proxyOptions.getPort()});
-            ProxySelector.setDefault(new CustomProxySelector(
-                    proxyOptions.getHost(),
-                    proxyOptions.getPort()));
-            Authenticator.setDefault(new CustomProxyAuthenticator(
-                    proxyOptions.getLogin(),
-                    proxyOptions.getPassword()));
-        }
     }
 
     /**
