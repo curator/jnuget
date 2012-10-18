@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.RecursiveAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.client.ClientFactory;
 import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.RemoteNupkg;
@@ -41,9 +42,9 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
      */
     private final int top;
     /**
-     * Клиент удаленного хранилища
+     * Фабрика клиентов удаленного хранилища
      */
-    protected NugetClient client;
+    private ClientFactory clientFactory;
     /**
      * Логгер
      */
@@ -54,16 +55,16 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
      * @param packages список, в который складываются полученные пакеты
      * @param low нижняя граница списка пакетов
      * @param top верхняя граница списка пакетов
-     * @param targetUrl URL удаленного хранилища
+     * @param clientFactory URL удаленного хранилища
      */
-    public GetRemotePackageFeedAction(int packageFeedSize, List<RemoteNupkg> packages, final int low, final int top, String targetUrl) {
+    public GetRemotePackageFeedAction(int packageFeedSize, List<RemoteNupkg> packages, final int low, final int top, ClientFactory clientFactory) {
         logger.debug("Создание потока для диапазона: {}:{}", new Object[]{low, top});
         this.packageFeedSize = packageFeedSize;
         this.packages = packages;
         this.low = low;
         this.top = top;
         //TODO Избавиться от безсмысленной инициализации классов только для проброса URL
-        this.client = new NugetClient(targetUrl);
+        this.clientFactory = clientFactory;
     }
 
     @Override
@@ -77,8 +78,8 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
         } else {
             final int middle = (top + low) / 2;
             logger.trace("Верхняя граница = {}; Нижняя граница = {}; Середина = {};", new Object[]{top, low, middle});
-            GetRemotePackageFeedAction bottomAction = new GetRemotePackageFeedAction(packageFeedSize, packages, low, middle, client.getUrl());
-            GetRemotePackageFeedAction topAction = new GetRemotePackageFeedAction(packageFeedSize, packages, middle, top, client.getUrl());
+            GetRemotePackageFeedAction bottomAction = new GetRemotePackageFeedAction(packageFeedSize, packages, low, middle, clientFactory);
+            GetRemotePackageFeedAction topAction = new GetRemotePackageFeedAction(packageFeedSize, packages, middle, top, clientFactory);
             invokeAll(bottomAction, topAction);
         }
     }
@@ -89,9 +90,10 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
     protected void loadPackages() {
         logger.trace("Получение пакетов для диапазона: {}:{}", new Object[]{low, top});
         ArrayList<RemoteNupkg> result = new ArrayList<>();
-        try {
+        try (NugetClient client = clientFactory.createClient()) {
             int skip = low;
             int packageSize = packageFeedSize;
+
             do {
                 int cnt = top - skip;
                 if (cnt > packageSize) {

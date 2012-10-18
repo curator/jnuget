@@ -19,6 +19,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
+import ru.aristar.jnuget.client.ClientFactory;
 import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.RemoteNupkg;
@@ -55,9 +56,8 @@ public class GetRemotePackageFeedActionTest {
         List<RemoteNupkg> arrayList = new ArrayList<>();
         arrayList = Collections.synchronizedList(arrayList);
         NugetClient client = context.mock(NugetClient.class);
+        ClientFactory clientFactory = context.mock(ClientFactory.class);
         Expectations expectations = new Expectations();
-        expectations.atLeast(0).of(client).getUrl();
-        expectations.will(returnValue(""));
         addExpectation(expectations, client, 200, 0, createPackageFeed("feed-1", 200, 1));
         addExpectation(expectations, client, 200, 200, createPackageFeed("feed-2", 200, 201));
         addExpectation(expectations, client, 200, 400, createPackageFeed("feed-3", 200, 401));
@@ -79,8 +79,7 @@ public class GetRemotePackageFeedActionTest {
         addExpectation(expectations, client, 200, 3600, createPackageFeed("feed-19", 200, 3601));
         addExpectation(expectations, client, 200, 3800, createPackageFeed("feed-20", 200, 3801));
         context.checking(expectations);
-        GetRemotePackageFeedAction instance = new GetRemotePackageFeedAction(200, arrayList, 0, 4000, "");
-        instance.client = client;
+        GetRemotePackageFeedAction instance = new GetRemotePackageFeedAction(200, arrayList, 0, 4000, clientFactory);
         //WHEN
         ForkJoinPool pool = new ForkJoinPool();
         pool.invoke(instance);
@@ -101,14 +100,15 @@ public class GetRemotePackageFeedActionTest {
         //GIVEN
         List<RemoteNupkg> nupkgs = new ArrayList<>();
         NugetClient client = context.mock(NugetClient.class);
-        GetRemotePackageFeedAction action = new GetRemotePackageFeedAction(5, nupkgs, 0, 200, "");
-        action.client = client;
+        ClientFactory clientFactory = context.mock(ClientFactory.class);
+        GetRemotePackageFeedAction action = new GetRemotePackageFeedAction(5, nupkgs, 0, 200, clientFactory);
         Expectations expectations = new Expectations();
-        expectations.atLeast(0).of(client).getUrl();
-        expectations.will(returnValue(""));
         addExpectation(expectations, client, 5, 0, createPackageFeed("feed-1", createPackageEntry("package-1", "1.2.3"), createPackageEntry("package-2", "1.2.3")));
         addExpectation(expectations, client, 2, 2, createPackageFeed("feed-2", createPackageEntry("package-3", "1.2.3"), createPackageEntry("package-4", "1.2.3")));
         addExpectation(expectations, client, 2, 4, createPackageFeed("feed-3"));
+        expectations.oneOf(client).close();
+        expectations.atLeast(0).of(clientFactory).createClient();
+        expectations.will(returnValue(client));
         context.checking(expectations);
         //WHEN
         action.loadPackages();
@@ -161,6 +161,7 @@ public class GetRemotePackageFeedActionTest {
      * @param count количество вложений
      * @param skip с какого идентификатора начать нумерацию пакетов
      * @return RSS сообщение
+     * @throws NugetFormatException некорректная версия тестового пакета  
      */
     private PackageFeed createPackageFeed(String name, int count, int skip) throws NugetFormatException {
         final PackageFeed packageFeed = context.mock(PackageFeed.class, name);
