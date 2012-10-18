@@ -43,7 +43,7 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
     /**
      * Клиент удаленного хранилища
      */
-    private final NugetClient client;
+    protected NugetClient client;
     /**
      * Логгер
      */
@@ -54,15 +54,16 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
      * @param packages список, в который складываются полученные пакеты
      * @param low нижняя граница списка пакетов
      * @param top верхняя граница списка пакетов
-     * @param client клиент удаленного хранилища
+     * @param targetUrl URL удаленного хранилища
      */
-    public GetRemotePackageFeedAction(int packageFeedSize, List<RemoteNupkg> packages, final int low, final int top, NugetClient client) {
+    public GetRemotePackageFeedAction(int packageFeedSize, List<RemoteNupkg> packages, final int low, final int top, String targetUrl) {
         logger.debug("Создание потока для диапазона: {}:{}", new Object[]{low, top});
         this.packageFeedSize = packageFeedSize;
         this.packages = packages;
         this.low = low;
         this.top = top;
-        this.client = client;
+        //TODO Избавиться от безсмысленной инициализации классов только для проброса URL
+        this.client = new NugetClient(targetUrl);
     }
 
     @Override
@@ -76,8 +77,8 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
         } else {
             final int middle = (top + low) / 2;
             logger.trace("Верхняя граница = {}; Нижняя граница = {}; Середина = {};", new Object[]{top, low, middle});
-            GetRemotePackageFeedAction bottomAction = new GetRemotePackageFeedAction(packageFeedSize, packages, low, middle, client);
-            GetRemotePackageFeedAction topAction = new GetRemotePackageFeedAction(packageFeedSize, packages, middle, top, client);
+            GetRemotePackageFeedAction bottomAction = new GetRemotePackageFeedAction(packageFeedSize, packages, low, middle, client.getUrl());
+            GetRemotePackageFeedAction topAction = new GetRemotePackageFeedAction(packageFeedSize, packages, middle, top, client.getUrl());
             invokeAll(bottomAction, topAction);
         }
     }
@@ -113,7 +114,7 @@ public class GetRemotePackageFeedAction extends RecursiveAction {
                     logger.trace("Обработано {} пакетов", new Object[]{feed.getEntries().size()});
                     packageSize = feed.getEntries().size();
                 } else {
-                    logger.warn("Не удалось получить пакеты для {}-{} c {} попыток", new Object[]{skip, skip + cnt, client.MAX_TRY_COUNT});
+                    logger.warn("Не удалось получить пакеты для {}-{} c {} попыток", new Object[]{skip, skip + cnt, NugetClient.MAX_TRY_COUNT});
                 }
                 skip = skip + packageSize;
             } while (skip < top && packageSize > 0);

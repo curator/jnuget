@@ -9,11 +9,12 @@
         </layout>
     </appender>
 
- 
-    <logger name="ru.aristar" level="debug" additivity="false">
+
+    <logger name="ru.aristar" additivity="false">
+        <level value="debug"/>
         <appender-ref ref="console"/>
     </logger>
-    
+
     <root>
         <priority value ="info" />
         <appender-ref ref="console" />

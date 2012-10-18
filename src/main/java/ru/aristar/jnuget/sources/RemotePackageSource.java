@@ -57,7 +57,7 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
             int groupCount = 200;
             logger.debug("Получение {} пакетов из удаленного сервера группами по {}",
                     new Object[]{count, groupCount});
-            forkJoinPool.invoke(new GetRemotePackageFeedAction(groupCount, result, 0, count, remoteStorage));
+            forkJoinPool.invoke(new GetRemotePackageFeedAction(groupCount, result, 0, count, getUrl()));
             logger.debug("Завершено получение пакетов count={}", new Object[]{result.size()});
             return result;
         } catch (IOException | URISyntaxException e) {
