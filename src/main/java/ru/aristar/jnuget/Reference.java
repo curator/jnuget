@@ -47,10 +47,15 @@ public class Reference implements Serializable {
         }
         if (!(obj instanceof Reference)) {
             return false;
-        } else {
-            Reference o = (Reference) obj;
-            return this.file.equals(o.file);
         }
+        Reference o = (Reference) obj;
+        if (o.file == null && this.file == null) {
+            return true;
+        }
+        if (o.file == null || this.file == null) {
+            return false;
+        }
+        return this.file.equals(o.file);
     }
 
     @Override

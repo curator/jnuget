@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.rss;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Comparator;
  *
  * @author sviridov
  */
-public class PackageDownloadCountComparator implements Comparator<PackageEntry> {
+public class PackageDownloadCountComparator implements Comparator<PackageEntry>, Serializable {
 
     @Override
     public int compare(PackageEntry o1, PackageEntry o2) {

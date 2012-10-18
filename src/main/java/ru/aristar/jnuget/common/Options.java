@@ -97,11 +97,13 @@ public class Options {
      *
      * @param file файл, в который производится сохранение
      * @throws JAXBException ошибка сохранения
-     * @throws FileNotFoundException папка для сохранения не найдена
+     * @throws IOException папка для сохранения не найдена илм произошла ошибка
+     * сохранения в файл
      */
-    public void saveOptions(File file) throws JAXBException, FileNotFoundException {
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        saveOptions(fileOutputStream);
+    public void saveOptions(File file) throws JAXBException, IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            saveOptions(fileOutputStream);
+        }
     }
 
     /**
@@ -170,7 +172,7 @@ public class Options {
                 options.saveOptions(file);
                 logger.info("Настройки сохранены в " + file);
                 return options;
-            } catch (JAXBException | FileNotFoundException e) {
+            } catch (JAXBException | IOException e) {
                 logger.warn("Ошибка загрузки настроек по умолчанию", e);
             }
         }
