@@ -16,7 +16,6 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.jmock.lib.legacy.ClassImposteriser;
 import static org.junit.Assert.assertThat;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.client.ClientFactory;
@@ -50,7 +49,6 @@ public class GetRemotePackageFeedActionTest {
      * @throws NugetFormatException некорректный формат тестовой версии
      */
     @Test
-    @Ignore("Необходимо переработать тест")
     public void testCompute() throws IOException, URISyntaxException, NugetFormatException {
         //GIVEN
         List<RemoteNupkg> arrayList = new ArrayList<>();
@@ -58,6 +56,9 @@ public class GetRemotePackageFeedActionTest {
         NugetClient client = context.mock(NugetClient.class);
         ClientFactory clientFactory = context.mock(ClientFactory.class);
         Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(clientFactory).createClient();
+        expectations.will(returnValue(client));
+        expectations.atLeast(0).of(client).close();
         addExpectation(expectations, client, 200, 0, createPackageFeed("feed-1", 200, 1));
         addExpectation(expectations, client, 200, 200, createPackageFeed("feed-2", 200, 201));
         addExpectation(expectations, client, 200, 400, createPackageFeed("feed-3", 200, 401));
@@ -161,7 +162,7 @@ public class GetRemotePackageFeedActionTest {
      * @param count количество вложений
      * @param skip с какого идентификатора начать нумерацию пакетов
      * @return RSS сообщение
-     * @throws NugetFormatException некорректная версия тестового пакета  
+     * @throws NugetFormatException некорректная версия тестового пакета
      */
     private PackageFeed createPackageFeed(String name, int count, int skip) throws NugetFormatException {
         final PackageFeed packageFeed = context.mock(PackageFeed.class, name);
