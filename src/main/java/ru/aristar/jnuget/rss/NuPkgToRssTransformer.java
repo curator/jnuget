@@ -58,8 +58,8 @@ public abstract class NuPkgToRssTransformer {
                 logger.warn("Ошибка сбора информации о пакете " + nupkg, e);
             }
         }
-        Collections.sort(packageEntrys, getPackageComparator(orderBy));
         markLastVersion(packageEntrys);
+        Collections.sort(packageEntrys, getPackageComparator(orderBy));
         logger.debug("Получено {} записей о пакетах", new Object[]{packageEntrys.size()});
         packageEntrys = cutPackageList(skip, top, packageEntrys);
         logger.debug("Подготовлено {} записей о пакетах", new Object[]{packageEntrys.size()});
@@ -121,10 +121,13 @@ public abstract class NuPkgToRssTransformer {
         if (packageEntrys == null || packageEntrys.isEmpty()) {
             return;
         }
-        packageEntrys.get(packageEntrys.size() - 1).getProperties().setIsLatestVersion(true);
+        ArrayList<PackageEntry> entrys = new ArrayList<>(packageEntrys);
+        Collections.sort(entrys, new PackageIdAndVersionComparator());
+
+        packageEntrys.get(entrys.size() - 1).getProperties().setIsLatestVersion(true);
         PackageEntry prev = null;
-        for (int i = packageEntrys.size() - 2; i >= 0; i--) {
-            PackageEntry current = packageEntrys.get(i);
+        for (int i = entrys.size() - 2; i >= 0; i--) {
+            PackageEntry current = entrys.get(i);
             if (prev != null) {
                 String prevId = prev.getTitle();
                 String currId = current.getTitle();
