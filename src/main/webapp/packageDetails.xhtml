@@ -4,7 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:a="http://aristar.ru/components">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
@@ -37,6 +37,12 @@
                     <li><h:outputText value="Права #{packageDetails.copyright}"/></li>
                     <li><h:outputText value="Локализация #{packageDetails.language}"/></li>
                     <li><h:outputText value="Теги #{packageDetails.tags}"/></li>
+                    <li>                       
+                        <h:outputText value="Структура пакета"/>
+                        <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
+                            <h:outputText value="#{node}"/>
+                        </a:tree>
+                    </li>
                     <li>
                         <h:outputText value="Зависимости"/>
                         <h:dataTable value="#{packageDetails.dependencies}" var="dependency">

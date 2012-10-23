@@ -5,7 +5,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -19,7 +20,7 @@ import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
-import ru.aristar.jnuget.sources.RootPackageSource;
+import ru.aristar.jnuget.ui.tree.TreeNode;
 
 /**
  * Контроллер подробной информации о пакете
@@ -222,5 +223,42 @@ public class PackageDetailsController {
      */
     public String getRootUrl() throws URISyntaxException {
         return getApplicationUri().getPath();
+    }
+
+    public TreeNode getRootFileNode() {
+        Node rootNode = new Node("Root");
+        Node folder1 = new Node("Каталог 1");
+        rootNode.getChildren().add(folder1);
+        Node folder2 = new Node("Каталог 2");
+        rootNode.getChildren().add(folder2);
+        Node folder3 = new Node("Каталог 3");
+        rootNode.getChildren().add(folder3);
+        folder1.getChildren().add(new Node("Файл 1"));
+        folder1.getChildren().add(new Node("Файл 2"));
+        folder1.getChildren().add(new Node("Файл 3"));
+        folder2.getChildren().add(new Node("Файл 4"));
+        folder2.getChildren().add(new Node("Файл 5"));
+        folder3.getChildren().add(new Node("Файл 6"));
+        return rootNode;
+    }
+
+    private static class Node implements TreeNode {
+
+        private final String name;
+        private final ArrayList<TreeNode> childs = new ArrayList<>();
+
+        public Node(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public Collection<TreeNode> getChildren() {
+            return childs;
+        }
     }
 }

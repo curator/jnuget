@@ -1,7 +1,5 @@
 package ru.aristar.jnuget.rss;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;

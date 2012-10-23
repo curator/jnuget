@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<facelet-taglib
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+    version="2.0">
+    <namespace>http://aristar.ru/components</namespace>
+    <tag>
+        <tag-name>tree</tag-name>
+        <component>
+            <component-type>ru.aristar.jnuget.ui.tree.TreeComponent</component-type>
+            <!--<renderer-type>org.apache.myfaces.custom.fileupload.FileUpload</renderer-type>-->
+        </component>
+    </tag>
+</facelet-taglib>
