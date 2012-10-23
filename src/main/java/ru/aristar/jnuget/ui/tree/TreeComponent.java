@@ -1,6 +1,12 @@
 package ru.aristar.jnuget.ui.tree;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
@@ -8,17 +14,49 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 /**
+ * Компонент, отображающий древовидную структуру в виде вложенных списков
  *
  * @author sviridov
  */
 @FacesComponent("ru.aristar.jnuget.ui.tree.TreeComponent")
 public class TreeComponent extends UIComponentBase {
 
+    /**
+     * Имя переменной, в которой хранится выражение для переменной, в которую
+     * биндится текущий узел
+     */
+    private static final String VAR = "var";
+    
     @Override
     public String getFamily() {
         return "ru.aristar.components";
     }
 
+    /**
+     * @return имя переменной, в которую биндится текущий узел
+     */
+    public String getVar() {
+        return (String) getStateHelper().get(VAR);
+    }
+
+    /**
+     * @param var имя переменной, в которую биндится текущий узел
+     */
+    public void setVar(String var) {
+        getStateHelper().put(VAR, var);
+    }
+
+    /**
+     * @return отображать или нет корневой элемент
+     */
+    private boolean showRootElement() {
+        Object value = getAttributes().get("showRoot");
+        if (value == null) {
+            return true;
+        }
+        return value.equals(true);
+    }
+    
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         //TODO Создать Renderer
@@ -29,20 +67,22 @@ public class TreeComponent extends UIComponentBase {
         writer.startElement("ul", this);
         //Узлы
         Object node = getAttributes().get("rootNode");
-        if (node == null || !(node instanceof TreeNode)) {
+        if (node == null) {
             return;
         }
-        TreeNode rootNode = (TreeNode) node;
-        Object showRoot = getAttributes().get("showRoot");
-        if (showRoot == null || (showRoot.equals(true))) {
-            writeNode(rootNode, writer, context);
+        if (showRootElement()) {
+            writeNode(node, writer, context);
         } else {
-            for (TreeNode childNode : rootNode.getChildren()) {
+            for (Object childNode : getChildren(node)) {
                 writeNode(childNode, writer, context);
             }
         }
     }
-
+    
+    @Override
+    public void encodeChildren(FacesContext context) throws IOException {
+    }
+    
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
         if ((context == null)) {
@@ -52,23 +92,68 @@ public class TreeComponent extends UIComponentBase {
         writer.endElement("ul");
     }
 
-    private void writeNode(TreeNode node, ResponseWriter writer, FacesContext context) throws IOException {
+    /**
+     * Отрендерить узел
+     *
+     * @param node узел
+     * @param writer поток, в который записываются данные
+     * @param context контекст
+     * @throws IOException ошибка записи в поток
+     */
+    private void writeNode(Object node, ResponseWriter writer, FacesContext context) throws IOException {
         if (node == null) {
             return;
         }
+        String var = (String) getStateHelper().get(VAR);
+        if (var != null) {
+            Map<String, Object> requestMap = getFacesContext().getExternalContext().getRequestMap();
+            requestMap.put(var, node);
+        }
+        
         writer.startElement("li", this);
-        //TODO Обработать вложенные компоненты
+        
         for (UIComponent component : getChildren()) {
             component.encodeAll(context);
         }
-        writer.writeText(node.getName(), null);
-        if (!node.getChildren().isEmpty()) {
+        
+        if (var != null) {
+            Map<String, Object> requestMap = getFacesContext().getExternalContext().getRequestMap();
+            requestMap.remove(var);
+        }
+        
+        Collection children = getChildren(node);
+        if (!children.isEmpty()) {
             writer.startElement("ul", this);
-            for (TreeNode childNode : node.getChildren()) {
+            for (Object childNode : children) {
                 writeNode(childNode, writer, context);
             }
             writer.endElement("ul");
         }
         writer.endElement("li");
+    }
+
+    /**
+     * Возвращает список дочерних объектов
+     *
+     * @param object родительский объект
+     * @return дочерние объекты или пустой список
+     */
+    private Collection getChildren(Object object) {
+        try {
+            Method method = object.getClass().getMethod("getChildren");
+            method.setAccessible(true);
+            Class<?> returnType = method.getReturnType();
+            if (returnType.isArray()) {
+                return Arrays.asList((Object[]) method.invoke(object));
+            } else if (Collection.class.isAssignableFrom(returnType)) {
+                return (Collection) method.invoke(object);
+            } else {
+                throw new NoSuchMethodException();
+            }
+        } catch (NoSuchMethodException | SecurityException |
+                IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException e) {
+            return Collections.EMPTY_LIST;
+        }
     }
 }

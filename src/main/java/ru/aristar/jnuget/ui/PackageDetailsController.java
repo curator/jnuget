@@ -225,6 +225,9 @@ public class PackageDetailsController {
         return getApplicationUri().getPath();
     }
 
+    /**
+     * @return заглушка
+     */
     public TreeNode getRootFileNode() {
         Node rootNode = new Node("Root");
         Node folder1 = new Node("Каталог 1");
@@ -242,6 +245,9 @@ public class PackageDetailsController {
         return rootNode;
     }
 
+    /**
+     * Заглушка
+     */
     private static class Node implements TreeNode {
 
         private final String name;
