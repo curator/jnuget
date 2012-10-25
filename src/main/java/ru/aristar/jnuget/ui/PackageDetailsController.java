@@ -20,7 +20,7 @@ import ru.aristar.jnuget.files.nuspec.Dependency;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
-import ru.aristar.jnuget.ui.tree.TreeNode;
+import ru.aristar.jnuget.ui.tree.TreeComponent;
 
 /**
  * Контроллер подробной информации о пакете
@@ -228,7 +228,7 @@ public class PackageDetailsController {
     /**
      * @return заглушка
      */
-    public TreeNode getRootFileNode() {
+    public TreeComponent.TreeNode getRootFileNode() {
         Node rootNode = new Node("Root");
         Node folder1 = new Node("Каталог 1");
         rootNode.getChildren().add(folder1);
@@ -248,22 +248,33 @@ public class PackageDetailsController {
     /**
      * Заглушка
      */
-    private static class Node implements TreeNode {
+    public static class Node implements TreeComponent.TreeNode {
 
+        /**
+         * Имя узла
+         */
         private final String name;
-        private final ArrayList<TreeNode> childs = new ArrayList<>();
+        /**
+         * Дочерние узлы
+         */
+        private final ArrayList<TreeComponent.TreeNode> childs = new ArrayList<>();
 
+        /**
+         * @param name имя узла
+         */
         public Node(String name) {
             this.name = name;
         }
 
-        @Override
+        /**
+         * @return имя узла
+         */
         public String getName() {
             return name;
         }
 
         @Override
-        public Collection<TreeNode> getChildren() {
+        public Collection<TreeComponent.TreeNode> getChildren() {
             return childs;
         }
     }

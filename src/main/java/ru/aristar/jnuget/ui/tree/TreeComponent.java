@@ -22,11 +22,24 @@ import javax.faces.context.ResponseWriter;
 public class TreeComponent extends UIComponentBase {
 
     /**
-     * Имя переменной, в которой хранится выражение для переменной, в которую
+     * Имя атрибута, в котором хранится выражение для переменной, в которую
      * биндится текущий узел
      */
     private static final String VAR = "var";
-    
+    /**
+     * Имя атрибута, содержащего информацию отображать или нет узел
+     */
+    public static final String SHOW_ROOT = "showRoot";
+    /**
+     * Имя атрибута, содержащего корневой узел дерева.
+     */
+    public static final String ROOT_NODE = "rootNode";
+    /**
+     * Имя атрибута, содержащего имя метода, возвращающего коллекцию дочерних
+     * элементов.
+     */
+    public static final String CHILDREN_METHOD = "childrenMethod";
+
     @Override
     public String getFamily() {
         return "ru.aristar.components";
@@ -50,13 +63,13 @@ public class TreeComponent extends UIComponentBase {
      * @return отображать или нет корневой элемент
      */
     private boolean showRootElement() {
-        Object value = getAttributes().get("showRoot");
+        Object value = getAttributes().get(SHOW_ROOT);
         if (value == null) {
             return true;
         }
         return value.equals(true);
     }
-    
+
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         //TODO Создать Renderer
@@ -66,7 +79,7 @@ public class TreeComponent extends UIComponentBase {
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("ul", this);
         //Узлы
-        Object node = getAttributes().get("rootNode");
+        Object node = getAttributes().get(ROOT_NODE);
         if (node == null) {
             return;
         }
@@ -78,11 +91,11 @@ public class TreeComponent extends UIComponentBase {
             }
         }
     }
-    
+
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
     }
-    
+
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
         if ((context == null)) {
@@ -109,18 +122,18 @@ public class TreeComponent extends UIComponentBase {
             Map<String, Object> requestMap = getFacesContext().getExternalContext().getRequestMap();
             requestMap.put(var, node);
         }
-        
+
         writer.startElement("li", this);
-        
+
         for (UIComponent component : getChildren()) {
             component.encodeAll(context);
         }
-        
+
         if (var != null) {
             Map<String, Object> requestMap = getFacesContext().getExternalContext().getRequestMap();
             requestMap.remove(var);
         }
-        
+
         Collection children = getChildren(node);
         if (!children.isEmpty()) {
             writer.startElement("ul", this);
@@ -139,8 +152,11 @@ public class TreeComponent extends UIComponentBase {
      * @return дочерние объекты или пустой список
      */
     private Collection getChildren(Object object) {
+        if (object instanceof TreeNode) {
+            return ((TreeNode) object).getChildren();
+        }
         try {
-            Method method = object.getClass().getMethod("getChildren");
+            Method method = object.getClass().getMethod(getChildMethodName());
             method.setAccessible(true);
             Class<?> returnType = method.getReturnType();
             if (returnType.isArray()) {
@@ -155,5 +171,23 @@ public class TreeComponent extends UIComponentBase {
                 InvocationTargetException e) {
             return Collections.EMPTY_LIST;
         }
+    }
+
+    /**
+     * @return имя метода, возвращающего дочерние элементы
+     */
+    private String getChildMethodName() {
+        return (String) getAttributes().get(CHILDREN_METHOD);
+    }
+
+    /**
+     * Узел дерева
+     */
+    public static interface TreeNode {
+
+        /**
+         * @return коллекция дочерних узлов
+         */
+        Collection<TreeNode> getChildren();
     }
 }
