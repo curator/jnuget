@@ -5,7 +5,7 @@
     <groupId>ru.aristar.nuget</groupId>
     <artifactId>jnuget</artifactId>
     <packaging>war</packaging>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.1</version>
     <name>JNuGet web</name>
     <url>https://github.com/aristar/JNuGet</url>
     <properties>
