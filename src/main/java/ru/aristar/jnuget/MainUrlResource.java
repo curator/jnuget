@@ -93,7 +93,7 @@ public class MainUrlResource {
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
-            @QueryParam("$top") @DefaultValue("30") int top,
+            @QueryParam("$top") @DefaultValue("-1") int top,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
