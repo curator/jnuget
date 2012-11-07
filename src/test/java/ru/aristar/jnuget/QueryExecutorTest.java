@@ -41,7 +41,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 oneOf(source).getPackages();
             }
@@ -82,7 +81,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 oneOf(source).getLastVersionPackages();
             }
@@ -108,7 +106,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source).getPackages();
                 will(returnValue(Arrays.asList(
@@ -139,7 +136,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source).getPackages();
                 will(returnValue(Arrays.asList(
@@ -170,7 +166,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source).getPackages();
                 will(returnValue(Arrays.asList(
@@ -203,7 +198,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source).getPackages();
                 will(returnValue(Arrays.asList(
@@ -236,7 +230,6 @@ public class QueryExecutorTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source).getPackages();
                 will(returnValue(Arrays.asList(

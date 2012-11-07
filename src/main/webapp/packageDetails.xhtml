@@ -3,8 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:a="http://aristar.ru/components">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
             <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
@@ -37,11 +36,12 @@
                     <li><h:outputText value="Права #{packageDetails.copyright}"/></li>
                     <li><h:outputText value="Локализация #{packageDetails.language}"/></li>
                     <li><h:outputText value="Теги #{packageDetails.tags}"/></li>
-                    <li>                       
-                        <h:outputText value="Структура пакета"/>
-                        <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
-                            <h:outputText value="#{node.name}"/>
-                        </a:tree>
+                    <li>
+                        <h:link value="Содержимое пакета" outcome="packageContent">
+                            <f:param name="storageId" value="#{packageDetails.storageId}"/>
+                            <f:param name="packageId" value="#{packageDetails.packageId}"/>
+                            <f:param name="packageVersion" value="#{packageDetails.packageVersion}"/>
+                        </h:link>
                     </li>
                     <li>
                         <h:outputText value="Зависимости"/>

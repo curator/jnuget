@@ -1,12 +1,13 @@
 package ru.aristar.jnuget.ui;
 
 import com.google.common.base.Joiner;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -128,14 +129,23 @@ public class PackageDetailsController {
         return result;
     }
 
+    /**
+     * @return краткое описание пакета
+     */
     public String getTitle() {
         return nuspec.getTitle();
     }
 
+    /**
+     * @return авторы пакета
+     */
     public String getAuthors() {
         return nuspec.getAuthors();
     }
 
+    /**
+     * @return владельцы пакета
+     */
     public String getOwners() {
         return nuspec.getOwners();
     }
@@ -174,6 +184,9 @@ public class PackageDetailsController {
         return nuspec.getReleaseNotes();
     }
 
+    /**
+     * @return права на пакет
+     */
     public String getCopyright() {
         return nuspec.getCopyright();
     }
@@ -229,20 +242,12 @@ public class PackageDetailsController {
      * @return заглушка
      */
     public TreeComponent.TreeNode getRootFileNode() {
-        Node rootNode = new Node("Root");
-        Node folder1 = new Node("Каталог 1");
-        rootNode.getChildren().add(folder1);
-        Node folder2 = new Node("Каталог 2");
-        rootNode.getChildren().add(folder2);
-        Node folder3 = new Node("Каталог 3");
-        rootNode.getChildren().add(folder3);
-        folder1.getChildren().add(new Node("Файл 1"));
-        folder1.getChildren().add(new Node("Файл 2"));
-        folder1.getChildren().add(new Node("Файл 3"));
-        folder2.getChildren().add(new Node("Файл 4"));
-        folder2.getChildren().add(new Node("Файл 5"));
-        folder3.getChildren().add(new Node("Файл 6"));
-        return rootNode;
+        try {
+            NupkgContentTree contentTree = new NupkgContentTree(nupkg);
+            return contentTree.getRootNode();
+        } catch (IOException e) {
+            return new Node();
+        }
     }
 
     /**
@@ -251,31 +256,15 @@ public class PackageDetailsController {
     public static class Node implements TreeComponent.TreeNode {
 
         /**
-         * Имя узла
-         */
-        private final String name;
-        /**
-         * Дочерние узлы
-         */
-        private final ArrayList<TreeComponent.TreeNode> childs = new ArrayList<>();
-
-        /**
-         * @param name имя узла
-         */
-        public Node(String name) {
-            this.name = name;
-        }
-
-        /**
          * @return имя узла
          */
         public String getName() {
-            return name;
+            return "Root";
         }
 
         @Override
         public Collection<TreeComponent.TreeNode> getChildren() {
-            return childs;
+            return Collections.EMPTY_LIST;
         }
     }
 }

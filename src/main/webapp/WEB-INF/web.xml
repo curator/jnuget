@@ -99,6 +99,7 @@
             <url-pattern>/sourceManager.xhtml</url-pattern>
             <url-pattern>/packageDetails.xhtml</url-pattern>
             <url-pattern>/storageContents.xhtml</url-pattern>
+            <url-pattern>/packageContent.xhtml</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>jnuget-gui</role-name>
