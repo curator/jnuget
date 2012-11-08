@@ -9,7 +9,7 @@
             <h1>JNuGet</h1>
             <c:if test="#{login.loggedIn}">
                 <h:form id="logoutForm">
-                    <h:commandButton id="exitButton" value="Выйти" type="submit" action="#{login.logout()}"/>
+                    <h:commandButton id="exitButton" value="#{messages.exit_button_message}" type="submit" action="#{login.logout()}"/>
                 </h:form>
             </c:if>
         </ui:composition>

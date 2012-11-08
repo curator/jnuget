@@ -8,14 +8,14 @@
         <ui:composition>
             <ol>
                 <ul>
-                    <a href="index.xhtml">Корень</a>
+                    <a href="index.xhtml"><h:outputText value="#{messages.root_link}"/></a>
                 </ul>
                 <ul>
                     <c:if test="#{login.loggedIn}">
-                        <a href="sourceManager.xhtml">Список хранилищ</a>
+                        <a href="sourceManager.xhtml"><h:outputText value="#{messages.package_sources}"/></a>
                         <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
-                            <a href="usersOptions.xhtml">Пользователи</a>
-                            <a href="commonOptions.xhtml">Настройки</a>
+                            <a href="usersOptions.xhtml"><h:outputText value="#{messages.users_link}"/></a>
+                            <a href="commonOptions.xhtml"><h:outputText value="#{messages.settings_link}"/></a>
                         </c:if>
                     </c:if>
                 </ul>
