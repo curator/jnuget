@@ -23,6 +23,7 @@ import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.TempNupkgFile;
 
 /**
+ * Тесты файловой системы
  *
  * @author sviridov
  */
@@ -65,80 +66,31 @@ public class NupkgFileSystemTest {
         final NupkgPath propertiesPath = new NupkgPath(fileSystem, "package/services/metadata/core-properties", true);
         final NupkgPath propertiesFile = new NupkgPath(fileSystem, "package/services/metadata/core-properties/c2068561aecd49fb9838b8b0797a65ae.psmdcp", false);
 
-        Expectations expectations = new Expectations() {
-            {
-                oneOf(fileVisitor).preVisitDirectory(with(rootPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(rootPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
+        Expectations expectations = new Expectations();
 
-                oneOf(fileVisitor).preVisitDirectory(with(relsPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(relsPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
+        //ПАПКИ
+        folderCheck(expectations, fileVisitor, rootPath);
+        folderCheck(expectations, fileVisitor, relsPath);
+        folderCheck(expectations, fileVisitor, packagePath);
+        folderCheck(expectations, fileVisitor, libPath);
+        folderCheck(expectations, fileVisitor, lib20Path);
+        folderCheck(expectations, fileVisitor, lib11Path);
+        folderCheck(expectations, fileVisitor, servicesPath);
+        folderCheck(expectations, fileVisitor, metadataPath);
+        folderCheck(expectations, fileVisitor, propertiesPath);
 
-                oneOf(fileVisitor).preVisitDirectory(with(packagePath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(packagePath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
+        //ФАЛЙЫ
+        fileCheck(expectations, fileVisitor, framework11dllPath);
+        fileCheck(expectations, fileVisitor, propertiesFile);
+        fileCheck(expectations, fileVisitor, nuspecFile);
+        fileCheck(expectations, fileVisitor, contentType);
+        fileCheck(expectations, fileVisitor, frameworklib20dllPath);
+        fileCheck(expectations, fileVisitor, relsFile);
+        fileCheck(expectations, fileVisitor, frameworklib20xmlPath);
+        fileCheck(expectations, fileVisitor, framework11xmlPath);
 
-                oneOf(fileVisitor).preVisitDirectory(with(libPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(libPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).preVisitDirectory(with(lib20Path), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(lib20Path, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).preVisitDirectory(with(lib11Path), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(lib11Path, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).preVisitDirectory(with(servicesPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(servicesPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).preVisitDirectory(with(metadataPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(metadataPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).preVisitDirectory(with(propertiesPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-                oneOf(fileVisitor).postVisitDirectory(propertiesPath, null);
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(framework11dllPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(propertiesFile), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(nuspecFile), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(contentType), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(frameworklib20dllPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(relsFile), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(frameworklib20xmlPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-
-                oneOf(fileVisitor).visitFile(with(framework11xmlPath), with(any(BasicFileAttributes.class)));
-                will(returnValue(FileVisitResult.CONTINUE));
-            }
-        };
         context.checking(expectations);
-        //WHEN        
+        //WHEN
         Files.walkFileTree(path, fileVisitor);
         //THEN
         context.assertIsSatisfied();
@@ -195,7 +147,7 @@ public class NupkgFileSystemTest {
         NupkgPath sub = new NupkgPath(null, "package", true);
         //WHEN
         boolean result = up.startsWith(sub);
-        //THEN 
+        //THEN
         assertThat(result, is(equalTo(false)));
     }
 
@@ -214,10 +166,38 @@ public class NupkgFileSystemTest {
         Iterator<Path> iterator = path.iterator();
         ArrayList<Path> result = Lists.newArrayList(iterator);
 
-        //THEN 
+        //THEN
         assertThat(result.size(), is(equalTo(3)));
         assertThat(result.get(0), is(equalTo(rootPath)));
         assertThat(result.get(1), is(equalTo(firstLevelPath)));
         assertThat(result.get(2), is(equalTo(secondLevelPath)));
+    }
+
+    /**
+     * Проверка посещения директории
+     *
+     * @param expectations проверки
+     * @param fileVisitor объект заглушка
+     * @param path путь к каталогу
+     * @throws IOException ошибка посещения каталога
+     */
+    private void folderCheck(Expectations expectations, FileVisitor fileVisitor, Path path) throws IOException {
+        expectations.oneOf(fileVisitor).preVisitDirectory(expectations.with(path), expectations.with(any(BasicFileAttributes.class)));
+        expectations.will(returnValue(FileVisitResult.CONTINUE));
+        expectations.oneOf(fileVisitor).postVisitDirectory(path, null);
+        expectations.will(returnValue(FileVisitResult.CONTINUE));
+    }
+
+    /**
+     * Проверка посещения файла
+     *
+     * @param expectations проверки
+     * @param fileVisitor объект заглушка
+     * @param path путь к файлу
+     * @throws IOException ошибка посещения файла
+     */
+    private void fileCheck(Expectations expectations, FileVisitor fileVisitor, Path path) throws IOException {
+        expectations.oneOf(fileVisitor).visitFile(expectations.with(path), expectations.with(any(BasicFileAttributes.class)));
+        expectations.will(returnValue(FileVisitResult.CONTINUE));
     }
 }
