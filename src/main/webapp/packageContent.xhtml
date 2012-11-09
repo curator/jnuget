@@ -12,7 +12,7 @@
             <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
             <f:event type="preRenderView" listener="#{packageDetails.init()}" />
         </f:metadata>
-        <title> <h:outputText value="Содержимое пакета #{packageDetails.packageId} #{packageDetails.packageVersion}"/></title>
+        <title> <h:outputText value="#{messages.package_content_title} #{packageDetails.packageId} #{packageDetails.packageVersion}"/></title>
     </h:head>
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">

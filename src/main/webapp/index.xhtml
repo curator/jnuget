@@ -4,7 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            <title>NuGet Private Repository</title>
+            <title><h:outputText value="#{messages.index_title}"/></title>
             <style type="text/css">
                 body { font-family: Calibri; }
             </style>
@@ -12,7 +12,7 @@
     </h:head>
     <h:body>
         <div>
-            <h2><h:outputText value="You are running JNuGet.Server #{index.version}"/></h2>
+            <h2><h:outputText value="#{messages.index_wellcom_message} #{index.version}"/></h2>
             <p>
                 Click <a href="nuget/nuget/Packages">here</a> to view your packages.
             </p>
@@ -21,19 +21,18 @@
             </p>
             <fieldset style="width:800px">
                 <legend><strong>Repository URL's</strong></legend>
-                In the package manager settings, add the following URL to the list of 
-                Package Sources:
+                <h:outputText value="#{messages.index_get_help}"/>
                 <blockquote>
                     <strong><h:outputText value="#{index.strorageGetUrl}"/></strong>
                 </blockquote>
 
-                Use the command below to push packages to this feed using the nuget command line tool (nuget.exe).
+                <h:outputText value="#{messages.index_push_help}"/>
 
                 <blockquote>
                     <strong>
                         <h:outputText value="nuget push {package file} -s  #{index.strorageGetUrl} {apikey}"/>
                     </strong>
-                </blockquote>            
+                </blockquote>
             </fieldset>
         </div>
     </h:body>
