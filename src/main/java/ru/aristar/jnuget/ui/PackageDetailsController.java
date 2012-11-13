@@ -150,6 +150,9 @@ public class PackageDetailsController {
         return nuspec.getOwners();
     }
 
+    /**
+     * @return URL иконки проекта
+     */
     public String getIconUrl() {
         if (nuspec.getIconUrl() == null) {
             return "Images/packageDefaultIcon.png";
@@ -158,14 +161,23 @@ public class PackageDetailsController {
         }
     }
 
+    /**
+     * @return URL основного сайта проекта
+     */
     public String getProjectUrl() {
         return nuspec.getProjectUrl();
     }
 
+    /**
+     * @return требуется или нет подтверждение лицензии
+     */
     public boolean isRequireLicenseAcceptance() {
         return nuspec.isRequireLicenseAcceptance();
     }
 
+    /**
+     * @return URl по которому можно получить лицензию проекта
+     */
     public String getLicenseUrl() {
         return nuspec.getLicenseUrl();
     }
@@ -248,6 +260,10 @@ public class PackageDetailsController {
         } catch (IOException e) {
             return new Node();
         }
+    }
+
+    public String getDownloadUrl(TreeComponent.TreeNode node) {
+        return "/downloadPart/"+storageId+"/FluentAssertions/1.6.0";
     }
 
     /**

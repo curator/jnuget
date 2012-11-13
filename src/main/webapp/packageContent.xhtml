@@ -18,7 +18,9 @@
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
                 <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
-                    <h:outputText value="#{node.name}"/>
+                    <h:outputLink value="#{packageDetails.getDownloadUrl(node)}">
+                        <h:outputText value="#{node.name}"/>
+                    </h:outputLink>
                 </a:tree>
             </ui:define>
         </ui:composition>

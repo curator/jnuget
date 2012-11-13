@@ -18,28 +18,28 @@
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
-
                 <c:choose>
                     <c:when test="#{storageContents.packageId==null}">
                         <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
-                        <br/>
-                        <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push') && storageContents.storage.pushStrategy.canPush()}">
-                            <h:form id="upload_form" enctype="multipart/form-data">
-                                <h:inputHidden id="firstRow" value="#{storageContents.low}"/>
-                                <h:inputHidden id="storageId" value="#{storageContents.storageId}"/>
-                                <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
-                                <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
-                            </h:form>
-                            <br/>
-                            <br/>
-                        </c:if>
-                        <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
-                            <h:link value="#{letterRef.getKey()}" outcome="storageContents">
-                                <f:param name="firstRow" value="#{letterRef.getValue()}"/>
-                                <f:param name="storageId" value="#{storageContents.storageId}"/>
-                                <f:param name="packageId" value="#{storageContents.packageId}"/>
-                            </h:link>
-                        </ui:repeat>
+                        <br>
+                            <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">
+                                <h:form id="upload_form" enctype="multipart/form-data" rendered="#{storageContents.storage.pushStrategy.canPush()}">
+                                    <h:inputHidden id="firstRow" value="#{storageContents.low}"/>
+                                    <h:inputHidden id="storageId" value="#{storageContents.storageId}"/>
+                                    <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
+                                    <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
+                                </h:form>
+                            </c:if>
+                        </br>
+                        <br>
+                            <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
+                                <h:link value="#{letterRef.getKey()}" outcome="storageContents">
+                                    <f:param name="firstRow" value="#{letterRef.getValue()}"/>
+                                    <f:param name="storageId" value="#{storageContents.storageId}"/>
+                                    <f:param name="packageId" value="#{storageContents.packageId}"/>
+                                </h:link>
+                            </ui:repeat>
+                        </br>
                     </c:when>
                     <c:otherwise>
                         <h:outputText value="Всего версий пакета #{storageContents.packageId} - #{storageContents.packageCount}"/>

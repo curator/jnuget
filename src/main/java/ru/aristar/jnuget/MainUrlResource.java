@@ -174,6 +174,16 @@ public class MainUrlResource {
         }
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Path("downloadPart/{storage}/{id}/{version}")
+    public Response getPackagePart(
+            @PathParam("storage") int storageId,
+            @PathParam("id") String id,
+            @PathParam("version") String versionString) {
+        return Response.serverError().entity("Не реализовано").build();
+    }
+
     /**
      * Метод помещения пакета в хранилище для версии NuGet старше 1.6
      *
