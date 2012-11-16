@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -280,7 +280,7 @@ public class PackageDetailsController {
 
         @Override
         public Collection<TreeComponent.TreeNode> getChildren() {
-            return Collections.EMPTY_LIST;
+            return new ArrayList<>();
         }
     }
 }

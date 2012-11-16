@@ -47,6 +47,7 @@ public class NupkgFileSystemTest {
         TempNupkgFile tempNupkgFile = new TempNupkgFile(inputStream);
         final NupkgFileSystem fileSystem = new NupkgFileSystem(tempNupkgFile);
         Path path = fileSystem.getRootDirectories().iterator().next();
+        @SuppressWarnings("unchecked")
         final FileVisitor<Path> fileVisitor = context.mock(FileVisitor.class);
         final NupkgPath rootPath = new NupkgPath(fileSystem, "", true);
         final NupkgPath nuspecFile = new NupkgPath(fileSystem, "NUnit.nuspec", false);
@@ -181,7 +182,7 @@ public class NupkgFileSystemTest {
      * @param path путь к каталогу
      * @throws IOException ошибка посещения каталога
      */
-    private void folderCheck(Expectations expectations, FileVisitor fileVisitor, Path path) throws IOException {
+    private void folderCheck(Expectations expectations, FileVisitor<Path> fileVisitor, Path path) throws IOException {
         expectations.oneOf(fileVisitor).preVisitDirectory(expectations.with(path), expectations.with(any(BasicFileAttributes.class)));
         expectations.will(returnValue(FileVisitResult.CONTINUE));
         expectations.oneOf(fileVisitor).postVisitDirectory(path, null);
@@ -196,7 +197,7 @@ public class NupkgFileSystemTest {
      * @param path путь к файлу
      * @throws IOException ошибка посещения файла
      */
-    private void fileCheck(Expectations expectations, FileVisitor fileVisitor, Path path) throws IOException {
+    private void fileCheck(Expectations expectations, FileVisitor<Path> fileVisitor, Path path) throws IOException {
         expectations.oneOf(fileVisitor).visitFile(expectations.with(path), expectations.with(any(BasicFileAttributes.class)));
         expectations.will(returnValue(FileVisitResult.CONTINUE));
     }

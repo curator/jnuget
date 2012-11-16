@@ -16,6 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
+import static java.text.MessageFormat.format;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -125,10 +126,15 @@ class NupkgFileSystemProvider extends FileSystemProvider {
 
     @Override
     public <A extends BasicFileAttributes> A readAttributes(Path path, Class<A> type, LinkOption... options) throws IOException {
-        if (path instanceof NupkgPath) {
-            return (A) (new NupkgFileAttributes((NupkgPath) path));
+        if (!type.equals(NupkgFileAttributes.class) && !type.equals(BasicFileAttributes.class)) {
+            throw new IllegalArgumentException(format("Возможно получение атрибутов только типа {0}", BasicFileAttributes.class));
         }
-        throw new IllegalArgumentException(path.getClass().getCanonicalName());
+        if (path instanceof NupkgPath) {
+            @SuppressWarnings("unchecked")
+            A result = (A) (new NupkgFileAttributes((NupkgPath) path));
+            return result;
+        }
+        throw new IllegalArgumentException(format("Недопустимо использование путий типа {0}", path.getClass()));
     }
 
     @Override

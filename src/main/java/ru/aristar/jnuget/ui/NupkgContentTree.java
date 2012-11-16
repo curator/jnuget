@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.nio.NupkgFileSystem;
 import ru.aristar.jnuget.ui.tree.TreeComponent;
@@ -80,7 +79,7 @@ public class NupkgContentTree {
             try {
                 boolean isDirectory = fileSystem.provider().readAttributes(path, BasicFileAttributes.class).isDirectory();
                 if (!isDirectory) {
-                    return Collections.EMPTY_LIST;
+                    return new ArrayList<>();
                 }
                 DirectoryStream<Path> directoryStream = fileSystem.provider().newDirectoryStream(path, null);
                 ArrayList<TreeNode> result = new ArrayList<>();
@@ -90,7 +89,7 @@ public class NupkgContentTree {
                 }
                 return result;
             } catch (IOException e) {
-                return Collections.EMPTY_LIST;
+                return new ArrayList<>();
             }
         }
         /**
