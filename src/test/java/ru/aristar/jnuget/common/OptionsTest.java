@@ -34,7 +34,7 @@ public class OptionsTest {
         //THEN
         assertTrue("Файл с настройками должен быть создан", file.exists());
         assertEquals("Файл с настройками содержит одно хранилище", 1, options.getStorageOptionsList().size());
-        assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
+        assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName").toArray()[0]);
         assertFalse("По умолчанию удаление пакетов запрещено", options.getStorageOptionsList().get(0).isCanDelete());
         assertFalse("По умолчанию публикация пакетов запрещена", options.getStorageOptionsList().get(0).isCanPush());
         //TEARDOWN
@@ -58,12 +58,12 @@ public class OptionsTest {
         assertEquals("Количество хранилищ", 2, options.getStorageOptionsList().size());
         assertEquals("Класс хранилища 1", "TEST_CLASS_1", options.getStorageOptionsList().get(0).getClassName());
         assertFalse("Xранилище 1 индексируется", options.getStorageOptionsList().get(0).isIndexed());
-        assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName"));
+        assertEquals("Имя папки хранилища 1", "TEST_FOLDER_1", options.getStorageOptionsList().get(0).getProperties().get("folderName").toArray()[0]);
         assertThat(options.getStorageOptionsList().get(0).isCanPush(), is(equalTo(true)));
         assertThat(options.getStorageOptionsList().get(0).isCanDelete(), is(equalTo(false)));
         assertEquals("Класс хранилища 2", "TEST_CLASS_2", options.getStorageOptionsList().get(1).getClassName());
         assertTrue("Xранилище 2 индексируется", options.getStorageOptionsList().get(1).isIndexed());
-        assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName"));
+        assertEquals("Имя папки хранилища 2", "TEST_FOLDER_2", options.getStorageOptionsList().get(1).getProperties().get("folderName").toArray()[0]);
         assertThat(options.getStorageOptionsList().get(1).isCanPush(), is(equalTo(false)));
         assertThat(options.getStorageOptionsList().get(1).isCanDelete(), is(equalTo(true)));
     }

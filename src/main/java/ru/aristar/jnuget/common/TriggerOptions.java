@@ -1,7 +1,7 @@
 package ru.aristar.jnuget.common;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -24,7 +24,7 @@ public class TriggerOptions {
      */
     @XmlJavaTypeAdapter(PropertiesTypeAdapter.class)
     @XmlElement(name = "properties")
-    private Map<String, String> properties;
+    private Multimap<String, String> properties;
 
     /**
      * @return имя класса триггера
@@ -43,9 +43,9 @@ public class TriggerOptions {
     /**
      * @return значение свойств тгриггера
      */
-    public Map<String, String> getProperties() {
+    public Multimap<String, String> getProperties() {
         if (properties == null) {
-            properties = new HashMap<>();
+            properties = HashMultimap.create();
         }
         return properties;
     }

@@ -1,15 +1,16 @@
 package ru.aristar.jnuget.sources;
 
+import com.google.common.collect.Multimap;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.common.CollectionGenericType;
 import ru.aristar.jnuget.common.OptionConverter;
 import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.StorageOptions;
@@ -227,15 +228,20 @@ public class PackageSourceFactory {
      * @param newObject объект
      * @throws Exception ошибка установки свойств
      */
-    private void setObjectProperties(Map<String, String> properties, Object newObject)
+    private void setObjectProperties(Multimap<String, String> properties, Object newObject)
             throws Exception {
         Class<?> sourceClass = newObject.getClass();
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            Method method = findSetter(sourceClass, entry.getKey());
+        for (String key : properties.keySet()) {
+            Method method = findSetter(sourceClass, key);
             Class<?> valueType = method.getParameterTypes()[0];
-            String stringValue = OptionConverter.replaceVariables(entry.getValue());
-            Object value = getValueFromString(valueType, stringValue);
+            Object value;
+            if (Collection.class.isAssignableFrom(valueType)) {
+                value = getCollectionValue(method, valueType, properties.get(key));
+            } else {
+                value = getSingleValue(valueType, properties.get(key));
+            }
             method.invoke(newObject, value);
+
         }
     }
 
@@ -352,5 +358,43 @@ public class PackageSourceFactory {
             throw new UnsupportedOperationException("Primitive type "
                     + targetClass + " is unsupported");
         }
+    }
+
+    /**
+     * Получение значения, если параметр является коллекцией
+     *
+     * @param method метод сеттер.
+     * @param valueType тип коллекции.
+     * @param values строковые представления значений коллекции.
+     * @return коллекция значений.
+     * @throws Exception ошибка преобразования.
+     */
+    private Collection getCollectionValue(Method method, Class<?> valueType, Collection<String> values) throws Exception {
+        CollectionGenericType annotation = method.getAnnotation(CollectionGenericType.class);
+        Class<?> elementType = annotation == null ? String.class : annotation.type();
+        @SuppressWarnings("unchecked")
+        Collection<? super Object> result = (Collection) valueType.getConstructor().newInstance();
+        for (String stringValue : values) {
+            stringValue = OptionConverter.replaceVariables(stringValue);
+            Object value = getValueFromString(elementType, stringValue);
+            result.add(value);
+        }
+        return result;
+    }
+
+    /**
+     * Получение значения, для простого параметра (не коллекции)
+     *
+     * @param valueType тип параметра
+     * @param values строковое значение
+     * @return значение
+     * @throws Exception ошибка преобразования.
+     */
+    private Object getSingleValue(Class<?> valueType, Collection<String> values) throws Exception {
+        Object value;
+        String stringValue = values.iterator().next();
+        stringValue = OptionConverter.replaceVariables(stringValue);
+        value = getValueFromString(valueType, stringValue);
+        return value;
     }
 }
