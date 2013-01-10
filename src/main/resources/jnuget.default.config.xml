@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <options>    
     <storages>
-        <storage class="ru.aristar.jnuget.sources.ClassicPackageSource" indexed="false">
+        <storage class="ru.aristar.jnuget.sources.ClassicPackageSource" indexed="false" name="DefaultSource" public="true">
             <properties>
                 <property name="folderName" value="${nuget.home}/Packages/"/>
             </properties>

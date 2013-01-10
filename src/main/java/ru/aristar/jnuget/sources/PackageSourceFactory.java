@@ -7,6 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.activation.UnsupportedDataTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,10 @@ public class PackageSourceFactory {
      * Настройки сервера
      */
     private final Options options;
+    /**
+     * Активные хранилища пакетов
+     */
+    private volatile ConcurrentHashMap<String, PackageSource<Nupkg>> packageSources;
 
     /**
      * Конструктор, перечитывающий настройки
@@ -59,14 +66,15 @@ public class PackageSourceFactory {
      * @param storageName имя, используемое для сохранения индекса
      * @param refreshInterval интервал обновления информации в индекск
      * @param cronString строка cron (планирование обновления индекса)
+     * @param saveIndex сохранять или нет индекс на диске
      * @return индексируемое хранилище
      */
     protected PackageSource<Nupkg> createIndexForStorage(PackageSource<Nupkg> packageSource,
-            String storageName, Integer refreshInterval, String cronString) {
+            String storageName, Integer refreshInterval, String cronString, boolean saveIndex) {
         logger.debug("Создание индекса для хранилища {}", new Object[]{packageSource});
         IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
         indexedPackageSource.setUnderlyingSource(packageSource);
-        if (storageName != null) {
+        if (saveIndex) {
             File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
             indexedPackageSource.setIndexStoreFile(storageFile);
         }
@@ -96,9 +104,13 @@ public class PackageSourceFactory {
         logger.warn("Для корневого репозитория разрешается публикация "
                 + "пакетов. (поведение по умолчанию)");
         rootPackageSource.setPushStrategy(pushStrategy);
+        packageSources = new ConcurrentHashMap<>();
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
+                if (storageOptions.isPublic()) {
+                    packageSources.put(storageOptions.getStorageName(), childSource);
+                }
                 rootPackageSource.getSources().add(childSource);
             } catch (Exception e) {
                 logger.warn("Ошибка создания хранилища пакетов", e);
@@ -153,7 +165,8 @@ public class PackageSourceFactory {
                     newSource,
                     storageOptions.getStorageName(),
                     storageOptions.getRefreshInterval(),
-                    storageOptions.getCronString());
+                    storageOptions.getCronString(),
+                    storageOptions.isSaveIndex());
         }
         logger.info("Хранилище создано");
         return newSource;
@@ -267,7 +280,7 @@ public class PackageSourceFactory {
      * @param reinitialize необходима переинициализация
      * @return источник пакетов
      */
-    public RootPackageSource getPackageSource(boolean reinitialize) {
+    private RootPackageSource getPackageSource(boolean reinitialize) {
         if (reinitialize || packageSource == null) {
             synchronized (this) {
                 if (packageSource == null) {
@@ -283,8 +296,38 @@ public class PackageSourceFactory {
      *
      * @return источник пакетов
      */
-    public RootPackageSource getPackageSource() {
+    public PackageSource<Nupkg> getPackageSource() {
         return getPackageSource(false);
+    }
+
+    /**
+     * @return активные хранилища пакетов
+     */
+    private Map<String, PackageSource<Nupkg>> getPackageSourcesMap() {
+        if (packageSources == null) {
+            synchronized (this) {
+                if (packageSources == null) {
+                    packageSource = createRootPackageSource(options);
+                }
+            }
+        }
+        return packageSources;
+    }
+
+    /**
+     * @return доступные источники пакетов
+     */
+    public List<PackageSource<Nupkg>> getPackageSources() {
+        ArrayList<PackageSource<Nupkg>> result = new ArrayList<>(getPackageSourcesMap().values());
+        return result;
+    }
+
+    /**
+     * @param name имя хранилища
+     * @return хранилище пакетов или null
+     */
+    public PackageSource<Nupkg> getPackageSource(String name) {
+        return getPackageSourcesMap().get(name);
     }
 
     /**

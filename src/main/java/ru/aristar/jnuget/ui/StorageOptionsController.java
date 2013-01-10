@@ -164,7 +164,7 @@ public class StorageOptionsController implements Serializable {
             indexDecorator = null;
             return;
         }
-        packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+        packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
         if (packageSource instanceof IndexedPackageSource) {
             indexDecorator = (IndexedPackageSource) packageSource;
             packageSource = indexDecorator.getUnderlyingSource();

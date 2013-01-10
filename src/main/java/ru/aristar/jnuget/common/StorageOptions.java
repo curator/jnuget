@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -38,10 +37,20 @@ public class StorageOptions {
     @XmlAttribute(name = "canDelete")
     private Boolean canDelete;
     /**
-     * Имя хранилища. Если задано - то индекс будет сохраняться
+     * Имя хранилища.
      */
-    @XmlAttribute(name = "storageName")
+    @XmlAttribute(name = "storageName", required = true)
     private String storageName;
+    /**
+     * Доступно ли хранилище извне
+     */
+    @XmlAttribute(name = "public")
+    private boolean isPublic = false;
+    /**
+     * Сохранять или нет индекс на диске
+     */
+    @XmlAttribute(name = "saveIndex")
+    private boolean saveIndex = false;
     /**
      * Интервал обновления информации о хранилище в минутах. Если задан - то
      * переодически опрашивается индексируемое хранилище на предмет изменения
@@ -161,6 +170,34 @@ public class StorageOptions {
      */
     public void setStorageName(String storageName) {
         this.storageName = storageName;
+    }
+
+    /**
+     * @return сохранять или нет индекс на диске
+     */
+    public boolean isSaveIndex() {
+        return saveIndex;
+    }
+
+    /**
+     * @param saveIndex сохранять или нет индекс на диске
+     */
+    public void setSaveIndex(boolean saveIndex) {
+        this.saveIndex = saveIndex;
+    }
+
+    /**
+     * @return доступно ли хранилище извне
+     */
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    /**
+     * @param isPublic доступно ли хранилище извне
+     */
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     /**

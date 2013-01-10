@@ -63,7 +63,7 @@ public class PackageDetailsController {
         if (storageId == -1) {
             packageSource = PackageSourceFactory.getInstance().getPackageSource();
         } else {
-            packageSource = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+            packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
         }
         nupkg = packageSource.getPackage(packageId, packageVersion);
         nuspec = nupkg == null ? null : nupkg.getNuspecFile();

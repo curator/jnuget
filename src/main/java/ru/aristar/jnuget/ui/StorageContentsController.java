@@ -136,7 +136,7 @@ public class StorageContentsController {
         if (storageId == -1) {
             storage = PackageSourceFactory.getInstance().getPackageSource();
         } else {
-            storage = PackageSourceFactory.getInstance().getPackageSource().getSources().get(storageId);
+            storage = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
         }
         if (packageId == null) {
             ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getLastVersionPackages());
