@@ -105,6 +105,8 @@ public class PackageSourceFactory {
                 + "пакетов. (поведение по умолчанию)");
         rootPackageSource.setPushStrategy(pushStrategy);
         packageSources = new ConcurrentHashMap<>();
+        int totalStoragesCount = 0;
+        int publicStoragesCount = 0;
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 if (storageOptions.getStorageName() == null) {
@@ -113,13 +115,15 @@ public class PackageSourceFactory {
                 PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
                 if (storageOptions.isPublic()) {
                     packageSources.put(storageOptions.getStorageName(), childSource);
+                    publicStoragesCount++;
                 }
                 rootPackageSource.getSources().add(childSource);
+                totalStoragesCount++;
             } catch (Exception e) {
                 logger.warn("Ошибка создания хранилища пакетов", e);
             }
         }
-        logger.info("Создано {} хранилищ", new Object[]{rootPackageSource.getSources().size()});
+        logger.info("Создано {} хранилищ из них публичных {}", new Object[]{totalStoragesCount, publicStoragesCount});
         return rootPackageSource;
     }
 
