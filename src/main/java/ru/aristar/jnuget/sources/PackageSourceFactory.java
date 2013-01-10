@@ -107,6 +107,9 @@ public class PackageSourceFactory {
         packageSources = new ConcurrentHashMap<>();
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
+                if (storageOptions.getStorageName() == null) {
+                    throw new IllegalArgumentException("Имя хранилища должно быть указано");
+                }
                 PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
                 if (storageOptions.isPublic()) {
                     packageSources.put(storageOptions.getStorageName(), childSource);

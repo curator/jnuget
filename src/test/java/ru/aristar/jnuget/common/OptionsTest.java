@@ -37,6 +37,7 @@ public class OptionsTest {
         assertEquals("Имя папки с пакетами", "${nuget.home}/Packages/", options.getStorageOptionsList().get(0).getProperties().get("folderName").toArray()[0]);
         assertFalse("По умолчанию удаление пакетов запрещено", options.getStorageOptionsList().get(0).isCanDelete());
         assertFalse("По умолчанию публикация пакетов запрещена", options.getStorageOptionsList().get(0).isCanPush());
+        assertThat(options.getStorageOptionsList().get(0).getStorageName(), is(equalTo("DefaultSource")));
         //TEARDOWN
         file.delete();
         nugetHome.delete();
