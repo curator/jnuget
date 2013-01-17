@@ -25,7 +25,7 @@ import ru.aristar.jnuget.sources.PackageSourceFactory;
  *
  * @author sviridov
  */
-@Path("")
+@Path("{storageName}")
 public class MainUrlResource {
 
     /**
@@ -39,19 +39,25 @@ public class MainUrlResource {
     private UriInfo context;
 
     /**
+     * Имя хранилища
+     */
+    @PathParam("storageName")
+    private String storageName;
+
+    /**
      * Конструктор по умолчанию (требование JAX-RS)
      */
     public MainUrlResource() {
     }
 
     /**
-     * Возвращает XML корневого узла сервера
+     * Возвращает XML корневого узла хранилища
      *
      * @return XML
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget")
+    @Path("")
     public Response getXml() {
         MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
         XmlStreamingOutput streamingOutput = new XmlStreamingOutput(mainUrl);
@@ -60,20 +66,11 @@ public class MainUrlResource {
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("")
-    public Response getRootXml() {
-        //TODO Разобраться со структурой приложения (что по какому URL должно находится)
-        return getXml();
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget/{metadata : [$]metadata}")
+    @Path("{metadata : [$]metadata}")
     public Response getMetadata() throws IOException {
-        try (InputStream inputStream = MainUrlResource.class.getResourceAsStream("/metadata.xml")) {
-            ResponseBuilder response = Response.ok((Object) inputStream);
-            return response.build();
-        }
+        InputStream inputStream = MainUrlResource.class.getResourceAsStream("/metadata.xml");
+        ResponseBuilder response = Response.ok((Object) inputStream);
+        return response.build();
     }
 
     /**
@@ -91,7 +88,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
+    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
@@ -99,9 +96,9 @@ public class MainUrlResource {
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            logger.debug("Запрос пакетов: filter={}, orderBy={}, skip={}, "
+            logger.debug("Запрос пакетов из хранилища {}: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
-                    new Object[]{filter, orderBy, skip, top, searchTerm, targetFramework});
+                    new Object[]{storageName, filter, orderBy, skip, top, searchTerm, targetFramework});
             PackageFeed feed = getPackageFeed(filter, searchTerm, targetFramework, orderBy, skip, top);
             XmlStreamingOutput streamingOutput = new XmlStreamingOutput(feed);
             return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
@@ -122,13 +119,13 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
+    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
     public Response getPackageCount(@QueryParam("$filter") String filter,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
-            logger.debug("Запрос количества пакетов: filter={}, searchTerm={}, targetFramework={}",
-                    new Object[]{filter, searchTerm, targetFramework});
+            logger.debug("Запрос количества пакетов из хранилища {}: filter={}, searchTerm={}, targetFramework={}",
+                    new Object[]{storageName, filter, searchTerm, targetFramework});
             Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
             final int count = files.size();
             logger.debug("Получено {} пакетов", new Object[]{count});
@@ -192,7 +189,7 @@ public class MainUrlResource {
      * @return ответ сервера (CREATED или FORBIDDEN)
      */
     @PUT
-    @Path("nuget")
+    @Path("")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response putPackage(@HeaderParam(API_KEY_HEADER_NAME) String apiKey,
             @FormDataParam("package") InputStream inputStream) {
