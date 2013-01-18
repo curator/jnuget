@@ -163,6 +163,7 @@ public class PackageSourceFactory {
         }
         @SuppressWarnings("unchecked")
         PackageSource<Nupkg> newSource = (PackageSource) object;
+        newSource.setName(storageOptions.getStorageName());
         setObjectProperties(storageOptions.getProperties(), object);
         ModifyStrategy pushStrategy = createPushStrategy(storageOptions);
         newSource.setPushStrategy(pushStrategy);

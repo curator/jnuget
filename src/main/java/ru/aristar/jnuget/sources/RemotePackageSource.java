@@ -43,6 +43,10 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
      * Стратегия публикации пакетов
      */
     protected ModifyStrategy pushStrategy = new ModifyStrategy(false);
+    /**
+     * Имя хранилища
+     */
+    private String name;
 
     /**
      * Получает список пакетов из удаленного хранилища
@@ -175,5 +179,15 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String storageName) {
+        this.name = storageName;
     }
 }

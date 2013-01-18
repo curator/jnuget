@@ -129,4 +129,13 @@ public class RootPackageSource implements PackageSource<Nupkg> {
     @Override
     public void refreshPackage(Nupkg nupkg) {
     }
+
+    @Override
+    public String getName() {
+        return "root";
+    }
+
+    @Override
+    public void setName(String storageName) {
+    }
 }

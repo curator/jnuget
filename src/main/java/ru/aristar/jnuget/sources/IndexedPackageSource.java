@@ -63,6 +63,16 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
         packageSource.refreshPackage(nupkg);
     }
 
+    @Override
+    public String getName() {
+        return packageSource.getName();
+    }
+
+    @Override
+    public void setName(String storageName) {
+        packageSource.setName(storageName);
+    }
+
     /**
      * Поток, обновляющий индекс
      */
@@ -80,6 +90,12 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
             }
         }
 
+        /**
+         * Основной метод
+         *
+         * @param context контекст исполнения
+         * @throws JobExecutionException ошибка исполнения
+         */
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
             run();

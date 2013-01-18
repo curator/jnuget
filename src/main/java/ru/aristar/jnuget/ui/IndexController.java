@@ -3,6 +3,8 @@ package ru.aristar.jnuget.ui;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Manifest;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -10,6 +12,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
+import ru.aristar.jnuget.sources.PackageSourceFactory;
 
 /**
  * Контроллер для индексной страницы
@@ -68,18 +73,24 @@ public class IndexController {
     }
 
     /**
+     * @param storageName имя хранилища
      * @return URL, по которому можно получать пакеты
      * @throws URISyntaxException ошибка получения URI прилодения
      */
-    public String getStrorageGetUrl() throws URISyntaxException {
-        return getApplicationUri().toASCIIString() + "/nuget/nuget";
+    public String getGetUrl(String storageName) throws URISyntaxException {
+        return getApplicationUri().toASCIIString() + "/storages/" + storageName + "/nuget";
     }
 
     /**
-     * @return URL, по которому можно публиковать пакеты
-     * @throws URISyntaxException ошибка получения URI прилодения
+     * @return имена публичных хранилищ
      */
-    public String getStroragePutUrl() throws URISyntaxException {
-        return getApplicationUri().toASCIIString() + "/nuget/";
+    public List<String> getStorageNames() {
+        List<PackageSource<Nupkg>> packageSources = PackageSourceFactory.getInstance().getPackageSources();
+        List<String> names = new ArrayList<>();
+        for (PackageSource<Nupkg> packageSource : packageSources) {
+            System.out.println(packageSource.getName());
+            names.add(packageSource.getName());
+        }
+        return names;
     }
 }

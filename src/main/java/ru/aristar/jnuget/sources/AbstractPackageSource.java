@@ -29,6 +29,10 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
      * Стратегия помещения пакета в хранилище
      */
     protected ModifyStrategy strategy;
+    /**
+     * имя хранилища
+     */
+    protected String name;
 
     @Override
     public boolean pushPackage(Nupkg nupkgFile) throws IOException {
@@ -72,6 +76,16 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
     @Override
     public void setPushStrategy(ModifyStrategy strategy) {
         this.strategy = strategy;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String storageName) {
+        this.name = storageName;
     }
 
     /**

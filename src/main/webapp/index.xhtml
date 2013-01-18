@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
             <title><h:outputText value="#{messages.index_title}"/></title>
@@ -21,18 +22,26 @@
             </p>
             <fieldset style="width:800px">
                 <legend><strong>Repository URL's</strong></legend>
-                <h:outputText value="#{messages.index_get_help}"/>
-                <blockquote>
-                    <strong><h:outputText value="#{index.strorageGetUrl}"/></strong>
-                </blockquote>
+                <p>
+                    <b>GET URL: </b><h:outputText value="#{messages.index_get_help}"/>
+                </p>
+                <p>
+                    <b>PUT URL: </b><h:outputText value="#{messages.index_push_help}"/>
+                </p>
+                <c:forEach items="#{index.storageNames}" var="storageName">
+                    <fieldset style="width:800px">
+                        <legend>
+                            <strong><h:outputText value="#{storageName}"/></strong>
+                        </legend>
 
-                <h:outputText value="#{messages.index_push_help}"/>
-
-                <blockquote>
-                    <strong>
-                        <h:outputText value="nuget push {package file} -s  #{index.strorageGetUrl} {apikey}"/>
-                    </strong>
-                </blockquote>
+                        <p>
+                            <b>GET URL: </b><strong><h:outputText value="#{index.getGetUrl(storageName)}"/></strong>
+                        </p>
+                        <p>
+                            <b>PUT URL: </b><strong><h:outputText value="nuget push {package file} -s  #{index.getGetUrl(storageName)} {apikey}"/></strong>
+                        </p>
+                    </fieldset>
+                </c:forEach>
             </fieldset>
         </div>
     </h:body>

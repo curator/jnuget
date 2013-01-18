@@ -189,4 +189,14 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
             proxyNupkg.setPackageSource(hostedSource);
         }
     }
+
+    @Override
+    public String getName() {
+        return remoteSource.getName();
+    }
+
+    @Override
+    public void setName(String storageName) {
+        remoteSource.setName(storageName);
+    }
 }

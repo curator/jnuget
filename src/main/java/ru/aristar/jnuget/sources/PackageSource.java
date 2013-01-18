@@ -15,6 +15,16 @@ import ru.aristar.jnuget.sources.push.ModifyStrategy;
 public interface PackageSource<T extends Nupkg> {
 
     /**
+     * @return имя хранилища
+     */
+    String getName();
+
+    /**
+     * @param storageName имя хранилища
+     */
+    void setName(String storageName);
+
+    /**
      * Возвращает полный список пакетов в хранилище
      *
      * @return коллекция файлов пакетов

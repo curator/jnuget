@@ -37,7 +37,6 @@ public class MainUrlResource {
      */
     @Context
     private UriInfo context;
-
     /**
      * Имя хранилища
      */
@@ -57,7 +56,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("")
+    @Path("nuget")
     public Response getXml() {
         MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
         XmlStreamingOutput streamingOutput = new XmlStreamingOutput(mainUrl);
@@ -66,7 +65,7 @@ public class MainUrlResource {
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("{metadata : [$]metadata}")
+    @Path("nuget/{metadata : [$]metadata}")
     public Response getMetadata() throws IOException {
         InputStream inputStream = MainUrlResource.class.getResourceAsStream("/metadata.xml");
         ResponseBuilder response = Response.ok((Object) inputStream);
@@ -88,7 +87,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
+    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
@@ -99,7 +98,11 @@ public class MainUrlResource {
             logger.debug("Запрос пакетов из хранилища {}: filter={}, orderBy={}, skip={}, "
                     + "top={}, searchTerm={}, targetFramework={}",
                     new Object[]{storageName, filter, orderBy, skip, top, searchTerm, targetFramework});
-            PackageFeed feed = getPackageFeed(filter, searchTerm, targetFramework, orderBy, skip, top);
+            PackageSource<Nupkg> packageSource = getPackageSource();
+            if (packageSource == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            PackageFeed feed = getPackageFeed(packageSource, filter, searchTerm, targetFramework, orderBy, skip, top);
             XmlStreamingOutput streamingOutput = new XmlStreamingOutput(feed);
             return Response.ok(streamingOutput, MediaType.APPLICATION_ATOM_XML_TYPE).build();
         } catch (Exception e) {
@@ -119,14 +122,18 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
+    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
     public Response getPackageCount(@QueryParam("$filter") String filter,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
         try {
             logger.debug("Запрос количества пакетов из хранилища {}: filter={}, searchTerm={}, targetFramework={}",
                     new Object[]{storageName, filter, searchTerm, targetFramework});
-            Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
+            PackageSource<Nupkg> packageSource = getPackageSource();
+            if (packageSource == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            Collection<? extends Nupkg> files = getPackages(packageSource, filter, searchTerm, targetFramework);
             final int count = files.size();
             logger.debug("Получено {} пакетов", new Object[]{count});
             return Response.ok(Integer.toString(count), MediaType.TEXT_PLAIN).build();
@@ -152,6 +159,9 @@ public class MainUrlResource {
         try {
             Version version = Version.parse(versionString);
             PackageSource packageSource = getPackageSource();
+            if (packageSource == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             Nupkg nupkg = packageSource.getPackage(id, version);
             if (nupkg == null) {
                 logger.warn("Пакет " + id + ":" + versionString + " не найден");
@@ -275,6 +285,9 @@ public class MainUrlResource {
                 if (nugetContext.isUserInRole(Role.Delete)) {
                     Version version = Version.parse(versionString);
                     PackageSource<Nupkg> packageSource = getPackageSource();
+                    if (packageSource == null) {
+                        return Response.status(Response.Status.NOT_FOUND).build();
+                    }
                     Nupkg nupkg = packageSource.getPackage(packageId, version);
                     if (nupkg == null) {
                         return Response.status(Response.Status.NOT_FOUND).build();
@@ -300,7 +313,7 @@ public class MainUrlResource {
      * @return источник пакетов
      */
     private PackageSource<Nupkg> getPackageSource() {
-        return PackageSourceFactory.getInstance().getPackageSource();
+        return PackageSourceFactory.getInstance().getPackageSource(storageName);
     }
 
     /**
@@ -321,7 +334,11 @@ public class MainUrlResource {
                 try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
                     logger.debug("Помещение пакета {} версии {} в хранилище",
                             new Object[]{nupkgFile.getId(), nupkgFile.getVersion()});
-                    boolean pushed = getPackageSource().pushPackage(nupkgFile);
+                    final PackageSource<Nupkg> packageSource = getPackageSource();
+                    if (packageSource == null) {
+                        return Response.status(Response.Status.NOT_FOUND).build();
+                    }
+                    boolean pushed = packageSource.pushPackage(nupkgFile);
 
                     if (pushed) {
                         response = Response.status(correctStatus);
@@ -351,6 +368,7 @@ public class MainUrlResource {
     /**
      * Возвращает объектную реализацию RSS рассылки с пакетами
      *
+     * @param packageSource источник пакетов
      * @param filter условие фильтрации
      * @param searchTerm условие поиска
      * @param targetFramework список фреймворков, для которых предназначен пакет
@@ -359,9 +377,9 @@ public class MainUrlResource {
      * @param top количество возвращаемых записей
      * @return объектное представление RSS
      */
-    private PackageFeed getPackageFeed(String filter, String searchTerm, String targetFramework, String orderBy, int skip, int top) {
+    private PackageFeed getPackageFeed(PackageSource<Nupkg> packageSource, String filter, String searchTerm, String targetFramework, String orderBy, int skip, int top) {
         //Получить пакеты
-        Collection<? extends Nupkg> files = getPackages(filter, searchTerm, targetFramework);
+        Collection<? extends Nupkg> files = getPackages(packageSource, filter, searchTerm, targetFramework);
         logger.debug("Получено {} пакетов", new Object[]{files.size()});
         //Преобразовать пакеты в RSS
         NugetContext nugetContext = new NugetContext(context.getBaseUri());
@@ -373,14 +391,13 @@ public class MainUrlResource {
     /**
      * Возвращает коллекцию пакетов, соответствующую условиям поиска
      *
+     * @param packageSource источник пакетов
      * @param filter условие фильтрации
      * @param searchTerm условие поиска
      * @param targetFramework список фреймворков, для которых предназначен пакет
      * @return коллекция пакетов
      */
-    private Collection<? extends Nupkg> getPackages(String filter, String searchTerm, String targetFramework) {
-        //Получить источник пакетов
-        PackageSource<Nupkg> packageSource = getPackageSource();
+    private Collection<? extends Nupkg> getPackages(PackageSource<Nupkg> packageSource, String filter, String searchTerm, String targetFramework) {
         //Выбрать пакеты по запросу
         QueryExecutor queryExecutor = new QueryExecutor();
         Collection<? extends Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm, targetFramework);

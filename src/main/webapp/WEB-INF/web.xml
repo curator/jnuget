@@ -44,7 +44,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ServletAdaptor</servlet-name>
-        <url-pattern>/nuget/*</url-pattern>
+        <url-pattern>/storages/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
