@@ -30,6 +30,10 @@ public class NugetClientTest {
      * Каталог с пакетами
      */
     private static File packageFolder;
+    /**
+     * URL тестового хранилища
+     */
+    private static final String TEST_PACKAGESOURCE_URL = "http://localhost:8088/storages/DefaultSource/nuget";
 
     /**
      * Инициализация настроек интеграционных тестов
@@ -76,7 +80,7 @@ public class NugetClientTest {
         //TODO Разобраться с клиентом. Тест явно битый URL в одном случае содержит nuget, в другом нет
         //GIVEN
         NugetClient nugetClient = new NugetClient();
-        nugetClient.setUrl("http://localhost:8088/nuget");
+        nugetClient.setUrl(TEST_PACKAGESOURCE_URL);
         //WHEN
         TempNupkgFile result = nugetClient.getPackage("NUnit", Version.parse("2.5.9.10348"));
         //THEN
@@ -94,7 +98,7 @@ public class NugetClientTest {
     public void testGetAllPackages() throws Exception {
         //GIVEN
         NugetClient nugetClient = new NugetClient();
-        nugetClient.setUrl("http://localhost:8088/nuget/nuget");
+        nugetClient.setUrl(TEST_PACKAGESOURCE_URL);
         //WHEN
         PackageFeed result = nugetClient.getPackages(null, null, null, null, null);
         //THEN
@@ -115,7 +119,7 @@ public class NugetClientTest {
     public void testGetPackageCount() throws IOException, URISyntaxException {
         //GIVEN
         NugetClient nugetClient = new NugetClient();
-        nugetClient.setUrl("http://localhost:8088/nuget/nuget");
+        nugetClient.setUrl(TEST_PACKAGESOURCE_URL);
         //WHEN
         int result = nugetClient.getPackageCount(false);
         //THEN
@@ -133,7 +137,7 @@ public class NugetClientTest {
     public void testGetLastVersionPackageCount() throws IOException, URISyntaxException {
         //GIVEN
         NugetClient nugetClient = new NugetClient();
-        nugetClient.setUrl("http://localhost:8088/nuget/nuget");
+        nugetClient.setUrl(TEST_PACKAGESOURCE_URL);
         //WHEN
         int result = nugetClient.getPackageCount(true);
         //THEN

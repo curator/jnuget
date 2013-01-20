@@ -27,6 +27,7 @@ public class RssIntegrationTests {
      * Каталог с пакетами
      */
     private static File packageFolder;
+    private static final String STORAGE_URL = "http://localhost:8088//storages/DefaultSource";
 
     /**
      * Инициализация настроек интеграционных тестов
@@ -86,7 +87,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Packages");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Packages");
         //THEN
         assertTrue(response.getText().contains("type=\"text\">Packages<"));
     }
@@ -102,7 +103,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget");
         //THEN
         assertTrue(response.getText().contains("xml:base=\"http://localhost:8088/nuget/nuget\""));
         assertTrue(response.getText().contains("title>Default<"));
@@ -122,7 +123,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Packages");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Packages");
         //THEN
         assertTrue(response.getText().contains("Packages(Id='NUnit',Version='2.5.9.10348')"));
     }
@@ -138,7 +139,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse("http://localhost:8088/nuget/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net20'");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net20'");
         //THEN
         assertEquals("В хранилище должно быть определенное количество пакетов", "1", response.getText());
     }
