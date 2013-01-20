@@ -27,7 +27,7 @@ public class RssIntegrationTests {
      * Каталог с пакетами
      */
     private static File packageFolder;
-    private static final String STORAGE_URL = "http://localhost:8088//storages/DefaultSource";
+    private static final String STORAGE_URL = "http://localhost:8088/storages/DefaultSource";
 
     /**
      * Инициализация настроек интеграционных тестов
@@ -105,7 +105,8 @@ public class RssIntegrationTests {
         //WHEN
         WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget");
         //THEN
-        assertTrue(response.getText().contains("xml:base=\"http://localhost:8088/nuget/nuget\""));
+        System.out.println(response.getText());
+        assertTrue(response.getText().contains("xml:base=\"" + STORAGE_URL + "/nuget\""));
         assertTrue(response.getText().contains("title>Default<"));
         assertTrue(response.getText().contains("href=\"Packages\""));
         assertTrue(response.getText().contains("title>Packages<"));
