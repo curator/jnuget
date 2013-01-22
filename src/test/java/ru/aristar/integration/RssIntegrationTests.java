@@ -105,7 +105,6 @@ public class RssIntegrationTests {
         //WHEN
         WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget");
         //THEN
-        System.out.println(response.getText());
         assertTrue(response.getText().contains("xml:base=\"" + STORAGE_URL + "/nuget\""));
         assertTrue(response.getText().contains("title>Default<"));
         assertTrue(response.getText().contains("href=\"Packages\""));

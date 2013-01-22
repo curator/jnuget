@@ -47,7 +47,6 @@ public class NugetClientTest {
             homeFolderName = System.getProperty("user.dir") + "/target/WorkFolder/";
         }
         File testFolder = new File(homeFolderName);
-        System.out.println("Test folder: " + testFolder);
         testFolder.mkdirs();
         packageFolder = new File(testFolder, "Packages");
         packageFolder.mkdirs();

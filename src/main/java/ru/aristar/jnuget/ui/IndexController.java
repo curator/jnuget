@@ -88,7 +88,6 @@ public class IndexController {
         List<PackageSource<Nupkg>> packageSources = PackageSourceFactory.getInstance().getPackageSources();
         List<String> names = new ArrayList<>();
         for (PackageSource<Nupkg> packageSource : packageSources) {
-            System.out.println(packageSource.getName());
             names.add(packageSource.getName());
         }
         return names;
