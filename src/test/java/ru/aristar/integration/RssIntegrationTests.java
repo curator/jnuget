@@ -73,7 +73,7 @@ public class RssIntegrationTests {
         //WHEN
         WebResponse response = webConversation.getResponse("http://localhost:8088");
         //THEN
-        assertTrue(response.getText().contains("You are running JNuGet.Server"));
+        assertTrue(response.getText().contains("to view manager."));
     }
 
     /**
