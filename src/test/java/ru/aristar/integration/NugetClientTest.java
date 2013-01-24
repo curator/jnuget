@@ -33,7 +33,7 @@ public class NugetClientTest {
     /**
      * URL тестового хранилища
      */
-    private static final String TEST_PACKAGESOURCE_URL = "http://localhost:8088/storages/DefaultSource/nuget";
+    private static final String TEST_PACKAGESOURCE_URL = "http://localhost:8088/storages/DefaultSource/";
 
     /**
      * Инициализация настроек интеграционных тестов

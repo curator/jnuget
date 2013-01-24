@@ -87,7 +87,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Packages");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/Packages");
         //THEN
         assertTrue(response.getText().contains("type=\"text\">Packages<"));
     }
@@ -103,9 +103,9 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget");
+        WebResponse response = webConversation.getResponse(STORAGE_URL);
         //THEN
-        assertTrue(response.getText().contains("xml:base=\"" + STORAGE_URL + "/nuget\""));
+        assertTrue(response.getText().contains("xml:base=\"" + STORAGE_URL + "\""));
         assertTrue(response.getText().contains("title>Default<"));
         assertTrue(response.getText().contains("href=\"Packages\""));
         assertTrue(response.getText().contains("title>Packages<"));
@@ -123,7 +123,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Packages");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/Packages");
         //THEN
         assertTrue(response.getText().contains("Packages(Id='NUnit',Version='2.5.9.10348')"));
     }
@@ -139,7 +139,7 @@ public class RssIntegrationTests {
         //GIVEN
         WebConversation webConversation = new WebConversation();
         //WHEN
-        WebResponse response = webConversation.getResponse(STORAGE_URL + "/nuget/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net20'");
+        WebResponse response = webConversation.getResponse(STORAGE_URL + "/Search()/$count?$filter=IsLatestVersion&searchTerm=''&targetFramework='net20'");
         //THEN
         assertEquals("В хранилище должно быть определенное количество пакетов", "1", response.getText());
     }
