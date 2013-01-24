@@ -12,6 +12,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.aristar.jnuget.MainUrlResource;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
@@ -78,7 +79,7 @@ public class IndexController {
      * @throws URISyntaxException ошибка получения URI прилодения
      */
     public String getGetUrl(String storageName) throws URISyntaxException {
-        return getApplicationUri().toASCIIString() + "/storages/" + storageName + "/nuget";
+        return getApplicationUri().toASCIIString() + "/storages/" + storageName;
     }
 
     /**

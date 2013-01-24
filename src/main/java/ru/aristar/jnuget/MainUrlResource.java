@@ -3,6 +3,7 @@ package ru.aristar.jnuget;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import javax.security.auth.login.LoginException;
 import javax.ws.rs.*;
@@ -56,7 +57,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget")
+    @Path("")
     public Response getXml() {
         MainUrl mainUrl = new MainUrl(context.getAbsolutePath().toString());
         XmlStreamingOutput streamingOutput = new XmlStreamingOutput(mainUrl);
@@ -65,7 +66,7 @@ public class MainUrlResource {
 
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget/{metadata : [$]metadata}")
+    @Path("{metadata : [$]metadata}")
     public Response getMetadata() throws IOException {
         InputStream inputStream = MainUrlResource.class.getResourceAsStream("/metadata.xml");
         ResponseBuilder response = Response.ok((Object) inputStream);
@@ -87,7 +88,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
+    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}")
     public Response getPackages(@QueryParam("$filter") String filter,
             @QueryParam("$orderby") @DefaultValue("updated") String orderBy,
             @QueryParam("$skip") @DefaultValue("0") int skip,
@@ -122,7 +123,7 @@ public class MainUrlResource {
      */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("nuget/{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
+    @Path("{packages : (Packages)[(]?[)]?|(Search)[(][)]}/{count : [$]count}")
     public Response getPackageCount(@QueryParam("$filter") String filter,
             @QueryParam("searchTerm") String searchTerm,
             @QueryParam("targetFramework") String targetFramework) {
@@ -278,7 +279,7 @@ public class MainUrlResource {
     private Response deletePackage(String apiKey,
             String packageId,
             String versionString) {
-        NugetContext nugetContext = new NugetContext(context.getBaseUri());
+        NugetContext nugetContext = new NugetContext(getCurrentStorageURI());
         try {
             nugetContext.login(apiKey);
             try {
@@ -327,7 +328,7 @@ public class MainUrlResource {
     private Response pushPackage(String apiKey, InputStream inputStream, Response.Status correctStatus) {
         try {
             logger.debug("Получен пакет ApiKey={}", new Object[]{apiKey});
-            NugetContext nugetContext = new NugetContext(context.getBaseUri());
+            NugetContext nugetContext = new NugetContext(getCurrentStorageURI());
             nugetContext.login(apiKey);
             if (nugetContext.isUserInRole(Role.Push)) {
                 ResponseBuilder response;
@@ -382,7 +383,7 @@ public class MainUrlResource {
         Collection<? extends Nupkg> files = getPackages(packageSource, filter, searchTerm, targetFramework);
         logger.debug("Получено {} пакетов", new Object[]{files.size()});
         //Преобразовать пакеты в RSS
-        NugetContext nugetContext = new NugetContext(context.getBaseUri());
+        NugetContext nugetContext = new NugetContext(getCurrentStorageURI());
         NuPkgToRssTransformer toRssTransformer = nugetContext.createToRssTransformer();
         PackageFeed feed = toRssTransformer.transform(files, orderBy, skip, top);
         return feed;
@@ -402,6 +403,13 @@ public class MainUrlResource {
         QueryExecutor queryExecutor = new QueryExecutor();
         Collection<? extends Nupkg> files = queryExecutor.execQuery(packageSource, filter, searchTerm, targetFramework);
         return files;
+    }
+
+    /**
+     * @return URI текущего хранилища
+     */
+    private URI getCurrentStorageURI() {
+        return URI.create(context.getBaseUri().toString() + storageName + "/");
     }
     /**
      * Имя заголовка запроса с ключем доступа
