@@ -3,6 +3,7 @@ package ru.aristar.jnuget.query;
 import java.util.Queue;
 import java.util.Stack;
 import ru.aristar.jnuget.files.NugetFormatException;
+import static java.text.MessageFormat.format;
 
 /**
  * Лексический анализатор запросов
@@ -38,14 +39,18 @@ public class QueryLexer {
      * @throws NugetFormatException токен не соответствует формату
      */
     protected Expression parse(Queue<String> tokens, Stack<Expression> stack) throws NugetFormatException {
+        if (stack == null) {
+            stack = new Stack<>();
+        }
+
         if (tokens.isEmpty()) {
+            if (stack.empty()) {
+                return new EmptyExpression();
+            }
             return stack.pop();
         }
         String token = tokens.poll();
 
-        if (stack == null) {
-            stack = new Stack<>();
-        }
         switch (token.toLowerCase()) {
             case "(": {
                 Expression expression = parse(tokens, null);
@@ -81,8 +86,13 @@ public class QueryLexer {
                 checkForAndExpression(stack, expression);
                 return parse(tokens, stack);
             }
+
+            case "version": {
+                Expression expression = VersionEq.parse(tokens);
+                return expression;
+            }
             default:
-                throw new NugetFormatException("Токен не поддерживается");
+                throw new NugetFormatException(format("Токен \"{0}\" не поддерживается.", token));
         }
     }
 

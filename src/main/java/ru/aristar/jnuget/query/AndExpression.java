@@ -21,6 +21,21 @@ public class AndExpression implements Expression {
      */
     private Expression secondExpression;
 
+    /**
+     * Конструктор по умолчанию
+     */
+    public AndExpression() {
+    }
+
+    /**
+     * @param firstExpression первый операнд
+     * @param secondExpression второй операнд
+     */
+    public AndExpression(Expression firstExpression, Expression secondExpression) {
+        this.firstExpression = firstExpression;
+        this.secondExpression = secondExpression;
+    }
+
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
         HashSet<Nupkg> result = new HashSet<>();
@@ -57,5 +72,10 @@ public class AndExpression implements Expression {
      */
     public void setSecondExpression(Expression secondExpression) {
         this.secondExpression = secondExpression;
+    }
+
+    @Override
+    public String toString() {
+        return firstExpression + " and " + secondExpression;
     }
 }

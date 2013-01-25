@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +27,9 @@ import ru.aristar.jnuget.common.ProxyOptions;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.query.AndExpression;
+import ru.aristar.jnuget.query.IdEqIgnoreCase;
+import ru.aristar.jnuget.query.VersionEq;
 import ru.aristar.jnuget.rss.PackageFeed;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -163,10 +165,17 @@ public class NugetClient implements AutoCloseable {
      * @throws NugetFormatException ошибка вычисления HASH пакета
      */
     public TempNupkgFile getPackage(String id, Version version) throws IOException, URISyntaxException, NugetFormatException {
-        URI uri = webResource.getURI();
-        uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
-        final String path = format("download/{0}/{1}", new Object[]{id, version.toString()});
-        try (InputStream inputStream = get(client, uri, path, InputStream.class)) {
+        IdEqIgnoreCase eqIgnoreCase = new IdEqIgnoreCase(id);
+        VersionEq versionEq = new VersionEq(version);
+        AndExpression andExpression = new AndExpression(eqIgnoreCase, versionEq);
+        String filter = andExpression.toString();
+        PackageFeed feed = getPackages(filter, null, 100, null, 0);
+        if(feed.getEntries().isEmpty()) {
+            return null;
+        }
+        URI uri = URI.create(feed.getEntries().get(0).getContent().getSrc());
+
+        try (InputStream inputStream = get(client, uri, "", InputStream.class)) {
             TempNupkgFile nupkgFile = new TempNupkgFile(inputStream);
             return nupkgFile;
         }

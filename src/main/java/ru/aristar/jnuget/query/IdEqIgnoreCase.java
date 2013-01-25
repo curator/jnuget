@@ -19,7 +19,7 @@ public class IdEqIgnoreCase implements Expression {
      * @param expected эталон
      * @throws NugetFormatException токен не соответствует эталону
      */
-    private static void assertToken(String actual, String expected) throws NugetFormatException {
+    public static void assertToken(String actual, String expected) throws NugetFormatException {
         if (!actual.equalsIgnoreCase(expected)) {
             throw new NugetFormatException("Встретился токен '" + actual
                     + "', когда ожидался '" + expected + "'");
@@ -29,6 +29,13 @@ public class IdEqIgnoreCase implements Expression {
      * Идентификатор пакета
      */
     private String packageId;
+
+    /**
+     * @param id идентификатор пакета
+     */
+    public IdEqIgnoreCase(String id) {
+        packageId = id;
+    }
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
@@ -44,13 +51,12 @@ public class IdEqIgnoreCase implements Expression {
      * NuGet
      */
     public static IdEqIgnoreCase parse(java.util.Queue<java.lang.String> tokens) throws NugetFormatException {
-        IdEqIgnoreCase expression = new IdEqIgnoreCase();
         assertToken(tokens.poll(), "(");
         assertToken(tokens.poll(), "Id");
         assertToken(tokens.poll(), ")");
         assertToken(tokens.poll(), "eq");
         assertToken(tokens.poll(), "'");
-        expression.setPackageId(tokens.poll());
+        IdEqIgnoreCase expression = new IdEqIgnoreCase(tokens.poll());
         assertToken(tokens.poll(), "'");
         return expression;
     }
@@ -67,5 +73,10 @@ public class IdEqIgnoreCase implements Expression {
      */
     public void setPackageId(String packageId) {
         this.packageId = packageId;
+    }
+
+    @Override
+    public String toString() {
+        return "tolower(Id) eq '" + packageId.toLowerCase() + "'";
     }
 }
