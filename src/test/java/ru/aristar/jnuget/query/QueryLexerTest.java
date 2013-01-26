@@ -228,9 +228,12 @@ public class QueryLexerTest {
         final String filterString = "tolower(Id) eq 'first.package' or tolower(Id) eq 'second.package'";
         //WHEN
         Expression expression = lexer.parse(filterString);
-        Collection<? extends Nupkg> result = expression.execute(packageSource);
+        @SuppressWarnings("unchecked")
+        Collection<Nupkg> result = (Collection<Nupkg>) expression.execute(packageSource);
         //THEN
-        assertArrayEquals("Список пакетов", new Nupkg[]{firstPackage, secondPackage}, result.toArray(new Nupkg[0]));
+        final Nupkg[] expected = new Nupkg[]{firstPackage, secondPackage};
+        assertThat(result.size(), is(equalTo(expected.length)));
+        assertThat(result, hasItems(expected));
     }
 
     /**
