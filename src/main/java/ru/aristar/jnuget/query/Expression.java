@@ -17,5 +17,20 @@ public interface Expression {
      * @param packageSource источник пакетов
      * @return список пакетов, соответствующих выражению
      */
-    public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource);
+    Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource);
+
+    /**
+     * Отфильтровать пакеты, удовлетворяющие выражению
+     *
+     * @param packages исходная коллекция пакетов
+     * @return отфильтрованные пакеты
+     */
+    Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages);
+
+    /**
+     * Болле приоритетным является выполнение в режиме фильтра
+     *
+     * @return true/false
+     */
+    boolean hasFilterPriority();
 }

@@ -1,6 +1,7 @@
 package ru.aristar.jnuget.query;
 
 import java.util.Collection;
+import java.util.HashSet;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
@@ -78,5 +79,21 @@ public class IdEqIgnoreCase implements Expression {
     @Override
     public String toString() {
         return "tolower(Id) eq '" + packageId.toLowerCase() + "'";
+    }
+
+    @Override
+    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
+        HashSet<Nupkg> result = new HashSet<>();
+        for (Nupkg nupkg : packages) {
+            if (nupkg.getId().equalsIgnoreCase(packageId)) {
+                result.add(nupkg);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean hasFilterPriority() {
+        return false;
     }
 }

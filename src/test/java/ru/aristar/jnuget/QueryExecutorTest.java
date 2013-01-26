@@ -10,7 +10,6 @@ import static org.jmock.Expectations.equal;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.junit.matchers.JUnitMatchers.hasItems;
@@ -329,11 +328,13 @@ public class QueryExecutorTest {
         context.checking(expectations);
         //WHEN
         QueryExecutor executor = new QueryExecutor();
-        Collection<? extends Nupkg> result = executor.execQuery(source, queryString, null);
+        @SuppressWarnings("unchecked")
+        Collection<Nupkg> result = (Collection<Nupkg>) executor.execQuery(source, queryString, null);
         //THEN
         Nupkg[] expecteds = {firstPackage, secondPackage, thridPackage,
             fourthPackage, fifthPackage, sixthPackage, seventhLastPackage};
-        assertArrayEquals("Пакеты, полученные из хранилища", expecteds, result.toArray(new Nupkg[0]));
+        assertThat(result.size(), is(equalTo(expecteds.length)));
+        assertThat(result, hasItems(expecteds));
     }
 
     /**

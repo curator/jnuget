@@ -16,6 +16,13 @@ import ru.aristar.jnuget.sources.PackageSource;
  */
 public class VersionEq implements Expression {
 
+    /**
+     * Распознает строку с выражением
+     *
+     * @param tokens токены строки выражения
+     * @return распознанное выражение
+     * @throws NugetFormatException некорректная строка выражения
+     */
     static VersionEq parse(Queue<String> tokens) throws NugetFormatException {
         assertToken(tokens.poll(), "eq");
         assertToken(tokens.poll(), "'");
@@ -57,5 +64,21 @@ public class VersionEq implements Expression {
     @Override
     public String toString() {
         return "Version eq '" + version + "'";
+    }
+
+    @Override
+    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
+        HashSet<Nupkg> result = new HashSet<>();
+        for (Nupkg nupkg : packages) {
+            if (version.equals(nupkg.getVersion())) {
+                result.add(nupkg);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean hasFilterPriority() {
+        return true;
     }
 }

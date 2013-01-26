@@ -2,6 +2,7 @@ package ru.aristar.jnuget.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
@@ -23,7 +24,7 @@ public class OrExpression implements Expression {
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
-        ArrayList<Nupkg> result = new ArrayList<>();
+        HashSet<Nupkg> result = new HashSet<>();
         Collection<? extends Nupkg> firstExpressionResult = getFirstExpression().execute(packageSource);
         result.addAll(firstExpressionResult);
         Collection<? extends Nupkg> secondExpressionResult = getSecondExpression().execute(packageSource);
@@ -57,5 +58,18 @@ public class OrExpression implements Expression {
      */
     public void setSecondExpression(Expression secondExpression) {
         this.secondExpression = secondExpression;
+    }
+
+    @Override
+    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
+        HashSet<Nupkg> result = new HashSet<>();
+        result.addAll(getFirstExpression().filter(packages));
+        result.addAll(getFirstExpression().filter(packages));
+        return result;
+    }
+
+    @Override
+    public boolean hasFilterPriority() {
+        return getFirstExpression().hasFilterPriority() && getFirstExpression().hasFilterPriority();
     }
 }

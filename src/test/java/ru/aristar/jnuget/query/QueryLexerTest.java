@@ -7,7 +7,6 @@ import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;

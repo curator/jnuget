@@ -127,7 +127,11 @@ public class QueryExecutor {
         try {
             QueryLexer queryLexer = new QueryLexer();
             Expression expression = queryLexer.parse(filter);
-            return expression.execute(packageSource);
+            if (expression.hasFilterPriority()) {
+                return expression.filter(packageSource.getPackages());
+            } else {
+                return expression.execute(packageSource);
+            }
         } catch (NugetFormatException e) {
             logger.warn("Ошибка разбора запроса пакетов", e);
             return packageSource.getPackages();

@@ -38,12 +38,18 @@ public class AndExpression implements Expression {
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
-        HashSet<Nupkg> result = new HashSet<>();
-        Collection<? extends Nupkg> firstExpressionResult = getFirstExpression().execute(packageSource);
-        result.addAll(firstExpressionResult);
-        Collection<? extends Nupkg> secondExpressionResult = getSecondExpression().execute(packageSource);
-        result.retainAll(secondExpressionResult);
-        return result;
+        if (!getFirstExpression().hasFilterPriority() && getSecondExpression().hasFilterPriority()) {
+            return getSecondExpression().filter(getFirstExpression().execute(packageSource));
+        } else if (getFirstExpression().hasFilterPriority() && !getSecondExpression().hasFilterPriority()) {
+            return getFirstExpression().filter(getSecondExpression().execute(packageSource));
+        } else {
+            HashSet<Nupkg> result = new HashSet<>();
+            Collection<? extends Nupkg> firstExpressionResult = getFirstExpression().execute(packageSource);
+            result.addAll(firstExpressionResult);
+            Collection<? extends Nupkg> secondExpressionResult = getSecondExpression().execute(packageSource);
+            result.retainAll(secondExpressionResult);
+            return result;
+        }
     }
 
     /**
@@ -77,5 +83,15 @@ public class AndExpression implements Expression {
     @Override
     public String toString() {
         return firstExpression + " and " + secondExpression;
+    }
+
+    @Override
+    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean hasFilterPriority() {
+        return getFirstExpression().hasFilterPriority() && getFirstExpression().hasFilterPriority();
     }
 }
