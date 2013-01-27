@@ -35,7 +35,7 @@ public interface Expression {
     boolean hasFilterPriority();
 
     /**
-     * Пакет проходит выражение
+     * Проверка проходит ли пакет выражение
      *
      * @param nupkg пакет
      * @return проходит или нет

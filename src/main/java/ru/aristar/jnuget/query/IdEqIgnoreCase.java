@@ -1,7 +1,6 @@
 package ru.aristar.jnuget.query;
 
 import java.util.Collection;
-import java.util.HashSet;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;

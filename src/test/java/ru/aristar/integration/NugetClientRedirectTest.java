@@ -15,6 +15,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import org.junit.After;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
@@ -31,18 +32,32 @@ import ru.aristar.jnuget.rss.PackageFeed;
 public class NugetClientRedirectTest {
 
     /**
+     * Тестовый сервер
+     */
+    private HttpServer server;
+
+    /**
+     * Остановка сервера
+     */
+    @After
+    public void stopServer() {
+        if (server != null) {
+            server.stop(0);
+        }
+    }
+
+    /**
      * Создание тестового HTTP сервера
      *
      * @param cahinElements последовательность "ответов от сервера"
-     * @return HTTP сервер
      * @throws IOException ошибка открытия сокета
      */
-    private HttpServer createHttpServer(ServerResponse... cahinElements) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(1234), 0);
+    private void createHttpServer(ServerResponse... cahinElements) throws IOException {
+        server = HttpServer.create(new InetSocketAddress(1234), 0);
         TestHttpHandler serv = new TestHttpHandler(cahinElements);
         server.createContext("/", serv);
         server.setExecutor(null); // creates a default executor
-        return server;
+        server.start();
     }
 
     /**
@@ -86,9 +101,11 @@ public class NugetClientRedirectTest {
             }
             exchange.sendResponseHeaders(responseCode.getStatusCode(), 0);
             if (sourceStream != null) {
-                ReadableByteChannel sourceChanel = Channels.newChannel(sourceStream);
-                WritableByteChannel targetChannel = Channels.newChannel(exchange.getResponseBody());
-                TempNupkgFile.fastChannelCopy(sourceChanel, targetChannel);
+                try (InputStream stream = sourceStream) {
+                    ReadableByteChannel sourceChanel = Channels.newChannel(stream);
+                    WritableByteChannel targetChannel = Channels.newChannel(exchange.getResponseBody());
+                    TempNupkgFile.fastChannelCopy(sourceChanel, targetChannel);
+                }
             }
             exchange.close();
         }
@@ -137,6 +154,7 @@ public class NugetClientRedirectTest {
      * @throws UniformInterfaceException ошибка чтения из сокета
      * @throws NugetFormatException тело ответа от сервера не соответствует
      * формату NuGet
+     * @throws URISyntaxException
      */
     @Test
     public void testGetPackageListWithRedirect()
@@ -160,13 +178,11 @@ public class NugetClientRedirectTest {
                 new String[][]{
                     new String[]{"Content-Type", "application/xml"}
                 });
-        HttpServer server = createHttpServer(c1, c2, c3);
-        server.start();
+        createHttpServer(c1, c2, c3);
         NugetClient nugetClient = new NugetClient();
         nugetClient.setUrl("http://localhost:1234");
         //WHEN
         PackageFeed result = nugetClient.getPackages(null, null, 100, null, 0);
-        server.stop(0);
         //THEN
         assertThat(result.getEntries().size(), is(equalTo(26)));
     }
@@ -178,29 +194,34 @@ public class NugetClientRedirectTest {
      * @throws IOException ошибка создания веб сервера
      * @throws NugetFormatException тело ответа от сервера не соответствует
      * формату NuGet
+     * @throws URISyntaxException
      */
     @Test
     public void testGetPackageBodyListWithRedirect() throws IOException, NugetFormatException, URISyntaxException {
         //GIVEN
         ServerResponse c1 = new ServerResponse(
+                this.getClass().getResourceAsStream("/rss/nunit-2.5.9.10348.xml"),
+                ClientResponse.Status.OK,
+                new String[][]{
+                    new String[]{"Content-Type", "application/xml"}
+                });
+        ServerResponse c2 = new ServerResponse(
                 null,
                 ClientResponse.Status.MOVED_PERMANENTLY,
                 new String[][]{
                     new String[]{"Location", "http://localhost:1234/2/"}
                 });
-        ServerResponse c2 = new ServerResponse(
+        ServerResponse c3 = new ServerResponse(
                 this.getClass().getResourceAsStream("/NUnit.2.5.9.10348.nupkg"),
                 ClientResponse.Status.OK,
                 new String[][]{
                     new String[]{"Content-Type", "application/xml"}
                 });
-        HttpServer server = createHttpServer(c1, c2);
-        server.start();
+        createHttpServer(c1, c2, c3);
         NugetClient nugetClient = new NugetClient();
         nugetClient.setUrl("http://localhost:1234");
         //WHEN
         TempNupkgFile result = nugetClient.getPackage("NUnit", Version.parse("2.5.9.10348"));
-        server.stop(0);
         //THEN
         assertThat(result.getId(), is(equalTo("NUnit")));
         assertThat(result.getVersion(), is(equalTo(Version.parse("2.5.9.10348"))));
