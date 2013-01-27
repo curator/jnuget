@@ -33,4 +33,12 @@ public interface Expression {
      * @return true/false
      */
     boolean hasFilterPriority();
+
+    /**
+     * Пакет проходит выражение
+     *
+     * @param nupkg пакет
+     * @return проходит или нет
+     */
+    boolean accept(Nupkg nupkg);
 }

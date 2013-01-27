@@ -2,7 +2,6 @@ package ru.aristar.jnuget.query;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.PackageSource;
 
@@ -11,7 +10,7 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class LatestVersionExpression implements Expression {
+public class LatestVersionExpression extends AbstractExpression{
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
@@ -33,5 +32,10 @@ public class LatestVersionExpression implements Expression {
     @Override
     public boolean hasFilterPriority() {
         return false;
+    }
+
+    @Override
+    public boolean accept(Nupkg nupkg) {
+        throw new UnsupportedOperationException("Not supported for this operation.");
     }
 }

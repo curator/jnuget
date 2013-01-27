@@ -10,16 +10,7 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class AndExpression implements Expression {
-
-    /**
-     * Первый множитель
-     */
-    private Expression firstExpression;
-    /**
-     * Второй множитель
-     */
-    private Expression secondExpression;
+public class AndExpression extends BinaryExpression {
 
     /**
      * Конструктор по умолчанию
@@ -52,46 +43,13 @@ public class AndExpression implements Expression {
         }
     }
 
-    /**
-     * @return Первый множитель
-     */
-    public Expression getFirstExpression() {
-        return firstExpression;
-    }
-
-    /**
-     * @param firstExpression Первый множитель
-     */
-    public void setFirstExpression(Expression firstExpression) {
-        this.firstExpression = firstExpression;
-    }
-
-    /**
-     * @return Второй множитель
-     */
-    public Expression getSecondExpression() {
-        return secondExpression;
-    }
-
-    /**
-     * @param secondExpression Второй множитель
-     */
-    public void setSecondExpression(Expression secondExpression) {
-        this.secondExpression = secondExpression;
+    @Override
+    public boolean accept(Nupkg nupkg) {
+        return getFirstExpression().accept(nupkg) && getSecondExpression().accept(nupkg);
     }
 
     @Override
     public String toString() {
         return firstExpression + " and " + secondExpression;
-    }
-
-    @Override
-    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean hasFilterPriority() {
-        return getFirstExpression().hasFilterPriority() && getFirstExpression().hasFilterPriority();
     }
 }

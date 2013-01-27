@@ -6,7 +6,6 @@ import java.util.Queue;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
-import static ru.aristar.jnuget.query.IdEqIgnoreCase.assertToken;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -14,7 +13,7 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class VersionEq implements Expression {
+public class VersionEq extends AbstractExpression {
 
     /**
      * Распознает строку с выражением
@@ -51,7 +50,6 @@ public class VersionEq implements Expression {
 
     @Override
     public Collection<? extends Nupkg> execute(PackageSource<? extends Nupkg> packageSource) {
-        //TODO Продумать ограничения по идентификаторам
         HashSet<Nupkg> result = new HashSet<>();
         for (Nupkg nupkg : packageSource.getPackages()) {
             if (nupkg.getVersion().equals(version)) {
@@ -62,23 +60,17 @@ public class VersionEq implements Expression {
     }
 
     @Override
-    public String toString() {
-        return "Version eq '" + version + "'";
-    }
-
-    @Override
-    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
-        HashSet<Nupkg> result = new HashSet<>();
-        for (Nupkg nupkg : packages) {
-            if (version.equals(nupkg.getVersion())) {
-                result.add(nupkg);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public boolean hasFilterPriority() {
         return true;
+    }
+
+    @Override
+    public boolean accept(Nupkg nupkg) {
+        return version.equals(nupkg.getVersion());
+    }
+
+    @Override
+    public String toString() {
+        return "Version eq '" + version + "'";
     }
 }

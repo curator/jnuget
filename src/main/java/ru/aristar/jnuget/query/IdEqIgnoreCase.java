@@ -11,21 +11,8 @@ import ru.aristar.jnuget.sources.PackageSource;
  *
  * @author sviridov
  */
-public class IdEqIgnoreCase implements Expression {
+public class IdEqIgnoreCase extends AbstractExpression {
 
-    /**
-     * Сравнивает токен с эталоном
-     *
-     * @param actual токен
-     * @param expected эталон
-     * @throws NugetFormatException токен не соответствует эталону
-     */
-    public static void assertToken(String actual, String expected) throws NugetFormatException {
-        if (!actual.equalsIgnoreCase(expected)) {
-            throw new NugetFormatException("Встретился токен '" + actual
-                    + "', когда ожидался '" + expected + "'");
-        }
-    }
     /**
      * Идентификатор пакета
      */
@@ -77,23 +64,17 @@ public class IdEqIgnoreCase implements Expression {
     }
 
     @Override
-    public String toString() {
-        return "tolower(Id) eq '" + packageId.toLowerCase() + "'";
-    }
-
-    @Override
-    public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
-        HashSet<Nupkg> result = new HashSet<>();
-        for (Nupkg nupkg : packages) {
-            if (nupkg.getId().equalsIgnoreCase(packageId)) {
-                result.add(nupkg);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public boolean hasFilterPriority() {
         return false;
+    }
+
+    @Override
+    public boolean accept(Nupkg nupkg) {
+        return nupkg.getId().equalsIgnoreCase(packageId);
+    }
+
+    @Override
+    public String toString() {
+        return "tolower(Id) eq '" + packageId.toLowerCase() + "'";
     }
 }

@@ -23,4 +23,9 @@ public class EmptyExpression implements Expression {
     public boolean hasFilterPriority() {
         return true;
     }
+
+    @Override
+    public boolean accept(Nupkg nupkg) {
+        return true;
+    }
 }
