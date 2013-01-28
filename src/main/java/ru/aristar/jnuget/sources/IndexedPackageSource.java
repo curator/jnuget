@@ -6,6 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import static java.text.MessageFormat.format;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import static org.quartz.CronScheduleBuilder.*;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -57,6 +60,18 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      * Ключ триггера обновления хранилища
      */
     private TriggerKey triggerKey;
+    /**
+     * Семафор, использующийся при помещении пакета в хранилище
+     */
+    private final Semaphore pushSemaphore = new Semaphore(1);
+    /**
+     * Индекс находистя в процессе обновления
+     */
+    private volatile boolean refreshIndexInProgress = false;
+    /**
+     * Очередь пакетов, ожидающих помещение в хранилище
+     */
+    private BlockingQueue<Nupkg> newPackageQueue = new LinkedBlockingQueue<>();
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
@@ -104,31 +119,51 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     /**
      * Перечитывает индекс хранилища
+     *
+     * @throws InterruptedException обновление индекса было прервано
+     * @throws IOException ошибка чтения/записи пакета
      */
-    private void refreshIndex() {
+    private void refreshIndex() throws InterruptedException, IOException {
         synchronized (this) {
             logger.info("Инициировано обновление индекса хранилища {}", new Object[]{packageSource});
-            Collection<? extends Nupkg> packages = packageSource.getPackages();
-            Index newIndex = new Index();
-            for (Nupkg nupkg : packages) {
+            refreshIndexInProgress = true;
+            try {
+                Collection<? extends Nupkg> packages = packageSource.getPackages();
+                Index newIndex = new Index();
+                for (Nupkg nupkg : packages) {
+                    try {
+                        nupkg.load();
+                        newIndex.put(nupkg);
+                    } catch (IOException e) {
+                        logger.warn("Ошибка инициализации пакета", e);
+                    }
+                }
+                logger.info("Добавление в индекс, ожидающих пакетов");
                 try {
-                    nupkg.load();
-                    newIndex.put(nupkg);
-                } catch (IOException e) {
-                    logger.warn("Ошибка инициализации пакета", e);
+                    pushSemaphore.acquire();
+                    logger.info(format("Ожидает добавления {0} пакетов", newPackageQueue.size()));
+                    while (!newPackageQueue.isEmpty()) {
+                        final Nupkg nupkg = newPackageQueue.poll();
+                        packageSource.pushPackage(nupkg);
+                        newIndex.put(nupkg);
+                    }
+                } finally {
+                    pushSemaphore.release();
                 }
-            }
-            this.index = newIndex;
-            if (indexStoreFile != null) {
-                try (FileOutputStream fileOutputStream = new FileOutputStream(indexStoreFile)) {
-                    index.saveTo(fileOutputStream);
-                } catch (Exception e) {
-                    logger.warn("Не удалось сохранить локальную копию индекса", e);
+                this.index = newIndex;
+                if (indexStoreFile != null) {
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(indexStoreFile)) {
+                        index.saveTo(fileOutputStream);
+                    } catch (Exception e) {
+                        logger.warn("Не удалось сохранить локальную копию индекса", e);
+                    }
                 }
+                logger.info("Обновление индекса хранилища {} завершено. Обнаружено {} пакетов",
+                        new Object[]{packageSource, index.size()});
+                this.notifyAll();
+            } finally {
+                refreshIndexInProgress = false;
             }
-            logger.info("Обновление индекса хранилища {} завершено. Обнаружено {} пакетов",
-                    new Object[]{packageSource, index.size()});
-            this.notifyAll();
         }
     }
 
@@ -195,13 +230,26 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public boolean pushPackage(Nupkg file) throws IOException {
-        synchronized (this) {
-            boolean result = packageSource.pushPackage(file);
-            if (result) {
-                Nupkg localFile = packageSource.getPackage(file.getId(), file.getVersion());
-                getIndex().put(localFile);
+        try {
+            pushSemaphore.acquire();
+            if (refreshIndexInProgress) {
+                if (!packageSource.getPushStrategy().canPush()) {
+                    return false;
+                }
+                newPackageQueue.add(file);
+                return true;
+            } else {
+                boolean result = packageSource.pushPackage(file);
+                if (result) {
+                    Nupkg localFile = packageSource.getPackage(file.getId(), file.getVersion());
+                    getIndex().put(localFile);
+                }
+                return result;
             }
-            return result;
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        } finally {
+            pushSemaphore.release();
         }
     }
 
