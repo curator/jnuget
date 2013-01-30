@@ -43,6 +43,10 @@ public class PackageSourceFactory {
      * Активные хранилища пакетов
      */
     private volatile ConcurrentHashMap<String, PackageSource<Nupkg>> packageSources;
+    /**
+     * Активные хранилища пакетов
+     */
+    private volatile ConcurrentHashMap<String, PackageSource<Nupkg>> publicPackageSources;
 
     /**
      * Конструктор, перечитывающий настройки
@@ -50,10 +54,6 @@ public class PackageSourceFactory {
     public PackageSourceFactory() {
         this.options = Options.loadOptions();
     }
-    /**
-     * Источник пакетов
-     */
-    private volatile RootPackageSource packageSource = null;
     /**
      * Логгер
      */
@@ -91,40 +91,30 @@ public class PackageSourceFactory {
     }
 
     /**
-     * Создание нового корневого хранилища на основе настроек
+     * Создание хранилищ на основе настроек
      *
      * @param serviceOptions настройки приложения
-     * @return хранилище пакетов
      */
-    protected RootPackageSource createRootPackageSource(Options serviceOptions) {
+    protected void createPackageSources(Options serviceOptions) {
         //Создание корневого хранилища
         logger.info("Инициализация файлового хранища");
-        RootPackageSource rootPackageSource = new RootPackageSource();
-        ModifyStrategy pushStrategy = new ModifyStrategy(true);
-        logger.warn("Для корневого репозитория разрешается публикация "
-                + "пакетов. (поведение по умолчанию)");
-        rootPackageSource.setPushStrategy(pushStrategy);
         packageSources = new ConcurrentHashMap<>();
-        int totalStoragesCount = 0;
-        int publicStoragesCount = 0;
+        publicPackageSources = new ConcurrentHashMap<>();
         for (StorageOptions storageOptions : serviceOptions.getStorageOptionsList()) {
             try {
                 if (storageOptions.getStorageName() == null) {
                     throw new IllegalArgumentException("Имя хранилища должно быть указано");
                 }
                 PackageSource<Nupkg> childSource = createPackageSource(storageOptions);
+                packageSources.put(storageOptions.getStorageName(), childSource);
                 if (storageOptions.isPublic()) {
-                    packageSources.put(storageOptions.getStorageName(), childSource);
-                    publicStoragesCount++;
+                    publicPackageSources.put(storageOptions.getStorageName(), childSource);
                 }
-                rootPackageSource.getSources().add(childSource);
-                totalStoragesCount++;
             } catch (Exception e) {
                 logger.warn("Ошибка создания хранилища пакетов", e);
             }
         }
-        logger.info("Создано {} хранилищ из них публичных {}", new Object[]{totalStoragesCount, publicStoragesCount});
-        return rootPackageSource;
+        logger.info("Создано {} хранилищ из них публичных {}", new Object[]{packageSources.size(), publicPackageSources.size()});
     }
 
     /**
@@ -283,43 +273,32 @@ public class PackageSourceFactory {
     }
 
     /**
-     * Возвращает источник пакетов
-     *
-     * @param reinitialize необходима переинициализация
-     * @return источник пакетов
-     */
-    private RootPackageSource getPackageSource(boolean reinitialize) {
-        if (reinitialize || packageSource == null) {
-            synchronized (this) {
-                if (packageSource == null) {
-                    packageSource = createRootPackageSource(options);
-                }
-            }
-        }
-        return packageSource;
-    }
-
-    /**
-     * Возвращает источник пакетов
-     *
-     * @return источник пакетов
-     */
-    public PackageSource<Nupkg> getPackageSource() {
-        return getPackageSource(false);
-    }
-
-    /**
-     * @return активные хранилища пакетов
+     * @return хранилища пакетов
      */
     private Map<String, PackageSource<Nupkg>> getPackageSourcesMap() {
         if (packageSources == null) {
             synchronized (this) {
                 if (packageSources == null) {
-                    packageSource = createRootPackageSource(options);
+                    createPackageSources(options);
                 }
             }
         }
         return packageSources;
+    }
+
+    /**
+     *
+     * @return публичные хранилища пакетов
+     */
+    private Map<String, PackageSource<Nupkg>> getPublicPackageSourcesMap() {
+        if (publicPackageSources == null) {
+            synchronized (this) {
+                if (publicPackageSources == null) {
+                    createPackageSources(options);
+                }
+            }
+        }
+        return publicPackageSources;
     }
 
     /**
@@ -331,11 +310,19 @@ public class PackageSourceFactory {
     }
 
     /**
-     * @param name имя хранилища
+     * @param storageName имя хранилища
      * @return хранилище пакетов или null
      */
-    public PackageSource<Nupkg> getPackageSource(String name) {
-        return getPackageSourcesMap().get(name);
+    public PackageSource<Nupkg> getPackageSource(String storageName) {
+        return getPackageSourcesMap().get(storageName);
+    }
+
+    /**
+     * @param storageName имя хранилища
+     * @return публичное хранилище пакетов или null
+     */
+    public PackageSource<Nupkg> getPublicPackageSource(String storageName) {
+        return getPublicPackageSourcesMap().get(storageName);
     }
 
     /**

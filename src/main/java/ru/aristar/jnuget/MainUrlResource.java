@@ -314,7 +314,7 @@ public class MainUrlResource {
      * @return источник пакетов
      */
     private PackageSource<Nupkg> getPackageSource() {
-        return PackageSourceFactory.getInstance().getPackageSource(storageName);
+        return PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
     }
 
     /**

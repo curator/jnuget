@@ -59,12 +59,7 @@ public class PackageDetailsController {
      * @throws NugetFormatException ошибка чтения спецификации пакета
      */
     public void init() throws NugetFormatException {
-        PackageSource packageSource;
-        if (storageId == -1) {
-            packageSource = PackageSourceFactory.getInstance().getPackageSource();
-        } else {
-            packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
-        }
+        PackageSource packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
         nupkg = packageSource.getPackage(packageId, packageVersion);
         nuspec = nupkg == null ? null : nupkg.getNuspecFile();
     }
@@ -263,7 +258,7 @@ public class PackageDetailsController {
     }
 
     public String getDownloadUrl(TreeComponent.TreeNode node) {
-        return "/downloadPart/"+storageId+"/FluentAssertions/1.6.0";
+        return "/downloadPart/" + storageId + "/FluentAssertions/1.6.0";
     }
 
     /**

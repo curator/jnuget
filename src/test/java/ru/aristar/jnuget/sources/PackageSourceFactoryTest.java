@@ -4,7 +4,6 @@ import java.io.File;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.common.StorageOptions;
 import ru.aristar.jnuget.common.TriggerOptions;
 import ru.aristar.jnuget.sources.push.*;
@@ -94,22 +93,5 @@ public class PackageSourceFactoryTest {
         assertThat("Триггер afther", result.getAftherPushTriggers().get(0), instanceOf(RemoveOldVersionTrigger.class));
         RemoveOldVersionTrigger aftherTrigger = (RemoveOldVersionTrigger) result.getAftherPushTriggers().get(0);
         assertThat("Количество пакетов триггера afther ", aftherTrigger.getMaxPackageCount(), equalTo(5));
-    }
-
-    /**
-     * Создание корневого хранилища
-     *
-     * @throws Exception ошибка в процессе теста
-     */
-    @Test
-    public void testCreateRootPackageSource() throws Exception {
-        //GIVEN
-        PackageSourceFactory sourceFactory = new PackageSourceFactory();
-        Options options = new Options();
-        //WHEN
-        PackageSource result = sourceFactory.createRootPackageSource(options);
-        //THEN
-        assertThat(result.getPushStrategy(), is(instanceOf(ModifyStrategy.class)));
-        assertThat(((ModifyStrategy) result.getPushStrategy()).canPush(), is(equalTo(true)));
     }
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
@@ -13,38 +13,35 @@ import ru.aristar.jnuget.sources.push.ModifyStrategy;
  *
  * @author sviridov
  */
-public class RootPackageSource implements PackageSource<Nupkg> {
+public class PackageSourceGroup implements PackageSource<Nupkg> {
 
     /**
      * Источники пакетов
      */
-    private LinkedList<PackageSource<Nupkg>> sources;
+    private List<PackageSource<? extends Nupkg>> packageSources;
     /**
      * Стратегия публикации пакетов
      */
     private ModifyStrategy pushStrategy;
+    /**
+     * Имя хранилища.
+     */
+    private String name;
 
     /**
      * @return Источники пакетов
      */
-    public LinkedList<PackageSource<Nupkg>> getSources() {
-        if (sources == null) {
-            sources = new LinkedList<>();
+    protected List<PackageSource<? extends Nupkg>> getSources() {
+        if (packageSources == null) {
+            packageSources = new ArrayList<>();
         }
-        return sources;
-    }
-
-    /**
-     * @param sources Источники пакетов
-     */
-    public void setSources(LinkedList<PackageSource<Nupkg>> sources) {
-        this.sources = sources;
+        return packageSources;
     }
 
     @Override
     public Collection<Nupkg> getPackages() {
         ArrayList<Nupkg> result = new ArrayList<>();
-        for (PackageSource<Nupkg> source : getSources()) {
+        for (PackageSource<? extends Nupkg> source : getSources()) {
             result.addAll(source.getPackages());
         }
         return result;
@@ -132,10 +129,38 @@ public class RootPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public String getName() {
-        return "root";
+        return name;
     }
 
     @Override
     public void setName(String storageName) {
+        name = storageName;
+    }
+
+    /**
+     * @return список имен вложеных хранилищ
+     */
+    public List<String> getInnerSourceNames() {
+        ArrayList<String> result = new ArrayList<>();
+        for (PackageSource packageSource : getSources()) {
+            result.add(packageSource.getName());
+        }
+        return result;
+    }
+
+    /**
+     * @param innerSourceNames список имен вложеных хранилищ
+     */
+    public void setInnerSourceNames(List<String> innerSourceNames) {
+        final List<PackageSource<? extends Nupkg>> sources = getSources();
+        sources.clear();
+        if (innerSourceNames == null || innerSourceNames.isEmpty()) {
+            return;
+        }
+
+        for (String innerSourceName : innerSourceNames) {
+            final PackageSource<Nupkg> packageSource = PackageSourceFactory.getInstance().getPackageSource(innerSourceName);
+            sources.add(packageSource);
+        }
     }
 }

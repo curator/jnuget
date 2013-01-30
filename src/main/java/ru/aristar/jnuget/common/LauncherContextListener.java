@@ -26,7 +26,7 @@ public class LauncherContextListener implements ServletContextListener {
             URL url = Thread.currentThread().getContextClassLoader().getResource("ru/aristar/jnuget/security/jaas.config");
             File file = new File(url.toURI());
             System.setProperty("java.security.auth.login.config", file.getAbsolutePath());
-            PackageSourceFactory.getInstance().getPackageSource();
+            PackageSourceFactory.getInstance().getPackageSources();
         } catch (URISyntaxException e) {
             logger.error("Ошибка инициализации сервлета", e);
         }

@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
@@ -15,7 +14,7 @@ import ru.aristar.jnuget.files.Nupkg;
  *
  * @author sviridov
  */
-public class RootPackageSourceTest {
+public class PackageSourceGroupTest {
 
     /**
      * Mock контекст
@@ -37,7 +36,6 @@ public class RootPackageSourceTest {
     private Nupkg createNupkg(final String id, final String version) throws Exception {
         final Nupkg pack = context.mock(Nupkg.class, "nupkg" + (mockId++));
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(pack).getId();
                 will(returnValue(id));
@@ -58,14 +56,13 @@ public class RootPackageSourceTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source = context.mock(PackageSource.class);
         context.checking(new Expectations() {
-
             {
                 //THEN
                 oneOf(source).getPackages();
                 will(returnValue(new ArrayList<Nupkg>()));
             }
         });
-        RootPackageSource packageSource = new RootPackageSource();
+        PackageSourceGroup packageSource = new PackageSourceGroup();
         packageSource.getSources().add(source);
         //WHEN
         packageSource.getPackages();
@@ -79,11 +76,10 @@ public class RootPackageSourceTest {
     @Test
     public void testGetLastVersions() throws Exception {
         //GIVEN
-        RootPackageSource rootPackageSource = new RootPackageSource();
+        PackageSourceGroup rootPackageSource = new PackageSourceGroup();
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source1 = context.mock(PackageSource.class, "source1");
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source1).getLastVersionPackages();
                 will(returnValue(Arrays.asList(createNupkg("A", "1.2.3"))));
@@ -93,7 +89,6 @@ public class RootPackageSourceTest {
         @SuppressWarnings("unchecked")
         final PackageSource<Nupkg> source2 = context.mock(PackageSource.class, "source2");
         context.checking(new Expectations() {
-
             {
                 atLeast(0).of(source2).getLastVersionPackages();
                 will(returnValue(Arrays.asList(createNupkg("A", "1.2.4"))));

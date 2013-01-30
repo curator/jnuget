@@ -133,11 +133,7 @@ public class StorageContentsController {
      * Инициализация хранилища
      */
     public void init() {
-        if (storageId == -1) {
-            storage = PackageSourceFactory.getInstance().getPackageSource();
-        } else {
-            storage = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
-        }
+        storage = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
         if (packageId == null) {
             ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getLastVersionPackages());
             packages = new ListDataModel<>(nupkgs);
