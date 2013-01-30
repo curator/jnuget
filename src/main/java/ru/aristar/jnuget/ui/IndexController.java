@@ -86,7 +86,7 @@ public class IndexController {
      * @return имена публичных хранилищ
      */
     public List<String> getStorageNames() {
-        List<PackageSource<Nupkg>> packageSources = PackageSourceFactory.getInstance().getPackageSources();
+        List<PackageSource<Nupkg>> packageSources = PackageSourceFactory.getInstance().getPublicPackageSources();
         List<String> names = new ArrayList<>();
         for (PackageSource<Nupkg> packageSource : packageSources) {
             names.add(packageSource.getName());

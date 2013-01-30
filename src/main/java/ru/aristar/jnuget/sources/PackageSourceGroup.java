@@ -27,6 +27,10 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
      * Имя хранилища.
      */
     private String name;
+    /**
+     * Имена источников пакетов
+     */
+    private ArrayList<String> sourceNames;
 
     /**
      * @return Источники пакетов
@@ -34,6 +38,12 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
     protected List<PackageSource<? extends Nupkg>> getSources() {
         if (packageSources == null) {
             packageSources = new ArrayList<>();
+            if (sourceNames != null) {
+                for (String innerSourceName : sourceNames) {
+                    final PackageSource<Nupkg> packageSource = PackageSourceFactory.getInstance().getPackageSource(innerSourceName);
+                    packageSources.add(packageSource);
+                }
+            }
         }
         return packageSources;
     }
@@ -140,7 +150,7 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
     /**
      * @return список имен вложеных хранилищ
      */
-    public List<String> getInnerSourceNames() {
+    public ArrayList<String> getInnerSourceNames() {
         ArrayList<String> result = new ArrayList<>();
         for (PackageSource packageSource : getSources()) {
             result.add(packageSource.getName());
@@ -151,16 +161,13 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
     /**
      * @param innerSourceNames список имен вложеных хранилищ
      */
-    public void setInnerSourceNames(List<String> innerSourceNames) {
+    public void setInnerSourceNames(ArrayList<String> innerSourceNames) {
         final List<PackageSource<? extends Nupkg>> sources = getSources();
-        sources.clear();
-        if (innerSourceNames == null || innerSourceNames.isEmpty()) {
-            return;
-        }
-
-        for (String innerSourceName : innerSourceNames) {
-            final PackageSource<Nupkg> packageSource = PackageSourceFactory.getInstance().getPackageSource(innerSourceName);
-            sources.add(packageSource);
+        packageSources = null;
+        if (innerSourceNames != null) {
+            sourceNames = new ArrayList<>(innerSourceNames);
+        } else {
+            sourceNames = new ArrayList<>();
         }
     }
 }

@@ -34,7 +34,7 @@ public class PackageSourceFactory {
     /**
      * Экземпляр фабрики
      */
-    private volatile static PackageSourceFactory instance;
+    protected volatile static PackageSourceFactory instance;
     /**
      * Настройки сервера
      */
@@ -302,10 +302,18 @@ public class PackageSourceFactory {
     }
 
     /**
-     * @return доступные источники пакетов
+     * @return источники пакетов
      */
     public List<PackageSource<Nupkg>> getPackageSources() {
         ArrayList<PackageSource<Nupkg>> result = new ArrayList<>(getPackageSourcesMap().values());
+        return result;
+    }
+
+    /**
+     * @return публичное доступные источники пакетов
+     */
+    public List<PackageSource<Nupkg>> getPublicPackageSources() {
+        ArrayList<PackageSource<Nupkg>> result = new ArrayList<>(getPublicPackageSourcesMap().values());
         return result;
     }
 
