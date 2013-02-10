@@ -1,9 +1,14 @@
 package ru.aristar.jnuget;
 
-import static junit.framework.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.hamcrest.number.OrderingComparison.lessThan;
+import static org.junit.Assert.*;
 import org.junit.Test;
+import ru.aristar.jnuget.files.NugetFormatException;
 
 /**
+ * тесты класса версии
  *
  * @author unlocker
  */
@@ -82,11 +87,17 @@ public class VersionTest {
         assertEquals("Версия " + olderStr + " должна быть старше, чем " + newerStr, -1, result);
     }
 
+    /**
+     * Проверка сравнения версий, если у первой минорное значение больше, чем у
+     * второй, а номар сборки меньше
+     *
+     * @throws NugetFormatException некорректный формат тестовой версии
+     */
     @Test
-    public void testMinorGreaterBuildLesser() throws Exception {
+    public void testMinorGreaterBuildLesser() throws NugetFormatException {
         // GIVEN
-        String newerStr = "1.3.3";
-        String olderStr = "1.2.5";
+        final String newerStr = "1.3.3";
+        final String olderStr = "1.2.5";
         Version older = Version.parse(olderStr);
         Version newer = Version.parse(newerStr);
 
@@ -100,10 +111,10 @@ public class VersionTest {
     /**
      * Преобразование строки в версию и обратно не должно менять строку
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws NugetFormatException некорректный формат тестовой версии
      */
     @Test
-    public void testVersionWithThreeDigit() throws Exception {
+    public void testVersionWithThreeDigit() throws NugetFormatException {
         //GIVEN
         final String sourceVersion = "4.0.10827";
         //WHEN
@@ -115,10 +126,10 @@ public class VersionTest {
     /**
      * Преобразование строки в версию для неполной релизной версии
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws NugetFormatException некорректный формат тестовой версии
      */
     @Test
-    public void testNonReleaseVersion() throws Exception {
+    public void testNonReleaseVersion() throws NugetFormatException {
         //GIVEN
         final String sourceVersion = "2.5-a";
         //WHEN
@@ -133,10 +144,10 @@ public class VersionTest {
     /**
      * Преобразование строки в версию для неполной релизной версии
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws NugetFormatException некорректный формат тестовой версии
      */
     @Test
-    public void testFullNonReleaseVersion() throws Exception {
+    public void testFullNonReleaseVersion() throws NugetFormatException {
         //GIVEN
         final String sourceVersion = "3.0.0.1034-rc";
         //WHEN
@@ -151,10 +162,10 @@ public class VersionTest {
     /**
      * Преобразование строки в версию для неполной версии
      *
-     * @throws Exception ошибка в процессе теста
+     * @throws NugetFormatException некорректный формат тестовой версии
      */
     @Test
-    public void testNonReleaseVersionNoBuild() throws Exception {
+    public void testNonReleaseVersionNoBuild() throws NugetFormatException {
         //GIVEN
         final String sourceVersion = "10.0.0-prerelease";
         //WHEN
@@ -164,5 +175,37 @@ public class VersionTest {
         assertEquals("Minor", Integer.valueOf(0), version.getMinor());
         assertEquals("Build", Integer.valueOf(0), version.getBuild());
         assertEquals("Revision", "-prerelease", version.getRevision());
+    }
+
+    /**
+     * проверка сравнений версий, младшая ревизия которых - число
+     *
+     * @throws NugetFormatException некорректный формат тестовой версии
+     */
+    @Test
+    public void testNumberVersionCompare() throws NugetFormatException {
+        //GIVEN
+        final Version firstVersion = Version.parse("1.1.2.3");
+        final Version secondVersion = Version.parse("1.1.2.11");
+        //WHEN
+        final int result = firstVersion.compareTo(secondVersion);
+        //THEN
+        assertThat(result, is(lessThan(0)));
+    }
+
+    /**
+     * проверка сравнений версий, младшая ревизия которых - строка
+     *
+     * @throws NugetFormatException некорректный формат тестовой версии
+     */
+    @Test
+    public void testNotNumberVersionCompare() throws NugetFormatException {
+        //GIVEN
+        final Version firstVersion = Version.parse("1.1.2.3-RC1");
+        final Version secondVersion = Version.parse("1.1.2.11-RC2");
+        //WHEN
+        final int result = firstVersion.compareTo(secondVersion);
+        //THEN
+        assertThat(result, is(greaterThan(0)));
     }
 }

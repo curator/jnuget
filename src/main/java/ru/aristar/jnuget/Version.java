@@ -19,9 +19,17 @@ public class Version implements Comparable<Version>, Serializable {
      */
     public static final String VERSION_FORMAT = "(\\d+)\\.?(\\d*)\\.?(\\d*)\\.?([-\\d\\w_]*)";
     /**
+     * Шаблон числа
+     */
+    private static final String NUMBER_PATTERN = "\\d+";
+    /**
      * Выражение разбора
      */
     private static transient Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
+    /**
+     * Шаблон числовой ревизии
+     */
+    private transient Pattern numberPattern = Pattern.compile(NUMBER_PATTERN);
 
     /**
      * Безопастно распознает majopr, minor и build
@@ -113,7 +121,7 @@ public class Version implements Comparable<Version>, Serializable {
         Integer minor = parseInt(matcher.group(2));
         Integer build = parseInt(matcher.group(3));
         String revision = null;
-        if(!matcher.group(4).isEmpty()){
+        if (!matcher.group(4).isEmpty()) {
             revision = matcher.group(4);
         }
         return new Version(major, minor, build, revision);
@@ -226,7 +234,13 @@ public class Version implements Comparable<Version>, Serializable {
         } else if (str2 == null) {
             return 1;
         } else {
-            return str1.compareToIgnoreCase(str2);
+            boolean firstStringIsNumber = numberPattern.matcher(str1).matches();
+            boolean secondStringIsNumber = numberPattern.matcher(str2).matches();
+            if (firstStringIsNumber & secondStringIsNumber) {
+                return Integer.compare(Integer.parseInt(str1), Integer.parseInt(str2));
+            } else {
+                return str1.compareToIgnoreCase(str2);
+            }
         }
     }
 
