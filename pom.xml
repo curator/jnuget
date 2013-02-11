@@ -208,6 +208,10 @@
             <layout>default</layout>
             <name>Repository for library Library[restapi]</name>
         </repository>
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -368,9 +372,9 @@
             <version>1.2</version>
         </dependency>
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.1.6</version>
+            <groupId>org.clojars.ghoseb</groupId>
+            <artifactId>cron4j</artifactId>
+            <version>2.2.1</version>
         </dependency>
     </dependencies>
 </project>

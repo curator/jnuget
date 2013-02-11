@@ -1,5 +1,7 @@
 package ru.aristar.jnuget.sources;
 
+import it.sauronsoftware.cron4j.InvalidPatternException;
+import it.sauronsoftware.cron4j.Scheduler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,17 +11,6 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
-import static org.quartz.CronScheduleBuilder.*;
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import static org.quartz.JobBuilder.*;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerFactory;
-import static org.quartz.TriggerBuilder.*;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
@@ -57,13 +48,10 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      */
     private Integer refreshInterval;
     /**
-     * Ключ триггера обновления хранилища
-     */
-    private TriggerKey triggerKey;
-    /**
      * Семафор, использующийся при помещении пакета в хранилище
      */
     private final Semaphore pushSemaphore = new Semaphore(1);
+    //TODO RefreshIndex semaphore
     /**
      * Индекс находистя в процессе обновления
      */
@@ -72,6 +60,10 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      * Очередь пакетов, ожидающих помещение в хранилище
      */
     private BlockingQueue<Nupkg> newPackageQueue = new LinkedBlockingQueue<>();
+    /**
+     * Планировщик обновления индекса.
+     */
+    private Scheduler scheduler;
 
     @Override
     public void refreshPackage(Nupkg nupkg) {
@@ -91,7 +83,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     /**
      * Поток, обновляющий индекс
      */
-    private class RefreshIndexThread extends TimerTask implements Job {
+    private class RefreshIndexThread extends TimerTask {
 
         /**
          * Основной метод потока, обновляющий индекс
@@ -99,21 +91,14 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
         @Override
         public void run() {
             try {
+                if (refreshIndexInProgress) {
+                    logger.info("Предыдущая задача обновления индекса не успела завершится");
+                    return;
+                }
                 refreshIndex();
             } catch (Exception e) {
                 logger.error("Ошибка оновления индекса для хранилища " + packageSource, e);
             }
-        }
-
-        /**
-         * Основной метод
-         *
-         * @param context контекст исполнения
-         * @throws JobExecutionException ошибка исполнения
-         */
-        @Override
-        public void execute(JobExecutionContext context) throws JobExecutionException {
-            run();
         }
     }
 
@@ -277,13 +262,25 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
 
     /**
      * @param packageSource источник пакетов, подлежащий индексированию
+     */
+    public void setUnderlyingSource(PackageSource<? extends Nupkg> packageSource) {
+        setUnderlyingSource(packageSource, false);
+    }
+
+    /**
+     * @param packageSource источник пакетов, подлежащий индексированию
+     * @param forseRescan инициировать пересканирование хранилища
      * @return поток обновления индекса
      */
-    public Thread setUnderlyingSource(PackageSource<? extends Nupkg> packageSource) {
+    public Thread setUnderlyingSource(PackageSource<? extends Nupkg> packageSource, boolean forseRescan) {
         this.packageSource = packageSource;
-        Thread thread = new Thread(new IndexedPackageSource.RefreshIndexThread());
-        thread.start();
-        return thread;
+        if (forseRescan) {
+            Thread thread = new Thread(new IndexedPackageSource.RefreshIndexThread());
+            thread.start();
+            return thread;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -315,26 +312,17 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
      */
     public void setCronSheduller(String cronString) {
         try {
-            SchedulerFactory factory = new org.quartz.impl.StdSchedulerFactory();
-            Scheduler scheduler = factory.getScheduler();
+            if (scheduler != null) {
+                scheduler.stop();
+            }
+            scheduler = new Scheduler();
+            scheduler.schedule(cronString, new RefreshIndexThread());
             if (!scheduler.isStarted()) {
                 scheduler.start();
             }
-            if (triggerKey != null) {
-                scheduler.unscheduleJob(triggerKey);
-            }
-
-            JobDetail refreshIndexJob = newJob(RefreshIndexThread.class).build();
-
-            triggerKey = TriggerKey.triggerKey(packageSource.toString(), PackageSource.class.getName());
-            CronTrigger trigger = newTrigger().withIdentity(triggerKey).withSchedule(cronSchedule(cronString)).forJob(refreshIndexJob).build();
-            scheduler.scheduleJob(trigger);
-        } catch (Exception e) {
+        } catch (IllegalStateException | InvalidPatternException e) {
             logger.error(format("Не удалось запланировать обновление индекса с параметрами {0}", cronString), e);
-            triggerKey = null;
         }
-
-
     }
 
     /**
