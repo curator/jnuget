@@ -38,7 +38,11 @@ public enum Framework {
     /**
      * NET 4.5
      */
-    net45(".NETFramework4.5", new String[]{"net45"}, new String[]{"net40", "net35", "net30", "net20"}),
+    net45(".NETFramework4.5", new String[]{"net45", "win80"}, new String[]{"net40", "net35", "net30", "net20"}),
+    /**
+     * .NETFramework4.5 Portable
+     */
+    portable_net45(".NETFramework4.5 Portable", new String[]{"portable-net45"}, new String[]{}),
     /**
      * WinRT 4.5
      */
@@ -58,7 +62,15 @@ public enum Framework {
     /**
      * SilverLight 5
      */
-    sl5("SilverLight 5", new String[]{"sl5", "sl50"}, new String[]{});
+    sl5("SilverLight 5", new String[]{"sl5", "sl50"}, new String[]{}),
+    /**
+     * WindowsPhone 7.1
+     */
+    wp71("WindowsPhone 7.1", new String[]{"wp71"}, new String[]{}),
+    /**
+     * WindowsPhone 8.0
+     */
+    wp80("WindowsPhone 8", new String[]{"wp80"}, new String[]{});
 
     /**
      * @param fullName полное название фреймворка
@@ -125,7 +137,7 @@ public enum Framework {
     /**
      * Разделитель фреймворков в строке запроса
      */
-    public static final String QUERY_STRING_DELIMETER = "\\|";
+    public static final String QUERY_STRING_DELIMETER = "\\||\\+";
 
     /**
      * Извлечение списка фреймворков из строки запроса
@@ -140,7 +152,11 @@ public enum Framework {
                 result = EnumSet.noneOf(Framework.class);
                 String[] frameworkStrings = value.split(QUERY_STRING_DELIMETER);
                 for (String frameworkString : frameworkStrings) {
-                    Framework framework = Framework.valueOf(frameworkString.toLowerCase());
+                    Framework framework = getByShortName(frameworkString.toLowerCase());
+                    if (framework == null) {
+                        logger.warn("Не найден фреймворк для строки: {}", new Object[]{frameworkString});
+                        continue;
+                    }
                     result.add(framework);
                 }
             } else {

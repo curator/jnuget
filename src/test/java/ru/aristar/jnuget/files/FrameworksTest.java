@@ -3,11 +3,11 @@ package ru.aristar.jnuget.files;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.matchers.JUnitMatchers.hasItems;
 
 /**
  * Тест получения информации о фрейморках для которых предназначен пакет
@@ -32,6 +32,11 @@ public class FrameworksTest {
         assertThat(result, is(hasItems(Framework.net40, Framework.sl4, Framework.sl5)));
     }
 
+    /**
+     * Проверка чтения фреймворков по умолчанию из удаленного пакетв
+     *
+     * @throws NugetFormatException ошибка создания пакета
+     */
     @Test
     @Ignore
     public void testReadFrameworkRemoteNupkg() throws NugetFormatException {
@@ -67,6 +72,19 @@ public class FrameworksTest {
         EnumSet<Framework> result = Framework.parse(targetFramework);
         //THEN
         assertThat(result, is(hasItems(Framework.values())));
+    }
+
+    /**
+     * Проверка извлечения списка фреймворков, разделенных плюсами
+     */
+    @Test
+    public void testParsePlusDelimeted() {
+        //GIVEN
+        String targetFramework = "portable-net45+sl40+wp71+win80";
+        //WHEN
+        EnumSet<Framework> result = Framework.parse(targetFramework);
+        //THEN
+        assertThat(result, is(hasItems(Framework.net45, Framework.sl4, Framework.portable_net45, Framework.wp71)));
     }
 
     /**

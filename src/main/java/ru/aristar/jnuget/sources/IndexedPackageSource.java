@@ -18,6 +18,7 @@ import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
 
 /**
+ * Индексируемое хранилище пакетов
  *
  * @author sviridov
  */
@@ -343,14 +344,14 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                     + "индекса", new Object[]{packageSource});
             try (FileInputStream fileInputStream = new FileInputStream(this.indexStoreFile)) {
                 this.index = Index.loadFrom(fileInputStream);
-                logger.info("Индекс загружен в память");
+                logger.info("Индекс загружен в память из локального файла \"{}\"", new Object[]{this.indexStoreFile});
                 Iterator<Nupkg> iterator = this.index.getAllPackages();
                 while (iterator.hasNext()) {
                     Nupkg nupkg = iterator.next();
                     this.packageSource.refreshPackage(nupkg);
                 }
-                logger.info("Индекс загружен из локального файла {}. Обнаружено "
-                        + "{} пакетов", new Object[]{this.indexStoreFile, index.size()});
+                logger.info("Индекс просканирован. Обнаружено {} пакетов",
+                        new Object[]{index.size()});
             } catch (Exception e) {
                 logger.warn("Не удалось прочитать локально сохраненный индекс", e);
             }
