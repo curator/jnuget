@@ -47,7 +47,7 @@
                     <h:column>
                         <f:facet name="header">Содержимое</f:facet>
                         <h:link value="Содержимое" outcome="storageContents">
-                            <f:param name="storageId" value="#{storagesList.storageOptions.rowIndex}"/>
+                            <f:param name="storageId" value="#{repo.getStorageName()}"/>
                         </h:link>
                     </h:column>
                 </h:dataTable>

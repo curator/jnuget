@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.ServletException;
@@ -44,7 +46,7 @@ public class StorageContentsController {
     /**
      * Идентификатор хранилища
      */
-    private int storageId;
+    private String storageName;
     /**
      * Количество пакетов, которое необходимо пропусть
      */
@@ -81,17 +83,35 @@ public class StorageContentsController {
     }
 
     /**
-     * @return идентификатор хранилища
+     * Проверка корректности имени хранилища
+     *
+     * @param context контекст сервиса
+     * @param component компонент пользовательского интерфейса
+     * @param object объект, подлежащий валидации
      */
-    public int getStorageId() {
-        return storageId;
+    public void validateStorageId(FacesContext context, UIComponent component, Object object) {
+        if (object == null || !(object instanceof String)) {
+            sendErrorCode(context, 404);
+            return;
+        }
+        String newStorageName = (String) object;
+        if (PackageSourceFactory.getInstance().getPublicPackageSource(newStorageName) == null) {
+            sendErrorCode(context, 404);
+        }
     }
 
     /**
-     * @param storageId идентификатор хранилища
+     * @return имя хранилища
      */
-    public void setStorageId(int storageId) {
-        this.storageId = storageId;
+    public String getStorageName() {
+        return storageName;
+    }
+
+    /**
+     * @param storageName имя хранилища
+     */
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
     }
 
     /**
@@ -133,7 +153,7 @@ public class StorageContentsController {
      * Инициализация хранилища
      */
     public void init() {
-        storage = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
+        storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
         if (packageId == null) {
             ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getLastVersionPackages());
             packages = new ListDataModel<>(nupkgs);
@@ -284,6 +304,17 @@ public class StorageContentsController {
         return Iterables.indexOf(packages, predicate);
 
 
+    }
+
+    /**
+     * Отправляет код ошибки
+     *
+     * @param context контекст JSF
+     * @param errorCode код ошибки
+     */
+    private void sendErrorCode(FacesContext context, int errorCode) {
+        context.getExternalContext().setResponseStatus(errorCode);
+        context.responseComplete();
     }
 
     /**

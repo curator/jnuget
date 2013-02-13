@@ -25,11 +25,11 @@ public class Version implements Comparable<Version>, Serializable {
     /**
      * Выражение разбора
      */
-    private static transient Pattern pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
+    private static transient Pattern pattern;
     /**
      * Шаблон числовой ревизии
      */
-    private transient Pattern numberPattern = Pattern.compile(NUMBER_PATTERN);
+    private transient Pattern numberPattern;
 
     /**
      * Безопастно распознает majopr, minor и build
@@ -60,6 +60,16 @@ public class Version implements Comparable<Version>, Serializable {
      * Ревизия
      */
     private final String revision;
+
+    /**
+     * @return выражение разбора
+     */
+    private static Pattern getPattern() {
+        if (pattern == null) {
+            pattern = Pattern.compile("^" + VERSION_FORMAT + "$");
+        }
+        return pattern;
+    }
 
     /**
      * @param major основная версия
@@ -103,6 +113,16 @@ public class Version implements Comparable<Version>, Serializable {
     }
 
     /**
+     * @return шаблон числовой ревизии
+     */
+    private Pattern getNumberPattern() {
+        if (numberPattern == null) {
+            numberPattern = Pattern.compile(NUMBER_PATTERN);
+        }
+        return numberPattern;
+    }
+
+    /**
      * Распознает строку с версией
      *
      * @param versionString строковое представление версии
@@ -113,7 +133,7 @@ public class Version implements Comparable<Version>, Serializable {
         if (versionString == null) {
             return null;
         }
-        Matcher matcher = pattern.matcher(versionString);
+        Matcher matcher = getPattern().matcher(versionString);
         if (!matcher.find()) {
             throw new NugetFormatException(format("Строка \"{0}\"не соответствует формату версии. ", versionString));
         }
@@ -134,7 +154,7 @@ public class Version implements Comparable<Version>, Serializable {
      * @return true, если это корректное строковое представление версии
      */
     public static boolean isValidVersionString(String versionRangeString) {
-        Matcher matcher = pattern.matcher(versionRangeString);
+        Matcher matcher = getPattern().matcher(versionRangeString);
         return matcher.matches();
     }
 
@@ -234,8 +254,8 @@ public class Version implements Comparable<Version>, Serializable {
         } else if (str2 == null) {
             return 1;
         } else {
-            boolean firstStringIsNumber = numberPattern.matcher(str1).matches();
-            boolean secondStringIsNumber = numberPattern.matcher(str2).matches();
+            boolean firstStringIsNumber = getNumberPattern().matcher(str1).matches();
+            boolean secondStringIsNumber = getNumberPattern().matcher(str2).matches();
             if (firstStringIsNumber & secondStringIsNumber) {
                 return Integer.compare(Integer.parseInt(str1), Integer.parseInt(str2));
             } else {

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
@@ -18,7 +20,7 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
     /**
      * Источники пакетов
      */
-    private List<PackageSource<? extends Nupkg>> packageSources;
+    private volatile List<PackageSource<? extends Nupkg>> packageSources;
     /**
      * Стратегия публикации пакетов
      */
@@ -31,21 +33,44 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
      * Имена источников пакетов
      */
     private ArrayList<String> sourceNames;
+    /**
+     * Логгер
+     */
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @return Источники пакетов
      */
     protected List<PackageSource<? extends Nupkg>> getSources() {
         if (packageSources == null) {
-            packageSources = new ArrayList<>();
-            if (sourceNames != null) {
-                for (String innerSourceName : sourceNames) {
-                    final PackageSource<Nupkg> packageSource = PackageSourceFactory.getInstance().getPackageSource(innerSourceName);
-                    packageSources.add(packageSource);
+            synchronized (this) {
+                if (packageSources == null) {
+                    packageSources = loadPackageSources(sourceNames);
                 }
             }
         }
         return packageSources;
+    }
+
+    /**
+     * Восстанавливает хранилища по их именам
+     *
+     * @param packageSourcenames имена хранилищ
+     * @return список хранилищ
+     */
+    private List<PackageSource<? extends Nupkg>> loadPackageSources(Collection<String> packageSourcenames) {
+        ArrayList<PackageSource<? extends Nupkg>> result = new ArrayList<>();
+        if (packageSourcenames != null) {
+            for (String innerSourceName : packageSourcenames) {
+                final PackageSource<Nupkg> packageSource = PackageSourceFactory.getInstance().getPackageSource(innerSourceName);
+                if (packageSource != null && packageSource != this) {
+                    result.add(packageSource);
+                } else {
+                    logger.warn("Некорректное вложенное хранилище: {}", new Object[]{packageSource});
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -161,11 +186,21 @@ public class PackageSourceGroup implements PackageSource<Nupkg> {
     /**
      * @param innerSourceNames список имен вложеных хранилищ
      */
-    public void setInnerSourceNames(ArrayList<String> innerSourceNames) {
-        final List<PackageSource<? extends Nupkg>> sources = getSources();
+    public synchronized void setInnerSourceNames(ArrayList<String> innerSourceNames) {
         packageSources = null;
         if (innerSourceNames != null) {
-            sourceNames = new ArrayList<>(innerSourceNames);
+            sourceNames = new ArrayList<>(innerSourceNames.size());
+            for (String innerSourceName : innerSourceNames) {
+                if (innerSourceName == null || innerSourceName.equals("")) {
+                    logger.warn("Задано пустое имя вложенного хранилища");
+                    continue;
+                }
+                if (getName() != null && innerSourceName.equals(getName())) {
+                    logger.warn("Рекурсивное назначение дочернего хранилища");
+                    continue;
+                }
+                sourceNames.add(innerSourceName);
+            }
         } else {
             sourceNames = new ArrayList<>();
         }

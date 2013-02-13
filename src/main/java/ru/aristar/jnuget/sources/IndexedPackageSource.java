@@ -353,6 +353,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                 logger.info("Индекс просканирован. Обнаружено {} пакетов",
                         new Object[]{index.size()});
             } catch (Exception e) {
+                indexStoreFile.delete();
                 logger.warn("Не удалось прочитать локально сохраненный индекс", e);
             }
         } else {
