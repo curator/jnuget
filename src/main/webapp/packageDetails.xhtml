@@ -6,7 +6,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
-            <f:viewParam name="storageId" value="#{packageDetails.storageId}"/>
+            <f:viewParam name="storageId" value="#{packageDetails.storageName}"/>
             <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
             <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
             <f:event type="preRenderView" listener="#{packageDetails.init()}" />
@@ -38,7 +38,7 @@
                     <li><h:outputText value="Теги #{packageDetails.tags}"/></li>
                     <li>
                         <h:link value="Содержимое пакета" outcome="packageContent">
-                            <f:param name="storageId" value="#{packageDetails.storageId}"/>
+                            <f:param name="storageId" value="#{packageDetails.storageName}"/>
                             <f:param name="packageId" value="#{packageDetails.packageId}"/>
                             <f:param name="packageVersion" value="#{packageDetails.packageVersion}"/>
                         </h:link>
@@ -52,9 +52,10 @@
                             </h:column>
                             <h:column>
                                 <f:facet name="header">Id</f:facet>
-                                <h:link value="#{dependency.id}" outcome="storageContents">
-                                    <f:param name="storageId" value="-1"/>
+                                <h:link value="#{dependency.id}" outcome="packageDetails">
+                                    <f:param name="storageId" value="#{packageDetails.storageName}"/>
                                     <f:param name="packageId" value="#{dependency.id}"/>
+                                    <f:param name="packageVersion" value="#{dependency.versionRangeString}"/>
                                 </h:link>
                             </h:column>
                             <h:column>
@@ -64,7 +65,7 @@
                         </h:dataTable>
                     </li>
                 </ul>
-                <a href="#{packageDetails.rootUrl}/nuget/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
+                <a href="#{packageDetails.rootUrl}/storages/#{packageDetails.storageName}/download/#{packageDetails.packageId}/#{packageDetails.packageVersion}">Закачать</a>
             </ui:define>
         </ui:composition>
     </h:body>

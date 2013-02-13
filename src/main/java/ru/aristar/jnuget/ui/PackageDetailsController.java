@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
@@ -33,9 +34,9 @@ import ru.aristar.jnuget.ui.tree.TreeComponent;
 public class PackageDetailsController {
 
     /**
-     * Идентификатор хранилища, в котором находится пакет
+     * Имя хранилища, в котором находится пакет
      */
-    private int storageId;
+    private String storageName;
     /**
      * Идентификатор пакета
      */
@@ -59,9 +60,35 @@ public class PackageDetailsController {
      * @throws NugetFormatException ошибка чтения спецификации пакета
      */
     public void init() throws NugetFormatException {
-        PackageSource packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
+        PackageSource packageSource = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
         nupkg = packageSource.getPackage(packageId, packageVersion);
+        if (nupkg == null) {
+            for (PackageSource<Nupkg> source : PackageSourceFactory.getInstance().getPublicPackageSources()) {
+                nupkg = source.getPackage(packageId, packageVersion);
+                if (nupkg != null) {
+                    break;
+                }
+            }
+        }
         nuspec = nupkg == null ? null : nupkg.getNuspecFile();
+    }
+
+    /**
+     * Проверка корректности имени хранилища
+     *
+     * @param context контекст сервиса
+     * @param component компонент пользовательского интерфейса
+     * @param object объект, подлежащий валидации
+     */
+    public void validateStorageId(FacesContext context, UIComponent component, Object object) {
+        if (object == null || !(object instanceof String)) {
+            sendErrorCode(context, 404);
+            return;
+        }
+        String newStorageName = (String) object;
+        if (PackageSourceFactory.getInstance().getPublicPackageSource(newStorageName) == null) {
+            sendErrorCode(context, 404);
+        }
     }
 
     /**
@@ -94,17 +121,17 @@ public class PackageDetailsController {
     }
 
     /**
-     * @return идентификатор хранилища
+     * @return имя хранилища
      */
-    public int getStorageId() {
-        return storageId;
+    public String getStorageName() {
+        return storageName;
     }
 
     /**
-     * @param storageId идентификатор хранилища
+     * @param storageName имя хранилища
      */
-    public void setStorageId(int storageId) {
-        this.storageId = storageId;
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
     }
 
     /**
@@ -258,7 +285,7 @@ public class PackageDetailsController {
     }
 
     public String getDownloadUrl(TreeComponent.TreeNode node) {
-        return "/downloadPart/" + storageId + "/FluentAssertions/1.6.0";
+        return "/downloadPart/" + storageName + "/FluentAssertions/1.6.0";
     }
 
     /**
@@ -277,5 +304,17 @@ public class PackageDetailsController {
         public Collection<TreeComponent.TreeNode> getChildren() {
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Отправляет код ошибки
+     *
+     * @param context контекст JSF
+     * @param errorCode код ошибки
+     */
+    private void sendErrorCode(FacesContext context, int errorCode) {
+        //TODO Отрефакторить, объеденить с StorageContentsController
+        context.getExternalContext().setResponseStatus(errorCode);
+        context.responseComplete();
     }
 }
