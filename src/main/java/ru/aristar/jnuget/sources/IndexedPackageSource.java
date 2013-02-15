@@ -118,6 +118,9 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                 Index newIndex = new Index();
                 for (Nupkg nupkg : packages) {
                     try {
+                        if (nupkg == null) {
+                            continue;
+                        }
                         nupkg.load();
                         newIndex.put(nupkg);
                     } catch (IOException e) {
@@ -131,7 +134,9 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
                     while (!newPackageQueue.isEmpty()) {
                         final Nupkg nupkg = newPackageQueue.poll();
                         packageSource.pushPackage(nupkg);
-                        newIndex.put(nupkg);
+                        if (nupkg != null) {
+                            newIndex.put(nupkg);
+                        }
                     }
                 } finally {
                     pushSemaphore.release();

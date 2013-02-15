@@ -118,7 +118,7 @@ public class StorageContentsController {
      * @return количество пакетов в хранилище
      */
     public int getPackageCount() {
-        return packages.getRowCount();
+        return getPackages().getRowCount();
     }
 
     /**
@@ -139,28 +139,17 @@ public class StorageContentsController {
      * @return хранилище пакетов
      */
     public PackageSource<Nupkg> getStorage() {
+        if (storage == null) {
+            storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
+        }
         return storage;
     }
 
     /**
      * @param storage хранилище пакетов
      */
-    public void setStorage(PackageSource<Nupkg> storage) {
+    protected void setStorage(PackageSource<Nupkg> storage) {
         this.storage = storage;
-    }
-
-    /**
-     * Инициализация хранилища
-     */
-    public void init() {
-        storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
-        if (packageId == null) {
-            ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getLastVersionPackages());
-            packages = new ListDataModel<>(nupkgs);
-        } else {
-            ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getPackages(packageId));
-            packages = new ListDataModel<>(nupkgs);
-        }
     }
 
     /**
@@ -171,9 +160,8 @@ public class StorageContentsController {
      * @throws ServletException не удалось прочитать multipart сообщение
      */
     public void uploadPackage() throws IOException, NugetFormatException, ServletException {
-        init();
         TempNupkgFile nupkgFile = new TempNupkgFile(uploadedFile.getInputStream());
-        storage.pushPackage(nupkgFile);
+        getStorage().pushPackage(nupkgFile);
     }
 
     /**
@@ -181,7 +169,7 @@ public class StorageContentsController {
      * первого подходящегопакета в списке пакетов
      */
     public List<Map.Entry<Character, Integer>> getLettersRefs() {
-        if (storage == null) {
+        if (getStorage() == null) {
             return new ArrayList<>(0);
         }
         Map<Character, Integer> result = new HashMap<>(PACKAGE_ID_START_LETTERS.length);
@@ -200,6 +188,15 @@ public class StorageContentsController {
      * @return список пакетов в хранилище
      */
     public DataModel<Nupkg> getPackages() {
+        if (packages == null) {
+            if (packageId == null) {
+                ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getLastVersionPackages());
+                packages = new ListDataModel<>(nupkgs);
+            } else {
+                ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getPackages(packageId));
+                packages = new ListDataModel<>(nupkgs);
+            }
+        }
         return packages;
     }
 
@@ -256,7 +253,7 @@ public class StorageContentsController {
      * @return список идентификаторов переходов
      */
     public List<Integer> getSkipList() {
-        if (storage == null) {
+        if (getStorage() == null) {
             return new ArrayList<>(0);
         }
         //Расчет числа отображаемых слева и справа от текущего диапазонов
@@ -301,7 +298,7 @@ public class StorageContentsController {
      */
     private int getFirstId(final char symbol) {
         Predicate<Nupkg> predicate = new FirstIdPredicate(symbol);
-        return Iterables.indexOf(packages, predicate);
+        return Iterables.indexOf(getPackages(), predicate);
 
 
     }
