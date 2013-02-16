@@ -73,7 +73,7 @@ public class IndexedPackageSourceTest {
         //GIVEN
         IndexedPackageSource packageSource = new IndexedPackageSource();
         ClassicPackageSource filePackageSource = new ClassicPackageSource(testFolder);
-        packageSource.setUnderlyingSource(filePackageSource).join();
+        packageSource.setUnderlyingSource(filePackageSource, true).join();
         //WHEN
         Collection<Nupkg> result = packageSource.getPackages();
         //THEN
@@ -97,7 +97,7 @@ public class IndexedPackageSourceTest {
         try (TempNupkgFile nupkgFile = new TempNupkgFile(inputStream)) {
             IndexedPackageSource packageSource = new IndexedPackageSource();
             ClassicPackageSource filePackageSource = new ClassicPackageSource(localTestFolder);
-            packageSource.setUnderlyingSource(filePackageSource).join();
+            packageSource.setUnderlyingSource(filePackageSource, true).join();
             packageSource.setPushStrategy(new ModifyStrategy(true));
             //WHEN
             packageSource.pushPackage(nupkgFile);

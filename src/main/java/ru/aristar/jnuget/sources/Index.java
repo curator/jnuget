@@ -214,6 +214,9 @@ public class Index implements Serializable {
      * @return пакет
      */
     public Nupkg getPackage(String id, Version version) {
+        if (id == null || version == null) {
+            return null;
+        }
         id = id.toLowerCase();
         SortedMap<Version, Nupkg> group = treeMap.get(id);
         if (group != null) {

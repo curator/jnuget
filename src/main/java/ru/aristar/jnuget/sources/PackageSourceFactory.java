@@ -73,7 +73,8 @@ public class PackageSourceFactory {
             String storageName, Integer refreshInterval, String cronString, boolean saveIndex) {
         logger.debug("Создание индекса для хранилища {}", new Object[]{packageSource});
         IndexedPackageSource indexedPackageSource = new IndexedPackageSource();
-        indexedPackageSource.setUnderlyingSource(packageSource);
+        boolean refreshNow = cronString == null;
+        indexedPackageSource.setUnderlyingSource(packageSource, refreshNow);
         if (saveIndex) {
             File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
             indexedPackageSource.setIndexStoreFile(storageFile);

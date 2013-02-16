@@ -33,9 +33,9 @@ import ru.aristar.jnuget.ui.tree.TreeComponent;
 public class PackageDetailsController {
 
     /**
-     * Идентификатор хранилища, в котором находится пакет
+     * Имя хранилища, в котором находится пакет
      */
-    private int storageId;
+    private String storageName;
     /**
      * Идентификатор пакета
      */
@@ -59,8 +59,16 @@ public class PackageDetailsController {
      * @throws NugetFormatException ошибка чтения спецификации пакета
      */
     public void init() throws NugetFormatException {
-        PackageSource packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
+        PackageSource packageSource = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
         nupkg = packageSource.getPackage(packageId, packageVersion);
+        if (nupkg == null) {
+            for (PackageSource<Nupkg> source : PackageSourceFactory.getInstance().getPublicPackageSources()) {
+                nupkg = source.getPackage(packageId, packageVersion);
+                if (nupkg != null) {
+                    break;
+                }
+            }
+        }
         nuspec = nupkg == null ? null : nupkg.getNuspecFile();
     }
 
@@ -94,17 +102,17 @@ public class PackageDetailsController {
     }
 
     /**
-     * @return идентификатор хранилища
+     * @return имя хранилища
      */
-    public int getStorageId() {
-        return storageId;
+    public String getStorageName() {
+        return storageName;
     }
 
     /**
-     * @param storageId идентификатор хранилища
+     * @param storageName имя хранилища
      */
-    public void setStorageId(int storageId) {
-        this.storageId = storageId;
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
     }
 
     /**
@@ -258,7 +266,7 @@ public class PackageDetailsController {
     }
 
     public String getDownloadUrl(TreeComponent.TreeNode node) {
-        return "/downloadPart/" + storageId + "/FluentAssertions/1.6.0";
+        return "/downloadPart/" + storageName + "/FluentAssertions/1.6.0";
     }
 
     /**

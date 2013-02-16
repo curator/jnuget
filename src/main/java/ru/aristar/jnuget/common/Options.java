@@ -241,6 +241,5 @@ public class Options {
             }
         }
         return usersOptions;
-        //TODO  Вынести настройки в самостоятельный класс
     }
 }

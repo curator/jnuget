@@ -42,10 +42,6 @@ public class StorageContentsController {
      */
     private String packageId;
     /**
-     * Идентификатор хранилища
-     */
-    private int storageId;
-    /**
      * Количество пакетов, которое необходимо пропусть
      */
     private int low = 0;
@@ -81,24 +77,29 @@ public class StorageContentsController {
     }
 
     /**
-     * @return идентификатор хранилища
+     * @return имя хранилища
      */
-    public int getStorageId() {
-        return storageId;
+    public String getStorageName() {
+        return storage == null ? null : storage.getName();
+
     }
 
     /**
-     * @param storageId идентификатор хранилища
+     * @param storageName имя хранилища
      */
-    public void setStorageId(int storageId) {
-        this.storageId = storageId;
+    public void setStorageName(String storageName) {
+        if (storageName == null) {
+            storage = null;
+        } else {
+            this.storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
+        }
     }
 
     /**
      * @return количество пакетов в хранилище
      */
     public int getPackageCount() {
-        return packages.getRowCount();
+        return getPackages().getRowCount();
     }
 
     /**
@@ -125,22 +126,8 @@ public class StorageContentsController {
     /**
      * @param storage хранилище пакетов
      */
-    public void setStorage(PackageSource<Nupkg> storage) {
+    protected void setStorage(PackageSource<Nupkg> storage) {
         this.storage = storage;
-    }
-
-    /**
-     * Инициализация хранилища
-     */
-    public void init() {
-        storage = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
-        if (packageId == null) {
-            ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getLastVersionPackages());
-            packages = new ListDataModel<>(nupkgs);
-        } else {
-            ArrayList<Nupkg> nupkgs = new ArrayList<>(storage.getPackages(packageId));
-            packages = new ListDataModel<>(nupkgs);
-        }
     }
 
     /**
@@ -151,9 +138,8 @@ public class StorageContentsController {
      * @throws ServletException не удалось прочитать multipart сообщение
      */
     public void uploadPackage() throws IOException, NugetFormatException, ServletException {
-        init();
         TempNupkgFile nupkgFile = new TempNupkgFile(uploadedFile.getInputStream());
-        storage.pushPackage(nupkgFile);
+        getStorage().pushPackage(nupkgFile);
     }
 
     /**
@@ -161,7 +147,7 @@ public class StorageContentsController {
      * первого подходящегопакета в списке пакетов
      */
     public List<Map.Entry<Character, Integer>> getLettersRefs() {
-        if (storage == null) {
+        if (getStorage() == null) {
             return new ArrayList<>(0);
         }
         Map<Character, Integer> result = new HashMap<>(PACKAGE_ID_START_LETTERS.length);
@@ -180,6 +166,15 @@ public class StorageContentsController {
      * @return список пакетов в хранилище
      */
     public DataModel<Nupkg> getPackages() {
+        if (packages == null) {
+            if (packageId == null) {
+                ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getLastVersionPackages());
+                packages = new ListDataModel<>(nupkgs);
+            } else {
+                ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getPackages(packageId));
+                packages = new ListDataModel<>(nupkgs);
+            }
+        }
         return packages;
     }
 
@@ -236,7 +231,7 @@ public class StorageContentsController {
      * @return список идентификаторов переходов
      */
     public List<Integer> getSkipList() {
-        if (storage == null) {
+        if (getStorage() == null) {
             return new ArrayList<>(0);
         }
         //Расчет числа отображаемых слева и справа от текущего диапазонов
@@ -281,7 +276,7 @@ public class StorageContentsController {
      */
     private int getFirstId(final char symbol) {
         Predicate<Nupkg> predicate = new FirstIdPredicate(symbol);
-        return Iterables.indexOf(packages, predicate);
+        return Iterables.indexOf(getPackages(), predicate);
 
 
     }
