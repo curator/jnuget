@@ -16,8 +16,6 @@ import ru.aristar.jnuget.client.NugetClient;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.RemoteNupkg;
 import static ru.aristar.jnuget.sources.AbstractPackageSource.extractLastVersion;
-import ru.aristar.jnuget.sources.push.AfterTrigger;
-import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 
@@ -147,14 +145,12 @@ public class RemotePackageSource implements PackageSource<RemoteNupkg> {
     @Override
     public boolean pushPackage(Nupkg nupkg) throws IOException {
         try {
-            //TODO перенести метод в стратегию
-            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforePushTriggers()) {
-                pushTrigger.doAction(nupkg, this);
+            boolean beforeTrigger = getPushStrategy().processBeforeTriggers(nupkg, this);
+            if (!beforeTrigger) {
+                return false;
             }
             remoteStorage.putPackage(nupkg);
-            for (AfterTrigger pushTrigger : getPushStrategy().getAftherPushTriggers()) {
-                pushTrigger.doAction(nupkg, this);
-            }
+            getPushStrategy().processAfterTriggers(nupkg, this);
             return true;
         } catch (UniformInterfaceException | NugetPushException e) {
             logger.warn("Ошибка помещения пакета в удаленное хранилище", e);

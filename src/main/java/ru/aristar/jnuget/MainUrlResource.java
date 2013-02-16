@@ -64,6 +64,10 @@ public class MainUrlResource {
         return Response.ok(streamingOutput, MediaType.APPLICATION_XML).build();
     }
 
+    /**
+     * @return метаданные хранилища
+     * @throws IOException ошибка чтения предсохранненных метаданных
+     */
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Path("{metadata : [$]metadata}")

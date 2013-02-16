@@ -30,7 +30,7 @@ import ru.aristar.jnuget.sources.push.ModifyStrategy;
  */
 public class PackageSourceFactory {
 
-    //TODO Переписать ифабрику под использование ObjectDescriptor
+    //TODO Переписать фабрику под использование ObjectDescriptor
     /**
      * Экземпляр фабрики
      */

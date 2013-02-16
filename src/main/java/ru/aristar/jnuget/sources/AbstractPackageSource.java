@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Nupkg;
-import ru.aristar.jnuget.sources.push.AfterTrigger;
-import ru.aristar.jnuget.sources.push.BeforeTrigger;
 import ru.aristar.jnuget.sources.push.ModifyStrategy;
 import ru.aristar.jnuget.sources.push.NugetPushException;
 
@@ -40,16 +38,12 @@ public abstract class AbstractPackageSource<T extends Nupkg> implements PackageS
             return false;
         }
         try {
-            //TODO перенести метод в стратегию
-            for (BeforeTrigger pushTrigger : getPushStrategy().getBeforePushTriggers()) {
-                if (!pushTrigger.doAction(nupkgFile, this)) {
-                    return false;
-                }
+            boolean beforeTrigger = getPushStrategy().processBeforeTriggers(nupkgFile, this);
+            if (!beforeTrigger) {
+                return false;
             }
             processPushPackage(nupkgFile);
-            for (AfterTrigger trigger : getPushStrategy().getAftherPushTriggers()) {
-                trigger.doAction(nupkgFile, this);
-            }
+            getPushStrategy().processAfterTriggers(nupkgFile, this);
         } catch (NugetPushException e) {
             logger.error("Ошибка помещения пакета в хранилище", e);
             return false;

@@ -2,6 +2,8 @@ package ru.aristar.jnuget.sources.push;
 
 import java.util.ArrayList;
 import java.util.List;
+import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.sources.PackageSource;
 
 /**
  * Класс стратегии модификации пакета в хранилище
@@ -77,7 +79,7 @@ public class ModifyStrategy {
     public boolean canDelete() {
         return canDelete;
     }
-    //TODO Жобавить проверку на разрешение удаления
+    //TODO Добавить проверку на разрешение удаления
 
     /**
      * @param canDelete разрешено или нет удаление
@@ -98,5 +100,20 @@ public class ModifyStrategy {
      */
     public void setCanPush(boolean canPush) {
         this.canPush = canPush;
+    }
+
+    public boolean processBeforeTriggers(Nupkg nupkg, PackageSource<? extends Nupkg> packageSource) throws NugetPushException {
+        for (BeforeTrigger trigger : getBeforePushTriggers()) {
+            if (!trigger.doAction(nupkg, packageSource)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void processAfterTriggers(Nupkg nupkg, PackageSource<? extends Nupkg> packageSource) throws NugetPushException {
+        for (AfterTrigger trigger : getAftherPushTriggers()) {
+            trigger.doAction(nupkg, packageSource);
+        }
     }
 }
