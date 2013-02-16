@@ -77,7 +77,7 @@ public class ModifyStrategy {
     public boolean canDelete() {
         return canDelete;
     }
-    //TODO Жобавить проверку на разрешение удаления
+    //TODO Добавить проверку на разрешение удаления
 
     /**
      * @param canDelete разрешено или нет удаление

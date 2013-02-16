@@ -6,7 +6,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
-            <f:viewParam name="storageId" value="#{packageDetails.storageName}"/>
+            <f:viewParam name="storageId" value="#{packageDetails.storageName}" validator="#{validator.validateStorageId}"/>
             <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
             <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
             <f:event type="preRenderView" listener="#{packageDetails.init()}" />

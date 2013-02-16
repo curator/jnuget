@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
@@ -71,24 +70,6 @@ public class PackageDetailsController {
             }
         }
         nuspec = nupkg == null ? null : nupkg.getNuspecFile();
-    }
-
-    /**
-     * Проверка корректности имени хранилища
-     *
-     * @param context контекст сервиса
-     * @param component компонент пользовательского интерфейса
-     * @param object объект, подлежащий валидации
-     */
-    public void validateStorageId(FacesContext context, UIComponent component, Object object) {
-        if (object == null || !(object instanceof String)) {
-            sendErrorCode(context, 404);
-            return;
-        }
-        String newStorageName = (String) object;
-        if (PackageSourceFactory.getInstance().getPublicPackageSource(newStorageName) == null) {
-            sendErrorCode(context, 404);
-        }
     }
 
     /**
@@ -304,17 +285,5 @@ public class PackageDetailsController {
         public Collection<TreeComponent.TreeNode> getChildren() {
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Отправляет код ошибки
-     *
-     * @param context контекст JSF
-     * @param errorCode код ошибки
-     */
-    private void sendErrorCode(FacesContext context, int errorCode) {
-        //TODO Отрефакторить, объеденить с StorageContentsController
-        context.getExternalContext().setResponseStatus(errorCode);
-        context.responseComplete();
     }
 }

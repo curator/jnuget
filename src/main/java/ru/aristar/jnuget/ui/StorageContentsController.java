@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.ServletException;
@@ -43,10 +41,6 @@ public class StorageContentsController {
      * Идентификатор пакета
      */
     private String packageId;
-    /**
-     * Идентификатор хранилища
-     */
-    private String storageName;
     /**
      * Количество пакетов, которое необходимо пропусть
      */
@@ -83,35 +77,22 @@ public class StorageContentsController {
     }
 
     /**
-     * Проверка корректности имени хранилища
-     *
-     * @param context контекст сервиса
-     * @param component компонент пользовательского интерфейса
-     * @param object объект, подлежащий валидации
-     */
-    public void validateStorageId(FacesContext context, UIComponent component, Object object) {
-        if (object == null || !(object instanceof String)) {
-            sendErrorCode(context, 404);
-            return;
-        }
-        String newStorageName = (String) object;
-        if (PackageSourceFactory.getInstance().getPublicPackageSource(newStorageName) == null) {
-            sendErrorCode(context, 404);
-        }
-    }
-
-    /**
      * @return имя хранилища
      */
     public String getStorageName() {
-        return storageName;
+        return storage == null ? null : storage.getName();
+
     }
 
     /**
      * @param storageName имя хранилища
      */
     public void setStorageName(String storageName) {
-        this.storageName = storageName;
+        if (storageName == null) {
+            storage = null;
+        } else {
+            this.storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
+        }
     }
 
     /**
@@ -139,9 +120,6 @@ public class StorageContentsController {
      * @return хранилище пакетов
      */
     public PackageSource<Nupkg> getStorage() {
-        if (storage == null) {
-            storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
-        }
         return storage;
     }
 
@@ -301,17 +279,6 @@ public class StorageContentsController {
         return Iterables.indexOf(getPackages(), predicate);
 
 
-    }
-
-    /**
-     * Отправляет код ошибки
-     *
-     * @param context контекст JSF
-     * @param errorCode код ошибки
-     */
-    private void sendErrorCode(FacesContext context, int errorCode) {
-        context.getExternalContext().setResponseStatus(errorCode);
-        context.responseComplete();
     }
 
     /**
