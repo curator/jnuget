@@ -7,16 +7,16 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
         <f:metadata>
-            <f:viewParam name="storageId" value="#{storageOptions.storageId}"/>
+            <f:viewParam name="storageId" value="#{storageOptions.storageName}" validator="#{validator.validateStorageId}"/>
         </f:metadata>
-        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></title>
+        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></title>
         <link rel="stylesheet" type="text/css" href="/css/main.css" />
     </h:head>
     <h:body>
         <ui:composition template="common/commonLayout.xhtml">
             <ui:define name="content">
                 <fieldset>
-                    <legend><h:outputText value="Настройки хранилища #{storageOptions.storageId + 1}"/></legend>
+                    <legend><h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></legend>
                     <ol>
                         <li>
                             <label for="className">Имя класса хранилища</label>
@@ -29,10 +29,6 @@
                         <li>
                             <label for="refreshInterval">Период обновления индекса</label>
                             <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
-                        </li>
-                        <li>
-                            <label for="storageName">Имя хранилища (используется для сохранения индекса)</label>
-                            <h:inputText id="storageName" value="#{storageOptions.storageName}"/>
                         </li>
                         <li>
                             <label for="canPush">Разрешена публикация пакетов</label>

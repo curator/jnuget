@@ -20,7 +20,7 @@
                         <c:choose>
                             <c:when test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
                                 <h:link value="#{storagesList.storageOptions.rowIndex+1}" outcome="storageOptions">
-                                    <f:param name="storageId" value="#{storagesList.storageOptions.rowIndex}"/>
+                                    <f:param name="storageId" value="#{repo.storageName}"/>
                                 </h:link>
                             </c:when>
                             <c:otherwise>

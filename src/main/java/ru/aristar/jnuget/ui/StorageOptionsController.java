@@ -1,6 +1,5 @@
 package ru.aristar.jnuget.ui;
 
-import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
-import ru.aristar.jnuget.common.Options;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.sources.IndexedPackageSource;
@@ -143,10 +141,6 @@ public class StorageOptionsController implements Serializable {
         }
     }
     /**
-     * Идентификатор хранилища
-     */
-    private Integer storageId;
-    /**
      * Хранилище
      */
     private PackageSource<? extends Nupkg> packageSource;
@@ -154,37 +148,6 @@ public class StorageOptionsController implements Serializable {
      * Индексирующий декоратор (или null, если хранилище не индексируется)
      */
     private IndexedPackageSource indexDecorator;
-
-    /**
-     * Инициализация хранилища
-     */
-    private void init() {
-        if (storageId == null) {
-            packageSource = null;
-            indexDecorator = null;
-            return;
-        }
-        packageSource = PackageSourceFactory.getInstance().getPackageSources().get(storageId);
-        if (packageSource instanceof IndexedPackageSource) {
-            indexDecorator = (IndexedPackageSource) packageSource;
-            packageSource = indexDecorator.getUnderlyingSource();
-        }
-    }
-
-    /**
-     * @return идентификатор хранилища
-     */
-    public Integer getStorageId() {
-        return storageId;
-    }
-
-    /**
-     * @param storageId идентификатор хранилища
-     */
-    public void setStorageId(Integer storageId) {
-        this.storageId = storageId;
-        init();
-    }
 
     /**
      * @return имя класса хранилища
@@ -257,27 +220,24 @@ public class StorageOptionsController implements Serializable {
      * @param storageName имя хранилища (используется для сохранения индекса)
      */
     public void setStorageName(String storageName) {
-        if (indexDecorator == null) {
+        if (storageName == null) {
+            packageSource = null;
+            indexDecorator = null;
             return;
         }
-        File storageFile = IndexedPackageSource.getIndexSaveFile(Options.getNugetHome(), storageName);
-        indexDecorator.setIndexStoreFile(storageFile);
+        packageSource = PackageSourceFactory.getInstance().getPackageSource(storageName);
+        if (packageSource != null && packageSource instanceof IndexedPackageSource) {
+            indexDecorator = (IndexedPackageSource) packageSource;
+            packageSource = indexDecorator.getUnderlyingSource();
+        }
     }
 
     /**
      * @return имя хранилища (используется для сохранения индекса)
      */
     public String getStorageName() {
-        if (indexDecorator == null) {
-            return null;
-        }
-        File indexFile = indexDecorator.getIndexStoreFile();
-        if (indexFile == null) {
-            return null;
-        }
-        String fileName = indexDecorator.getIndexStoreFile().getName();
-        fileName = fileName.substring(0, fileName.length() - 4);
-        return fileName;
+
+        return packageSource == null ? null : packageSource.getName();
     }
 
     /**
