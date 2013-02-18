@@ -22,7 +22,7 @@ import ru.aristar.jnuget.sources.push.ModifyStrategy;
  *
  * @author sviridov
  */
-public class IndexedPackageSource implements PackageSource<Nupkg> {
+public class IndexedPackageSource implements PackageSource<Nupkg>, AutoCloseable {
 
     /**
      * Индекс пакетов
@@ -79,6 +79,13 @@ public class IndexedPackageSource implements PackageSource<Nupkg> {
     @Override
     public void setName(String storageName) {
         packageSource.setName(storageName);
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (scheduler != null && scheduler.isStarted()) {
+            scheduler.stop();
+        }
     }
 
     /**
