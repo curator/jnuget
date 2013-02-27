@@ -1,15 +1,18 @@
 package ru.aristar.jnuget.query;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import static org.hamcrest.CoreMatchers.*;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
+import org.jmock.lib.legacy.ClassImposteriser;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
+import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import ru.aristar.jnuget.sources.PackageSource;
 
 /**
@@ -22,7 +25,11 @@ public class QueryLexerTest {
     /**
      * Контекст для создания заглушек
      */
-    private Mockery context = new Mockery();
+    private Mockery context = new Mockery() {
+        {
+            setImposteriser(ClassImposteriser.INSTANCE);
+        }
+    };
 
     /**
      * Проверка простого выражения на эквивалентность идентификатора пакета
@@ -283,5 +290,76 @@ public class QueryLexerTest {
         final String filterString = "tolower(Id eq 'projectwise.api'";
         //WHEN
         Expression expression = lexer.parse(filterString);
+    }
+
+    /**
+     * Проверка анализа строки запроса от SharpDevelop
+     *
+     * @throws NugetFormatException строка запроса не соответствует формату
+     * NuGet
+     */
+    @Test
+    public void testSharpDevelopString() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        final String filterString = "(((Id ne null) and substringof('spring',tolower(Id))) or ((Description ne null) and substringof('spring',tolower(Description)))) or ((Tags ne null) and substringof(' spring ',tolower(Tags)))";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        assertThat(expression, is(instanceOf(OrExpression.class)));
+    }
+
+    @Test
+    public void testFindSharpDevelopQuery() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        //Пакеты
+        Nupkg firstPackage = context.mock(Nupkg.class, "first.package");
+        NuspecFile firstNuspec = context.mock(NuspecFile.class, "first.nuspec");
+        Nupkg secondPackage = context.mock(Nupkg.class, "second.package");
+        NuspecFile secondNuspec = context.mock(NuspecFile.class, "second.nuspec");
+
+        //Источник пакетов
+        @SuppressWarnings("unchecked")
+        PackageSource<? extends Nupkg> packageSource = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(packageSource).getPackages();
+        expectations.will(returnValue(Arrays.asList(firstPackage, secondPackage)));
+        expectations.atLeast(0).of(firstPackage).getId();
+        expectations.will(returnValue("first.package"));
+        expectations.atLeast(0).of(firstPackage).getNuspecFile();
+        expectations.will(returnValue(firstNuspec));
+        expectations.atLeast(0).of(secondPackage).getId();
+        expectations.will(returnValue("second.package"));
+        expectations.atLeast(0).of(secondPackage).getNuspecFile();
+        expectations.will(returnValue(secondNuspec));
+
+        expectations.atLeast(0).of(firstNuspec).getDescription();
+        expectations.will(returnValue("ffff"));
+
+        expectations.atLeast(0).of(secondNuspec).getDescription();
+        expectations.will(returnValue("ssss"));
+
+        expectations.atLeast(0).of(firstNuspec).getDescription();
+        expectations.will(returnValue("ffff"));
+
+        expectations.atLeast(0).of(secondNuspec).getDescription();
+       expectations.will(returnValue("ssss"));
+
+        expectations.atLeast(0).of(firstNuspec).getTags();
+        expectations.will(returnValue(new ArrayList<String>()));
+
+        expectations.atLeast(0).of(secondNuspec).getTags();
+        expectations.will(returnValue(new ArrayList<String>()));
+
+        context.checking(expectations);
+
+        final String filterString = "(((Id ne null) and substringof('first',tolower(Id))) or ((Description ne null) and substringof('first',tolower(Description)))) or ((Tags ne null) and substringof('first',tolower(Tags)))";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        @SuppressWarnings("unchecked")
+        Collection<Nupkg> result = (Collection<Nupkg>) expression.execute(packageSource);
+        //THEN
+        assertThat(result.size(), is(equalTo(1)));
+        assertThat(result, hasItems(firstPackage));
     }
 }

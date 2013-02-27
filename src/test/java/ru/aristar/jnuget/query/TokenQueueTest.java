@@ -26,7 +26,7 @@ public class TokenQueueTest {
                 + "(tolower(Id) eq 'projectwise.isolationlevel.implementation')) "
                 + "or (tolower(Id) eq 'nlog')) or (tolower(Id) eq 'postsharp') and isLatestVersion";
         TokenQueue tokenQueue = new TokenQueue(filterString);
-        //WHEN         
+        //WHEN
         String[] actual = tokenQueue.toArray(new String[0]);
         String[] expected = new String[]{"(", "(", "(", "(", "(", "(", "tolower", "(",
             "Id", ")", "eq", "'", "projectwise.api", "'", ")",
@@ -48,7 +48,7 @@ public class TokenQueueTest {
         //GIVEN
         final String filterString = "tolower(Id) eq 'projectwise.api'";
         TokenQueue tokenQueue = new TokenQueue(filterString);
-        //WHEN         
+        //WHEN
         Object[] actual = tokenQueue.toArray(new Object[0]);
         //THEN
         assertThat(actual.length, is(equalTo(8)));
@@ -110,5 +110,29 @@ public class TokenQueueTest {
         assertThat(tokenQueue.isEmpty(), is(equalTo(false)));
         assertThat(tokenQueue.poll(), is(equalTo(")")));
         assertThat(tokenQueue.isEmpty(), is(equalTo(true)));
+    }
+
+    /**
+     * Тест последовательного получения элементов очереди токенов, с
+     * разделителями запятыми
+     */
+    @Test
+    public void testPoolWithComma() {
+        //GIVEN
+        final String filterString = "substringof('spring',tolower(Id)))";
+        //WHEN
+        TokenQueue tokenQueue = new TokenQueue(filterString);
+        //THEN
+        assertThat(tokenQueue.poll(), is(equalTo("substringof")));
+        assertThat(tokenQueue.poll(), is(equalTo("(")));
+        assertThat(tokenQueue.poll(), is(equalTo("'")));
+        assertThat(tokenQueue.poll(), is(equalTo("spring")));
+        assertThat(tokenQueue.poll(), is(equalTo("'")));
+        assertThat(tokenQueue.poll(), is(equalTo("tolower")));
+        assertThat(tokenQueue.poll(), is(equalTo("(")));
+        assertThat(tokenQueue.poll(), is(equalTo("Id")));
+        assertThat(tokenQueue.poll(), is(equalTo(")")));
+        assertThat(tokenQueue.poll(), is(equalTo(")")));
+        assertThat(tokenQueue.poll(), is(equalTo(")")));
     }
 }

@@ -70,6 +70,30 @@ public class QueryLexer {
                 return expression;
             }
 
+            case "id": {
+                Expression expression = IdNe.parse(tokens);
+                checkForAndExpression(stack, expression);
+                return parse(tokens, stack);
+            }
+
+            case "description": {
+                Expression expression = DescriptionNe.parse(tokens);
+                checkForAndExpression(stack, expression);
+                return parse(tokens, stack);
+            }
+
+            case "tags": {
+                Expression expression = TagsNe.parse(tokens);
+                checkForAndExpression(stack, expression);
+                return parse(tokens, stack);
+            }
+
+            case "substringof": {
+                SubstringOfEqToLower expression = SubstringOfEqToLower.parse(tokens);
+                checkForAndExpression(stack, expression);
+                return parse(tokens, stack);
+            }
+
             case ")": {
                 return stack.pop();
             }

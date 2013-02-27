@@ -72,7 +72,7 @@ public class TokenQueue implements Queue<String> {
      * @return является ли строка "пустым" токеном
      */
     private boolean isSkipToken(String string) {
-        return string.matches("[\\s\\r\\n]+");
+        return string.matches("[\\s\\r\\n,]+");
     }
 
     /**
