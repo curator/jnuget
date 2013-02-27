@@ -309,7 +309,7 @@ public class QueryLexerTest {
     }
 
     @Test
-    public void testFindSharpDevelopQuery() throws NugetFormatException {
+    public void testFindSharpDevelopQueryExecute() throws NugetFormatException {
         //GIVEN
         QueryLexer lexer = new QueryLexer();
         //Пакеты
@@ -343,7 +343,7 @@ public class QueryLexerTest {
         expectations.will(returnValue("ffff"));
 
         expectations.atLeast(0).of(secondNuspec).getDescription();
-       expectations.will(returnValue("ssss"));
+        expectations.will(returnValue("ssss"));
 
         expectations.atLeast(0).of(firstNuspec).getTags();
         expectations.will(returnValue(new ArrayList<String>()));
@@ -358,6 +358,61 @@ public class QueryLexerTest {
         Expression expression = lexer.parse(filterString);
         @SuppressWarnings("unchecked")
         Collection<Nupkg> result = (Collection<Nupkg>) expression.execute(packageSource);
+        //THEN
+        assertThat(result.size(), is(equalTo(1)));
+        assertThat(result, hasItems(firstPackage));
+    }
+
+    @Test
+    public void testFindSharpDevelopQueryFilter() throws NugetFormatException {
+        //GIVEN
+        QueryLexer lexer = new QueryLexer();
+        //Пакеты
+        Nupkg firstPackage = context.mock(Nupkg.class, "first.package");
+        NuspecFile firstNuspec = context.mock(NuspecFile.class, "first.nuspec");
+        Nupkg secondPackage = context.mock(Nupkg.class, "second.package");
+        NuspecFile secondNuspec = context.mock(NuspecFile.class, "second.nuspec");
+
+        //Источник пакетов
+        @SuppressWarnings("unchecked")
+        PackageSource<? extends Nupkg> packageSource = context.mock(PackageSource.class);
+        Expectations expectations = new Expectations();
+        expectations.atLeast(0).of(packageSource).getPackages();
+        expectations.will(returnValue(Arrays.asList(firstPackage, secondPackage)));
+        expectations.atLeast(0).of(firstPackage).getId();
+        expectations.will(returnValue("first.package"));
+        expectations.atLeast(0).of(firstPackage).getNuspecFile();
+        expectations.will(returnValue(firstNuspec));
+        expectations.atLeast(0).of(secondPackage).getId();
+        expectations.will(returnValue("second.package"));
+        expectations.atLeast(0).of(secondPackage).getNuspecFile();
+        expectations.will(returnValue(secondNuspec));
+
+        expectations.atLeast(0).of(firstNuspec).getDescription();
+        expectations.will(returnValue("ffff"));
+
+        expectations.atLeast(0).of(secondNuspec).getDescription();
+        expectations.will(returnValue("ssss"));
+
+        expectations.atLeast(0).of(firstNuspec).getDescription();
+        expectations.will(returnValue("ffff"));
+
+        expectations.atLeast(0).of(secondNuspec).getDescription();
+        expectations.will(returnValue("ssss"));
+
+        expectations.atLeast(0).of(firstNuspec).getTags();
+        expectations.will(returnValue(new ArrayList<String>()));
+
+        expectations.atLeast(0).of(secondNuspec).getTags();
+        expectations.will(returnValue(new ArrayList<String>()));
+
+        context.checking(expectations);
+
+        final String filterString = "(((Id ne null) and substringof('first',tolower(Id))) or ((Description ne null) and substringof('first',tolower(Description)))) or ((Tags ne null) and substringof('first',tolower(Tags)))";
+        //WHEN
+        Expression expression = lexer.parse(filterString);
+        @SuppressWarnings("unchecked")
+        Collection<Nupkg> result = (Collection<Nupkg>) expression.filter(packageSource.getPackages());
         //THEN
         assertThat(result.size(), is(equalTo(1)));
         assertThat(result, hasItems(firstPackage));

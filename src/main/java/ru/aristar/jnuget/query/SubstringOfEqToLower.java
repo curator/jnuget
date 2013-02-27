@@ -93,7 +93,7 @@ public class SubstringOfEqToLower extends AbstractExpression {
                     return nupkg.getNuspecFile().getDescription().toLowerCase().contains(value.toLowerCase());
                 }
                 case "tags": {
-                    return true; //TODO Доделать
+                    return false; //TODO Доделать
                 }
                 default:
                     throw new NugetFormatException(format("Поле \"{0}\" не поддерживается.", field));

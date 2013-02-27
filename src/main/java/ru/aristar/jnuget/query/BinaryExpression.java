@@ -23,7 +23,7 @@ public abstract class BinaryExpression implements Expression {
     @Override
     public Collection<? extends Nupkg> filter(Collection<? extends Nupkg> packages) {
         HashSet<Nupkg> result = new HashSet<>();
-        for (Nupkg nupkg : result) {
+        for (Nupkg nupkg : packages) {
             if (accept(nupkg)) {
                 result.add(nupkg);
             }
