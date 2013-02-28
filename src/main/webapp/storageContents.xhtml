@@ -23,10 +23,8 @@
                         <br>
                             <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">
                                 <h:form id="upload_form" enctype="multipart/form-data" rendered="#{storageContents.storage.pushStrategy.canPush()}">
-                                    <h:inputHidden id="firstRow" value="#{storageContents.low}"/>
-                                    <h:inputHidden id="storageId" value="#{storageContents.storageName}"/>
                                     <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
-                                    <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage}"/>
+                                    <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage()}" type="submit"/>
                                 </h:form>
                             </c:if>
                         </br>

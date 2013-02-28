@@ -3,6 +3,7 @@ package ru.aristar.jnuget.ui;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.IOException;
+import java.io.Serializable;
 import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.ServletException;
@@ -30,8 +31,8 @@ import ru.aristar.jnuget.sources.PackageSourceFactory;
  * @author sviridov
  */
 @ManagedBean(name = "storageContents")
-@RequestScoped
-public class StorageContentsController {
+@ViewScoped
+public class StorageContentsController implements Serializable {
 
     /**
      * Символы, с которых могут начинаться иммена пакетов
@@ -52,15 +53,19 @@ public class StorageContentsController {
     /**
      * Список пакетов в хранилище
      */
-    protected DataModel<Nupkg> packages;
+    protected transient DataModel<Nupkg> packages;
     /**
      * Хранилище пакетов
      */
-    private PackageSource<Nupkg> storage;
+    private transient PackageSource<Nupkg> storage;
     /**
      * Загруженый файл
      */
-    private UploadedFile uploadedFile;
+    private transient UploadedFile uploadedFile;
+    /**
+     * Имя хранилища
+     */
+    private String storageName;
 
     /**
      * @return загруженый файл
@@ -80,7 +85,7 @@ public class StorageContentsController {
      * @return имя хранилища
      */
     public String getStorageName() {
-        return storage == null ? null : storage.getName();
+        return storageName;
 
     }
 
@@ -88,11 +93,7 @@ public class StorageContentsController {
      * @param storageName имя хранилища
      */
     public void setStorageName(String storageName) {
-        if (storageName == null) {
-            storage = null;
-        } else {
-            this.storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
-        }
+        this.storageName = storageName;
     }
 
     /**
@@ -120,6 +121,11 @@ public class StorageContentsController {
      * @return хранилище пакетов
      */
     public PackageSource<Nupkg> getStorage() {
+        if (storage == null) {
+            if (storageName != null) {
+                storage = PackageSourceFactory.getInstance().getPublicPackageSource(storageName);
+            }
+        }
         return storage;
     }
 
@@ -131,7 +137,7 @@ public class StorageContentsController {
     }
 
     /**
-     * ЗАгрузка готового пакета на сервер
+     * Загрузка готового пакета на сервер
      *
      * @throws IOException ошибка чтения данных от клиента
      * @throws NugetFormatException некорректный формат пакета
@@ -140,6 +146,7 @@ public class StorageContentsController {
     public void uploadPackage() throws IOException, NugetFormatException, ServletException {
         TempNupkgFile nupkgFile = new TempNupkgFile(uploadedFile.getInputStream());
         getStorage().pushPackage(nupkgFile);
+        packages = null;
     }
 
     /**
