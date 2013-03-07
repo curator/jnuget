@@ -33,6 +33,10 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
      * Логгер
      */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Стратегия добавления пакетов
+     */
+    private ModifyStrategy pushStrategy;
 
     /**
      * Конструктор по умолчанию
@@ -162,12 +166,12 @@ public class ProxyPackageSource implements PackageSource<Nupkg> {
 
     @Override
     public ModifyStrategy getPushStrategy() {
-        return hostedSource.getPushStrategy();
+        return this.pushStrategy;
     }
 
     @Override
     public void setPushStrategy(ModifyStrategy strategy) {
-        remoteSource.setPushStrategy(strategy);
+        this.pushStrategy = strategy;
     }
 
     @Override

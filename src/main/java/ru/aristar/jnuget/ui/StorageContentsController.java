@@ -22,7 +22,6 @@ import org.apache.myfaces.custom.fileupload.UploadedFile;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
-import ru.aristar.jnuget.rss.PackageIdAndVersionComparator;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
