@@ -22,6 +22,7 @@ import org.apache.myfaces.custom.fileupload.UploadedFile;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
 import ru.aristar.jnuget.files.TempNupkgFile;
+import ru.aristar.jnuget.rss.PackageIdAndVersionComparator;
 import ru.aristar.jnuget.sources.PackageSource;
 import ru.aristar.jnuget.sources.PackageSourceFactory;
 
@@ -176,9 +177,21 @@ public class StorageContentsController implements Serializable {
         if (packages == null) {
             if (packageId == null) {
                 ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getLastVersionPackages());
+                Collections.sort(nupkgs, new Comparator<Nupkg>() {
+                    @Override
+                    public int compare(Nupkg o1, Nupkg o2) {
+                        return o1.getId().compareToIgnoreCase(o2.getId());
+                    }
+                });
                 packages = new ListDataModel<>(nupkgs);
             } else {
                 ArrayList<Nupkg> nupkgs = new ArrayList<>(getStorage().getPackages(packageId));
+                Collections.sort(nupkgs, new Comparator<Nupkg>() {
+                    @Override
+                    public int compare(Nupkg o1, Nupkg o2) {
+                        return o1.getVersion().compareTo(o2.getVersion());
+                    }
+                });
                 packages = new ListDataModel<>(nupkgs);
             }
         }
