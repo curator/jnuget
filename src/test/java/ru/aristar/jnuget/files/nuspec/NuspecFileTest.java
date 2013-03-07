@@ -221,16 +221,16 @@ public class NuspecFileTest {
         assertThat(result.getFrameworkAssembly().size(), is(equalTo(5)));
         assertThat(result.getFrameworkAssembly().get(0).getAssemblyName(), is(equalTo("PresentationCore")));
         assertThat(result.getFrameworkAssembly().get(0).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
-        
+
         assertThat(result.getFrameworkAssembly().get(1).getAssemblyName(), is(equalTo("PresentationFramework")));
         assertThat(result.getFrameworkAssembly().get(1).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
-        
+
         assertThat(result.getFrameworkAssembly().get(2).getAssemblyName(), is(equalTo("WindowsBase")));
         assertThat(result.getFrameworkAssembly().get(2).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
-        
+
         assertThat(result.getFrameworkAssembly().get(3).getAssemblyName(), is(equalTo("System")));
         assertThat(result.getFrameworkAssembly().get(3).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net35, Framework.net40))));
-        
+
         assertThat(result.getFrameworkAssembly().get(4).getAssemblyName(), is(equalTo("System.Xaml")));
         assertThat(result.getFrameworkAssembly().get(4).getTargetFrameworks(), is(equalTo(EnumSet.of(Framework.net40))));
     }
@@ -255,5 +255,21 @@ public class NuspecFileTest {
         assertThat(result.getDependenciesGroups().get(0).getTargetFramework(), is(nullValue()));
         assertThat(result.getDependenciesGroups().get(1).getTargetFramework(), is(equalTo(Framework.net40)));
         assertThat(result.getDependenciesGroups().get(2).getTargetFramework(), is(equalTo(Framework.sl30)));
+    }
+
+    /**
+     * Проверка на корректность работы с новым пространством имен
+     *
+     * @throws NugetFormatException тестовый XML не соответствует спецификации
+     * NuGet
+     */
+    @Test
+    public void testParseNewNamespace() throws NugetFormatException {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/Spring.Data.nuspec.xml");
+        //WHEN
+        NuspecFile result = NuspecFile.Parse(inputStream);
+        //THEN
+        assertThat(result, is(notNullValue()));
     }
 }
