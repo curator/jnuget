@@ -1,42 +1,36 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
-    <h:head>
-        <title>Авторизация</title>
-    </h:head>
-    <h:body>
-        <ui:composition template="common/commonLayout.xhtml">
-            <ui:define name="content">
-                <h:form id="login">
-                    <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage"
-                                warnClass="warnMessage"></h:messages>
-                    <ol>
-                        <li>
-                            <label for="username">Имя пользователя : </label>
-                            <h:inputText id="username" value="#{login.userName}" disabled="#{login.loggedIn}"/>
-                        </li>
-                        <li>
-                            <label for="password">Пароль : </label>
-                            <h:inputSecret id="password" value="#{login.password}" disabled="#{login.loggedIn}"/>
-                        </li>
-                        <li>
-                            <c:choose>
-                                <c:when test="#{!login.loggedIn}">
-                                    <h:commandButton id="login_button" value="Войти" action="#{login.login}" type="submit"/>
-                                    <h:commandButton id="clear_button" value="Очистить" type="reset"></h:commandButton>
-                                </c:when>
-                                <c:otherwise>
-                                    <h:commandButton id="clear_button" value="Выйти" action="#{login.logout}" type="submit"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </li>
-                    </ol>
-                </h:form>
-            </ui:define>
-        </ui:composition>
-    </h:body>
-</html>
+<ui:composition template="common/commonLayout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:define name="title">Авторизация</ui:define>
+    <ui:define name="content">
+        <h:form id="login">
+            <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage" warnClass="warnMessage"/>
+            <ol>
+                <li>
+                    <label for="username">Имя пользователя : </label>
+                    <h:inputText id="username" value="#{login.userName}" disabled="#{login.loggedIn}"/>
+                </li>
+                <li>
+                    <label for="password">Пароль : </label>
+                    <h:inputSecret id="password" value="#{login.password}" disabled="#{login.loggedIn}"/>
+                </li>
+                <li>
+                    <c:choose>
+                        <c:when test="#{!login.loggedIn}">
+                            <h:commandButton id="login_button" value="Войти" action="#{login.login}" type="submit"/>
+                            <h:commandButton id="clear_button" value="Очистить" type="reset"></h:commandButton>
+                        </c:when>
+                        <c:otherwise>
+                            <h:commandButton id="clear_button" value="Выйти" action="#{login.logout}" type="submit"/>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
+            </ol>
+        </h:form>
+    </ui:define>
+</ui:composition>
 

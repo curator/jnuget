@@ -1,29 +1,24 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:a="http://aristar.ru/components">
-    <h:head>
-        <f:metadata>
-            <f:viewParam name="storageId" value="#{packageDetails.storageName}" validator="#{validator.validateStorageId}"/>
-            <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
-            <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
-            <f:event type="preRenderView" listener="#{packageDetails.init()}" />
-        </f:metadata>
-        <title> <h:outputText value="#{messages.package_content_title} #{packageDetails.packageId} #{packageDetails.packageVersion}"/></title>
-    </h:head>
-    <h:body>
-        <ui:composition template="common/commonLayout.xhtml">
-            <ui:define name="content">
-                <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
-                    <h:outputLink value="#{packageDetails.getDownloadUrl(node)}">
-                        <h:outputText value="#{node.name}"/>
-                    </h:outputLink>
-                </a:tree>
-            </ui:define>
-        </ui:composition>
-    </h:body>
-</html>
+<ui:composition template="common/commonLayout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:a="http://aristar.ru/components">
+    <f:metadata>
+        <f:viewParam name="storageId" value="#{packageDetails.storageName}" validator="#{validator.validateStorageId}"/>
+        <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
+        <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
+        <f:event type="preRenderView" listener="#{packageDetails.init()}" />
+    </f:metadata>
+    <ui:define name="title"><h:outputText value="#{messages.package_content_title} #{packageDetails.packageId} #{packageDetails.packageVersion}"/></ui:define>
+    <ui:define name="content">
+        <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
+            <h:outputLink value="#{packageDetails.getDownloadUrl(node)}">
+                <h:outputText value="#{node.name}"/>
+            </h:outputLink>
+        </a:tree>
+    </ui:define>
+</ui:composition>
 

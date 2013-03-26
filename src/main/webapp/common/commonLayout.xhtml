@@ -4,7 +4,9 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <h:head>
+        <title><ui:insert name="title"/></title>
         <link rel="stylesheet" type="text/css" href="css/main.css" />
+        <ui:insert name="additional_heares"/>
     </h:head>
     <h:body>
         <div id="page">
@@ -13,7 +15,7 @@
                     <ui:include src="/common/commonHeader.xhtml" />
                 </ui:insert>
             </div>
-            
+
             <div id="sidebar">
                 <ui:insert name="sidebar">
                     <ui:include src="/common/commonSidebar.xhtml"/>

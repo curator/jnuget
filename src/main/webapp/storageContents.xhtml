@@ -1,110 +1,107 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:t="http://myfaces.apache.org/tomahawk"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    <h:head>
-        <f:metadata>
-            <f:viewParam name="storageId" value="#{storageContents.storageName}" validator="#{validator.validateStorageId}"/>
-            <f:viewParam name="firstRow" value="#{storageContents.low}"/>
-            <f:viewParam name="packageId" value="#{storageContents.packageId}"/>
-        </f:metadata>
-        <title> <h:outputText value="Содержимое хранилища #{storageContents.storageName}"/></title>
-    </h:head>
-    <h:body>
-        <ui:composition template="common/commonLayout.xhtml">
-            <ui:define name="content">
-                <c:choose>
-                    <c:when test="#{storageContents.packageId==null}">
-                        <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
-                        <br>
-                            <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">
-                                <h:form id="upload_form" enctype="multipart/form-data" rendered="#{storageContents.storage.pushStrategy.canPush()}">
-                                    <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
-                                    <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage()}" type="submit"/>
-                                </h:form>
-                            </c:if>
-                        </br>
-                        <br>
-                            <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
-                                <h:link value="#{letterRef.getKey()}" outcome="storageContents">
-                                    <f:param name="firstRow" value="#{letterRef.getValue()}"/>
-                                    <f:param name="storageId" value="#{storageContents.storageName}"/>
-                                    <f:param name="packageId" value="#{storageContents.packageId}"/>
-                                </h:link>
-                            </ui:repeat>
-                        </br>
-                    </c:when>
-                    <c:otherwise>
-                        <h:outputText value="Всего версий пакета #{storageContents.packageId} - #{storageContents.packageCount}"/>
-                    </c:otherwise>
-                </c:choose>
-                <h:dataTable value="#{storageContents.packages}" var="nupkg"
-                             first="#{storageContents.low}"
-                             rows="#{storageContents.displayCount}">
-                    <h:column>
-                        <f:facet name="header">№</f:facet>
-                        <h:link value="#{storageContents.packages.rowIndex+1}" outcome="storageContents">
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{nupkg.id}"/>
-                        </h:link>
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Идентификатор пакета</f:facet>
-                        <h:link value="#{nupkg.id}" outcome="storageContents">
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{nupkg.id}"/>
-                        </h:link>
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Версия пакета</f:facet>
-                        <h:link value="#{nupkg.version}" outcome="packageDetails">
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{nupkg.id}"/>
-                            <f:param name="packageVersion" value="#{nupkg.version}"/>
-                        </h:link>
-                    </h:column>
-                </h:dataTable>
-                <c:choose>
-                    <c:when test="#{storageContents.skipList.size()>5}">
-                        <h:link value="&lt;&lt;" outcome="storageContents">
-                            <f:param name="firstRow" value="#{storageContents.skipList.get(0)}"/>
+<ui:composition template="common/commonLayout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <f:metadata>
+        <f:viewParam name="storageId" value="#{storageContents.storageName}" validator="#{validator.validateStorageId}"/>
+        <f:viewParam name="firstRow" value="#{storageContents.low}"/>
+        <f:viewParam name="packageId" value="#{storageContents.packageId}"/>
+    </f:metadata>
+
+    <ui:define name="title"><h:outputText value="Содержимое хранилища #{storageContents.storageName}"/></ui:define>
+    <ui:define name="content">
+        <c:choose>
+            <c:when test="#{storageContents.packageId==null}">
+                <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
+                <br>
+                    <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">
+                        <h:form id="upload_form" enctype="multipart/form-data" rendered="#{storageContents.storage.pushStrategy.canPush()}">
+                            <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
+                            <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage()}" type="submit"/>
+                        </h:form>
+                    </c:if>
+                </br>
+                <br>
+                    <ui:repeat value="#{storageContents.lettersRefs}" var="letterRef">
+                        <h:link value="#{letterRef.getKey()}" outcome="storageContents">
+                            <f:param name="firstRow" value="#{letterRef.getValue()}"/>
                             <f:param name="storageId" value="#{storageContents.storageName}"/>
                             <f:param name="packageId" value="#{storageContents.packageId}"/>
                         </h:link>
-                        <h:outputText value="&nbsp;"/>
-                        <h:link value="&lt;" outcome="storageContents">
-                            <f:param name="firstRow" value="#{storageContents.skipList.get(1)}"/>
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{storageContents.packageId}"/>
-                        </h:link>
-                        <h:outputText value="&nbsp;"/>
-                        <ui:repeat offset="2" value="#{storageContents.skipList}" var="skip" size="#{storageContents.skipList.size()-4}">
-                            <h:link value="#{skip+1}-#{storageContents.normalizeTop(skip+storageContents.displayCount)}">
-                                <f:param name="firstRow" value="#{skip}"/>
-                                <f:param name="storageId" value="#{storageContents.storageName}"/>
-                                <f:param name="packageId" value="#{storageContents.packageId}"/>
-                            </h:link>
-                            <h:outputText value="&nbsp;"/>
-                        </ui:repeat>
-                        <h:link value="&gt;" outcome="storageContents">
-                            <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 2)}"/>
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{storageContents.packageId}"/>
-                        </h:link>
-                        <h:outputText value="&nbsp;"/>
-                        <h:link value="&gt;&gt;" outcome="storageContents">
-                            <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 1)}"/>
-                            <f:param name="storageId" value="#{storageContents.storageName}"/>
-                            <f:param name="packageId" value="#{storageContents.packageId}"/>
-                        </h:link>
-                    </c:when>
-                </c:choose>
-            </ui:define>
-        </ui:composition>
-    </h:body>
-</html>
+                    </ui:repeat>
+                </br>
+            </c:when>
+            <c:otherwise>
+                <h:outputText value="Всего версий пакета #{storageContents.packageId} - #{storageContents.packageCount}"/>
+            </c:otherwise>
+        </c:choose>
+        <h:dataTable value="#{storageContents.packages}" var="nupkg"
+                     first="#{storageContents.low}"
+                     rows="#{storageContents.displayCount}">
+            <h:column>
+                <f:facet name="header">№</f:facet>
+                <h:link value="#{storageContents.packages.rowIndex+1}" outcome="storageContents">
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{nupkg.id}"/>
+                </h:link>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Идентификатор пакета</f:facet>
+                <h:link value="#{nupkg.id}" outcome="storageContents">
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{nupkg.id}"/>
+                </h:link>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Версия пакета</f:facet>
+                <h:link value="#{nupkg.version}" outcome="packageDetails">
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{nupkg.id}"/>
+                    <f:param name="packageVersion" value="#{nupkg.version}"/>
+                </h:link>
+            </h:column>
+        </h:dataTable>
+        <c:choose>
+            <c:when test="#{storageContents.skipList.size()>5}">
+                <h:link value="&lt;&lt;" outcome="storageContents">
+                    <f:param name="firstRow" value="#{storageContents.skipList.get(0)}"/>
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
+                </h:link>
+                <h:outputText value="&nbsp;"/>
+                <h:link value="&lt;" outcome="storageContents">
+                    <f:param name="firstRow" value="#{storageContents.skipList.get(1)}"/>
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
+                </h:link>
+                <h:outputText value="&nbsp;"/>
+                <ui:repeat offset="2" value="#{storageContents.skipList}" var="skip" size="#{storageContents.skipList.size()-4}">
+                    <h:link value="#{skip+1}-#{storageContents.normalizeTop(skip+storageContents.displayCount)}">
+                        <f:param name="firstRow" value="#{skip}"/>
+                        <f:param name="storageId" value="#{storageContents.storageName}"/>
+                        <f:param name="packageId" value="#{storageContents.packageId}"/>
+                    </h:link>
+                    <h:outputText value="&nbsp;"/>
+                </ui:repeat>
+                <h:link value="&gt;" outcome="storageContents">
+                    <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 2)}"/>
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
+                </h:link>
+                <h:outputText value="&nbsp;"/>
+                <h:link value="&gt;&gt;" outcome="storageContents">
+                    <f:param name="firstRow" value="#{storageContents.skipList.get(storageContents.getSkipList().size() - 1)}"/>
+                    <f:param name="storageId" value="#{storageContents.storageName}"/>
+                    <f:param name="packageId" value="#{storageContents.packageId}"/>
+                </h:link>
+            </c:when>
+        </c:choose>
+    </ui:define>
+</ui:composition>
 

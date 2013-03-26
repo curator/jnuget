@@ -1,93 +1,87 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
-    <h:head>
-        <f:metadata>
-            <f:viewParam name="storageId" value="#{storageOptions.storageName}" validator="#{validator.validateStorageId}"/>
-        </f:metadata>
-        <title> <h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></title>
-        <link rel="stylesheet" type="text/css" href="/css/main.css" />
-    </h:head>
-    <h:body>
-        <ui:composition template="common/commonLayout.xhtml">
-            <ui:define name="content">
-                <fieldset>
-                    <legend><h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></legend>
-                    <ol>
-                        <li>
-                            <label for="className">Имя класса хранилища</label>
-                            <h:inputText id="className" value="#{storageOptions.className}"/>
-                        </li>
-                        <li>
-                            <label for="isIndexed">Индексировать</label>
-                            <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>
-                        </li>
-                        <li>
-                            <label for="refreshInterval">Период обновления индекса</label>
-                            <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
-                        </li>
-                        <li>
-                            <label for="canPush">Разрешена публикация пакетов</label>
-                            <h:selectBooleanCheckbox id="canPush" value="#{storageOptions.canPush}"/>
-                        </li>
-                        <li>
-                            <label for="canDelete">Разрешено удаление пакетов</label>
-                            <h:selectBooleanCheckbox id="canDelete" value="#{storageOptions.canDelete}"/>
-                        </li>
-                        <c:forEach items="#{storageOptions.storageProperties}" var="entry">
-                            <li>
-                                <label for="storage-#{entry.name}"><h:outputText value="#{entry.description}"/></label>
-                                <h:inputText id="storage-#{entry.name}" value="#{entry.value}"/>
-                            </li>
-                        </c:forEach>
-                    </ol>
-                    <c:if test="#{storageOptions.beforeTriggers.size() != 0}">
-                        <div>
-                            <h2>Триггеры выполняемые перед помещением пакета в хранилище</h2>
-                            <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
-                                <fieldset>
-                                    <legend><h:outputText value="#{trigger.objectName}"/></legend>
-                                    <ol>
-                                        <c:forEach items="#{trigger.properties}" var="property">
-                                            <li>
-                                                <label for="beforeTrigger-#{property.name}">
-                                                    <h:outputText value="#{property.description}"/>
-                                                </label>
-                                                <h:inputText id="beforeTrigger-#{property.name}" value="#{property.value}"/>
-                                            </li>
-                                        </c:forEach>
-                                    </ol>
-                                </fieldset>
-                            </c:forEach>
-                        </div>
-                    </c:if>
-                    <c:if test="#{storageOptions.aftherTriggers.size() != 0}">
-                        <div>
-                            <h2>Триггеры выполняемые после помещения пакета в хранилище</h2>
-                            <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
-                                <fieldset>
-                                    <legend><h:outputText value="#{trigger.objectName}"/></legend>
-                                    <ol>
-                                        <c:forEach items="#{trigger.properties}" var="property">
-                                            <li>
-                                                <label for="afterTrigger-#{property.name}">
-                                                    <h:outputText value="#{property.description}"/>
-                                                </label>
-                                                <h:inputText id="afterTrigger-#{property.name}" value="#{property.value}"/>
-                                            </li>
-                                        </c:forEach>
-                                    </ol>
-                                </fieldset>
-                            </c:forEach>
-                        </div>
-                    </c:if>
-                </fieldset>
-            </ui:define>
-        </ui:composition>
-    </h:body>
-</html>
+<ui:composition template="common/commonLayout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+    <f:metadata>
+        <f:viewParam name="storageId" value="#{storageOptions.storageName}" validator="#{validator.validateStorageId}"/>
+    </f:metadata>
+    <ui:define name="title"><h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></ui:define>
+    <ui:define name="content">
+        <fieldset>
+            <legend><h:outputText value="Настройки хранилища #{storageOptions.storageName}"/></legend>
+            <ol>
+                <li>
+                    <label for="className">Имя класса хранилища</label>
+                    <h:inputText id="className" value="#{storageOptions.className}"/>
+                </li>
+                <li>
+                    <label for="isIndexed">Индексировать</label>
+                    <h:selectBooleanCheckbox id="isIndexed" value="#{storageOptions.indexed}"/>
+                </li>
+                <li>
+                    <label for="refreshInterval">Период обновления индекса</label>
+                    <h:inputText id="refreshInterval" value="#{storageOptions.refreshInterval}"/>
+                </li>
+                <li>
+                    <label for="canPush">Разрешена публикация пакетов</label>
+                    <h:selectBooleanCheckbox id="canPush" value="#{storageOptions.canPush}"/>
+                </li>
+                <li>
+                    <label for="canDelete">Разрешено удаление пакетов</label>
+                    <h:selectBooleanCheckbox id="canDelete" value="#{storageOptions.canDelete}"/>
+                </li>
+                <c:forEach items="#{storageOptions.storageProperties}" var="entry">
+                    <li>
+                        <label for="storage-#{entry.name}"><h:outputText value="#{entry.description}"/></label>
+                        <h:inputText id="storage-#{entry.name}" value="#{entry.value}"/>
+                    </li>
+                </c:forEach>
+            </ol>
+            <c:if test="#{storageOptions.beforeTriggers.size() != 0}">
+                <div>
+                    <h2>Триггеры выполняемые перед помещением пакета в хранилище</h2>
+                    <c:forEach items="#{storageOptions.beforeTriggers}" var="trigger">
+                        <fieldset>
+                            <legend><h:outputText value="#{trigger.objectName}"/></legend>
+                            <ol>
+                                <c:forEach items="#{trigger.properties}" var="property">
+                                    <li>
+                                        <label for="beforeTrigger-#{property.name}">
+                                            <h:outputText value="#{property.description}"/>
+                                        </label>
+                                        <h:inputText id="beforeTrigger-#{property.name}" value="#{property.value}"/>
+                                    </li>
+                                </c:forEach>
+                            </ol>
+                        </fieldset>
+                    </c:forEach>
+                </div>
+            </c:if>
+            <c:if test="#{storageOptions.aftherTriggers.size() != 0}">
+                <div>
+                    <h2>Триггеры выполняемые после помещения пакета в хранилище</h2>
+                    <c:forEach items="#{storageOptions.aftherTriggers}" var="trigger">
+                        <fieldset>
+                            <legend><h:outputText value="#{trigger.objectName}"/></legend>
+                            <ol>
+                                <c:forEach items="#{trigger.properties}" var="property">
+                                    <li>
+                                        <label for="afterTrigger-#{property.name}">
+                                            <h:outputText value="#{property.description}"/>
+                                        </label>
+                                        <h:inputText id="afterTrigger-#{property.name}" value="#{property.value}"/>
+                                    </li>
+                                </c:forEach>
+                            </ol>
+                        </fieldset>
+                    </c:forEach>
+                </div>
+            </c:if>
+        </fieldset>
+    </ui:define>
+</ui:composition>
 
