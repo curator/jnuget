@@ -27,7 +27,7 @@ public class IndexedPackageSource implements PackageSource<Nupkg>, AutoCloseable
     /**
      * Индекс пакетов
      */
-    private volatile Index index = null;
+    private volatile Index index = new Index();
     /**
      * Индексируемый источник пакетов
      */

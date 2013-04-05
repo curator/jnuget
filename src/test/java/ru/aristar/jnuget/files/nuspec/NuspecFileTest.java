@@ -1,11 +1,26 @@
 package ru.aristar.jnuget.files.nuspec;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import ru.aristar.jnuget.Reference;
 import ru.aristar.jnuget.Version;
 import ru.aristar.jnuget.files.Framework;
@@ -18,6 +33,51 @@ import ru.aristar.jnuget.rss.PackageEntry;
  * @author sviridov
  */
 public class NuspecFileTest {
+
+    /**
+     * Извлекает данные из XML документа
+     *
+     * @param xmlData XML документ
+     * @param xPath xPath выражение
+     * @return строковое представление данных
+     * @throws XPathExpressionException некорректное xPath выражение
+     * @throws ParserConfigurationException ошибка создания парсера XML
+     * @throws SAXException некорректный XML
+     * @throws IOException ошибка чтения данных
+     */
+    private String getStringValue(byte[] xmlData, String xPath) throws XPathExpressionException, SAXException, IOException, ParserConfigurationException {
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true);
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(new ByteArrayInputStream(xmlData));
+        NamespaceContext context = new CustomContext();
+        XPathFactory pathFactory = XPathFactory.newInstance();
+        XPath path = pathFactory.newXPath();
+        path.setNamespaceContext(context);
+        XPathExpression expr = path.compile(xPath);
+        return (String) expr.evaluate(doc, XPathConstants.STRING);
+    }
+
+    /**
+     * Контекст для определения пространств имен
+     */
+    private class CustomContext implements NamespaceContext {
+
+        @Override
+        public String getNamespaceURI(String prefix) {
+            return "http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd";
+        }
+
+        @Override
+        public String getPrefix(String namespaceURI) {
+            return null;
+        }
+
+        @Override
+        public Iterator getPrefixes(String namespaceURI) {
+            return null;
+        }
+    }
 
     /**
      * Тест разбора файла спецификации из XML
@@ -271,5 +331,24 @@ public class NuspecFileTest {
         NuspecFile result = NuspecFile.Parse(inputStream);
         //THEN
         assertThat(result, is(notNullValue()));
+    }
+
+    /**
+     * Тест на корректную сериализацию примечаний к релизу
+     *
+     * @throws Exception ошибка в процессе теста
+     */
+    @Test
+    public void testReleaseNotesMarshaliing() throws Exception {
+        //GIVEN
+        NuspecFile nuspecFile = new NuspecFile();
+        nuspecFile.setReleaseNotes("Test release notes");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        //WHEN
+        nuspecFile.saveTo(outputStream);
+        outputStream.close();
+        String result = getStringValue(outputStream.toByteArray(), "/a:package/a:metadata/a:releaseNotes/text()");
+        //THEN
+        assertThat(result, is(equalTo("Test release notes")));
     }
 }
