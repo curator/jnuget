@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +33,7 @@ import ru.aristar.jnuget.rss.PackageEntry;
  * @author sviridov
  */
 @XmlRootElement(name = "package", namespace = NuspecFile.NUSPEC_XML_NAMESPACE_2011)
+@XmlAccessorType(XmlAccessType.NONE)
 public class NuspecFile implements Serializable {
 
     /**
@@ -150,49 +153,56 @@ public class NuspecFile implements Serializable {
     @XmlElement(name = "metadata", namespace = NUSPEC_XML_NAMESPACE_2011)
     private Metadata metadata;
 
+    private Metadata getMetadata() {
+        if (metadata == null) {
+            metadata = new Metadata();
+        }
+        return metadata;
+    }
+
     /**
      * @return Уникальный идентификатор пакета
      */
     public String getId() {
-        return metadata.id;
+        return getMetadata().id;
     }
 
     /**
      * @return Версия пакета
      */
     public Version getVersion() {
-        return metadata.version;
+        return getMetadata().version;
     }
 
     /**
      * @return Заглавие
      */
     public String getTitle() {
-        return metadata.title;
+        return getMetadata().title;
     }
 
     /**
      * @return Список авторов пакета
      */
     public String getAuthors() {
-        return metadata.authors;
+        return getMetadata().authors;
     }
 
     /**
      * @return Список владельцев пакета
      */
     public String getOwners() {
-        return metadata.owners;
+        return getMetadata().owners;
     }
 
     /**
      * @return Требуется ли запрос лицензии
      */
     public boolean isRequireLicenseAcceptance() {
-        if (metadata.requireLicenseAcceptance == null) {
+        if (getMetadata().requireLicenseAcceptance == null) {
             return false;
         } else {
-            return metadata.requireLicenseAcceptance;
+            return getMetadata().requireLicenseAcceptance;
         }
     }
 
@@ -200,28 +210,28 @@ public class NuspecFile implements Serializable {
      * @return Описание пакета
      */
     public String getDescription() {
-        return metadata.description;
+        return getMetadata().description;
     }
 
     /**
      * @return URL лицензии
      */
     public String getLicenseUrl() {
-        return metadata.licenseUrl;
+        return getMetadata().licenseUrl;
     }
 
     /**
      * @return URL проекта
      */
     public String getProjectUrl() {
-        return metadata.projectUrl;
+        return getMetadata().projectUrl;
     }
 
     /**
      * @return URL иконки
      */
     public String getIconUrl() {
-        return metadata.iconUrl;
+        return getMetadata().iconUrl;
     }
 
     /**
@@ -229,7 +239,7 @@ public class NuspecFile implements Serializable {
      * @return примечания к релизу
      */
     public String getReleaseNotes() {
-        return this.metadata.releaseNotes;
+        return this.getMetadata().releaseNotes;
     }
 
     /**
@@ -237,58 +247,58 @@ public class NuspecFile implements Serializable {
      * @param releaseNotes примечания к релизу
      */
     public void setReleaseNotes(String releaseNotes) {
-        this.metadata.releaseNotes = releaseNotes;
+        this.getMetadata().releaseNotes = releaseNotes;
     }
 
     /**
      * @return Краткое описание пакета
      */
     public String getSummary() {
-        return metadata.summary;
+        return getMetadata().summary;
     }
 
     /**
      * @return Кому пренадлежат права на пакет
      */
     public String getCopyright() {
-        return metadata.copyright;
+        return getMetadata().copyright;
     }
 
     /**
      * @return Язык
      */
     public String getLanguage() {
-        return metadata.language;
+        return getMetadata().language;
     }
 
     /**
      * @return Список меток
      */
     public List<String> getTags() {
-        if (metadata.tags == null) {
+        if (getMetadata().tags == null) {
             return new ArrayList<>();
         }
-        return metadata.tags;
+        return getMetadata().tags;
     }
 
     /**
      * @return Список ссылок
      */
     public List<Reference> getReferences() {
-        if (metadata.references == null) {
+        if (getMetadata().references == null) {
             return new ArrayList<>();
         }
-        return metadata.references;
+        return getMetadata().references;
     }
 
     /**
      * @return зависимости пакетов, включая те, что в группах
      */
     public List<Dependency> getDependencies() {
-        if (metadata.dependencies == null) {
+        if (getMetadata().dependencies == null) {
             return new ArrayList<>();
         }
-        return metadata.dependencies.getDependencies();
+        return getMetadata().dependencies.getDependencies();
     }
 
     /**
@@ -296,24 +306,24 @@ public class NuspecFile implements Serializable {
      * @return группы зависимостей, включая корневую
      */
     public List<DependenciesGroup> getDependenciesGroups() {
-        return metadata.dependencies.getGroups();
+        return getMetadata().dependencies.getGroups();
     }
 
     /**
      * @return зависимости от сборок, входящих в поставку .NET
      */
     public List<FrameworkAssembly> getFrameworkAssembly() {
-        if (metadata.frameworkAssembly == null) {
-            metadata.frameworkAssembly = new ArrayList<>();
+        if (getMetadata().frameworkAssembly == null) {
+            getMetadata().frameworkAssembly = new ArrayList<>();
         }
-        return metadata.frameworkAssembly;
+        return getMetadata().frameworkAssembly;
     }
 
     /**
      * @param frameworkAssembly зависимости от сборок, входящих в поставку .NET
      */
     public void setFrameworkAssembly(List<FrameworkAssembly> frameworkAssembly) {
-        metadata.frameworkAssembly = frameworkAssembly;
+        getMetadata().frameworkAssembly = frameworkAssembly;
     }
 
     /**
@@ -372,19 +382,18 @@ public class NuspecFile implements Serializable {
             throw new NugetFormatException("Идентификатор и версия пакета должны"
                     + " быть указаны: " + entry.getTitle() + ':' + properties.getVersion());
         }
-        metadata = new Metadata();
-        metadata.authors = entry.getAuthor() == null ? null : entry.getAuthor().getName();
-        metadata.dependencies = new Dependencies();
-        metadata.id = entry.getTitle();
-        metadata.version = properties.getVersion();
-        metadata.tags = properties.getTags();
-        metadata.summary = properties.getSummary();
-        metadata.copyright = properties.getCopyright();
-        metadata.dependencies.dependencies = properties.getDependenciesList();
-        metadata.description = properties.getDescription();
-        metadata.requireLicenseAcceptance = properties.getRequireLicenseAcceptance();
-        metadata.projectUrl = properties.getProjectUrl();
-        metadata.iconUrl = properties.getIconUrl();
+        getMetadata().authors = entry.getAuthor() == null ? null : entry.getAuthor().getName();
+        getMetadata().dependencies = new Dependencies();
+        getMetadata().id = entry.getTitle();
+        getMetadata().version = properties.getVersion();
+        getMetadata().tags = properties.getTags();
+        getMetadata().summary = properties.getSummary();
+        getMetadata().copyright = properties.getCopyright();
+        getMetadata().dependencies.dependencies = properties.getDependenciesList();
+        getMetadata().description = properties.getDescription();
+        getMetadata().requireLicenseAcceptance = properties.getRequireLicenseAcceptance();
+        getMetadata().projectUrl = properties.getProjectUrl();
+        getMetadata().iconUrl = properties.getIconUrl();
         //TODO Дописать свойства
     }
     /**
