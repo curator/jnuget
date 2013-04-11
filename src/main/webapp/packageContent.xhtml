@@ -11,6 +11,7 @@
         <f:viewParam name="packageId" value="#{packageDetails.packageId}"/>
         <f:viewParam name="packageVersion" value="#{packageDetails.packageVersion}"/>
         <f:event type="preRenderView" listener="#{packageDetails.init()}" />
+        <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
     </f:metadata>
     <ui:define name="title"><h:outputText value="#{messages.package_content_title} #{packageDetails.packageId} #{packageDetails.packageVersion}"/></ui:define>
     <ui:define name="content">

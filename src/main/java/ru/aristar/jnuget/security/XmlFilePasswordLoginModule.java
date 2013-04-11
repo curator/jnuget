@@ -21,7 +21,7 @@ public class XmlFilePasswordLoginModule extends XmlFileAbstractLoginModule imple
             NameCallback nameCallback = new NameCallback("login");
             PasswordCallback passwordCallback = new PasswordCallback("password", true);
             callbackHandler.handle(new Callback[]{nameCallback, passwordCallback});
-            logger.info("Запрос авторизации: " + nameCallback.getName() + ":" + new String(passwordCallback.getPassword()));
+            logger.trace("Запрос авторизации: {}:{}", new Object[]{nameCallback.getName(), new String(passwordCallback.getPassword())});
             user = usersOptions.findUser(nameCallback.getName(), passwordCallback.getPassword());
             if (user == null) {
                 return false;

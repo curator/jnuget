@@ -12,6 +12,7 @@
         <f:viewParam name="storageId" value="#{storageContents.storageName}" validator="#{validator.validateStorageId}"/>
         <f:viewParam name="firstRow" value="#{storageContents.low}"/>
         <f:viewParam name="packageId" value="#{storageContents.packageId}"/>
+        <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
     </f:metadata>
 
     <ui:define name="title"><h:outputText value="Содержимое хранилища #{storageContents.storageName}"/></ui:define>

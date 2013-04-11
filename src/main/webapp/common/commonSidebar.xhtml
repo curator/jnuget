@@ -8,14 +8,19 @@
         <ul>
             <a href="index.xhtml"><h:outputText value="#{messages.root_link}"/></a>
         </ul>
-        <ul>
-            <c:if test="#{login.loggedIn}">
+        <c:if test="#{login.loggedIn}">
+            <ul>
                 <a href="sourceManager.xhtml"><h:outputText value="#{messages.package_sources}"/></a>
-                <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
+            </ul>
+            <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-admin')}">
+                <ul>
                     <a href="usersOptions.xhtml"><h:outputText value="#{messages.users_link}"/></a>
+                </ul>
+                <ul>
                     <a href="commonOptions.xhtml"><h:outputText value="#{messages.settings_link}"/></a>
-                </c:if>
+                </ul>
             </c:if>
-        </ul>
+
+        </c:if>
     </ol>
 </ui:composition>

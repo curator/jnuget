@@ -6,11 +6,13 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
-
-    <ui:define name="title">Хранилища пакетов</ui:define>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
+    </f:metadata>
+    <ui:define name="title">${messages.sourceManager_title}</ui:define>
     <ui:define name="content">
-        <br>Домашняя папка NuGet: <h:outputText id="rootFolder" value="#{storagesList.nugetHome}"/></br>
-        <br>Всего источников пакетов: <h:outputText id="nameText" value="#{storagesList.repositoriesCount}"/></br>
+        <br>${messages.sources_home_folder}<h:outputText id="rootFolder" value="#{storagesList.nugetHome}"/></br>
+        <br>${messages.sourceManager_package_source_count}<h:outputText id="nameText" value="#{storagesList.repositoriesCount}"/></br>
         <h:dataTable value="#{storagesList.storageOptions}" var="repo">
             <h:column>
                 <f:facet name="header">№</f:facet>
@@ -26,7 +28,7 @@
                 </c:choose>
             </h:column>
             <h:column>
-                <f:facet name="header">Класс хранилища</f:facet>
+                <f:facet name="header">${messages.sourceManager_package_source_class}</f:facet>
                 <h:outputText value="#{repo.getClassName()}"/>
             </h:column>
             <h:column>
@@ -42,8 +44,8 @@
                 <h:outputText value="#{repo.getRefreshInterval()}"/>
             </h:column>
             <h:column>
-                <f:facet name="header">Содержимое</f:facet>
-                <h:link value="Содержимое" outcome="storageContents">
+                <f:facet name="header">${messages.sourceManager_package_source_content}</f:facet>
+                <h:link value="${messages.sourceManager_package_source_content}" outcome="storageContents">
                     <f:param name="storageId" value="#{repo.getStorageName()}"/>
                 </h:link>
             </h:column>

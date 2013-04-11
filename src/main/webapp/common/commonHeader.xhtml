@@ -5,9 +5,18 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h1>JNuGet</h1>
+    <h:form id="changeLanguage">
+        <h:commandLink action="#{language.changeLanguage('ru')}" id="ru">
+            <h:graphicImage library="images" name="RU.png"/>
+        </h:commandLink>
+        <h:commandLink action="#{language.changeLanguage('en')}" id="en">
+            <h:graphicImage library="images" name="GB.png"/>
+        </h:commandLink>
+    </h:form>
     <c:if test="#{login.loggedIn}">
         <h:form id="logoutForm">
             <h:commandButton id="exitButton" value="#{messages.exit_button_message}" type="submit" action="#{login.logout()}"/>
         </h:form>
     </c:if>
+
 </ui:composition>

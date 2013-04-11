@@ -18,6 +18,12 @@
     width: 5em;
 }
 
+#header #changeLanguage {
+    position: fixed;
+    right: 1em;
+    top: 0.5em;
+}
+
 #content{
     position: fixed;
     left: 10em;

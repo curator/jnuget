@@ -4,28 +4,32 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
+    </f:metadata>
     <ui:define name="title">Авторизация</ui:define>
     <ui:define name="content">
         <h:form id="login">
             <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage" warnClass="warnMessage"/>
             <ol>
                 <li>
-                    <label for="username">Имя пользователя : </label>
+                    <label for="username">${messages.login_user_name}</label>
                     <h:inputText id="username" value="#{login.userName}" disabled="#{login.loggedIn}"/>
                 </li>
                 <li>
-                    <label for="password">Пароль : </label>
+                    <label for="password">${messages.login_password}</label>
                     <h:inputSecret id="password" value="#{login.password}" disabled="#{login.loggedIn}"/>
                 </li>
                 <li>
                     <c:choose>
                         <c:when test="#{!login.loggedIn}">
-                            <h:commandButton id="login_button" value="Войти" action="#{login.login}" type="submit"/>
-                            <h:commandButton id="clear_button" value="Очистить" type="reset"></h:commandButton>
+                            <h:commandButton id="login_button" value="${messages.login_login_button}" action="#{login.login}" type="submit"/>
+                            <h:commandButton id="clear_button" value="${messages.login_clear_button}" type="reset"></h:commandButton>
                         </c:when>
                         <c:otherwise>
-                            <h:commandButton id="clear_button" value="Выйти" action="#{login.logout}" type="submit"/>
+                            <h:commandButton id="clear_button" value="${messages.exit_button_message}" action="#{login.logout}" type="submit"/>
                         </c:otherwise>
                     </c:choose>
                 </li>
