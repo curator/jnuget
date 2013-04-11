@@ -15,16 +15,18 @@
         <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
     </f:metadata>
 
-    <ui:define name="title"><h:outputText value="Содержимое хранилища #{storageContents.storageName}"/></ui:define>
+    <ui:define name="title">${messages.storageContents_title} #{storageContents.storageName}"/></ui:define>
     <ui:define name="content">
         <c:choose>
             <c:when test="#{storageContents.packageId==null}">
-                <h:outputText value="Всего различных пакетов в хранилище - #{storageContents.packageCount}"/>
+                <h:outputFormat value="${messages.storageContents_total_package_count}">
+                    <f:param value="#{storageContents.packageCount}"/>
+                </h:outputFormat>
                 <br>
                     <c:if test="#{facesContext.externalContext.isUserInRole('jnuget-push')}">
                         <h:form id="upload_form" enctype="multipart/form-data" rendered="#{storageContents.storage.pushStrategy.canPush()}">
                             <t:inputFileUpload id="file" value="#{storageContents.uploadedFile}" required="true"/>
-                            <h:commandButton id="upload_button" value="Загрузить" action="#{storageContents.uploadPackage()}" type="submit"/>
+                            <h:commandButton id="upload_button" value="${messages.storageContents_upload}" action="#{storageContents.uploadPackage()}" type="submit"/>
                         </h:form>
                     </c:if>
                 </br>
@@ -53,14 +55,14 @@
                 </h:link>
             </h:column>
             <h:column>
-                <f:facet name="header">Идентификатор пакета</f:facet>
+                <f:facet name="header">${messages.storageContents_package_id}</f:facet>
                 <h:link value="#{nupkg.id}" outcome="storageContents">
                     <f:param name="storageId" value="#{storageContents.storageName}"/>
                     <f:param name="packageId" value="#{nupkg.id}"/>
                 </h:link>
             </h:column>
             <h:column>
-                <f:facet name="header">Версия пакета</f:facet>
+                <f:facet name="header">${messages.storageContents_package_version}</f:facet>
                 <h:link value="#{nupkg.version}" outcome="packageDetails">
                     <f:param name="storageId" value="#{storageContents.storageName}"/>
                     <f:param name="packageId" value="#{nupkg.id}"/>

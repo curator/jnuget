@@ -16,9 +16,10 @@
     <ui:define name="title"><h:outputText value="#{messages.package_content_title} #{packageDetails.packageId} #{packageDetails.packageVersion}"/></ui:define>
     <ui:define name="content">
         <a:tree rootNode="#{packageDetails.rootFileNode}" var="node" showRoot="#{false}">
-            <h:outputLink value="#{packageDetails.getDownloadUrl(node)}">
+            <h:outputText value="#{node.name}"/>
+            <!--<h:outputLink value="#{packageDetails.getDownloadUrl(node)}">
                 <h:outputText value="#{node.name}"/>
-            </h:outputLink>
+            </h:outputLink>-->
         </a:tree>
     </ui:define>
 </ui:composition>

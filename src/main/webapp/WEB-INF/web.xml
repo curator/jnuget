@@ -9,6 +9,10 @@
         <param-value>/WEB-INF/tomahawk.taglib.xml;/WEB-INF/aristar.taglib.xml</param-value>
     </context-param>
     <context-param>
+        <param-name>facelets.SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
         <param-name>javax.faces.RESOURCE_EXCLUDES</param-name>
         <param-value>.class .jsp .jspx .properties .groovy</param-value>
     </context-param>

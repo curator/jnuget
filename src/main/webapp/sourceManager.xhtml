@@ -28,20 +28,21 @@
                 </c:choose>
             </h:column>
             <h:column>
+                <f:facet name="header">${messages.sourceManager_package_name}</f:facet>
+                <h:outputText value="#{repo.getStorageName()}"/>
+            </h:column>
+            <h:column>
                 <f:facet name="header">${messages.sourceManager_package_source_class}</f:facet>
                 <h:outputText value="#{repo.getClassName()}"/>
             </h:column>
             <h:column>
-                <f:facet name="header">Индексируемое (Y/N)</f:facet>
+                <f:facet name="header">${messages.sourceManager_is_indexed}</f:facet>
                 <h:outputText value='#{repo.isIndexed()?"Y":"N"}'/>
             </h:column>
             <h:column>
-                <f:facet name="header">Имя хранилища</f:facet>
-                <h:outputText value="#{repo.getStorageName()}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">Интервал обновления индекса</f:facet>
-                <h:outputText value="#{repo.getRefreshInterval()}"/>
+                <f:facet name="header">${messages.sourceManager_index_refresh_interval}</f:facet>
+                <h:outputText value="#{repo.getRefreshInterval()}" rendered="#{repo.refreshInterval != null and repo.cronString == null}"/>
+                <h:outputText value="#{repo.cronString}" rendered="#{repo.cronString != null}"/>
             </h:column>
             <h:column>
                 <f:facet name="header">${messages.sourceManager_package_source_content}</f:facet>

@@ -9,7 +9,7 @@
     <f:metadata>
         <f:event type="preRenderView" listener="#{language.setUserLocale()}"/>
     </f:metadata>
-    <ui:define name="title">Авторизация</ui:define>
+    <ui:define name="title">${messages.login_title}</ui:define>
     <ui:define name="content">
         <h:form id="login">
             <h:messages globalOnly="true" styleClass="message" errorClass="errorMessage" infoClass="infoMessage" warnClass="warnMessage"/>
