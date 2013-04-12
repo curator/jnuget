@@ -92,6 +92,7 @@ public class LoginController {
         } catch (ServletException e) {
             logger.warn("Ошибка в процессе авторизации {}:{} {} ", new Object[]{userName, password, e});
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Ошибка в процессе авторизации", null));
+            context.getExternalContext().invalidateSession();
             return "failure";
         }
     }
@@ -107,6 +108,7 @@ public class LoginController {
         final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
             request.logout();
+            context.getExternalContext().invalidateSession();
         } catch (ServletException e) {
             logger.error("Ошибка выхода из системы", e);
         }
