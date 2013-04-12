@@ -11,8 +11,6 @@ import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.junit.matchers.JUnitMatchers.hasItems;
 import ru.aristar.jnuget.files.Framework;
 import ru.aristar.jnuget.files.NugetFormatException;
 import ru.aristar.jnuget.files.Nupkg;
