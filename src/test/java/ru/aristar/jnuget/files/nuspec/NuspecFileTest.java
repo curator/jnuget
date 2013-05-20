@@ -351,4 +351,21 @@ public class NuspecFileTest {
         //THEN
         assertThat(result, is(equalTo("Test release notes")));
     }
+
+    /**
+     * Проверка распознания спецификации, у которой целевой фреймворк сборки
+     * указан как пустая строка
+     *
+     * @throws NugetFormatException некорректный формат тестового файла
+     * спецификации
+     */
+    @Test
+    public void testEmptyStringAssemblyFrameworks() throws NugetFormatException {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/DockPanelSuite.nuspec.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        //THEN
+        assertThat(nuspecFile, is(notNullValue()));
+    }
 }
