@@ -1,5 +1,6 @@
 package ru.aristar.jnuget.files;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import ru.aristar.jnuget.files.nuspec.NuspecFile;
 import java.util.EnumSet;
@@ -37,12 +38,11 @@ public class FrameworkAssembly {
 
         @Override
         public String marshal(EnumSet<Framework> frameworks) throws Exception {
-            StringBuilder builder = new StringBuilder();
-            for (Framework framework : frameworks) {
-                builder.append(framework.getFullName());
-                builder.append(FRAMEWORKS_DELIMETER);
+            if (frameworks == null || frameworks.isEmpty()) {
+                return null;
             }
-            return builder.substring(0, builder.length() - 3);
+            String result = Joiner.on(FRAMEWORKS_DELIMETER).join(frameworks);
+            return result;
         }
 
         @Override
