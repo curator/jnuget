@@ -20,7 +20,7 @@ public class FrameworkAssemblyTest {
     @Test
     public void testUnmarshalEmptyValue() throws Exception {
         //GIVEN
-        FrameworkAssembly.AssemblyTargetFrameworkAdapter adapter = new FrameworkAssembly.AssemblyTargetFrameworkAdapter();
+        AssemblyTargetFrameworkAdapter adapter = new AssemblyTargetFrameworkAdapter();
         //WHEN
         EnumSet<Framework> result = adapter.unmarshal("");
         //THEN
@@ -35,7 +35,7 @@ public class FrameworkAssemblyTest {
     @Test
     public void testMarshalNullValue() throws Exception {
         //GIVEN
-        FrameworkAssembly.AssemblyTargetFrameworkAdapter adapter = new FrameworkAssembly.AssemblyTargetFrameworkAdapter();
+        AssemblyTargetFrameworkAdapter adapter = new AssemblyTargetFrameworkAdapter();
         //WHEN
         String result = adapter.marshal(null);
         //THEN
