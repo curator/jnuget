@@ -26,7 +26,11 @@ public class NugetNamespaceFilter extends XMLFilterImpl {
      * Конструктор, использующий пространства имен по умолчанию
      */
     public NugetNamespaceFilter() {
-        this(new String[]{NuspecFile.NUSPEC_XML_NAMESPACE_2010, NuspecFile.NUSPEC_XML_NAMESPACE_EMPTY, NuspecFile.NUSPEC_XML_NAMESPACE_2012},
+        this(new String[]{
+            NuspecFile.NUSPEC_XML_NAMESPACE_2010,
+            NuspecFile.NUSPEC_XML_NAMESPACE_EMPTY,
+            NuspecFile.NUSPEC_XML_NAMESPACE_2012,
+            NuspecFile.NUSPEC_XML_NAMESPACE_2013},
                 NuspecFile.NUSPEC_XML_NAMESPACE_2011);
     }
 

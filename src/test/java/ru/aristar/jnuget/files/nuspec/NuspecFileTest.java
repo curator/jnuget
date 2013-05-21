@@ -368,4 +368,20 @@ public class NuspecFileTest {
         //THEN
         assertThat(nuspecFile, is(notNullValue()));
     }
+
+    /**
+     * Проверка чтения пакета с XSD от 06.2012
+     *
+     * @throws NugetFormatException некорректный формат тестового файла
+     * спецификации
+     */
+    @Test
+    public void testNamespace2013() throws NugetFormatException {
+        //GIVEN
+        InputStream inputStream = NuspecFileTest.class.getResourceAsStream("/nuspec/NLog.nuspec.2.0.1.xml");
+        //WHEN
+        NuspecFile nuspecFile = NuspecFile.Parse(inputStream);
+        //THEN
+        assertThat(nuspecFile, is(notNullValue()));
+    }
 }

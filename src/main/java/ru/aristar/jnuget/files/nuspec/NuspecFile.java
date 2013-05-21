@@ -401,6 +401,10 @@ public class NuspecFile implements Serializable {
      */
     public static final String NUSPEC_XML_NAMESPACE_2012 = "http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd";
     /**
+     * Пространство имен для спецификации пакета NuGet 2013
+     */
+    public static final String NUSPEC_XML_NAMESPACE_2013 = "http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd";
+    /**
      * Пространство имен для спецификации пакета NuGet 2011
      */
     public static final String NUSPEC_XML_NAMESPACE_2011 = "http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd";
